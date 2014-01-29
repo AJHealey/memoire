@@ -1,0 +1,41 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\title{UCL Network}
+\begin{document}
+\maketitle
+\section{Description catégories}
+En suivant le \textbf{RFC1918} sur les classes d'adresses privées, l'UCL a également divisé les machines en 3 catégories:
+\begin{itemize}
+\item \texttt{Catégorie 1}: Les machines qui n'ont pas besoin d'accéder à des machines d'autres entreprises ou à l'Internet dans son ensemble. Les machines de cette catégorie peuvent utiliser des adresses IP qui sont uniques dans l'entreprise, mais qui peuvent être ambigues entre différentes entreprises.
+\item \texttt{Catégorie 2}: Les machines qui ont besoin d'accéder à un nombre limité de services extérieurs (ex: email, www, ftp, ...) qui peuvent être servis par des passerelles applicatives. Pour beaucoup de machines dans cette catégorie, un accès non restreint (fourni par la connectivité IP) n'est pas forcément nécessaire et même quelque fois non désiré pour des raisons de sécurité. Pour les mêmes raisons que pour les machines de la première catégorie, de telles machines peuvent utiliser des adresses IP uniques dans l'entreprise, mais peuvent être ambigues entre différentes entreprises.
+\item \texttt{Catégorie 3}: Les machines ont besoin d'un accès réseau à l'extérieur de l'entreprise (fourni par la connectivité IP). Les machines de cette dernière catégorie ont besoin d'une adresse unique sur tout l'Internet.
+\end{itemize}
+A l'UCL, les machines de \textbf{catégorie 3} reçoivent une adresse \texttt{\textbf{130.104}}\\
+Les réseaux \textit{intranet} (\textbf{catégorie 1 et 2}) reçoivent une adresse \texttt{\textbf{192.168.}}\\\\
+Il y a également 2 groupes séparés dans les intranets :
+\begin{itemize}
+\item \texttt{Réseau de \textbf{non confiance}} : 192.168.0.0/17 [192.168.0.0] to [192.168.127.255]
+\item \texttt{Réseau de \textbf{confiance}} : 192.168.128.0/17 [192.168.128.0] to [192.168.255.255]
+\end{itemize}
+
+\section{Adresses IP RADIUS}
+\begin{itemize}
+\item \texttt{10.253.12.3} : ?
+\item \texttt{10.253.12.4} : ?
+\item \texttt{127.0.0.1} : Loopback (what for ?)
+\item \texttt{130.104.1.11} : SRI SERVER
+\item \texttt{130.104.10.134} : PYTHAGORE
+\item \texttt{130.104.250.1} : SRI-PPP (SRI Point to Point)
+\item \texttt{192.168.251.169} : PRI-ISBA-CHERCHEUR (ISBA=Institut Statistiques, Biostatistiques et sciences actuarielles)
+\item \texttt{192.168.251.177} : PRI-WISM1-MGMT (PRI = principal ?)
+\item \texttt{192.168.251.178} : PRI-WISM1-MGMT
+\item \texttt{192.168.251.181} : PRI-WISM1-MGMT
+\item \texttt{192.168.251.182} : PRI-WISM1-MGMT
+\item \texttt{193.190.198.33} : ?
+\item \texttt{193.190.198.59} : ?
+\end{itemize}
+
+\end{document}

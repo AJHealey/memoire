@@ -1,0 +1,86 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\title{Radius information}
+\begin{document}
+\maketitle
+\section{Radius specifications}
+RADIUS (Remote Authentication Dial-In User Service) is a networking protocol that provides centralized Authentication, Authorization and Accounting (AAA) management for users that connect and use a network service.\\
+Last version of the protocol normalized by the IETF in two RFCs (June 2000): 
+\begin{itemize}
+\item \texttt{RFC2865} : RADIUS Authentication
+\item \texttt{RFC2866} : RADIUS Accounting
+\end{itemize}
+The RADIUS protocol uses UDP.
+\section{How does it work ?}
+\subsection{Authentication and Authorization}
+\textbf{UDP ports: 1645 or 1812}\\
+The authentication is initiated by a client that can be a NAS (Network Access Server), an wireless access point, a firewall, another server, etc. The RADIUS server manage this request and make a lookup, if necessary, in an extern database (SQL, LDAP,...).\\\\
+The user or machine sends a request to a Remote Access Server (RAS) using user's access credentials. Those credentials are passed to the RAS device via the link-layer protocol. The RAS then sends an \textbf{Access Request} message to the RADIUS server, requesting authorization to grant access via the RADIUS protocol (the request includes access credentials such as password and username).\\
+The RADIUS server checks that the information is correct and sends back one of the three following responses :
+\begin{itemize}
+\item \texttt{Access Reject} : The user cannot access to the requested network resources. The reasons may include a failure to provide proof of identification or an unknown or inactive user account.
+\item \texttt{Access Challenge} : The RADIUS server asks for more information (the client will respons with another Access-Request packet). The Access Challenge is also used in more complex authentication dialogs where a secure tunnel is established between the user machine and the RADIUS server in a way that the access credentials are hidden from the RAS.
+\item \texttt{Access Accept} : The user is granted access.
+\end{itemize}
+
+The RADIUS identification can be enhanced with a \textbf{autorization} like the user's IP address, his maximal connection time, QoS parameters,...
+
+\subsection{Accounting}
+\textbf{UDP ports: 1646 or 1813}\\
+The accounting uses 2 packets :
+\begin{itemize}
+\item \texttt{Accounting Start} : It's simply a \textbf{Accounting-Request} packet with a \texttt{acct\_status\_type} attribute with the value \textbf{start}. This packet is sent to the RADIUS server after the authentication and contains some data (username, IP address, connection date \& hour,...).
+\item \texttt{Accounting Stop} : Same type of packet but here the \texttt{acct\_status\_type} attribute value is \textbf{stop}. When the user quits the service or when the RADIUS deconnects him because of inactivity this packet is sent (either from the user or the server). There are generally a lot of data in this packet (connection duration, number of packets exchanged, information on websites visited, etc.).
+\end{itemize}
+There is also a special record called the \texttt{Interim Update}. It is sent by the NAS or the RADIUS server to update the status of the current connection.
+
+\section{Password protocols}
+Natively, 2 protocols :
+\begin{itemize}
+\item \texttt{PAP} : Password Authentication Protocol. Exchange in the \textbf{clear}.
+\item \texttt{CHAP} : Challenge Handshake Authentication Protocol. It works 3 steps :
+	\begin{itemize}
+	\item After the authentication, the RADIUS server sends a \textit{challenge} to the user. It is a 255 octets value randomly generated.
+	\item The user responds with a value computed with the challenge and his password using a hash function like MD5 (appends the password and the value and then hashes that result). He sends back to the RADIUS server the value.
+	\item The server realize the same operation and compares its results with the value received. It then accepts or refuses the connection.
+\end{itemize}
+	CHAP sends after a fixed amount of time a new challenge to the user.
+\item \texttt{EAP} : Extensible Authentication Protocol.
+\item \texttt{802.1X} 
+\end{itemize}
+
+Now we have the Microsoft variations:
+\begin{itemize}
+\item \texttt{MS-CHAP} : RFC2433
+\item \texttt{MS-CHAP-V2} : RFC2759
+\end{itemize}
+
+\section{Current Case}
+Two RADIUS servers at UCL and three LDAP servers.
+\begin{itemize}
+\item \texttt{Radius1} : radius1.sri.ucl.ac.be (130.104.1.9)
+	\begin{itemize}
+		\item \texttt{PRS} : Personnel (port 1822) | Dossier \textit{radiusLDAP1}
+		\item \texttt{ETD} : Etudiants (port 1832) | Dossier \textit{radiusLDAP2}
+		\item \texttt{GUEST} : Guests (port 1852) | Dossier \textit{radiusLDAP4}
+		\item \texttt{EDUROAM} : Eduroam (port 1812) | Dossier \textit{radius}
+	\end{itemize}
+\item \texttt{Radius2} : radius2.sri.ucl.ac.be (130.104.1.8)
+\begin{itemize}
+		\item \texttt{PRS} : Personnel (port 1822) | Dossier \textit{radiusLDAP1}
+		\item \texttt{ETD} : Etudiants (port 1832) | Dossier \textit{radiusLDAP2}
+		\item \texttt{GUEST} : Guests (port 1852) | Dossier \textit{radiusLDAP4}
+		\item \texttt{EDUROAM} : Eduroam (port 1812) | Dossier \textit{radius}
+	\end{itemize}
+\end{itemize}
+About the LDAP servers :
+\begin{itemize}
+\item \texttt{LDAP ANNUAIRE} : Adresses mails UCL
+\item \texttt{LDAP OASIS} : Active directory
+\item \texttt{LDAP ID GLOBAL} : Users information (+SSL)
+\end{itemize}
+
+\end{document}

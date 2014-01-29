@@ -1,0 +1,13 @@
+ctrl_interface=/var/run/wpa_supplicant
+eapol_version=1
+ap_scan=1
+fast_reauth=1
+network={
+	ssid="UCLouvain"
+	key_mgmt=WPA-EAP
+	eap=TTLS
+	identity="identifiant_global@wifi.uclouvain.be"
+	password="XXXXX"
+	ca_cert="/etc/wpa_supplicant/chain-radius.pem"
+	phase2="auth=PAP"
+}

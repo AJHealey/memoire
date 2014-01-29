@@ -1,0 +1,1 @@
+FACILITIES = "infos/facilitiesCodes.json"

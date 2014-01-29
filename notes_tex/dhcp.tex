@@ -1,0 +1,19 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\title{DHCP}
+\begin{document}
+\maketitle
+\section{How does DHCP works ?}
+There are 4 steps in the DHCP process:
+\begin{itemize}
+\item \texttt{DISCOVER}: The client that does not yet have an IP address, broadcasts a series of DHCP discover packets in order to locate the DHCP servers.
+\item \texttt{OFFER}: Each DHCP server will respond with an IP address for the client to use.
+\item \texttt{REQUEST}: The client requests the use of one of the addresses provided.
+\item \texttt{ACK/NACK}: The server acknowledges (ACK) or denies (NACK) the use of the address requested by the user.
+\end{itemize}
+\section{UCL infrastructure}
+There are 2 DHCP servers (dhcp1 and dhcp2).
+\end{document}
