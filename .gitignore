@@ -4,3 +4,4 @@ __pycache__/
 *.gz
 *.log
 *.out
+*.dvi
