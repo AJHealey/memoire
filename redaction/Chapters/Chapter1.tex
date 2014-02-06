@@ -11,24 +11,29 @@
 
 
 \section{Towards a WiFi Monitoring Tool}
-As for other universities around the world, the Catholic Univeristy of Louvain has a large wireless network throughout its different campus. This network provides a direct and reliable connection to all the students, staff, teachers and researchers of the university at all time. The problem with the UCL infrastructure is that it is quite huge and it is always changing. The UCL/SRI team, which is responsible for the effective development of that infrastructure and its connection with the outside world, is always trying to improve the connectivity on the site by adding access point or upgrading the Cisco controllers.\\
+As for other universities around the world, the Catholic Univeristy of Louvain offers a large wireless network throughout its different campus. This network provides a direct and reliable connection to all of the students, staff, teachers and researchers of the university at all time. The problem with the UCL infrastructure is that it is quite huge and it is always changing. The UCL/SRI team, which is responsible for the effective development of that infrastructure and its connection with the outside world, is always trying to improve the connectivity on the site by adding access point or upgrading the Cisco controllers for instance.\\
 
-Because of that complexity, the management and the efficiency of that network has become quite difficult and buggy. Indeed, the logfiles produced by the controllers are very verbose which induce an arduous and tricky work of decryption when a the team wants to find and trace a problem that occured before on the system. Furthermore, there are more and more users trying to get a connection on the campus (laptops, smartphones,...). This might causes some disturbance on the network that leads to connectivity problems for the direct user.\\
+Because of that complexity, the management and the efficiency of that network has become quite difficult and buggy. Indeed, the logfiles produced by the controllers are very verbosed which induce an arduous and tricky work of decryption when the team wants to find and trace a problem that occured before on the system. Furthermore, there are more and more users trying to get a connection on the campus (laptops, smartphones,...). This might causes some disturbance on the network that leads to connectivity problems for the direct user.\\
 
-In this thesis, we discuss the implementation of a WiFi monitoring tool that will help the network administrators managing the wireless infrastructure. To achieve that, we have to proceed in two steps. First of all, we have to collect all the information that travels over the network. Those information come from heterogeneous sources (from controllers logfiles to active monitoring logs through customized routers). Second, we have to analyze and process that raw data in a way that is understandable and readable for the end users.
+In this thesis, we discuss the implementation of a WiFi monitoring tool that will help the network administrators managing the wireless infrastructure. To achieve that, we proceed in two steps. First of all, we collect all the information that travels over the network. Those information come from heterogeneous sources (from controllers logfiles to active monitoring logs through customized routers). Second, we have to analyze and process that raw data in a way that is understandable and readable for the end users.
 
 \subsection{Data Gathering}
-As said before, the sources of data are quite heterogeneous. To handle that, we'll have to implement a system that can hold and represent all the information in a consistent way.
+%As said before, the sources of data are quite heterogeneous. To handle that, we'll have to implement a system that can hold and represent all the information in a consistent way.
+
+To work properly, our monitoring tool needs to gather data from the UCL wireless network. These data comes from various places and are quite heterogeneous. Indeed, our system implementation gathers, and stores into our private server, the logfiles containing all the information about the RADIUS, LDAP and DHCP servers as well as the information about the different WiSMs (Wireless Services Modules). Thanks to those logfiles we have a complete overview of the network status and the components at all time.\\
+
+Moreover, we have designed a custom OpenWRT router that authenticate itself on the UCL network to check if there is a problem during the authentication phase. All the information that the router gathers are also stored into our server. This gives active network status information compared to the passive one collected with the different logfiles.
+
 
 \subsection{Data Analysis}
-The core will be responsible to centralized, analyse and take the action accordingly the information received from the probes. Its actions will mainly depend on the access that it will have the network. Typical action would be to adapt the controller or inform precisely the administrator of the problems detected. Most of the time, there most difficult is not to be aware of the problem but to understand the causes of it.
+%The core will be responsible to centralized, analyse and take the action accordingly the information received from the probes. Its actions will mainly depend on the access that it will have the network. Typical action would be to adapt the controller or inform precisely the administrator of the problems detected. Most of the time, there most difficult is not to be aware of the problem but to understand the causes of it.
+The next step is the data analysis. In that phase, our system examines all the logfiles of the server and [TODO]
+
+
+
 
 Throughout this thesis we explain what are the main issues encountered today on the university wireless network and how our monitoring tool is helping the network administrators managing this system. In a first chapter, we present the working environment, and more specifically, the UCL Internet infrastructure. We also discuss the different types of logs we use in our tool. In the following chapter, we present all the network components and protocols used inside the network and where connectivity problems can occur. Finally we provide and describe an implementation of our monitoring tool and we deploy it on the network to gather results and feedback.
 
 
-
-
-
-\section{Motivation}
-
-\section{Objectives}
+\section{State of the art}
+Here we present the state of the art of wireless network monitoring.
