@@ -1,1 +1,0 @@
-FACILITIES = "infos/facilitiesCodes.json"
