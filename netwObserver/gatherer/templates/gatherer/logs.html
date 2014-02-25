@@ -1,0 +1,18 @@
+{% extends "gatherer/base.html" %}
+{% load staticfiles %}
+
+{% block custCSS %}
+<link href="{% static 'gatherer/css/index.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+
+<ul class="nav nav-tabs">
+	<li><a href="{% url 'index' %}">General</a></li>
+	<li class="active"><a href="#">Logs</a></li>
+	<li><a href="{% url 'snmp' %}">SNMP</a></li>
+</ul>
+
+
+{% endblock %}

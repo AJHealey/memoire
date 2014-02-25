@@ -9,12 +9,15 @@
 {% block content %}
 
 <div class="tabbable">
+
 	<ul class="nav nav-tabs">
-		<li class="active"><a href="#">General</a></li>
+		<li><a href="{% url 'index' %}">General</a></li>
 		<li><a href="{% url 'logs' %}">Logs</a></li>
-		<li><a href="{% url 'snmp' %}">SNMP</a></li>
+		<li class="active"><a href="#">SNMP</a></li>
 	</ul>
-</div>
+
+</div> <!-- /container -->
+
 
 
 {% endblock %}

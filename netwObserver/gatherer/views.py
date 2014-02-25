@@ -8,5 +8,14 @@ def index(request):
 	context['users'] = UserDevice.objects.all()
 	return render(request, "gatherer/index.html", context)
 
+def logs(request):
+	#context = {}
+	return render(request, "gatherer/logs.html")
+
+def snmp(request):
+	context = {}
+	return render(request, "gatherer/snmp.html", context)
+
+
 
 
