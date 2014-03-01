@@ -23,12 +23,13 @@
 		<form method="post"  action="{% url 'index' %}" class="form-horizontal" role="form">
 		{% csrf_token %}
 			<div class="form-group">
-				<label for="selectLogFile" class="col-md-1 control-label">Logs File</label>
+				<label for="selectLogFile" class="col-md-2 control-label">Available Files</label>
 				<div class="col-md-6">			
 					<select class="form-control" name="selectLogFile" id="selectLogFile">
 						{% if logFiles %}
+							<option value="" selected></option>
 							{% for f in logFiles %}
-								<option value="{{forloop.counter}}">{{f}}</option>
+							<option value="{{forloop.counter}}">{{f}}</option>
 							{% endfor %}
 						{% endif %}
 					</select>
