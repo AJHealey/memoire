@@ -31,4 +31,7 @@ def walker(ip):
 
 
 if __name__ == '__main__':
-    walker(wism1IP[1])
+    for ip in wism1IP:
+        print(ip + ':\n')
+        walker(ip)
+        print('\n------------------------\n')
