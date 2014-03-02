@@ -43,6 +43,7 @@ class WismEvent(models.Model):
 
 	message = models.CharField(max_length=256)
 
+## Error Parsing
 class BadLog(models.Model):
 	log = models.CharField(max_length=256)
 	cause = models.CharField(max_length=256)
