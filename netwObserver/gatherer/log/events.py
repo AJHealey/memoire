@@ -36,19 +36,21 @@ class RadiusInfo(Event):
 
 #DHCP
 class DHCPDiscover(Event):
-	def __init__(self, date, dhcpServer, device, via):
+	def __init__(self, date, dhcpServer, device, via, message=''):
 		super().__init__(date)
 		self.dhcpServer = dhcpServer
 		self.device = device
 		self.via = via
+		self.message = message
 
 class DHCPRequest(Event):
-	def __init__(self, date, dhcpServer, ipRequested, device, via):
+	def __init__(self, date, dhcpServer, ipRequested, device, via, message=''):
 		super().__init__(date)
 		self.dhcpServer = dhcpServer
 		self.ipRequested = ipRequested
 		self.device = device
 		self.via = via
+		self.message = message
 
 class DHCPOffer(Event):
 	def __init__(self, date, dhcpServer, ipOffered, device, via):
@@ -60,14 +62,20 @@ class DHCPOffer(Event):
 
 
 class DHCPAck(Event):
-	def __init__(self, date, dhcpServer, ipAcked, device, deviceName, via):
+	def __init__(self, date, dhcpServer, ipAcked, device, deviceName, via, message=''):
 		super().__init__(date)
 		self.dhcpServer = dhcpServer
 		self.ipAcked = ipAcked
 		self.device = device
 		self.deviceName = deviceName
 		self.via = via
+		self.message = message
 
+class DHCPLog(Event):
+	def __init__(self, date, dhcpServer, message):
+		super().__init__(date)
+		self.dhcpServer = dhcpServer
+		self.message = message
 
 #Wism
 class WismLog(Event):

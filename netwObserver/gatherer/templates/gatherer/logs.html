@@ -38,8 +38,8 @@
 			</thead>
 			<tbody>
 				{% for event in dhcpEvent %}
-				<tr {% if event.dhcpType == 'Ack' %}class="success"{%endif%}>
-					<th></th>
+				<tr {% if event.dhcpType == 'Ack' %}class="success"{%elif event.dhcpType == 'Discover' and event.message %}class="warning" data-toggle="tooltip" data-placement="bottom" title="{{event.message}}"{%elif event.dhcpType == 'Log'%}class='info'{%endif%}>
+					<th>{%if event.dhcpType == 'Discover' and event.message %}<span class="glyphicon glyphicon-warning-sign"></span>{%endif%}</th>
 					<td>{{event.date|date:"D d M Y H:i:s:u"}}</td>
 					<td>{{event.server}}</td>
 					<td>{{event.dhcpType}}</td>

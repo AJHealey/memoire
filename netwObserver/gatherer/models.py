@@ -28,9 +28,10 @@ class RadiusEvent(models.Model):
 class DHCPEvent(models.Model):
 	date = models.DateTimeField(primary_key=True)
 	server = models.CharField(max_length=5)
-	device = macField.MACAddressField()
+	device = macField.MACAddressField(null=True)
 	dhcpType = models.CharField(max_length=10)
 	ip = models.GenericIPAddressField(null=True)
+	message = models.CharField(max_length=256, null=True)
 
 ## Wism model
 class WismEvent(models.Model):

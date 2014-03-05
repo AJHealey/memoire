@@ -24,18 +24,29 @@ def index(request):
 
 	if 'selectLogFile' in request.POST and request.POST['selectLogFile'] != '':
 		selectedLogFile = context['logFiles'][int(float(request.POST['selectLogFile']))-1]
-		Thread(target=logParsing, args=(join(TMPFILE,selectedLogFile),)).start()
-		#logParsing(join(TMPFILE,selectedLogFile))
+		#Thread(target=logParsing, args=(join(TMPFILE,selectedLogFile),)).start()
+		logParsing(join(TMPFILE,selectedLogFile))
 
 	return render(request, "gatherer/index.html", context)
 
-def logs(request, cat='dhcp', page=1, perpage=100):
+def logs(request, cat='dhcp', page=1, perpage=100, filters={}):
 	context = {}
 	context['cat'] = cat
+	context['perpage'] = perpage
+	context['page'] = page
+	context['filters'] = filters
 
 	## DHCP Logs
 	if cat == 'dhcp':
 		tmpQuery = DHCPEvent.objects.order_by('-date')
+		
+		if 'filterIP' in filters:
+			tmpQuery = tmpQuery.filter(ip=filters['filterIP'])
+		if 'filterType' in filters:
+			tmpQuery = tmpQuery.filter(ip=filters['filterType'])
+		if 'filterDevice' in filters:
+			tmpQuery = tmpQuery.filter(ip=filters['filterDevice'])
+		
 		p = Paginator(tmpQuery,perpage)
 		try:
 			context['dhcpEvent'] = p.page(page)
@@ -69,8 +80,6 @@ def logs(request, cat='dhcp', page=1, perpage=100):
 		except EmptyPage:
 			context['wismEvent'] = p.page(p.num_pages)
 
-
-
 	return render(request, "gatherer/logs.html", context)
 
 def snmp(request):
@@ -79,56 +88,70 @@ def snmp(request):
 
 
 ######################
-
 def logParsing(path):
-	
-	for event in parser(path):
-		try:
-			if isinstance(event,NotAnEvent):
-				pass
 
-			## Radius Events
-			if isinstance(event,RadiusOk):
-				RadiusEvent.objects.create(date=event.date, login=event.login, radiusType='OK')
+	entries = []
 
-			elif isinstance(event,RadiusIncorrect):
-				RadiusEvent.objects.create(date=event.date, login=event.login, radiusType='KO')
+	for i, event in enumerate(parser(path)):
 
-			elif isinstance(event,RadiusError):
-				RadiusEvent.objects.create(date=event.date, message=event.message, radiusType='error')
-
-			elif isinstance(event,RadiusNotice):
-				RadiusEvent.objects.create(date=event.date, message=event.message, radiusType='notice')
-
-			elif isinstance(event,RadiusInfo):
-				RadiusEvent.objects.create(date=event.date, message=event.message, radiusType='info')
-
-
-			## DHCP Events
-			elif isinstance(event,DHCPDiscover):
-				DHCPEvent.objects.create(date=event.date, server=event.dhcpServer, device=event.device, dhcpType='Discover')
-
-			elif isinstance(event,DHCPRequest):
-				DHCPEvent.objects.create(date=event.date, server=event.dhcpServer, device=event.device, dhcpType='Request', ip=event.ipRequested)
-
-			elif isinstance(event,DHCPOffer):
-				DHCPEvent.objects.create(date=event.date, server=event.dhcpServer, device=event.device, dhcpType='Offer',  ip=event.ipOffered)
-
-			elif isinstance(event,DHCPAck):
-				DHCPEvent.objects.create(date=event.date, server=event.dhcpServer, device=event.device, dhcpType='Ack',  ip=event.ipAcked)
-
-			## Wism Event
-			elif isinstance(event,WismLog):
-				WismEvent.objects.create(date=event.date, ip=event.ip, category=event.category, severity=event.severity, mnemo=event.mnemo, message=event.message)
-
-			#####
-			elif isinstance(event,UnparsedLog):
-				BadLog.objects.create(log=event.log, cause=event.cause)
-
-		except IntegrityError:
+		if isinstance(event,NotAnEvent):
 			pass
 
+		## Radius Events
+		if isinstance(event,RadiusOk):
+			entries.append(RadiusEvent(date=event.date, login=event.login, radiusType='OK'))
 
+		elif isinstance(event,RadiusIncorrect):
+			entries.append(RadiusEvent(date=event.date, login=event.login, radiusType='KO'))
+
+		elif isinstance(event,RadiusError):
+			entries.append(RadiusEvent(date=event.date, message=event.message, radiusType='error'))
+
+		elif isinstance(event,RadiusNotice):
+			entries.append(RadiusEvent(date=event.date, message=event.message, radiusType='notice'))
+
+		elif isinstance(event,RadiusInfo):
+			entries.append(RadiusEvent(date=event.date, message=event.message, radiusType='info'))
+
+
+		## DHCP Events
+		elif isinstance(event,DHCPDiscover):
+			entries.append(DHCPEvent(date=event.date, server=event.dhcpServer, device=event.device, dhcpType='Discover', message=event.message))
+
+		elif isinstance(event,DHCPRequest):
+			entries.append(DHCPEvent(date=event.date, server=event.dhcpServer, device=event.device, dhcpType='Request', ip=event.ipRequested))
+
+		elif isinstance(event,DHCPOffer):
+			entries.append(DHCPEvent(date=event.date, server=event.dhcpServer, device=event.device, dhcpType='Offer',  ip=event.ipOffered))
+
+		elif isinstance(event,DHCPAck):
+			entries.append(DHCPEvent(date=event.date, server=event.dhcpServer, device=event.device, dhcpType='Ack',  ip=event.ipAcked))
+
+		elif isinstance(event,DHCPLog):
+			entries.append(DHCPEvent(date=event.date, server=event.dhcpServer, dhcpType='Log', message=event.message))
+
+
+		## Wism Event
+		elif isinstance(event,WismLog):
+			entries.append(WismEvent(date=event.date, ip=event.ip, category=event.category, severity=event.severity, mnemo=event.mnemo, message=event.message))
+		
+
+		#####
+		elif isinstance(event,UnparsedLog):
+			entries.append(BadLog(log=event.log, cause=event.cause))
+
+		if (i+1) % 500 == 0:
+			addBatch(entries)
+
+	addBatch(entries)
+
+
+def addBatch(lists):
+	for element in lists:
+		try:
+			element.save()
+		except IntegrityError:
+			pass
 
 
 

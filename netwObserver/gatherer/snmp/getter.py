@@ -1,4 +1,6 @@
 from pysnmp.entity.rfc3413.oneliner import cmdgen
+ 
+
 
 
 wism1IP = ['192.168.251.177', '192.168.251.178', '192.168.251.181', '192.168.251.182']
@@ -8,16 +10,17 @@ commutateurs = ['172.31.1.116', '172.31.1.15', '172.31.1.3', '172.31.1.61', '172
 
 cmdGen = cmdgen.CommandGenerator()
 
-def walker(ip):
+def walker(ip, port=161, community='snmpstudentINGI', OIB='1.3.6.1.4.1.14179'):
     errorIndication, errorStatus, errorIndex, varBindTable = cmdGen.nextCmd(
-        cmdgen.CommunityData('snmpstudentINGI'),
-        cmdgen.UdpTransportTarget((ip, 161)),
-        '1.3.6.1.4.1.14179',
+        cmdgen.CommunityData(community),
+        cmdgen.UdpTransportTarget((ip, port)),
+        OIB,
         lookupNames=True, lookupValues=True
     )
 
     if errorIndication:
         print(errorIndication)
+    
     else:
         if errorStatus:
             print('%s at %s' % (
@@ -34,4 +37,4 @@ def walker(ip):
 if __name__ == '__main__':
     walker(commutateurs[1])
         
-
+# snmpwalk -v2c -c snmpstudentINGI -ObentU 192.168.15.202 1.3.6.1.4.1.14179

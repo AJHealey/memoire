@@ -55,10 +55,26 @@ def radiusParser(infos):
 	#2013-10-21T17:26:00+02:00 radius1.sri.ucl.ac.be radiusd[1523]: [ID 702911 local3.notice] Login OK: [@eur.nl] (from client WiSMPythagore-B port 29 cli e4-d5-3d-89-af-51)
 	infos[0] = infos[0][:(infos[0].rfind(":"))] + infos[0][(infos[0].rfind(":"))+1:]
 	
-	date = datetime.strptime(infos[0], "%Y-%m-%dT%H:%M:%S%z")
+	try:
+		date = datetime.strptime(infos[0], "%Y-%m-%dT%H:%M:%S%z")
+	except:
+		date = datetime.strptime(infos[0], "%Y-%m-%dT%H:%M:%S.%f%z")
+
 	radiusUrl = infos[1]
 
-	if infos[6].lower() == "login" :
+	# Log from sipr.logs
+	if infos[3].lower() == "login" :
+		tmp = infos[4].lower()
+		login = infos[5][1:-1]
+		if tmp.startswith("ok"):
+			return RadiusOk(date, login)
+		elif tmp.startswith("incorrect"):
+			return RadiusIncorrect(date, login)
+		else:
+			raise Exception()
+
+	# Big Log file
+	elif infos[6].lower() == "login" :
 		tmp = infos[7].lower()
 		login = infos[8][1:-1]
 
@@ -90,10 +106,20 @@ def dhcpParser(infos):
 	dhcpServer = infos[1]
 	dhcpType = infos[3]
 
+
+
 	## Client broadcasted asking
 	if infos[3] == "DHCPDISCOVER":
 		device = infos[5]
-		via = infos[7]
+		
+		if ':' in infos[7]:
+			via = infos[7][:-1]
+			message = ' '.join(infos[8:])
+			if 'load balance' in message:
+				message = ''
+			return DHCPDiscover(date, dhcpServer, device, via, message)
+		else:
+			via = infos[7]
 		return DHCPDiscover(date, dhcpServer, device, via)
 
 	# Server respond
@@ -107,10 +133,16 @@ def dhcpParser(infos):
 	elif infos[3] == "DHCPREQUEST":
 		ipRequested = infos[5]
 		device = infos[7]
-		via = infos[9]
-		return DHCPRequest(date, dhcpServer, ipRequested, device, via)
+		if ':' in infos[9]:
+			via = infos[9][:-1]
+			message = ' '.join(infos[10:])
+			return DHCPRequest(date, dhcpServer, ipRequested, device, via, message)
+		else:
+			via = infos[9]
+			return DHCPRequest(date, dhcpServer, ipRequested, device, via)
 
 	# Server acknoledge
+	#2014-03-04T13:08:36.177061+01:00 dhcp-2 dhcpd: DHCPACK to 192.135.168.96 (e0:b9:a5:d9:69:cc) via eth0 
 	elif infos[3] == "DHCPACK":
 		ipAcked = infos[5]
 		device = infos[7]
@@ -125,6 +157,10 @@ def dhcpParser(infos):
 
 	elif infos[3] == "DHCPINFORM":
 		return NotAnEvent(date)
+
+	elif syslog in infos[3]:
+		message = ' '.join(infos[4:])
+		return DHCPLog(date, dhcpServer, message)
 
 	else :
 		raise Exception()
