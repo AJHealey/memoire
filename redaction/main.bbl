@@ -1,0 +1,54 @@
+\begin{thebibliography}{7}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Bordères and Makarévitch(2006)]{radius1}
+Serge Bordères and Nat Makarévitch.
+\newblock \emph{Authentification réseau avec Radius : 802.1x, {EAP},
+  FreeRadius}.
+\newblock Eyrolles, Paris, 2006.
+\newblock ISBN 2-212-12007-9.
+\newblock URL \url{http://opac.inria.fr/record=b1128764}.
+\newblock Les protocoles étudiés dans cet ouvrage peuvent être trouvés sur
+  le site http://www.rfc-editor.org.
+
+\bibitem[Smith et~al.(2010)Smith, Woodhams, and Marg]{wireless1}
+Jeff Smith, Jake Woodhams, and Robert Marg.
+\newblock \emph{Controller-Based Wireless LAN Fundamentals: An end-to-end
+  reference guide to design, deploy, manage, and secure 802.11 wireless
+  networks}.
+\newblock WebEx Communications, 1st edition, 2010.
+\newblock ISBN 1587058251, 9781587058257.
+
+\bibitem[Gress and Johnson(2009)]{gress2009deploying}
+M.L. Gress and L.~Johnson.
+\newblock \emph{Deploying and Troubleshooting Cisco Wireless LAN Controllers}.
+\newblock Cisco Technology Series. Pearson Education, 2009.
+\newblock ISBN 9781587140501.
+\newblock URL \url{http://books.google.be/books?id=YLHvHGGx5AEC}.
+
+\bibitem[Terena(2012)]{eduroam1}
+Terena.
+\newblock What is eduroam?, June 2012.
+\newblock URL \url{http://www.eduroam.org}.
+
+\bibitem[Belnet(2011)]{eduroam2}
+Belnet.
+\newblock Belnet eduroam service, 2011.
+\newblock URL \url{http://www.eduroam.be}.
+
+\bibitem[InterMapper()]{intermapper}
+InterMapper.
+\newblock Intermapper web server.
+\newblock URL \url{http://micronoc.sri.ucl.ac.be/~admin/map_screen.html}.
+
+\bibitem[Cisco()]{snmp}
+Cisco.
+\newblock Simple network management protocol.
+\newblock URL
+  \url{http://docwiki.cisco.com/wiki/Simple_Network_Management_Protocol}.
+
+\end{thebibliography}
