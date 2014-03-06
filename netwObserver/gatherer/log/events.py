@@ -44,11 +44,12 @@ class DHCPDiscover(Event):
 		self.message = message
 
 class DHCPRequest(Event):
-	def __init__(self, date, dhcpServer, ipRequested, device, via, message=''):
+	def __init__(self, date, dhcpServer, ipRequested, device, deviceName, via, message=''):
 		super().__init__(date)
 		self.dhcpServer = dhcpServer
 		self.ipRequested = ipRequested
 		self.device = device
+		self.deviceName = deviceName
 		self.via = via
 		self.message = message
 
@@ -71,11 +72,29 @@ class DHCPAck(Event):
 		self.via = via
 		self.message = message
 
+class DHCPNak(Event):
+	def __init__(self, date, dhcpServer, ipNak, device, via):
+		super().__init__(date)
+		self.dhcpServer = dhcpServer
+		self.ipNak = ipNak
+		self.device = device
+		self.via = via
+
+
 class DHCPLog(Event):
-	def __init__(self, date, dhcpServer, message):
+	def __init__(self, date, dhcpServer, message, ip=''):
 		super().__init__(date)
 		self.dhcpServer = dhcpServer
 		self.message = message
+		self.ip = ip
+
+class DHCPWarning(Event):
+	def __init__(self, date, dhcpServer, ip, message):
+		super().__init__(date)
+		self.dhcpServer = dhcpServer
+		self.ip = ip
+		self.message = message
+
 
 #Wism
 class WismLog(Event):

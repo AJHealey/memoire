@@ -1,5 +1,5 @@
 from os import listdir
-from os.path import isfile,join
+from os.path import isfile,join, splitext
 from threading import Thread
 from datetime import timedelta
 
@@ -55,7 +55,6 @@ def logs(request, cat='dhcp', page=1, perpage=100, filters={}):
 		except EmptyPage:
 			context['dhcpEvent'] = p.page(p.num_pages)
 
-
 	## Radius Logs
 	elif cat == 'radius':
 		tmpQuery = RadiusEvent.objects.order_by('-date')
@@ -66,7 +65,6 @@ def logs(request, cat='dhcp', page=1, perpage=100, filters={}):
 			context['radiusEvent'] = p.page(1)
 		except EmptyPage:
 			context['radiusEvent'] = p.page(p.num_pages)
-
 
 	## Wism Logs
 	elif cat == 'wism':
@@ -87,13 +85,15 @@ def snmp(request):
 	return render(request, "gatherer/snmp.html", context)
 
 
-######################
+####### Auxiliary Methods ######
 def logParsing(path):
 
+	# keeps the entries not put in the DB
 	entries = []
 
 	for i, event in enumerate(parser(path)):
 
+		## Unuseful log
 		if isinstance(event,NotAnEvent):
 			pass
 
@@ -113,7 +113,6 @@ def logParsing(path):
 		elif isinstance(event,RadiusInfo):
 			entries.append(RadiusEvent(date=event.date, message=event.message, radiusType='info'))
 
-
 		## DHCP Events
 		elif isinstance(event,DHCPDiscover):
 			entries.append(DHCPEvent(date=event.date, server=event.dhcpServer, device=event.device, dhcpType='Discover', message=event.message))
@@ -127,31 +126,60 @@ def logParsing(path):
 		elif isinstance(event,DHCPAck):
 			entries.append(DHCPEvent(date=event.date, server=event.dhcpServer, device=event.device, dhcpType='Ack',  ip=event.ipAcked))
 
-		elif isinstance(event,DHCPLog):
-			entries.append(DHCPEvent(date=event.date, server=event.dhcpServer, dhcpType='Log', message=event.message))
+		elif isinstance(event,DHCPNak):
+			entries.append(DHCPEvent(date=event.date, server=event.dhcpServer, device=event.device, dhcpType='Nak',  ip=event.ipNak))
 
+
+		elif isinstance(event,DHCPLog):
+			entries.append(DHCPEvent(date=event.date, server=event.dhcpServer, dhcpType='Log', message=event.message, ip=event.ip))
+
+		elif isinstance(event,DHCPWarning):
+			entries.append(DHCPEvent(date=event.date, server=event.dhcpServer, dhcpType='Warning', message=event.message, ip=event.ip))
 
 		## Wism Event
 		elif isinstance(event,WismLog):
 			entries.append(WismEvent(date=event.date, ip=event.ip, category=event.category, severity=event.severity, mnemo=event.mnemo, message=event.message))
 		
-
-		#####
+		##### Bad logs
 		elif isinstance(event,UnparsedLog):
 			entries.append(BadLog(log=event.log, cause=event.cause))
 
+		# groups the access to the database
 		if (i+1) % 500 == 0:
 			addBatch(entries)
+			entries = []
 
 	addBatch(entries)
 
+	# Save the wrong logs and delete them from the DB
+	name,ext = splitext(path)
+	saveBadLogs(name + '.badLogs')
 
-def addBatch(lists):
-	for element in lists:
+
+def addBatch(entrieslist):
+	""" Add all the entries in lists to the DB
+
+	Argument:
+	list -- list of entries
+	"""
+	for element in entrieslist:
 		try:
 			element.save()
 		except IntegrityError:
 			pass
 
+def saveBadLogs(path):
+	""" Save the unparsed log in path and remove them from the DB
 
+	Argument:
+	path -- the path where the bad logs are saved
+	"""
+	
+	badLogs = BadLog.objects.all()
+	if len(badLogs) > 0:
+		with open(path, 'w') as f:
+			for element in badLogs:
+				f.write(str(element) + '\n')
+
+		badLogs.delete()
 

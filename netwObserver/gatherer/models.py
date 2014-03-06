@@ -20,8 +20,12 @@ class RadiusEvent(models.Model):
 	login = models.CharField(max_length=128,null=True)
 	message = models.CharField(max_length=128,null=True)
 
+	def __str__(self):
+		return "" + self.radiusType + " : " +  str(self.login)
+
 	class Meta:
 		unique_together = (("date", "login","radiusType"),('date', 'server','message'))
+
 
 
 ## DHCP model
@@ -48,6 +52,8 @@ class WismEvent(models.Model):
 class BadLog(models.Model):
 	log = models.CharField(max_length=256)
 	cause = models.CharField(max_length=256)
+	def __str__(self):
+		return "" + self.log + "--> " +  self.cause + '\n'
 
 ####################
 
