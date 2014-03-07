@@ -19,18 +19,20 @@ SEVERITYMEANING = ['Emergency: System is unusable','Alert: Action must be taken 
 
 def index(request):
 	context = {}
-	context['logFiles'] = [ f for f in listdir(TMPFILE) if isfile(join(TMPFILE,f))]
+	context['app'] = 'gatherer'
+	context['logFiles'] = [ f for f in listdir(TMPFILE) if isfile(join(TMPFILE,f)) and not f.startswith(".") and not f.endswith('.badLogs')]
 	context.update(csrf(request))
 
-	if 'selectLogFile' in request.POST and request.POST['selectLogFile'] != '':
-		selectedLogFile = context['logFiles'][int(float(request.POST['selectLogFile']))-1]
-		#Thread(target=logParsing, args=(join(TMPFILE,selectedLogFile),)).start()
-		logParsing(join(TMPFILE,selectedLogFile))
+	if 'selectLogFile' in request.POST:
+		if request.POST['selectLogFile'] in context["logFiles"]:
+			#Thread(target=logParsing, args=(join(TMPFILE,selectedLogFile),)).start()
+			logParsing(join(TMPFILE,selectedLogFile))
 
 	return render(request, "gatherer/index.html", context)
 
 def logs(request, cat='dhcp', page=1, perpage=100, filters={}):
 	context = {}
+	context['app'] = 'gatherer'
 	context['cat'] = cat
 	context['perpage'] = perpage
 	context['page'] = page
@@ -82,6 +84,7 @@ def logs(request, cat='dhcp', page=1, perpage=100, filters={}):
 
 def snmp(request):
 	context = {}
+	context['app'] = 'gatherer'
 	return render(request, "gatherer/snmp.html", context)
 
 

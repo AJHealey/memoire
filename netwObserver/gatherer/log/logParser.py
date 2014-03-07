@@ -90,7 +90,7 @@ def radiusParser(infos):
 			return RadiusIncorrect(date, login)
 
 		else:
-			raise Exception()
+			raise Exception("DHCP unknown login operation")
 
 	# Big Log file
 	elif infos[6].lower() == "login" :
@@ -110,7 +110,7 @@ def radiusParser(infos):
 			return RadiusIncorrect(date, login)
 
 		else:
-			raise Exception()
+			raise Exception("DHCP unknown login operation")
 
 
 	elif 'error' in infos[5].lower():
