@@ -1,6 +1,6 @@
 import re
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy
 from django.forms import fields
 from django.db import models
 
@@ -9,7 +9,7 @@ mac_re = re.compile(MAC_RE)
 
 class MACAddressFormField(fields.RegexField):
     default_error_messages = {
-        'invalid': _(u'Enter a valid MAC address.'),
+        'invalid': ugettext_lazy(u'Enter a valid MAC address.'),
     }
 
     def __init__(self, *args, **kwargs):
