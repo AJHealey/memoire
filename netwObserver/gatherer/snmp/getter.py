@@ -8,7 +8,7 @@ commutateurs = ['172.31.1.116', '172.31.1.15', '172.31.1.3', '172.31.1.61', '172
 
 cmdGen = cmdgen.CommandGenerator()
 
-def walker(ip, port=161, community='snmpstudentINGI', OIB='1.3.6.1.4.1.14179'):
+def walker(ip, port=161, community='snmpstudentINGI', OIB='1.3.6.1.4.1.14179.2.2.16.1.1'):
     errorIndication, errorStatus, errorIndex, varBindTable = cmdGen.nextCmd(
         cmdgen.CommunityData(community),
         cmdgen.UdpTransportTarget((ip, port)),
@@ -33,6 +33,6 @@ def walker(ip, port=161, community='snmpstudentINGI', OIB='1.3.6.1.4.1.14179'):
 
 
 if __name__ == '__main__':
-    walker(commutateurs[1])
+    walker(wism2IP[1])
         
 # snmpwalk -v2c -c snmpstudentINGI -ObentU 192.168.15.202 1.3.6.1.4.1.14179
