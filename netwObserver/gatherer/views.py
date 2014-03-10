@@ -13,8 +13,9 @@ from gatherer.log.logParser import parser
 from gatherer.models import UserDevice, RadiusEvent, DHCPEvent, WismEvent, BadLog
 
 from gatherer.log.events import *
+from django.conf import settings
 
-TMPFILE="gatherer/tmp/"
+TMPFILE=settings.MEDIA_ROOT
 SEVERITYMEANING = ['Emergency: System is unusable','Alert: Action must be taken immediately', 'Critical: Critical conditions', 'Error: Error conditions', 'Warning: Warning conditions', 'Notice: Normal but significant condition', 'Informational: Informational messages', 'Debug: Debug-level messages']
 
 def index(request):
