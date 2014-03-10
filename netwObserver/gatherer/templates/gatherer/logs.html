@@ -14,7 +14,7 @@
 	<li><a href="{% url 'snmp' %}">SNMP</a></li>
 </ul>
 
-<div class='row' style="margin-top:20px;">
+<div class='row'>
 	<div class="col-md-1">
 		<ul class="nav nav-pills nav-stacked">
 			<li {% if cat == 'dhcp' %}class="active"{%endif%}><a href="{% url 'logs' 'dhcp' %}">DHCP</a></li>
