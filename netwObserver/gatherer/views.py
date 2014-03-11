@@ -28,7 +28,6 @@ def index(request):
 		if request.POST['selectLogFile'] in context["logFiles"]:
 			Thread(target=logParsing, args=(join(TMPFILE,request.POST.get('selectLogFile')[0]),) ).start()
 			#logParsing(join(TMPFILE,request.POST.get('selectLogFile')[0]))
-			raise Exception({join(TMPFILE,request.POST.get('selectLogFile'))})
 
 	return render(request, "gatherer/index.html", context)
 
