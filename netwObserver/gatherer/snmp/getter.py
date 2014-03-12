@@ -1,38 +1,40 @@
 from pysnmp.entity.rfc3413.oneliner import cmdgen
  
 
-wism1IP = ['192.168.251.177', '192.168.251.178', '192.168.251.181', '192.168.251.182']
-wism2IP = ['192.168.251.169', '192.168.251.170']
-commutateurs = ['172.31.1.116', '172.31.1.15', '172.31.1.3', '172.31.1.61', '172.31.1.75', '172.31.10.4', '172.31.10.5', '172.31.11.2', '172.31.12.21', '172.31.12.46', '172.31.12.6', '172.31.13.2', '172.31.14.132', '172.31.14.4', '172.31.15.131', '172.31.15.132', '172.31.15.3', '172.31.15.4', '172.31.16.11', '172.31.16.12', '172.31.16.133', '172.31.16.33', '172.31.17.2', '172.31.18.3', '172.31.2.67', '172.31.216.3', '172.31.216.5', '172.31.235.10', '172.31.235.30', '172.31.254.105', '172.31.254.2', '172.31.254.3', '172.31.254.5', '172.31.254.67', '172.31.254.85', '172.31.254.87', '172.31.27.21', '172.31.28.131', '172.31.28.143', '172.31.28.161', '172.31.29.18', '172.31.29.32', '172.31.29.33', '172.31.29.4', '172.31.29.47', '172.31.3.131', '172.31.3.132', '172.31.3.50', '172.31.3.8', '172.31.30.2', '172.31.31.10', '172.31.31.105', '172.31.31.118', '172.31.31.23', '172.31.31.68', '172.31.31.85', '172.31.31.86', '172.31.32.3', '172.31.32.5', '172.31.32.6', '172.31.33.11', '172.31.33.12', '172.31.33.34', '172.31.33.4', '172.31.33.52', '172.31.34.2', '172.31.36.2', '172.31.37.4', '172.31.39.3', '172.31.39.32', '172.31.39.4', '172.31.39.5', '172.31.4.5', '172.31.42.11', '172.31.42.21', '172.31.42.32', '172.31.5.21', '172.31.5.3', '172.31.51.2', '172.31.6.17', '172.31.6.18', '172.31.6.3', '172.31.65.2', '172.31.66.2', '172.31.7.32', '172.31.7.4', '172.31.8.21', '172.31.81.3', '172.31.81.4', '172.31.83.11', '172.31.83.21', '172.31.83.3', '172.31.83.31', '172.31.85.110', '172.31.85.111', '172.31.85.75', '172.31.85.80', '172.31.85.95', '172.31.85.97', '172.31.86.2']
+wism = ['192.168.251.170']
 
 
-cmdGen = cmdgen.CommandGenerator()
+def getApMacAdresses (ip, port=161, community='snmpstudentINGI'):
+    cmdGen = cmdgen.CommandGenerator()
 
-def walker(ip, port=161, community='snmpstudentINGI', OIB='1.3.6.1.4.1.14179.2.2.16.1.1'):
-    errorIndication, errorStatus, errorIndex, varBindTable = cmdGen.nextCmd(
-        cmdgen.CommunityData(community),
-        cmdgen.UdpTransportTarget((ip, port)),
-        OIB,
-        lookupNames=True, lookupValues=True
-    )
+    errorIndication, errorStatus, errorIndex, varBinds = cmdGen.getCmd(
+    cmdgen.CommunityData(community),
+    cmdgen.UdpTransportTarget((ip, port)),
+    '1.3.6.1.4.1.14179.2.1.4.1.1')
 
     if errorIndication:
-        print(errorIndication)
-    
+        raise Exception(str(errorIndication))
+
     else:
         if errorStatus:
-            print('%s at %s' % (
-                errorStatus.prettyPrint(),
-                errorIndex and varBindTable[-1][int(errorIndex)-1] or '?'
-                )
-            )
+            raise Exception('%s at %s' % (
+            errorStatus.prettyPrint(),
+            errorIndex and varBinds[int(errorIndex)-1] or '?'
+            ))
         else:
-            for varBindTableRow in varBindTable:
-                for name, val in varBindTableRow:
-                    print('%s = %s' % (name.prettyPrint(), val.prettyPrint()))
+            result = {}
+            for name, val in varBinds:
+                result[name] = var
+
+
 
 
 if __name__ == '__main__':
-    walker(wism2IP[1])
+    try:
+        print(str(getApMacAdresses(wism[0])))
+    except Exception as e:
+        print(e)
+
+
         
 # snmpwalk -v2c -c snmpstudentINGI -ObentU 192.168.15.202 1.3.6.1.4.1.14179
