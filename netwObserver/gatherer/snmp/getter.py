@@ -10,7 +10,7 @@ def getApMacAdresses (ip, port=161, community='snmpstudentINGI'):
     errorIndication, errorStatus, errorIndex, varBindTable = cmdGen.nextCmd(
     cmdgen.CommunityData(community),
     cmdgen.UdpTransportTarget((ip, port)),
-    '1.3.6.1.4.1.14179.2.1.4.1.1')
+    '1.3.6.1.4.1.14179.2.1.4.1.1', lookupValues=True)
 
     if errorIndication:
         raise Exception(str(errorIndication))
@@ -26,6 +26,8 @@ def getApMacAdresses (ip, port=161, community='snmpstudentINGI'):
             print(len(varBindTable))
             for varBindTableRow in varBindTable:
                 for name, val in varBindTableRow:
+                    print(name)
+                    print(value)
                     result[name.prettyPrint()] = val.prettyPrint()
                 return result
 
