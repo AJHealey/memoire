@@ -10,7 +10,7 @@ def getApMacAdresses (ip, port=161, community='snmpstudentINGI'):
     errorIndication, errorStatus, errorIndex, varBindTable = cmdGen.nextCmd(
     cmdgen.CommunityData(community),
     cmdgen.UdpTransportTarget((ip, port)),
-    '1.3.6.1.4.1.14179.2.2.1', lookupValues=True)
+    '1.3.6.1.4.1.14179.2.2.1.1.3', lookupValues=True)
 
     if errorIndication:
         raise Exception(str(errorIndication))
