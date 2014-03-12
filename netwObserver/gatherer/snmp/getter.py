@@ -7,7 +7,7 @@ wism = ['192.168.251.170']
 def getApMacAdresses (ip, port=161, community='snmpstudentINGI'):
     cmdGen = cmdgen.CommandGenerator()
 
-    errorIndication, errorStatus, errorIndex, varBinds = cmdGen.getCmd(
+    errorIndication, errorStatus, errorIndex, varBinds = cmdGen.walkCmd(
     cmdgen.CommunityData(community),
     cmdgen.UdpTransportTarget((ip, port)),
     '1.3.6.1.4.1.14179.2.1.4.1.1')
