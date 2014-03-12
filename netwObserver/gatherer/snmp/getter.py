@@ -26,7 +26,7 @@ def getApMacAdresses (ip, port=161, community='snmpstudentINGI'):
             for varBindTableRow in varBindTable:
                 for name, val in varBindTableRow:
                     result[name.prettyPrint()] = val.prettyPrint()
-            return result
+                return result
 
 
 
