@@ -31,10 +31,9 @@ def getApMacAdresses (ip, port=161, community='snmpstudentINGI'):
 
 
 if __name__ == '__main__':
-    try:
-        print(str(getApMacAdresses(wism[0])))
-    except Exception as e:
-        print(e)
+    
+    print(str(getApMacAdresses(wism[0])))
+
 
 
         
