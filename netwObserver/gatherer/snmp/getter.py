@@ -24,7 +24,7 @@ def getApMacAdresses (ip, port=161, community='snmpstudentINGI'):
         else:
             result = {}
             for name, val in varBinds:
-                result[name] = val
+                result[name.prettyPrint()] = val.prettyPrint()
             return result
 
 
