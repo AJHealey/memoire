@@ -43,7 +43,7 @@ def parseMacAdresse(macString):
 
 if __name__ == '__main__':
     r = getApMacAdresses(wism[0])
-    for k in r:
+    for k in sorted(r):
         print(k + ' : ' + r[k])
     print(str(len(r)))
 
