@@ -7,5 +7,7 @@ urlpatterns = patterns('',
 	url(r'^logs/$', views.logs, name='logs'),
 	url(r'^logs/(?P<cat>\S+)/(?P<page>\d+)', views.logs, name='logs'),
     url(r'^logs/(?P<cat>\S+)', views.logs, name='logs'),
-    url(r'^snmp/', views.snmp, name='snmp'),
+    url(r'^snmp/$', views.snmp, name='snmp'),
+ 	url(r'^snmp/(?P<cat>\S+)', views.snmp, name='snmp'),
+
 )

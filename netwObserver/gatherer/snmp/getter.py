@@ -2,15 +2,15 @@ from pysnmp.entity.rfc3413.oneliner import cmdgen
  
 
 wism = ['192.168.251.170']
+protocolsCode = {'1' : 'dot11a', '2' : 'dot11b', '3' : 'dot11g', '4' : 'unknown', '5' : 'mobile', '6' : 'dot11n24', '7' : 'dot11n5'}
 
-
-def getApMacAdresses (ip, port=161, community='snmpstudentINGI'):
+def walker(ip, oib, port=161, community='snmpstudentINGI'):
     cmdGen = cmdgen.CommandGenerator()
 
     errorIndication, errorStatus, errorIndex, varBindTable = cmdGen.nextCmd(
     cmdgen.CommunityData(community),
     cmdgen.UdpTransportTarget((ip, port)),
-    '1.3.6.1.4.1.14179.2.2.1.1.3', lookupValues=True)
+    oib, lookupValues=True)
 
     if errorIndication:
         raise Exception(str(errorIndication))
@@ -26,10 +26,48 @@ def getApMacAdresses (ip, port=161, community='snmpstudentINGI'):
             print(len(varBindTable))
             for varBindTableRow in varBindTable:
                 for name, val in varBindTableRow:
-                    result[name.prettyPrint()] = val.prettyPrint()
+                    result[name.prettyPrint()[len(oib)+1:]] = val.prettyPrint()
             return result
 
 
+## Access Points
+def getApNames(ip, port=161, community='snmpstudentINGI'):
+    """ Name of each Access Point """
+    return walker(ip,'1.3.6.1.4.1.14179.2.2.1.1.3', port=port, community=community)
+
+def getApMacAddresses(ip, port=161, community='snmpstudentINGI'):
+    """ MAC address of Access Point """
+    return walker(ip,'1.3.6.1.4.1.14179.2.2.1.1.1', port=port, community=community)
+
+def getApIPs(ip, port=161, community='snmpstudentINGI'):
+    """ IP address of Access Point """
+    return walker(ip,'1.3.6.1.4.1.14179.2.2.1.1.19', port=port, community=community)
+
+def getApLocation(ip, port=161, community='snmpstudentINGI'):
+    """ Location of the access point (if configured) """
+    return walker(ip,'1.3.6.1.4.1.14179.2.2.1.1.4', port=port, community=community)
+
+## Mobile Stations
+def getMobileStationMacAddresses(ip, port=161, community='snmpstudentINGI'):
+    """ Mac Address of each station connected to an AP """
+    return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.1', port=port, community=community)
+
+def getMobileStationIPs(ip, port=161, community='snmpstudentINGI'):
+    """ IP address of each station connected to an AP """
+    return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.2', port=port, community=community)
+
+def getMobileStationProtocol(ip, port=161, community='snmpstudentINGI'):
+    """ Protocol used by the station (e.g 802.11a, b, g, n) """
+    result = walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.25', port=port, community=community)
+    for k in result.keys():
+        result[k] = protocolsCode[result[k]]
+    return result
+
+def getMobileStationSSID(ip, port=161, community='snmpstudentINGI'):
+    """ SSID advertised by the mobile station """
+    return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.7', port=port, community=community)
+
+###### Auxiliary Methods #######
 def parseMacAdresse(macString):
     result = macString
 
@@ -41,12 +79,31 @@ def parseMacAdresse(macString):
     else:
         return ''
 
+
+
+#####
 if __name__ == '__main__':
-    r = getApMacAdresses(wism[0])
+    import sys
+    
+    result = []
+    if len(sys.argv) > 1:
+        if sys.argv[1] == 'apname':
+            result = getApNames
+        elif sys.argv[1] == 'apmac':
+            result = getApMacAddresses
+        elif sys.argv[1] == 'apip':
+            result = getApIPs
+        elif sys.argv[1] == 'msmac':
+            result = getMobileStationMacAddresses
+        elif sys.argv[1] == 'macip':
+            result = getMobileStationIPs 
+        elif sys.argv[1] == 'macprot':
+            result = getMobileStationProtocol
+    
+    print("[*] Results:")
     for k in sorted(r):
-        print(k + ' : ' + r[k])
-    print(str(len(r)))
+        print("\t" + k + ' : ' + r[k])
+    print("-" * 50)
+    print(str(len(r)) + " results")
 
-
-        
-# snmpwalk -v2c -c snmpstudentINGI -ObentU 192.168.15.202 1.3.6.1.4.1.14179
+       

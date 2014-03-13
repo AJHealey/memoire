@@ -10,7 +10,7 @@ from django.http import HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from gatherer.log.logParser import parser
-from gatherer.models import UserDevice, RadiusEvent, DHCPEvent, WismEvent, BadLog
+from gatherer.models import RadiusEvent, DHCPEvent, WismEvent, MobileStation, AccessPoint, BadLog
 
 from gatherer.log.events import *
 from django.conf import settings
@@ -24,10 +24,11 @@ def index(request):
 	context['logFiles'] = [ f for f in listdir(TMPFILE) if isfile(join(TMPFILE,f)) and not f.startswith(".") and not f.endswith('.badLogs')]
 	context.update(csrf(request))
 
-	if 'selectLogFile' in request.POST:
-		if request.POST['selectLogFile'] in context["logFiles"]:
-			Thread(target=logParsing, args=(join(TMPFILE,request.POST.get('selectLogFile')[0]),) ).start()
-			#logParsing(join(TMPFILE,request.POST.get('selectLogFile')[0]))
+	if request.method == 'POST':
+		if 'selectLogFile' in request.POST:
+			if request.POST['selectLogFile'] in context["logFiles"]:
+				Thread(target=logParsing, args=(join(TMPFILE,request.POST.get('selectLogFile')[0]),) ).start()
+				#logParsing(join(TMPFILE,request.POST.get('selectLogFile')[0]))
 
 	return render(request, "gatherer/index.html", context)
 
@@ -83,9 +84,12 @@ def logs(request, cat='dhcp', page=1, perpage=100, filters={}):
 
 	return render(request, "gatherer/logs.html", context)
 
-def snmp(request):
+def snmp(request, cat='ap'):
 	context = {}
 	context['app'] = 'gatherer'
+	context['cat'] = cat
+	if cat == 'ap':
+		context['ap'] = AccessPoint.objects.order_by('name')
 	return render(request, "gatherer/snmp.html", context)
 
 

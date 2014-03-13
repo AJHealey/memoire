@@ -1,17 +1,7 @@
 from django.db import models
 from custom import macField
 
-# General Models
-class UserDevice(models.Model):
-	name = models.CharField(max_length=24)
-	macAdress = macField.MACAddressField(primary_key=True)
-
-	def __str__(self):
-		return "" + self.login + " : " +  self.macAdress
-
-
 # Log models
-
 ## Radius Model
 class RadiusEvent(models.Model):
 	date = models.DateTimeField()
@@ -25,8 +15,6 @@ class RadiusEvent(models.Model):
 
 	class Meta:
 		unique_together = (("date", "login","radiusType"),('date', 'server','message'))
-
-
 
 ## DHCP model
 class DHCPEvent(models.Model):
@@ -47,6 +35,27 @@ class WismEvent(models.Model):
 	mnemo = models.CharField(max_length=56)
 
 	message = models.CharField(max_length=256)
+
+
+## Mobile stations Model
+class MobileStation(models.Model):
+	index = models.CharField(max_length=25, null=True)
+	macAddress = macField.MACAddressField(primary_key=True)
+	ip = models.GenericIPAddressField(null=True)
+	SSID = models.CharField(max_length=25, null=True)
+	Dot11Proto = models.CharField(max_length=10, null=True)
+
+
+## Access Point Model
+class AccessPoint(models.Model):
+	index = models.CharField(max_length=25, null=True)
+	name = models.CharField(max_length=50, null=True)
+	macAddress = macField.MACAddressField(primary_key=True)
+	ip = models.GenericIPAddressField(null=True)
+	location = models.CharField(max_length=50, null=True)
+	def __str__(self):
+		return self.name + " : " + self.macAdress
+
 
 ## Error Parsing
 class BadLog(models.Model):
