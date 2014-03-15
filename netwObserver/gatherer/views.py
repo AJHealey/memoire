@@ -12,7 +12,6 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from gatherer.log.logParser import parser
 from gatherer.models import RadiusEvent, DHCPEvent, WismEvent, MobileStation, AccessPoint, BadLog
 
-from gatherer.log.events import *
 from django.conf import settings
 
 TMPFILE=settings.MEDIA_ROOT
@@ -26,8 +25,8 @@ def index(request):
 
 	if request.method == 'POST':
 		if 'selectLogFile' in request.POST:
-			if request.POST['selectLogFile'] in context["logFiles"]:
-				Thread(target=logParsing, args=(join(TMPFILE,request.POST.get('selectLogFile')[0]),) ).start()
+			if request.POST.get('selectLogFile','') in context["logFiles"]:
+				Thread(target=parser, args=(join(TMPFILE,request.POST.get('selectLogFile','')),) ).start()
 				#logParsing(join(TMPFILE,request.POST.get('selectLogFile')[0]))
 
 	return render(request, "gatherer/index.html", context)
@@ -36,8 +35,7 @@ def logs(request, cat='dhcp', page=1, perpage=100, filters={}):
 	context = {}
 	context['app'] = 'gatherer'
 	context['cat'] = cat
-	context['perpage'] = perpage
-	context['page'] = page
+
 	context['filters'] = filters
 
 	## DHCP Logs
@@ -91,103 +89,3 @@ def snmp(request, cat='ap'):
 	if cat == 'ap':
 		context['ap'] = AccessPoint.objects.order_by('name')
 	return render(request, "gatherer/snmp.html", context)
-
-
-####### Auxiliary Methods ######
-def logParsing(path):
-
-	# keeps the entries not put in the DB
-	entries = []
-
-	for i, event in enumerate(parser(path)):
-
-		## Unuseful log
-		if isinstance(event,NotAnEvent):
-			pass
-
-		## Radius Events
-		if isinstance(event,RadiusOk):
-			entries.append(RadiusEvent(date=event.date, login=event.login, radiusType='OK'))
-
-		elif isinstance(event,RadiusIncorrect):
-			entries.append(RadiusEvent(date=event.date, login=event.login, radiusType='KO'))
-
-		elif isinstance(event,RadiusError):
-			entries.append(RadiusEvent(date=event.date, message=event.message, radiusType='error'))
-
-		elif isinstance(event,RadiusNotice):
-			entries.append(RadiusEvent(date=event.date, message=event.message, radiusType='notice'))
-
-		elif isinstance(event,RadiusInfo):
-			entries.append(RadiusEvent(date=event.date, message=event.message, radiusType='info'))
-
-		## DHCP Events
-		elif isinstance(event,DHCPDiscover):
-			entries.append(DHCPEvent(date=event.date, server=event.dhcpServer, device=event.device, dhcpType='Discover', message=event.message))
-
-		elif isinstance(event,DHCPRequest):
-			entries.append(DHCPEvent(date=event.date, server=event.dhcpServer, device=event.device, dhcpType='Request', ip=event.ipRequested))
-
-		elif isinstance(event,DHCPOffer):
-			entries.append(DHCPEvent(date=event.date, server=event.dhcpServer, device=event.device, dhcpType='Offer',  ip=event.ipOffered))
-
-		elif isinstance(event,DHCPAck):
-			entries.append(DHCPEvent(date=event.date, server=event.dhcpServer, device=event.device, dhcpType='Ack',  ip=event.ipAcked))
-
-		elif isinstance(event,DHCPNak):
-			entries.append(DHCPEvent(date=event.date, server=event.dhcpServer, device=event.device, dhcpType='Nak',  ip=event.ipNak))
-
-
-		elif isinstance(event,DHCPLog):
-			entries.append(DHCPEvent(date=event.date, server=event.dhcpServer, dhcpType='Log', message=event.message, ip=event.ip))
-
-		elif isinstance(event,DHCPWarning):
-			entries.append(DHCPEvent(date=event.date, server=event.dhcpServer, dhcpType='Warning', message=event.message, ip=event.ip))
-
-		## Wism Event
-		elif isinstance(event,WismLog):
-			entries.append(WismEvent(date=event.date, ip=event.ip, category=event.category, severity=event.severity, mnemo=event.mnemo, message=event.message))
-		
-		##### Bad logs
-		elif isinstance(event,UnparsedLog):
-			entries.append(BadLog(log=event.log, cause=event.cause))
-
-		# groups the access to the database
-		if (i+1) % 500 == 0:
-			addBatch(entries)
-			entries = []
-
-	addBatch(entries)
-
-	# Save the wrong logs and delete them from the DB
-	name,ext = splitext(path)
-	saveBadLogs(name + '.badLogs')
-
-
-def addBatch(entrieslist):
-	""" Add all the entries in lists to the DB
-
-	Argument:
-	list -- list of entries
-	"""
-	for element in entrieslist:
-		try:
-			element.save()
-		except IntegrityError:
-			pass
-
-def saveBadLogs(path):
-	""" Save the unparsed log in path and remove them from the DB
-
-	Argument:
-	path -- the path where the bad logs are saved
-	"""
-	
-	badLogs = BadLog.objects.all()
-	if len(badLogs) > 0:
-		with open(path, 'w') as f:
-			for element in badLogs:
-				f.write(str(element) + '\n')
-
-		badLogs.delete()
-

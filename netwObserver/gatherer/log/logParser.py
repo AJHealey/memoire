@@ -2,7 +2,9 @@
 import codecs
 import re
 from datetime import *
-from .events import *
+
+from gatherer.models import RadiusEvent, DHCPEvent, WismEvent, MobileStation, AccessPoint, BadLog
+from django.db import IntegrityError
 
 
 def wismParser(infos):
@@ -35,24 +37,26 @@ def wismParser(infos):
 
 		# les logs de type %LOG-X-Q_IND: ne sont qu'un duplicata de log precedent
 		if category == "LOG" and mnemo == "Q_IND":
-			return NotAnEvent(date)
+			return None
 
 		# Generic logs
-		else : 
-			return WismLog(date, ipWism, category, severity, mnemo.replace('_',' '), ' '.join(infos[9:]).strip() )
+		else :
+			mnemo = mnemo.replace('_',' ')
+			message = ' '.join(infos[9:]).strip()
+			return WismEvent(date=date, ip=ipWism, category=category, severity=severity, mnemo=mnemo, message=message)
 
 	# Uncommon Wism log types
 	elif logType == "-Traceback:" :
-		return WismTraceback(date)
+		return None
 
 	elif logType == "pykota.sipr.ucl.ac.be" :
-		return NotAnEvent(date)
+		return None
 
 	elif logType == "postfix/smtpd[13316]:" :
-		return NotAnEvent(date)
+		return None
 
 	else :
-		return UnknownServiceWismLog(date, infos[3:].join(" "))
+		raise Exception("Wism: Unknown Service (" + " ".join(infos[3:]) + ")")
 
 
 def radiusParser(infos):
@@ -84,15 +88,15 @@ def radiusParser(infos):
 
 		login = infos[i][1:-1]
 		if tmp.startswith("ok"):
-			return RadiusOk(date, login)
+			return RadiusEvent(date=date, login=login, radiusType='OK')
 
 		elif tmp.startswith("incorrect"):
-			return RadiusIncorrect(date, login)
+			return RadiusEvent(date=date, login=login, radiusType='KO')
 
 		else:
 			raise Exception("DHCP unknown login operation")
 
-	# Big Log file
+	# Old Log file
 	elif infos[6].lower() == "login" :
 		i = 7
 		tmp = infos[i].lower()
@@ -104,23 +108,23 @@ def radiusParser(infos):
 
 		login = infos[i][1:-1]
 		if tmp.startswith("ok"):
-			return RadiusOk(date, login)
+			return RadiusEvent(date=date, login=login, radiusType='OK')
 
 		elif tmp.startswith("incorrect"):
-			return RadiusIncorrect(date, login)
+			return RadiusEvent(date=date, login=login, radiusType='KO')
 
 		else:
 			raise Exception("DHCP unknown login operation")
 
 
 	elif 'error' in infos[5].lower():
-		return RadiusError(date, ' '.join(infos[6:]).strip())
+		return RadiusEvent(date=date, message=(' '.join(infos[6:]).strip()), radiusType='error')
 
 	elif 'notice' in infos[5].lower():
-		return RadiusNotice(date, ' '.join(infos[6:]).strip())
+		return RadiusEvent(date=date, message=(' '.join(infos[6:]).strip()), radiusType='notice')
 
 	elif 'info' in infos[5].lower():
-		return RadiusInfo(date, ' '.join(infos[6:]).strip())
+		return RadiusEvent(date=date, message=(' '.join(infos[6:]).strip()), radiusType='info')
 
 
 def dhcpParser(infos):
@@ -139,11 +143,10 @@ def dhcpParser(infos):
 	# Sys log message
 	if 'syslog' in infos[2]:
 		message = ' '.join(infos[4:])
-		return DHCPLog(date, dhcpServer, message)
+		return DHCPEvent(date=date, server=dhcpServer, dhcpType='Log', message=message)
 
 	# DHCP events
 	elif 'dhcp' in infos[2]:
-
 		## Client broadcasted asking
 		if infos[3] == "DHCPDISCOVER":
 			device = infos[5]
@@ -153,17 +156,17 @@ def dhcpParser(infos):
 				message = ' '.join(infos[8:])
 				if 'load balance' in message:
 					message = ''
-				return DHCPDiscover(date, dhcpServer, device, via, message)
+				return DHCPEvent(date=date, server=dhcpServer, device=device, dhcpType='Discover', message=message)
 			else:
 				via = infos[7]
-			return DHCPDiscover(date, dhcpServer, device, via)
+			return DHCPEvent(date=date, server=dhcpServer, device=device, dhcpType='Discover')
 
 		# Server respond
 		elif infos[3] == "DHCPOFFER":
 			ipOffered = infos[5]
 			device = infos[7]
 			via = infos[9]
-			return DHCPOffer(date, dhcpServer, ipOffered, device, via)
+			return DHCPEvent(date=date, server=dhcpServer, device=device, dhcpType='Offer',  ip=ipOffered)
 
 		# Client choose ip
 		elif infos[3] == "DHCPREQUEST":
@@ -193,8 +196,8 @@ def dhcpParser(infos):
 					message = ' '.join(infos[i:])
 				else:
 					via = infos[i]
-		
-			return DHCPRequest(date, dhcpServer, ipRequested, device, via, message)
+
+			return DHCPEvent(date=date, server=dhcpServer, device=device, dhcpType='Request', ip=ipRequested, message=message)
 
 
 		# Server acknoledge
@@ -210,7 +213,7 @@ def dhcpParser(infos):
 			elif '(' in infos[i]:
 				device = infos[i][1:-1]
 			else:
-				raise Exception("DHCP weird Ack log")
+				raise Exception("DHCP: Weird Ack log")
 
 			i += 1
 			deviceName = ''
@@ -221,33 +224,30 @@ def dhcpParser(infos):
 			if infos[i] == 'via':
 				i += 1
 				via = infos[i]
-			
-			return DHCPAck(date, dhcpServer, ipAcked, device, deviceName, via)
+			return DHCPEvent(date=date, server=dhcpServer, device=device, dhcpType='Ack',  ip=ipAcked)
 
 		# Ip needs to be renewed
 		elif infos[3] == "DHCPNAK":
 			ipNacked = infos[5]
 			device = infos[7]
 			via = infos[9]
-			return DHCPNak(date, dhcpServer, ipNacked, device, via)
+			return DHCPEvent(date=date, server=dhcpServer, device=device, dhcpType='Nak',  ip=ipNacked)
 
 		elif infos[3] == "DHCPINFORM":
-			return NotAnEvent(date)
+			return None
 
 		else :
 			tmp = ' '.join(infos[2:])
 			if 'ICMP Echo reply while lease' in tmp:
-				return DHCPWarning(date, dhcpServer, infos[7], 'pinged')
+				return DHCPEvent(date=date, server=dhcpServer, dhcpType='Warning', message='pinged', ip=infos[7])
 	
 			elif 'incoming update is less critical than outgoing update' in tmp:
-				return DHCPLog(date, dhcpServer, 'Incoming update is less critical than outgoing update', infos[6])
-
-			raise Exception('DHCP event: ' + infos[3] + ' unknown')
-
-		
+				return DHCPEvent(date=date, server=dhcpServer, dhcpType='Log', message='Incoming update is less critical than outgoing update', ip=infos[6])
+			
+			else:
+				raise Exception('DHCP event: ' + infos[3] + ' unknown')	
 	else :
 		raise Exception('DHCP category unknown: ' + infos[2])
-
 
 
 def parser(path):
@@ -271,34 +271,73 @@ def parser(path):
 
 		# Normal logs
 		else:
-			for line in logFile:				
+			entries = []
+			for i, line in enumerate(logFile):				
+				
 				try:
 					# splits the log (required by the parsing methods)
 					log = line.split()
 
 					# DHCP log
 					if 'dhcp' in log[1].lower() :
-						yield dhcpParser(log)
+						entries.append(dhcpParser(log))
 
 					# radius log
 					elif 'radius' in log[1].lower() or 'radius' in log[2].lower():
-						yield radiusParser(log)
+						entries.append(radiusParser(log))
 
 					# controller log
 					elif 'controller' in log[1].lower():
-						yield UnparsedLog(line, 'Controller log')
+						entries.append(BadLog(log=line, cause='Controller log not suported.'))
 
 					# wism log
 					elif "wism" in log[2].lower() :
-						yield wismParser(log)
+						entries.append(wismParser(log))
 
 					# unhandled log
 					else:
-						yield UnparsedLog(line, "Unknown log type")
-
+						entries.append(BadLog(log=line, cause="Unknown log type"))
 
 				except Exception as e:
 					# misunderstood log
-					yield UnparsedLog(line, str(e))
-			
+					entries.append(BadLog(log=line, cause=str(e)))
+				
+				finally:
+					if (i+1) % 500 == 0:
+						addBatch(entries)
+						entries = []
+
+			addBatch(entries)
+
+
+def addBatch(entrieslist):
+	""" Add all the entries in lists to the DB
+
+	Argument:
+	list -- list of entries
+	"""
+	for element in entrieslist:
+		try:
+			element.save()
+		except IntegrityError:
+			pass
+		except AttributeError:
+			# save() on None type
+			pass
+
+
+def saveBadLogs(path):
+	""" Save the unparsed log in path and remove them from the DB
+
+	Argument:
+	path -- the path where the bad logs are saved
+	"""
+	
+	badLogs = BadLog.objects.all()
+	if len(badLogs) > 0:
+		with open(path, 'w') as f:
+			for element in badLogs:
+				f.write(str(element) + '\n')
+
+		badLogs.delete()
 
