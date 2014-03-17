@@ -21,7 +21,7 @@ class MobileStation(Device):
 	DOT11_PROTOCOLS = (('a',"800.11a"),('b',"800.11b"),('g',"800.11g"),('n2',"800.11n (2.4Ghz)"),('n5',"800.11n (5Ghz)"),('u',"Unknown"),('m',"Mobile"))
 	
 	ssid = models.CharField(max_length=25, null=True)
-	dot11protocol = models.CharField(max_length=2, choices=DOT11_PROTOCOLS, null=True)
+	dot11protocol = models.CharField(max_length=2, null=True)
 	def __str__(self):
 		return self.macAddress
 

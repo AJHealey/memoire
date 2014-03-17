@@ -155,11 +155,7 @@ def getAllMS():
         new = 0
         for index, proto in tmp.items():
             if index in result:
-                if proto in protocolsCode:
-                    result[index].dot11protocol = protocolsCode[proto]
-                else:
-                    result[index].dot11protocol = 'u'
-                    
+                result[index].dot11protocol = proto
                 count += 1
             else:
                 new += 1
@@ -185,6 +181,7 @@ def snmpAPDaemon():
 
 
 def snmpMSDaemon():
+    time.sleep(30)
     while True:
         try:
             getAllMS()
