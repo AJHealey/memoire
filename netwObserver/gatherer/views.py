@@ -100,7 +100,7 @@ def snmp(request, cat='ap', page=1, perpage=100):
 		except EmptyPage:
 			context['ap'] = p.page(p.num_pages)
 
-	if cat == 'ms':
+	elif cat == 'ms':
 		tmpQuery = MobileStation.objects.order_by('macAddress')
 		p = Paginator(tmpQuery,perpage)
 		try:

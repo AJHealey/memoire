@@ -6,7 +6,7 @@ from pysnmp.entity.rfc3413.oneliner import cmdgen
 from gatherer.models import AccessPoint
 
 wism = ['192.168.251.170']
-protocolsCode = {'1' : 'dot11a', '2' : 'dot11b', '3' : 'dot11g', '4' : 'unknown', '5' : 'mobile', '6' : 'dot11n24', '7' : 'dot11n5'}
+protocolsCode = {'dot11a' : 'a', 'dot11b' : 'b', 'dot11g' : 'g', 'unknown' : 'u', 'mobile' : 'm', 'dot11n24' : 'n2', 'dot11n5' : 'n5'}
 
 def walker(ip, oib, port=161, community='snmpstudentINGI'):
     cmdGen = cmdgen.CommandGenerator()
@@ -62,10 +62,7 @@ def getMobileStationIPs(ip, port=161, community='snmpstudentINGI'):
 
 def getMobileStationProtocol(ip, port=161, community='snmpstudentINGI'):
     """ Protocol used by the station (e.g 802.11a, b, g, n) """
-    result = walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.25', port=port, community=community)
-    for k in result.keys():
-        result[k] = protocolsCode[result[k]]
-    return result
+    return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.25', port=port, community=community)
 
 def getMobileStationSSID(ip, port=161, community='snmpstudentINGI'):
     """ SSID advertised by the mobile station """
@@ -158,7 +155,11 @@ def getAllMS():
         new = 0
         for index, proto in tmp.items():
             if index in result:
-                result[index].dot11protocol = proto
+                if proto in protocolsCode:
+                    result[index].dot11protocol = protocolsCode[proto]
+                else:
+                    result[index].dot11protocol = 'u'
+                    
                 count += 1
             else:
                 new += 1
@@ -187,7 +188,7 @@ def snmpMSDaemon():
     while True:
         try:
             getAllMS()
-            time.sleep(30*60)
+            time.sleep(66*60)
         except:
             time.sleep(24*60*60)
 
