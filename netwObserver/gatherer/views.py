@@ -86,10 +86,18 @@ def logs(request, cat='dhcp', page=1, perpage=100, filters={}):
 
 	return render(request, "gatherer/logs.html", context)
 
-def snmp(request, cat='ap'):
+def snmp(request, cat='ap', page=1, perpage=100):
 	context = {}
 	context['app'] = 'gatherer'
 	context['cat'] = cat
 	if cat == 'ap':
-		context['ap'] = AccessPoint.objects.order_by('name')
+		tmpQuery = AccessPoint.objects.order_by('name')
+		p = Paginator(tmpQuery,perpage)
+		try:
+			context['ap'] = p.page(page)
+		except PageNotAnInteger:
+			context['ap'] = p.page(1)
+		except EmptyPage:
+			context['ap'] = p.page(p.num_pages)
+
 	return render(request, "gatherer/snmp.html", context)
