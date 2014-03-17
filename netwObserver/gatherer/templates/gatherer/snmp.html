@@ -36,10 +36,12 @@
       </thead>
       <tbody>
         {% for point in ap %}
-        <td></td>
-        <td>{{point.name}}</td>
-        <td>{{point.macAddress}}</td>
-        <td>{{point.ip}}</td>
+        <tr>
+          <td></td>
+          <td>{{point.name}}</td>
+          <td>{{point.macAddress}}</td>
+          <td>{{point.ip}}</td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
@@ -55,10 +57,12 @@
       </thead>
       <tbody>
         {% for station in ms %}
-        <td></td>
-        <td>{{station.name}}</td>
-        <td>{{station.macAddress}}</td>
-        <td>{{station.ip}}</td>
+        <tr>
+          <td></td>
+          <td>{{station.name}}</td>
+          <td>{{station.macAddress}}</td>
+          <td>{{station.ip}}</td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
