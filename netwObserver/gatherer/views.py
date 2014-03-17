@@ -100,4 +100,15 @@ def snmp(request, cat='ap', page=1, perpage=100):
 		except EmptyPage:
 			context['ap'] = p.page(p.num_pages)
 
+	if cat == 'ms':
+		tmpQuery = MobileStation.objects.order_by('macAddress')
+		p = Paginator(tmpQuery,perpage)
+		try:
+			context['ms'] = p.page(page)
+		except PageNotAnInteger:
+			context['ms'] = p.page(1)
+		except EmptyPage:
+			context['ms'] = p.page(p.num_pages)
+
+
 	return render(request, "gatherer/snmp.html", context)

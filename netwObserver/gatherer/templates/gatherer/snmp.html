@@ -45,6 +45,16 @@
         {% endfor %}
       </tbody>
     </table>
+    <footer>
+      {{ap|length}} entr{{ ap|pluralize:'y,ies' }}
+      {%if ap.paginator.num_pages > 1 %}
+      <p class="text-center">Page {{ ap.number }} of {{ ap.paginator.num_pages }}</p>
+      <ul class="pager">
+          <li class="previous{%if not ap.has_previous%} disabled{%endif%}"><a href="{%if ap.has_previous%}{% url 'snmp' 'ap' ap.previous_page_number %}{%else%}#{%endif%}">Newer</a></li>
+          <li class="next{%if not ap.has_next%} disabled{%endif%}"><a href="{%if ap.has_next%}{% url 'snmp' 'ap' ap.next_page_number %}{%else%}#{%endif%}">Older</a></li>
+      </ul>
+      {%endif%}
+    </footer>
     {%elif ms %}
     <table class="table table-striped table-hover">
       <thead>
@@ -66,6 +76,16 @@
         {% endfor %}
       </tbody>
     </table>
+    <footer>
+      {{ms|length}} entr{{ ms|pluralize:'y,ies' }}
+      {%if ms.paginator.num_pages > 1 %}
+      <p class="text-center">Page {{ ms.number }} of {{ ms.paginator.num_pages }}</p>
+      <ul class="pager">
+          <li class="previous{%if not ms.has_previous%} disabled{%endif%}"><a href="{%if ms.has_previous%}{% url 'snmp' 'ms' ms.previous_page_number %}{%else%}#{%endif%}">Newer</a></li>
+          <li class="next{%if not ms.has_next%} disabled{%endif%}"><a href="{%if ms.has_next%}{% url 'snmp' 'ms' ms.next_page_number %}{%else%}#{%endif%}">Older</a></li>
+      </ul>
+      {%endif%}
+    </footer>
     {%endif%}
   </div>
 </div>

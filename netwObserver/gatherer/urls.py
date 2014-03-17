@@ -8,6 +8,7 @@ urlpatterns = patterns('',
 	url(r'^logs/(?P<cat>\S+)/(?P<page>\d+)', views.logs, name='logs'),
     url(r'^logs/(?P<cat>\S+)', views.logs, name='logs'),
     url(r'^snmp/$', views.snmp, name='snmp'),
+    url(r'^snm/(?P<cat>\S+)/(?P<page>\d+)', views.snmp, name='snmp'),
  	url(r'^snmp/(?P<cat>\S+)', views.snmp, name='snmp'),
 
 )

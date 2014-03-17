@@ -1,5 +1,7 @@
 import time
 
+from django.utils import timezone
+
 from pysnmp.entity.rfc3413.oneliner import cmdgen
 from gatherer.models import AccessPoint
 
@@ -110,16 +112,86 @@ def getAllAP():
 
     finally:
         for ap in result.values():
+            ap.lastTouched = timezone.now()
             ap.save()
 
+def getAllMS():
+    result = {}
+    addWhile = 0
+    removeWhile = 0
+    try:
+        # Get All Access Points (Mac Address)
+        tmp = getMobileStationMacAddresses(ip=wism[0])
+        for index, mac in tmp.items():
+            result[index], created = MobileStation.objects.get_or_create(macAddress=parseMacAdresse(mac))
+       
+        # Add names    
+        tmp = getMobileStationSSID(ip=wism[0])
+        count = 0
+        new = 0
+        for index, ssid in tmp.items():
+            if index in result:
+                result[index].ssid = ssid
+                count += 1
+            else:
+                new += 1
+        addWhile += new - addWhile
+        removeWhile += (len(result) - count) - removeWhile
 
-def snmpDaemon():
+
+        # Add IP
+        tmp = getMobileStationIPs(ip=wism[0])
+        count = 0
+        new = 0
+        for index, ip in tmp.items():
+            if index in result:
+                result[index].ip = ip
+                count += 1
+            else:
+                new += 1
+        addWhile += new - addWhile
+        removeWhile += (len(result) - count) - removeWhile
+
+        # Add Protocol
+        tmp = getMobileStationProtocol(ip=wism[0])
+        count = 0
+        new = 0
+        for index, proto in tmp.items():
+            if index in result:
+                result[index].dot11protocol = proto
+                count += 1
+            else:
+                new += 1
+        addWhile += new - addWhile
+        removeWhile += (len(result) - count) - removeWhile
+
+    except:
+        pass
+
+    finally:
+        for ms in result.values():
+            ms.lastTouched = timezone.now()
+            ms.save()
+
+
+def snmpAPDaemon():
     while True:
         try:
             getAllAP()
             time.sleep(60*60)
         except:
             time.sleep(24*60*60)
+
+
+def snmpMSDaemon():
+    while True:
+        try:
+            getAllMS()
+            time.sleep(30*60)
+        except:
+            time.sleep(24*60*60)
+
+
 
 
 ###### Auxiliary Methods #######
