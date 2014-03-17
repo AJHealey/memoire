@@ -109,6 +109,10 @@ class CurrentTask(models.Model):
 	def __str__(self):
 		return self.name + " by " + self.owner + ": " + ( "active" if self.stillActive() else "inactive")
 
+class OperationalError(models.Model):
+	date = models.DateTimeField()
+	source = models.CharField(max_length=25)
+	error = models.CharField(max_length=250)
 
 ####################
 

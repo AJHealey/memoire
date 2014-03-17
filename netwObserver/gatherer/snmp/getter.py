@@ -3,7 +3,7 @@ import time
 from django.utils import timezone
 
 from pysnmp.entity.rfc3413.oneliner import cmdgen
-from gatherer.models import AccessPoint
+from gatherer.models import AccessPoint, MobileStation, OperationalError
 
 wism = ['192.168.251.170']
 protocolsCode = {'dot11a' : 'a', 'dot11b' : 'b', 'dot11g' : 'g', 'unknown' : 'u', 'mobile' : 'm', 'dot11n24' : 'n2', 'dot11n5' : 'n5'}
@@ -104,8 +104,8 @@ def getAllAP():
                 new += 1
         addWhile += new - addWhile
         removeWhile += (len(result) - count) - removeWhile
-    except:
-        pass
+    except Exception as e:
+        OperationalError(date=timezone.now(), source='snmpAPDaemon', error=str(e))
 
     finally:
         for ap in result.values():
@@ -162,8 +162,8 @@ def getAllMS():
         addWhile += new - addWhile
         removeWhile += (len(result) - count) - removeWhile
 
-    except:
-        pass
+    except Exception as e:
+        OperationalError(date=timezone.now(), source='snmpMSDaemon', error=str(e))
 
     finally:
         for ms in result.values():
