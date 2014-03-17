@@ -10,7 +10,7 @@ from django.http import HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from gatherer.log.logParser import parser
-from gatherer.log.snmp import getAllAP
+from gatherer.snmp.getter import getAllAP
 from gatherer.models import RadiusEvent, DHCPEvent, WismEvent, MobileStation, AccessPoint, BadLog
 
 from django.conf import settings
