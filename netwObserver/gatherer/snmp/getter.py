@@ -105,7 +105,7 @@ def getAllAP():
         addWhile += new - addWhile
         removeWhile += (len(result) - count) - removeWhile
     except Exception as e:
-        OperationalError(date=timezone.now(), source='snmpAPDaemon', error=str(e))
+        OperationalError(date=timezone.now(), source='snmpAPDaemon', error=str(e)).save()
 
     finally:
         for ap in result.values():
@@ -163,7 +163,7 @@ def getAllMS():
         removeWhile += (len(result) - count) - removeWhile
 
     except Exception as e:
-        OperationalError(date=timezone.now(), source='snmpMSDaemon', error=str(e))
+        OperationalError(date=timezone.now(), source='snmpMSDaemon', error=str(e)).save()
 
     finally:
         for ms in result.values():
