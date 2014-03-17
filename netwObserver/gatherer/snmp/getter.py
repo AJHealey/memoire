@@ -202,6 +202,7 @@ def parseMacAdresse(macString):
     if len(result) == 12:
         return result[0:2] + ":" + result[2:4] + ":" + result[4:6] + ":" + result[6:8] + ":" + result[8:10] + ":" +result[10:]
     else:
+        OperationalError(date=timezone.now(), source='snmp macAddress parsing', error=macString).save()
         return ''
 
 

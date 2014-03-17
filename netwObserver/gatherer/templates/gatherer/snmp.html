@@ -60,18 +60,20 @@
       <thead>
         <tr>
           <th></th>
-          <th>Name</th>
           <th>Mac Address</th>
           <th>IP</th>
+          <th>SSID</th>
+          <th>Wifi Protocol</th>
         </tr>
       </thead>
       <tbody>
         {% for station in ms %}
         <tr>
           <td></td>
-          <td>{{station.name}}</td>
           <td>{{station.macAddress}}</td>
           <td>{{station.ip}}</td>
+          <td>{{station.ssid}}</td>
+          <td>{{station.dot11protocol}}</td>
         </tr>
         {% endfor %}
       </tbody>
