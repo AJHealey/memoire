@@ -3,7 +3,9 @@ import codecs
 import re
 from datetime import *
 
-from gatherer.models import RadiusEvent, DHCPEvent, WismEvent, MobileStation, AccessPoint, BadLog
+from os.path import splitext
+
+from gatherer.models import RadiusEvent, DHCPEvent, WismEvent, User, Device, MobileStation, AccessPoint, BadLog
 from django.db import IntegrityError
 
 
@@ -43,7 +45,7 @@ def wismParser(infos):
 		else :
 			mnemo = mnemo.replace('_',' ')
 			message = ' '.join(infos[9:]).strip()
-			return WismEvent(date=date, ip=ipWism, category=category, severity=severity, mnemo=mnemo, message=message)
+			return  WismEvent(date=date, wismIp=ipWism, category=category, severity=severity, mnemo=mnemo, message=message)
 
 	# Uncommon Wism log types
 	elif logType == "-Traceback:" :
@@ -86,12 +88,14 @@ def radiusParser(infos):
 				i += 1
 			i += 1
 
-		login = infos[i][1:-1]
+		# message contains the given login
+		message = infos[i][1:-1].lower()
 		if tmp.startswith("ok"):
-			return RadiusEvent(date=date, login=login, radiusType='OK')
+			user, created = User.objects.get_or_create(login=message)
+			return RadiusEvent(date=date, user=user, radiusType='OK')
 
 		elif tmp.startswith("incorrect"):
-			return RadiusEvent(date=date, login=login, radiusType='KO')
+			return RadiusEvent(date=date, message=message, radiusType='KO')
 
 		else:
 			raise Exception("DHCP unknown login operation")
@@ -106,12 +110,14 @@ def radiusParser(infos):
 				i += 1
 			i += 1
 
-		login = infos[i][1:-1]
+		# message contains the given login
+		message = infos[i][1:-1].lower()
 		if tmp.startswith("ok"):
-			return RadiusEvent(date=date, login=login, radiusType='OK')
+			user, created = User.objects.get_or_create(login=message)
+			return RadiusEvent(date=date, user=user, radiusType='OK')
 
 		elif tmp.startswith("incorrect"):
-			return RadiusEvent(date=date, login=login, radiusType='KO')
+			return RadiusEvent(date=date, message=message, radiusType='KO')
 
 		else:
 			raise Exception("DHCP unknown login operation")
@@ -149,7 +155,7 @@ def dhcpParser(infos):
 	elif 'dhcp' in infos[2]:
 		## Client broadcasted asking
 		if infos[3] == "DHCPDISCOVER":
-			device = infos[5]
+			device, created = MobileStation.objects.get_or_create(macAddress=infos[5])
 			
 			if ':' in infos[7]:
 				via = infos[7][:-1]
@@ -164,7 +170,7 @@ def dhcpParser(infos):
 		# Server respond
 		elif infos[3] == "DHCPOFFER":
 			ipOffered = infos[5]
-			device = infos[7]
+			device, created = MobileStation.objects.get_or_create(macAddress=infos[7])
 			via = infos[9]
 			return DHCPEvent(date=date, server=dhcpServer, device=device, dhcpType='Offer',  ip=ipOffered)
 
@@ -179,7 +185,7 @@ def dhcpParser(infos):
 
 			if infos[i] == 'from':
 				i += 1
-				device = infos[i]
+				device, created = MobileStation.objects.get_or_create(macAddress=infos[i])
 
 			i += 1
 			deviceName = '' 
@@ -209,9 +215,9 @@ def dhcpParser(infos):
 
 			if infos[i] == 'to':
 				i += 1
-				device = infos[i]
+				device, created = MobileStation.objects.get_or_create(macAddress=infos[i])
 			elif '(' in infos[i]:
-				device = infos[i][1:-1]
+				device, created = MobileStation.objects.get_or_create(macAddress=infos[i][1:-1])
 			else:
 				raise Exception("DHCP: Weird Ack log")
 
@@ -229,7 +235,7 @@ def dhcpParser(infos):
 		# Ip needs to be renewed
 		elif infos[3] == "DHCPNAK":
 			ipNacked = infos[5]
-			device = infos[7]
+			device, created = MobileStation.objects.get_or_create(macAddress=infos[7])
 			via = infos[9]
 			return DHCPEvent(date=date, server=dhcpServer, device=device, dhcpType='Nak',  ip=ipNacked)
 
@@ -308,6 +314,8 @@ def parser(path):
 						entries = []
 
 			addBatch(entries)
+			name,ext = splitext(path)
+			saveBadLogs(name + '.badLogs')
 
 
 def addBatch(entrieslist):

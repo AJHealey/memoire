@@ -27,7 +27,7 @@ def index(request):
 		if 'selectLogFile' in request.POST:
 			if request.POST.get('selectLogFile','') in context["logFiles"]:
 				Thread(target=parser, args=(join(TMPFILE,request.POST.get('selectLogFile','')),) ).start()
-				#logParsing(join(TMPFILE,request.POST.get('selectLogFile')[0]))
+				#parser(join(TMPFILE,request.POST.get('selectLogFile','')))
 
 	return render(request, "gatherer/index.html", context)
 
@@ -42,12 +42,15 @@ def logs(request, cat='dhcp', page=1, perpage=100, filters={}):
 	if cat == 'dhcp':
 		tmpQuery = DHCPEvent.objects.order_by('-date')
 		
+		if "filterDate" in filters:
+			tmpQuery = tmpQuery.filter(date__gte=filters['filterDate'][0])
+			tmpQuery = tmpQuery.filter(date__gte=filters['filterDate'][1])
 		if 'filterIP' in filters:
-			tmpQuery = tmpQuery.filter(ip=filters['filterIP'])
+			tmpQuery = tmpQuery.filter(ip__exact=filters['filterIP'])
 		if 'filterType' in filters:
-			tmpQuery = tmpQuery.filter(ip=filters['filterType'])
+			tmpQuery = tmpQuery.filter(dhcpType__exact=filters['filterType'])
 		if 'filterDevice' in filters:
-			tmpQuery = tmpQuery.filter(ip=filters['filterDevice'])
+			tmpQuery = tmpQuery.filter(device_macAddress=filters['filterDevice'])
 		
 		p = Paginator(tmpQuery,perpage)
 		try:

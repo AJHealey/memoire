@@ -24,7 +24,26 @@
     </ul>
   </div>
   <div class="col-md-10">
-    {%if ap%}
+    {% if ap %}
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Mac Address</th>
+          <th>IP</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for point in ap %}
+        <td></td>
+        <td>{{point.name}}</td>
+        <td>{{point.macAddress}}</td>
+        <td>{{point.ip}}</td>
+        {% endfor %}
+      </tbody>
+    </table>
+    {%elif ms %}
     <table class="table table-striped table-hover">
       <thead>
         <tr>
@@ -46,7 +65,5 @@
     {%endif%}
   </div>
 </div>
-
-
 
 {% endblock %}

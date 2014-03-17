@@ -44,7 +44,7 @@
 					<td>{{event.server}}</td>
 					<td>{{event.dhcpType}}</td>
 					<td>{{event.ip|default_if_none:"-"}}</td>
-					<td>{{event.device}}</td>
+					<td>{{event.device.macAddress}}</td>
 				</tr>
 				{% endfor %}
 			</tbody>
@@ -93,7 +93,7 @@
 					<tr {% if event.radiusType == 'OK' %}class="success"{%elif event.radiusType == 'KO' %}class="warning"{%endif%}>
 						<td>{% if event.radiusType == 'OK' %}<span class="glyphicon glyphicon-ok"></span>{%elif event.radiusType == 'KO' %}<span class="glyphicon glyphicon-remove"></span>{%endif%}</td>
 						<td>{{event.date|date:"D d M Y H:i:s"}}</td>
-						<td>{{event.login}}</td>
+						<td>{% if event.radiusType == 'OK' %}{{event.user.login}}{%elif event.radiusType == 'KO' %}{{event.message}}{%endif%}</td>
 					</tr>
 					{%endif%}
 				{% endfor %}

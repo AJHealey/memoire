@@ -1,5 +1,5 @@
 from pysnmp.entity.rfc3413.oneliner import cmdgen
- 
+from gatherer.models import AccessPoint
 
 wism = ['192.168.251.170']
 protocolsCode = {'1' : 'dot11a', '2' : 'dot11b', '3' : 'dot11g', '4' : 'unknown', '5' : 'mobile', '6' : 'dot11n24', '7' : 'dot11n5'}
@@ -19,7 +19,7 @@ def walker(ip, oib, port=161, community='snmpstudentINGI'):
         if errorStatus:
             raise Exception('%s at %s' % (
             errorStatus.prettyPrint(),
-            errorIndex and varBinds[int(errorIndex)-1] or '?'
+            errorIndex and varBindTable[int(errorIndex)-1] or '?'
             ))
         else:
             result = {}
@@ -67,6 +67,44 @@ def getMobileStationSSID(ip, port=161, community='snmpstudentINGI'):
     """ SSID advertised by the mobile station """
     return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.7', port=port, community=community)
 
+def getAllAP():
+    result = {}
+    addWhile = 0
+    removeWhile = 0
+    try: 
+        # Get All Access Points (Mac Address)
+        tmp = getApMacAddresses(ip=wism[0])
+        for index, mac in tmp.items():
+            result[index] = AccessPoint(macAddress=parseMacAdresse(mac))
+       
+        # Add names    
+        tmp = getApNames(ip=wism[0])
+        count = 0
+        new = 0
+        for index, name in tmp.items():
+            if index in result:
+                result[index].name = name
+                count += 1
+            else:
+                new += 1
+        addWhile += new - addWhile
+        removeWhile += (len(result) - count) - removeWhile
+
+
+        # Add IP
+        tmp = getApIPs(ip=wism[0])
+        count = 0
+        new = 0
+        for index, ip in tmp.items():
+            if index in result:
+                result[index].ip = ip
+                count += 1
+            else:
+                new += 1
+        addWhile += new - addWhile
+        removeWhile += (len(result) - count) - removeWhile
+
+
 ###### Auxiliary Methods #######
 def parseMacAdresse(macString):
     result = macString
@@ -84,7 +122,9 @@ def parseMacAdresse(macString):
 #####
 if __name__ == '__main__':
     import sys
-    
+    for ap in getAllAP():
+        print(str(ap))
+    '''
     result = []
     if len(sys.argv) > 1:
         if sys.argv[1] == 'apname':
@@ -105,5 +145,5 @@ if __name__ == '__main__':
         print("\t" + k + ' : ' + r[k])
     print("-" * 50)
     print(str(len(r)) + " results")
-
+    '''
        
