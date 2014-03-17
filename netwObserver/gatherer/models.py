@@ -31,7 +31,7 @@ class AccessPoint(Device):
 	name = models.CharField(max_length=50, null=True)
 	location = models.CharField(max_length=50, null=True)
 	def __str__(self):
-		return self.name + " : " + self.macAdress + ' (' + self.ip + ')'
+		return str(self.name) + " : " + str(self.macAdress) + ' (' + str(self.ip) + ')'
 
 
 ## User
