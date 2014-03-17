@@ -54,11 +54,11 @@
         </tr>
       </thead>
       <tbody>
-        {% for point in ap %}
+        {% for station in ms %}
         <td></td>
-        <td>{{point.name}}</td>
-        <td>{{point.macAddress}}</td>
-        <td>{{point.ip}}</td>
+        <td>{{station.name}}</td>
+        <td>{{station.macAddress}}</td>
+        <td>{{station.ip}}</td>
         {% endfor %}
       </tbody>
     </table>

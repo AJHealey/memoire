@@ -12,6 +12,9 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "netwObserver.settings")
 
 
 ### Start-up code (technique inspired by "http://eldarion.com/blog/2013/02/14/entry-point-hook-django-projects/") ###
+from threading import Thread
+from gatherer.snmp.getter import snmpDaemon
+Thread(target=snmpDaemon).start()
 
 
 from django.core.wsgi import get_wsgi_application

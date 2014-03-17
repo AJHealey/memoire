@@ -1,3 +1,5 @@
+import time
+
 from pysnmp.entity.rfc3413.oneliner import cmdgen
 from gatherer.models import AccessPoint
 
@@ -75,7 +77,7 @@ def getAllAP():
         # Get All Access Points (Mac Address)
         tmp = getApMacAddresses(ip=wism[0])
         for index, mac in tmp.items():
-            result[index] = AccessPoint(macAddress=parseMacAdresse(mac))
+            result[index], created = AccessPoint.objects.get_or_create(macAddress=parseMacAdresse(mac))
        
         # Add names    
         tmp = getApNames(ip=wism[0])
@@ -107,7 +109,17 @@ def getAllAP():
         pass
 
     finally:
-        return result.values()
+        for ap in result.values():
+            ap.save()
+
+
+def snmpDaemon():
+    while True:
+        try:
+            getAllAP()
+            time.sleep(60*60)
+        except:
+            time.sleep(24*60*60)
 
 
 ###### Auxiliary Methods #######
