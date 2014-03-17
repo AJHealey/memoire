@@ -70,40 +70,24 @@ def getMobileStationSSID(ip, port=161, community='snmpstudentINGI'):
 
 def getAllAP():
     result = {}
-    addWhile = 0
-    removeWhile = 0
     try:
         # Get All Access Points (Mac Address)
         tmp = getApMacAddresses(ip=wism[0])
         for index, mac in tmp.items():
             result[index], created = AccessPoint.objects.get_or_create(macAddress=parseMacAdresse(mac))
-       
+        
         # Add names    
         tmp = getApNames(ip=wism[0])
-        count = 0
-        new = 0
         for index, name in tmp.items():
             if index in result:
                 result[index].name = name
-                count += 1
-            else:
-                new += 1
-        addWhile += new - addWhile
-        removeWhile += (len(result) - count) - removeWhile
-
 
         # Add IP
         tmp = getApIPs(ip=wism[0])
-        count = 0
-        new = 0
         for index, ip in tmp.items():
             if index in result:
                 result[index].ip = ip
-                count += 1
-            else:
-                new += 1
-        addWhile += new - addWhile
-        removeWhile += (len(result) - count) - removeWhile
+
     except Exception as e:
         OperationalError(date=timezone.now(), source='snmpAPDaemon', error=str(e)).save()
 
@@ -114,53 +98,35 @@ def getAllAP():
 
 def getAllMS():
     result = {}
-    addWhile = 0
-    removeWhile = 0
     try:
         # Get All Access Points (Mac Address)
         tmp = getMobileStationMacAddresses(ip=wism[0])
         for index, mac in tmp.items():
-            result[index], created = MobileStation.objects.get_or_create(macAddress=parseMacAdresse(mac))
+            mac = parseMacAdresse(mac)
+            if not mac == '':
+                result[index], created = MobileStation.objects.get_or_create(macAddress=mac)
        
         # Add names    
         tmp = getMobileStationSSID(ip=wism[0])
-        count = 0
-        new = 0
         for index, ssid in tmp.items():
             if index in result:
-                result[index].ssid = ssid
-                count += 1
-            else:
-                new += 1
-        addWhile += new - addWhile
-        removeWhile += (len(result) - count) - removeWhile
+                if 'b\'' in ssid:
+                    result[index].ssid = ssid[2:-1]
+                else:
+                    result[index].ssid = ssid
 
 
         # Add IP
         tmp = getMobileStationIPs(ip=wism[0])
-        count = 0
-        new = 0
         for index, ip in tmp.items():
             if index in result:
                 result[index].ip = ip
-                count += 1
-            else:
-                new += 1
-        addWhile += new - addWhile
-        removeWhile += (len(result) - count) - removeWhile
 
         # Add Protocol
         tmp = getMobileStationProtocol(ip=wism[0])
-        count = 0
-        new = 0
         for index, proto in tmp.items():
             if index in result:
                 result[index].dot11protocol = proto
-                count += 1
-            else:
-                new += 1
-        addWhile += new - addWhile
-        removeWhile += (len(result) - count) - removeWhile
 
     except Exception as e:
         OperationalError(date=timezone.now(), source='snmpMSDaemon', error=str(e)).save()

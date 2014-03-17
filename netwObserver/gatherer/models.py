@@ -18,10 +18,10 @@ class Device(models.Model):
 
 ## Mobile stations Model
 class MobileStation(Device):
-	DOT11_PROTOCOLS = (('a',"800.11a"),('b',"800.11b"),('g',"800.11g"),('n2',"800.11n (2.4Ghz)"),('n5',"800.11n (5Ghz)"),('u',"Unknown"),('m',"Mobile"))
+	DOT11_PROTOCOLS = (('1',"800.11a"),('2',"800.11b"),('3',"800.11g"),('6',"800.11n (2.4Ghz)"),('7',"800.11n (5Ghz)"),('4',"Unknown"),('5',"Mobile"))
 	
 	ssid = models.CharField(max_length=25, null=True)
-	dot11protocol = models.CharField(max_length=2, null=True)
+	dot11protocol = models.CharField(max_length=1, choices=DOT11_PROTOCOLS, null=True)
 	def __str__(self):
 		return self.macAddress
 
