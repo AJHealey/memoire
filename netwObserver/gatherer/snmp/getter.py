@@ -71,7 +71,7 @@ def getAllAP():
     result = {}
     addWhile = 0
     removeWhile = 0
-    try: 
+    try:
         # Get All Access Points (Mac Address)
         tmp = getApMacAddresses(ip=wism[0])
         for index, mac in tmp.items():
@@ -103,6 +103,11 @@ def getAllAP():
                 new += 1
         addWhile += new - addWhile
         removeWhile += (len(result) - count) - removeWhile
+    except:
+        pass
+
+    finally:
+        return result.values()
 
 
 ###### Auxiliary Methods #######
