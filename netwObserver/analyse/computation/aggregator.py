@@ -24,7 +24,7 @@ def getUserByDot11Protocol():
 	
 	for proto,display in MobileStation.DOT11_PROTOCOLS:
 		stats[display] = MobileStation.objects.filter(dot11protocol__exact=proto).count()
-	
-	return sorted(stats)
+
+	return stats
 
 
