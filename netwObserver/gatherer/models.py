@@ -18,7 +18,7 @@ class Device(models.Model):
 
 ## Mobile stations Model
 class MobileStation(Device):
-	DOT11_PROTOCOLS = (('1',"800.11a"),('2',"800.11b"),('3',"800.11g"),('6',"800.11n (2.4Ghz)"),('7',"800.11n (5Ghz)"),('4',"Unknown"),('5',"Mobile"))
+	DOT11_PROTOCOLS = (('1',"802.11a"),('2',"802.11b"),('3',"802.11g"),('6',"802.11n (2.4Ghz)"),('7',"802.11n (5Ghz)"),('4',"Unknown"),('5',"Mobile"))
 	
 	ssid = models.CharField(max_length=25, null=True)
 	dot11protocol = models.CharField(max_length=1, choices=DOT11_PROTOCOLS, null=True)
@@ -64,7 +64,7 @@ class RadiusEvent(models.Model):
 
 ## DHCP model
 class DHCPEvent(models.Model):
-	date = models.DateTimeField()
+	date = models.DateTimeField(primary_key=True)
 	server = models.CharField(max_length=5)
 	device = models.ForeignKey(MobileStation, null=True)
 	dhcpType = models.CharField(max_length=10)
@@ -73,7 +73,7 @@ class DHCPEvent(models.Model):
 
 ## Wism model
 class WismEvent(models.Model):
-	date = models.DateTimeField()
+	date = models.DateTimeField(primary_key=True)
 	wismIp = models.GenericIPAddressField()
 
 	category = models.CharField(max_length=10)
@@ -86,7 +86,7 @@ class WismEvent(models.Model):
 		unique_together = (('date', 'wismIp'),)
 
 
-########################################################################
+################## Auxiliary Models #######################
 
 ## Error Parsing
 class BadLog(models.Model):
@@ -95,24 +95,30 @@ class BadLog(models.Model):
 	def __str__(self):
 		return "" + self.log + " --> " +  self.cause + '\n'
 
-# Tasks model
+## Tasks model
 class CurrentTask(models.Model):
 	lastTouched = models.DateTimeField()
 	name = models.CharField(max_length=25)
 	owner = models.CharField(max_length=25)
-	state = models.CharField(max_length=25)
 	progress = models.CharField(max_length=4)
- 
+ 	
+	def touch(self):
+		lastTouched = timezone.now()
+
 	def stillActive(self):
 		return (timezone.now() - self.lastTouched) < timedelta(minutes=10)
 
 	def __str__(self):
 		return self.name + " by " + self.owner + ": " + ( "active" if self.stillActive() else "inactive")
 
+## Operational Errors Model
 class OperationalError(models.Model):
 	date = models.DateTimeField()
 	source = models.CharField(max_length=25)
 	error = models.CharField(max_length=250)
+
+	def __str__(self):
+		return str(self.date) + ": " + self.error + " (from " + self.source + ")"
 
 ####################
 

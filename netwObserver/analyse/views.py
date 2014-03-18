@@ -1,8 +1,16 @@
 from django.shortcuts import render
+from analyse.computation import aggregator
 
 # Create your views here.
-def index(request):
+def analyse(request, cat='ms'):
 	context = {}
-	context["cat"] = "wism"
-	context['app'] = 'analysis' 
-	return render(request, "analyse/index.html", context)
+	context["cat"] = cat
+	context['app'] = 'analysis'
+
+	if cat == 'ms':
+		context["ms"] = {'802.11 Statistics' : aggregator.getUserByDot11Protocol()}
+
+	elif cat = "wism":
+		context["wism"] = {}
+
+	return render(request, "analyse/analyse.html", context)
