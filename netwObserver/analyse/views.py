@@ -8,7 +8,7 @@ def analyse(request, cat='ms'):
 	context['app'] = 'analysis'
 
 	if cat == 'ms':
-		context["ms"] = {'802.11 Statistics' : ("3" + str(aggregator.getUserByDot11Protocol())), "test":"test"}
+		context["ms"] = {'802.11 Statistics' : str(aggregator.getUserByDot11Protocol())}
 
 	elif cat == "wism":
 		context["wism"] = {}
