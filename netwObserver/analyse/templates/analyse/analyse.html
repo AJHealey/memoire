@@ -87,7 +87,7 @@ path {
 		{%for element, infos in ms.items %}
 			<h1>{{element}}</h1>
 			<dl class="dl-horizontal">
-			{%for proto, value in infos%}
+			{%for proto, value in infos.items%}
  				<dt>{{proto}}</dt>
   					<dd>{{value}}</dd>
 			{%endfor%}
