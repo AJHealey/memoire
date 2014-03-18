@@ -59,24 +59,24 @@ class RadiusEvent(models.Model):
 	message = models.CharField(max_length=128,null=True)
 
 	def __str__(self):
-		return "" + self.radiusType + " : " +  str(self.login)
+		return "" + self.radiusType + " : " +  self.user.login
 
 	class Meta:
-		unique_together = (('date', 'microsecond', 'server'),)
+		unique_together = (('date', 'microsecond', 'user'),)
 
 ## DHCP model
 class DHCPEvent(models.Model):
 	date = models.DateTimeField()
 	microsecond = models.DecimalField(max_digits=6, decimal_places=0)
 
-	server = models.CharField(max_length=5)
+	server = models.CharField(max_length=10)
 	device = models.ForeignKey(MobileStation, null=True)
 	dhcpType = models.CharField(max_length=10)
 	ip = models.GenericIPAddressField(null=True)
 	message = models.CharField(max_length=256, null=True)
 
 	class Meta:
-		unique_together = (('date', 'microsecond'),)
+		unique_together = (('date', 'microsecond', 'server'),)
 
 ## Wism model
 class WismEvent(models.Model):

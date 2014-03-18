@@ -142,7 +142,7 @@
 						<td></span></td>
 					{%endif%}
 						<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
-						<td>{{event.ip}}</td>
+						<td>{{event.wismIp}}</td>
 						<td>{{event.category}}</td>
 						<td data-toggle="tooltip" data-placement="bottom" title="{{sevMeaning|get:event.severity}}">{{event.severity}}</td>
 						<td data-toggle="tooltip" data-placement="bottom" title="{{event.message}}">{{event.mnemo}}</td>
