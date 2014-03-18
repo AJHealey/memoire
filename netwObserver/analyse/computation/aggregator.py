@@ -21,9 +21,10 @@ def getWismLogByType():
 
 def getUserByDot11Protocol():
 	stats = {p:0 for _,p in MobileStation.DOT11_PROTOCOLS}
+	
 	for proto,display in MobileStation.DOT11_PROTOCOLS:
 		stats[display] = MobileStation.objects.filter(dot11protocol__exact=proto).count()
 
-	return stats
+	return MobileStation.DOT11_PROTOCOLS
 
 
