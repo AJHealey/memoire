@@ -50,7 +50,7 @@ class User(models.Model):
 ## Radius Model
 class RadiusEvent(models.Model):
 	date = models.DateTimeField()
-	microsecond = models.DecimalField(max_digits=6)
+	microsecond = models.DecimalField(max_digits=6, decimal_places=0)
 
 	server = models.CharField(max_length=25)
 	radiusType = models.CharField(max_length=10) #TODO choice
@@ -67,7 +67,7 @@ class RadiusEvent(models.Model):
 ## DHCP model
 class DHCPEvent(models.Model):
 	date = models.DateTimeField()
-	microsecond = models.DecimalField(max_digits=6)
+	microsecond = models.DecimalField(max_digits=6, decimal_places=0)
 
 	server = models.CharField(max_length=5)
 	device = models.ForeignKey(MobileStation, null=True)
@@ -81,7 +81,7 @@ class DHCPEvent(models.Model):
 ## Wism model
 class WismEvent(models.Model):
 	date = models.DateTimeField()
-	microsecond = models.DecimalField(max_digits=6)
+	microsecond = models.DecimalField(max_digits=6, decimal_places=0)
 	
 	wismIp = models.GenericIPAddressField()
 
