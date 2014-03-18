@@ -1,0 +1,15 @@
+{% extends "common/base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<div class='row' style="margin-top:20px;">
+	<div class="col-md-1">
+		<ul class="nav nav-pills nav-stacked">
+			<li {% if cat == 'ms' %}class="active"{%endif%}><a href="{% url '' 'dhcp' %}">Mobile Station</a></li>
+			<li {% if cat == 'wism' %}class="active"{%endif%}><a href="">Wism</a></li>
+		</ul>
+	</div>
+
+	<div id="graph" class="col-md-10">
+	</div>
+</div>
