@@ -17,8 +17,8 @@ path {
 <div class='row' style="margin-top:20px;">
 	<div class="col-md-1">
 		<ul class="nav nav-pills nav-stacked">
-			<li {% if cat == 'ms' %}class="active"{%endif%}><a href="">Wism</a></li>
-			<li {% if cat == 'wism' %}class="active"{%endif%}><a href="">Wism</a></li>
+			<li {% if cat == 'ms' %}class="active"{%endif%}><a href="{% url 'analyse' 'ms' %}">Mobile Stations</a></li>
+			<li {% if cat == 'wism' %}class="active"{%endif%}><a href="{% url 'analyse' 'wism' %}">Wism</a></li>
 		</ul>
 	</div>
 
@@ -84,28 +84,9 @@ path {
 
 	</script>
 	{%elif ms%}
-	<h1>Mobile Stations Statistics</h1>
-	{%for element in ms%}
-	<h2>{{element}}</h2>
-		<dl class="dl-horizontal">
-		{%for cat in ms.element%}
-  		<dt>cat</dt>
-  			<dd>
-  				<ol>
-  				{%for severity in ms.element.cat%}
-  					<li>
-  						<ul>
-  						{%for mnemo in ms.element.cat.severity%}
-  						<li>{{mnemo}} : {{ms.element.cat.severity.mnemo}}</li>
-  						{%endfor%}
-						</ul>
-  					</li>
-  				{%endfor%}
-				</ol>	
-  			</dd>
-		{%endfor%}
-		</dl>
-	{%endfor%}
+		{%for element in ms%}
+			{{ms.element}}
+		{%endif%}
 	{%endif%}
 	</div>
 </div>
