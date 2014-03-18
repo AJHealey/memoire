@@ -62,7 +62,7 @@ class RadiusEvent(models.Model):
 		return "" + self.radiusType + " : " +  str(self.login)
 
 	class Meta:
-		unique_together = (('date', 'millisec', 'server'),)
+		unique_together = (('date', 'microsecond', 'server'),)
 
 ## DHCP model
 class DHCPEvent(models.Model):
@@ -76,7 +76,7 @@ class DHCPEvent(models.Model):
 	message = models.CharField(max_length=256, null=True)
 
 	class Meta:
-		unique_together = (('date', 'millisec'),)
+		unique_together = (('date', 'microsecond'),)
 
 ## Wism model
 class WismEvent(models.Model):
@@ -92,7 +92,7 @@ class WismEvent(models.Model):
 	message = models.CharField(max_length=256)
 
 	class Meta:
-		unique_together = (('date', 'millisec', 'wismIp'),)
+		unique_together = (('date', 'microsecond', 'wismIp'),)
 
 
 ################## Auxiliary Models #######################
