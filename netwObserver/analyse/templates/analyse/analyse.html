@@ -84,9 +84,9 @@ path {
 
 	</script>
 	{%elif ms%}
-		{%for element in ms %}
+		{%for element, infos in ms.items %}
 			<h1>{{element}}</h1>
-			O {{ms.element}} O
+			O {{infos}} O
 		{%endfor%}
 	{%endif%}
 	</div>
