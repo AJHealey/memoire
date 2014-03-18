@@ -10,7 +10,7 @@ def analyse(request, cat='ms'):
 	if cat == 'ms':
 		context["ms"] = {'802.11 Statistics' : aggregator.getUserByDot11Protocol()}
 
-	elif cat = "wism":
+	elif cat == "wism":
 		context["wism"] = {}
 
 	return render(request, "analyse/analyse.html", context)
