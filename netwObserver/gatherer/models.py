@@ -23,7 +23,7 @@ class MobileStation(Device):
 	ssid = models.CharField(max_length=25, null=True)
 	dot11protocol = models.CharField(max_length=1, choices=DOT11_PROTOCOLS, null=True)
 	def __str__(self):
-		return self.macAddress
+		return str(self.macAddress) + ' on ' + str(self.ssid)
 
 
 ## Access Point Model
