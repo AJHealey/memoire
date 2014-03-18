@@ -50,6 +50,8 @@ class User(models.Model):
 ## Radius Model
 class RadiusEvent(models.Model):
 	date = models.DateTimeField()
+	microsecond = models.DecimalField(max_digits=6)
+
 	server = models.CharField(max_length=25)
 	radiusType = models.CharField(max_length=10) #TODO choice
 	
@@ -60,20 +62,27 @@ class RadiusEvent(models.Model):
 		return "" + self.radiusType + " : " +  str(self.login)
 
 	class Meta:
-		unique_together = (('date', 'server'),)
+		unique_together = (('date', 'millisec', 'server'),)
 
 ## DHCP model
 class DHCPEvent(models.Model):
-	date = models.DateTimeField(primary_key=True)
+	date = models.DateTimeField()
+	microsecond = models.DecimalField(max_digits=6)
+
 	server = models.CharField(max_length=5)
 	device = models.ForeignKey(MobileStation, null=True)
 	dhcpType = models.CharField(max_length=10)
 	ip = models.GenericIPAddressField(null=True)
 	message = models.CharField(max_length=256, null=True)
 
+	class Meta:
+		unique_together = (('date', 'millisec'),)
+
 ## Wism model
 class WismEvent(models.Model):
-	date = models.DateTimeField(primary_key=True)
+	date = models.DateTimeField()
+	microsecond = models.DecimalField(max_digits=6)
+	
 	wismIp = models.GenericIPAddressField()
 
 	category = models.CharField(max_length=10)
@@ -83,7 +92,7 @@ class WismEvent(models.Model):
 	message = models.CharField(max_length=256)
 
 	class Meta:
-		unique_together = (('date', 'wismIp'),)
+		unique_together = (('date', 'millisec', 'wismIp'),)
 
 
 ################## Auxiliary Models #######################

@@ -45,7 +45,7 @@ def wismParser(infos):
 		else :
 			mnemo = mnemo.replace('_',' ')
 			message = ' '.join(infos[9:]).strip()
-			return  WismEvent(date=date, wismIp=ipWism, category=category, severity=severity, mnemo=mnemo, message=message)
+			return  WismEvent(date=date, microsecond=date.microsecond, wismIp=ipWism, category=category, severity=severity, mnemo=mnemo, message=message)
 
 	# Uncommon Wism log types
 	elif logType == "-Traceback:" :
@@ -92,10 +92,10 @@ def radiusParser(infos):
 		message = infos[i][1:-1].lower()
 		if tmp.startswith("ok"):
 			user, created = User.objects.get_or_create(login=message)
-			return RadiusEvent(date=date, user=user, radiusType='OK')
+			return RadiusEvent(date=date, microsecond=date.microsecond, user=user, radiusType='OK')
 
 		elif tmp.startswith("incorrect"):
-			return RadiusEvent(date=date, message=message, radiusType='KO')
+			return RadiusEvent(date=date, microsecond=date.microsecond, message=message, radiusType='KO')
 
 		else:
 			raise Exception("DHCP unknown login operation")
@@ -114,23 +114,23 @@ def radiusParser(infos):
 		message = infos[i][1:-1].lower()
 		if tmp.startswith("ok"):
 			user, created = User.objects.get_or_create(login=message)
-			return RadiusEvent(date=date, user=user, radiusType='OK')
+			return RadiusEvent(date=date, microsecond=date.microsecond, user=user, radiusType='OK')
 
 		elif tmp.startswith("incorrect"):
-			return RadiusEvent(date=date, message=message, radiusType='KO')
+			return RadiusEvent(date=date, microsecond=date.microsecond, message=message, radiusType='KO')
 
 		else:
 			raise Exception("DHCP unknown login operation")
 
 
 	elif 'error' in infos[5].lower():
-		return RadiusEvent(date=date, message=(' '.join(infos[6:]).strip()), radiusType='error')
+		return RadiusEvent(date=date, microsecond=date.microsecond, message=(' '.join(infos[6:]).strip()), radiusType='error')
 
 	elif 'notice' in infos[5].lower():
-		return RadiusEvent(date=date, message=(' '.join(infos[6:]).strip()), radiusType='notice')
+		return RadiusEvent(date=date, microsecond=date.microsecond, message=(' '.join(infos[6:]).strip()), radiusType='notice')
 
 	elif 'info' in infos[5].lower():
-		return RadiusEvent(date=date, message=(' '.join(infos[6:]).strip()), radiusType='info')
+		return RadiusEvent(date=date, microsecond=date.microsecond, message=(' '.join(infos[6:]).strip()), radiusType='info')
 
 
 def dhcpParser(infos):
@@ -149,7 +149,7 @@ def dhcpParser(infos):
 	# Sys log message
 	if 'syslog' in infos[2]:
 		message = ' '.join(infos[4:])
-		return DHCPEvent(date=date, server=dhcpServer, dhcpType='Log', message=message)
+		return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, dhcpType='Log', message=message)
 
 	# DHCP events
 	elif 'dhcp' in infos[2]:
@@ -162,17 +162,17 @@ def dhcpParser(infos):
 				message = ' '.join(infos[8:])
 				if 'load balance' in message:
 					message = ''
-				return DHCPEvent(date=date, server=dhcpServer, device=device, dhcpType='Discover', message=message)
+				return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='Discover', message=message)
 			else:
 				via = infos[7]
-			return DHCPEvent(date=date, server=dhcpServer, device=device, dhcpType='Discover')
+			return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='Discover')
 
 		# Server respond
 		elif infos[3] == "DHCPOFFER":
 			ipOffered = infos[5]
 			device, created = MobileStation.objects.get_or_create(macAddress=infos[7])
 			via = infos[9]
-			return DHCPEvent(date=date, server=dhcpServer, device=device, dhcpType='Offer',  ip=ipOffered)
+			return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='Offer',  ip=ipOffered)
 
 		# Client choose ip
 		elif infos[3] == "DHCPREQUEST":
@@ -203,7 +203,7 @@ def dhcpParser(infos):
 				else:
 					via = infos[i]
 
-			return DHCPEvent(date=date, server=dhcpServer, device=device, dhcpType='Request', ip=ipRequested, message=message)
+			return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='Request', ip=ipRequested, message=message)
 
 
 		# Server acknoledge
@@ -230,14 +230,14 @@ def dhcpParser(infos):
 			if infos[i] == 'via':
 				i += 1
 				via = infos[i]
-			return DHCPEvent(date=date, server=dhcpServer, device=device, dhcpType='Ack',  ip=ipAcked)
+			return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='Ack',  ip=ipAcked)
 
 		# Ip needs to be renewed
 		elif infos[3] == "DHCPNAK":
 			ipNacked = infos[5]
 			device, created = MobileStation.objects.get_or_create(macAddress=infos[7])
 			via = infos[9]
-			return DHCPEvent(date=date, server=dhcpServer, device=device, dhcpType='Nak',  ip=ipNacked)
+			return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='Nak',  ip=ipNacked)
 
 		elif infos[3] == "DHCPINFORM":
 			return None
@@ -245,10 +245,10 @@ def dhcpParser(infos):
 		else :
 			tmp = ' '.join(infos[2:])
 			if 'ICMP Echo reply while lease' in tmp:
-				return DHCPEvent(date=date, server=dhcpServer, dhcpType='Warning', message='pinged', ip=infos[7])
+				return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, dhcpType='Warning', message='pinged', ip=infos[7])
 	
 			elif 'incoming update is less critical than outgoing update' in tmp:
-				return DHCPEvent(date=date, server=dhcpServer, dhcpType='Log', message='Incoming update is less critical than outgoing update', ip=infos[6])
+				return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, dhcpType='Log', message='Incoming update is less critical than outgoing update', ip=infos[6])
 			
 			else:
 				raise Exception('DHCP event: ' + infos[3] + ' unknown')	

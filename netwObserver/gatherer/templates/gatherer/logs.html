@@ -40,7 +40,7 @@
 				{% for event in dhcpEvent %}
 				<tr {% if event.dhcpType == 'Ack' %}class="success"{%elif event.dhcpType == 'Discover' and event.message %}class="warning" data-toggle="tooltip" data-placement="bottom" title="{{event.message}}"{%elif event.dhcpType == 'Log'%}class='info' data-toggle="tooltip" data-placement="bottom" title="{{event.message}}"{%endif%}>
 					<th>{%if event.dhcpType == 'Discover' and event.message %}<span class="glyphicon glyphicon-warning-sign"></span>{%endif%}</th>
-					<td>{{event.date|date:"D d M Y H:i:s:u"}}</td>
+					<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
 					<td>{{event.server}}</td>
 					<td>{{event.dhcpType}}</td>
 					<td>{{event.ip|default_if_none:"-"}}</td>
@@ -74,25 +74,25 @@
 					{%if event.radiusType == 'error' %}
 					<tr class='danger'>
 						<td><span class="glyphicon glyphicon-warning-sign"></span></td>
-						<td>{{event.date|date:"D d M Y H:i:s"}}</td>
+						<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
 						<td>{{event.message}}</td>
 					</tr>
 					{%elif event.radiusType == 'notice' %}
 					<tr class='info'>
 						<td><span class="glyphicon glyphicon-eye-open"></span></td>
-						<td>{{event.date|date:"D d M Y H:i:s"}}</td>
+						<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
 						<td>{{event.message}}</td>
 					</tr>
 					{%elif event.radiusType == 'info' %}
 					<tr>
 						<td><span class="glyphicon glyphicon-book"></span></td>
-						<td>{{event.date|date:"D d M Y H:i:s"}}</td>
+						<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
 						<td>{{event.message}}</td>
 					</tr>
 					{%else%}
 					<tr {% if event.radiusType == 'OK' %}class="success"{%elif event.radiusType == 'KO' %}class="warning"{%endif%}>
 						<td>{% if event.radiusType == 'OK' %}<span class="glyphicon glyphicon-ok"></span>{%elif event.radiusType == 'KO' %}<span class="glyphicon glyphicon-remove"></span>{%endif%}</td>
-						<td>{{event.date|date:"D d M Y H:i:s"}}</td>
+						<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
 						<td>{% if event.radiusType == 'OK' %}{{event.user.login}}{%elif event.radiusType == 'KO' %}{{event.message}}{%endif%}</td>
 					</tr>
 					{%endif%}
@@ -141,7 +141,7 @@
 					>
 						<td></span></td>
 					{%endif%}
-						<td>{{event.date|date:"D d M Y H:i:s:u"}}</td>
+						<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
 						<td>{{event.ip}}</td>
 						<td>{{event.category}}</td>
 						<td data-toggle="tooltip" data-placement="bottom" title="{{sevMeaning|get:event.severity}}">{{event.severity}}</td>
