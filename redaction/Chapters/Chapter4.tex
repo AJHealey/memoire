@@ -1,13 +1,43 @@
 % Chapter Template
 
-\chapter{Monitoring tool implementation} % Main chapter title
+\chapter{Monitoring Tool - Architecture} % Main chapter title
 
 \label{Chapter4} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
 
-\lhead{Chapter 4. \emph{Monitoring Tool Implementation}} % Change X to a consecutive number; this is for the header on each page - perhaps a shortened title
+\lhead{Chapter 4. \emph{Monitoring Tool - Part 1}}
 
-%----------------------------------------------------------------------------------------
-%	SECTION 1
-%----------------------------------------------------------------------------------------
+\section{Architecture}
+The system have two very distinct entities. The first part is the one responsible for gathering information. This component handles the responsibility to keep the operational database up to date and in a consistent state. The other side of the application is the one managing the analysis made with the information gathered.
 
-\section{Monitoring tool modeling}
+\subsection{Gatherer}
+This part of the application is constituted of several modules that allow it to communicate with the various sources of information. Each module is responsible of a distinct kind of information and each of them have to transform the piece of information in a coherent entry in the database. As the information come from heterogeneous origins, each information have to be understood and transform into an entity that can be related to others. Without such transformation, the possible analysis would be really limited and not really interesting.
+
+\subsubsection{Logs}
+The first kind of information we managed to analyse was the logs files. There is one file per infrastructure component:
+\begin{itemize}
+\item Radius
+\item DHCP
+\item Wism
+\end{itemize}
+These elements generate several log each seconds and the first difficulty was to make a first sorting. A part of them are just informational and don't bring useful information about the state of the network. Such information will never be used during the analysis and then they don't have to be store in the database. Another part of the log are repetition of others. In fact, as each element produces its logs independently, some logs can overlap and represent the same information. Redundant information are useless and the same information don't need to be in the database twice. This can seems to be a unimportant issue but in consideration of the quantity of information proceed by the application, an overloading of the database can cause severe performance issue during the analysis phase.
+
+\subsubsection{SNMP}
+The SNMP protocol allows us to retrieve information on the controller in real-time. The module handling the SNMP request can update the information about the situation of each access point or any client. This bring a lot of interesting data regarding the users of the network but the main drawback is that the request are heavy. We can't make them at any time because it requires resources from the controller. In consequence, we have to find the right balance between keeping the database update and not overloading the controller with SNMP request.
+The main information extracted are the status of every access points (AP). We can see what access point are actually associated with the controller. A lot of statistics (e.g the load of the AP) are available.
+The same holds for the client associated to an access point. Each mobile station is indexed by the controller and statistics about it are hold.
+
+\subsubsection{Active Monitoring}
+[OpenWRT]
+
+\subsubsection{Database}
+The database have to be capable of representing each kind of information and manage the links between them. It isn't hard to create entries for a log but the difficulties appear when we make link with other entities and have to keep them in a coherent state. Several questions raised when we try to designed our database. For example, if a client is no more associated with an access point, do we have to remove it from the database? Such questions can seem futile but have deep implication on the database.
+
+\subsection{Analyser}
+As the gatherer only put available information together, it doesn't bring anything new. In the other side, the analyse component will use the data and the links between them to extract useful information about the network. For example, the SNMP shows the people associated with an access point but only an analysis through time will allow us to detect and even forecast overload in the network. This component will manage the analyse on the database and storing the result over the time.
+
+\subsubsection{Utilization Statistics}
+
+
+
+\subsubsection{Event Statistics}
+

@@ -88,3 +88,8 @@ MEDIA_ROOT = './media/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
+
+## User Settings
+SNMPAPLAP = 59
+SNMPMSLAP = 30
+

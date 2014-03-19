@@ -69,6 +69,8 @@ def getMobileStationSSID(ip, port=161, community='snmpstudentINGI'):
     return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.7', port=port, community=community)
 
 def getAllAP():
+    ''' Cross reference all the information on the Access Point and update the database '''
+
     result = {}
     try:
         # Get All Access Points (Mac Address)
@@ -96,7 +98,9 @@ def getAllAP():
             ap.lastTouched = timezone.now()
             ap.save()
 
+
 def getAllMS():
+    ''' Cross reference all the information on the Mobile Station and update the database '''
     result = {}
     try:
         # Get All Access Points (Mac Address)
@@ -137,29 +141,36 @@ def getAllMS():
             ms.save()
 
 
-def snmpAPDaemon():
+def snmpAPDaemon(laps=3600):
+    ''' Background task gathering information on Access Point '''
+    task, _ = CurrentTask.objects.get_or_create(owner="apdaemon")
     while True:
         try:
             getAllAP()
-            time.sleep(60*60)
+            task.touch()
+            time.sleep(laps)
         except:
-            time.sleep(24*60*60)
+            time.sleep(10*laps)
 
 
-def snmpMSDaemon():
+def snmpMSDaemon(laps=3600):
+    ''' Background task gathering information on Mobile Station '''
+    task, _ = CurrentTask.objects.get_or_create(owner="msdaemon")
     time.sleep(30)
     while True:
         try:
             getAllMS()
-            time.sleep(66*60)
+            task.touch()
+            time.sleep(laps)
         except:
-            time.sleep(24*60*60)
+            time.sleep(10*laps)
 
 
 
 
 ###### Auxiliary Methods #######
 def parseMacAdresse(macString):
+    ''' Parse a mac address in hexadecimal into canonical form '''
     result = macString
 
     if result.startswith('0x'):
@@ -178,26 +189,4 @@ if __name__ == '__main__':
     import sys
     for ap in getAllAP():
         print(str(ap))
-    '''
-    result = []
-    if len(sys.argv) > 1:
-        if sys.argv[1] == 'apname':
-            result = getApNames
-        elif sys.argv[1] == 'apmac':
-            result = getApMacAddresses
-        elif sys.argv[1] == 'apip':
-            result = getApIPs
-        elif sys.argv[1] == 'msmac':
-            result = getMobileStationMacAddresses
-        elif sys.argv[1] == 'macip':
-            result = getMobileStationIPs 
-        elif sys.argv[1] == 'macprot':
-            result = getMobileStationProtocol
-    
-    print("[*] Results:")
-    for k in sorted(r):
-        print("\t" + k + ' : ' + r[k])
-    print("-" * 50)
-    print(str(len(r)) + " results")
-    '''
        
