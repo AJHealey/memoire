@@ -1,9 +1,11 @@
 import time
+from datetime import timedelta
 
 from django.utils import timezone
+from django.conf import settings
 
 from pysnmp.entity.rfc3413.oneliner import cmdgen
-from gatherer.models import AccessPoint, MobileStation, OperationalError
+from gatherer.models import AccessPoint, MobileStation, OperationalError, CurrentTask
 
 wism = ['192.168.251.170']
 protocolsCode = {'dot11a' : 'a', 'dot11b' : 'b', 'dot11g' : 'g', 'unknown' : 'u', 'mobile' : 'm', 'dot11n24' : 'n2', 'dot11n5' : 'n5'}
@@ -34,7 +36,7 @@ def walker(ip, oib, port=161, community='snmpstudentINGI'):
             return result
 
 
-## Access Points
+## Access Points Requests
 def getApNames(ip, port=161, community='snmpstudentINGI'):
     """ Name of each Access Point """
     return walker(ip,'1.3.6.1.4.1.14179.2.2.1.1.3', port=port, community=community)
@@ -51,7 +53,7 @@ def getApLocation(ip, port=161, community='snmpstudentINGI'):
     """ Location of the access point (if configured) """
     return walker(ip,'1.3.6.1.4.1.14179.2.2.1.1.4', port=port, community=community)
 
-## Mobile Stations
+## Mobile Stations Requests
 def getMobileStationMacAddresses(ip, port=161, community='snmpstudentINGI'):
     """ Mac Address of each station connected to an AP """
     return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.1', port=port, community=community)
@@ -67,6 +69,11 @@ def getMobileStationProtocol(ip, port=161, community='snmpstudentINGI'):
 def getMobileStationSSID(ip, port=161, community='snmpstudentINGI'):
     """ SSID advertised by the mobile station """
     return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.7', port=port, community=community)
+
+def getMobileStationAPMacAddress(ip, port=161, community='snmpstudentINGI'):
+    """ SSID advertised by the mobile station """
+    return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.4', port=port, community=community)
+
 
 def getAllAP():
     ''' Cross reference all the information on the Access Point and update the database '''
@@ -95,7 +102,7 @@ def getAllAP():
 
     finally:
         for ap in result.values():
-            ap.lastTouched = timezone.now()
+            ap.touch()
             ap.save()
 
 
@@ -119,7 +126,6 @@ def getAllMS():
                 else:
                     result[index].ssid = ssid
 
-
         # Add IP
         tmp = getMobileStationIPs(ip=wism[0])
         for index, ip in tmp.items():
@@ -132,38 +138,48 @@ def getAllMS():
             if index in result:
                 result[index].dot11protocol = proto
 
+        # Link to AP
+        tmp = getMobileStationAPMacAddress(ip=wism[0])
+        for index, apMac in tmp.items():
+            if index in result:
+                result[index].ap = AccessPoint.objects.get_or_create(macAddress=parseMacAdresse(apMac))
+
     except Exception as e:
         OperationalError(date=timezone.now(), source='snmpMSDaemon', error=str(e)).save()
 
     finally:
         for ms in result.values():
-            ms.lastTouched = timezone.now()
+            ms.touch()
             ms.save()
 
 
-def snmpAPDaemon(laps=3600):
+def snmpAPDaemon(laps=timedelta(hours=1)):
     ''' Background task gathering information on Access Point '''
-    task, _ = CurrentTask.objects.get_or_create(owner="apdaemon")
+    task, _ = CurrentTask.objects.get_or_create(name="apdaemon")
     while True:
         try:
             getAllAP()
             task.touch()
-            time.sleep(laps)
+            time.sleep(laps.total_seconds())
         except:
-            time.sleep(10*laps)
+            time.sleep(10*laps.total_seconds())
 
 
-def snmpMSDaemon(laps=3600):
-    ''' Background task gathering information on Mobile Station '''
-    task, _ = CurrentTask.objects.get_or_create(owner="msdaemon")
+def snmpMSDaemon(laps=timedelta(minutes=30)):
+    ''' Background task gathering information on Mobile Station 
+
+        Argument:
+        laps -- duration between update. Instance of timedelta
+    '''
+    task, _ = CurrentTask.objects.get_or_create(name="msdaemon")
     time.sleep(30)
     while True:
         try:
             getAllMS()
             task.touch()
-            time.sleep(laps)
+            time.sleep(laps.total_seconds())
         except:
-            time.sleep(10*laps)
+            time.sleep(10*laps.total_seconds())
 
 
 

@@ -11,7 +11,7 @@ class Device(models.Model):
 	# If primary key => not inherited
 	macAddress = macField.MACAddressField(unique=True)
 	ip = models.GenericIPAddressField(null=True)
-	lastTouched = models.DateTimeField(null=True)
+	lastTouched = models.DateTimeField(null=True, default=lambda:(timezone.now()) )
 
 	def touch(self):
 		lastTouched = timezone.now()
@@ -21,35 +21,35 @@ class Device(models.Model):
 		ordering = ["macAddress"]
 
 
-## Mobile stations Model
-class MobileStation(Device):
-	DOT11_PROTOCOLS = (('1',"802.11a"),('2',"802.11b"),('3',"802.11g"),('6',"802.11n (2.4Ghz)"),('7',"802.11n (5Ghz)"),('4',"Unknown"),('5',"Mobile"))
-
-	ssid = models.CharField(max_length=25, null=True)
-	dot11protocol = models.CharField(max_length=1, choices=DOT11_PROTOCOLS, null=True)
-	
-	def __str__(self):
-		return str(self.macAddress) + ' on ' + str(self.ssid)
-
-	def isAssociated(self):
-		try:
-			return (timezone.now() - self.lastTouched) < timedelta(second=settings.SNMPMSLAP)
-		except:
-			return (timezone.now() - self.lastTouched) < timedelta(minute=30)
-
-
 ## Access Point Model
+class APManage(models.Manager):
+	def isUp(self):
+		return super(APManage, self).filter(lastTouched__gte=(timezone.now() - settings.SNMPMSLAP))
+
 class AccessPoint(Device):
 	name = models.CharField(max_length=50, null=True)
 	location = models.CharField(max_length=50, null=True)
+	
+	objects = APManage()
 	def __str__(self):
 		return str(self.name) + " : " + str(self.macAddress) + ' (' + str(self.ip) + ')'
+
+
+## Mobile stations Model
+class MSManage(models.Manager):
+	def isAssociated(self):
+			return super(MSManage, self).filter(lastTouched__gte=(timezone.now() - settings.SNMPMSLAP))
+
+class MobileStation(Device):
+	DOT11_PROTOCOLS = (('1',"802.11a"),('2',"802.11b"),('3',"802.11g"),('6',"802.11n (2.4Ghz)"),('7',"802.11n (5Ghz)"),('4',"Unknown"),('5',"Mobile"))
+
+	ap = models.ForeignKey(AccessPoint, related_name='associated', null=True)
+	ssid = models.CharField(max_length=25, null=True)
+	dot11protocol = models.CharField(max_length=1, choices=DOT11_PROTOCOLS, null=True)
 	
-	def isUp(self):
-		try:
-			return (timezone.now() - self.lastTouched) < timedelta(second=settings.SNMPAPLAP)
-		except:
-			return (timezone.now() - self.lastTouched) < timedelta(second=3600)
+	objects = MSManage()
+	def __str__(self):
+		return str(self.macAddress) + ' on ' + str(self.ssid)
 
 
 ## User
@@ -61,7 +61,6 @@ class User(models.Model):
 
 	class Meta:
 		ordering = ["login"]
-
 
 
 # Log models
@@ -124,9 +123,9 @@ class BadLog(models.Model):
 
 ## Tasks model
 class CurrentTask(models.Model):
-	lastTouched = models.DateTimeField()
+	lastTouched = models.DateTimeField(default=timezone.now())
 	name = models.CharField(max_length=25, primary_key=True)
-	progress = models.CharField(max_length=4)
+	status = models.CharField(max_length=10)
  	
 	def touch(self):
 		lastTouched = timezone.now()
@@ -135,7 +134,7 @@ class CurrentTask(models.Model):
 		return (timezone.now() - self.lastTouched) < timedelta(minutes=10)
 
 	def __str__(self):
-		return self.name + " by " + self.owner + ": " + ( "active" if self.stillActive() else "inactive")
+		return self.name + ": " + ( "active" if self.stillActive() else "inactive") + ' - ' + self.status
 
 ## Operational Errors Model
 class OperationalError(models.Model):

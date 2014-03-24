@@ -91,7 +91,7 @@ def snmp(request, cat='ap', page=1, perpage=100):
 	context['app'] = 'gatherer'
 	context['cat'] = cat
 	if cat == 'ap':
-		tmpQuery = AccessPoint.objects.order_by('name')
+		tmpQuery = AccessPoint.objects.isUp().order_by('name')
 		p = Paginator(tmpQuery,perpage)
 		try:
 			context['ap'] = p.page(page)
@@ -101,7 +101,7 @@ def snmp(request, cat='ap', page=1, perpage=100):
 			context['ap'] = p.page(p.num_pages)
 
 	elif cat == 'ms':
-		tmpQuery = MobileStation.objects.order_by('macAddress')
+		tmpQuery = MobileStation.objects.isAssociated().order_by('macAddress')
 		p = Paginator(tmpQuery,perpage)
 		try:
 			context['ms'] = p.page(page)
