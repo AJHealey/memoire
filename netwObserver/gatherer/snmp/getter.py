@@ -146,7 +146,7 @@ def getAllMS():
         tmp = getMobileStationAPMacAddress(ip=wism[0])
         for index, apMac in tmp.items():
             if index in result:
-                result[index].ap = AccessPoint.objects.get_or_create(macAddress=parseMacAdresse(apMac))
+                result[index].ap, creted = AccessPoint.objects.get_or_create(macAddress=parseMacAdresse(apMac))
 
     except Exception as e:
         OperationalError(date=timezone.now(), source='snmpMSDaemon', error=str(e)).save()
