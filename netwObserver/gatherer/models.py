@@ -14,7 +14,7 @@ class Device(models.Model):
 	lastTouched = models.DateTimeField(null=True, default=lambda:(timezone.now()) )
 
 	def touch(self):
-		lastTouched = timezone.now()
+		lastTouched = timezone.now(USE_TZ=True)
 
 	class Meta:
 		abstract = True
@@ -24,7 +24,7 @@ class Device(models.Model):
 ## Access Point Model
 class APManage(models.Manager):
 	def isUp(self):
-		return super(APManage, self).filter(lastTouched__gte=(timezone.now() - settings.SNMPAPLAP))
+		return super(APManage, self).filter(lastTouched__gte=(timezone.now(USE_TZ=True) - settings.SNMPAPLAP))
 
 class AccessPoint(Device):
 	name = models.CharField(max_length=50, null=True)
@@ -38,7 +38,7 @@ class AccessPoint(Device):
 ## Mobile stations Model
 class MSManage(models.Manager):
 	def isAssociated(self):
-			return super(MSManage, self).filter(lastTouched__gte=(timezone.now() - settings.SNMPMSLAP))
+			return super(MSManage, self).filter(lastTouched__gte=(timezone.now(USE_TZ=True) - settings.SNMPMSLAP))
 
 class MobileStation(Device):
 	DOT11_PROTOCOLS = (('1',"802.11a"),('2',"802.11b"),('3',"802.11g"),('6',"802.11n (2.4Ghz)"),('7',"802.11n (5Ghz)"),('4',"Unknown"),('5',"Mobile"))
@@ -131,7 +131,7 @@ class CurrentTask(models.Model):
 		lastTouched = timezone.now()
 
 	def stillActive(self):
-		return (timezone.now() - self.lastTouched) < timedelta(minutes=10)
+		return (timezone.now(USE_TZ=True) - self.lastTouched) < timedelta(minutes=10)
 
 	def __str__(self):
 		return self.name + ": " + ( "active" if self.stillActive() else "inactive") + ' - ' + self.status

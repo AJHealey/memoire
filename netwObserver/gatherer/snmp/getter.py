@@ -84,8 +84,7 @@ def getAllAP():
         tmp = getApMacAddresses(ip=wism[0])
         for index, mac in tmp.items():
             result[index], created = AccessPoint.objects.get_or_create(macAddress=parseMacAdresse(mac))
-            if not created:
-                result[index].touch()
+
         
         # Add names    
         tmp = getApNames(ip=wism[0])
@@ -118,8 +117,7 @@ def getAllMS():
             mac = parseMacAdresse(mac)
             if not mac == '':
                 result[index], created = MobileStation.objects.get_or_create(macAddress=mac)
-                if not created:
-                    result[index].touch()
+
        
         # Add names    
         tmp = getMobileStationSSID(ip=wism[0])
