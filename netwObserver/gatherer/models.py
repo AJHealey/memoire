@@ -11,10 +11,10 @@ class Device(models.Model):
 	# If primary key => not inherited
 	macAddress = macField.MACAddressField(unique=True)
 	ip = models.GenericIPAddressField(null=True)
-	lastTouched = models.DateTimeField(null=True, default=lambda:(timezone.now()) )
+	lastTouched = models.DateTimeField(null=True, default=lambda:(timezone.localtime(timezone.now())) )
 
 	def touch(self):
-		lastTouched = timezone.now(USE_TZ=True)
+		lastTouched = timezone.localtime(timezone.now())
 
 	class Meta:
 		abstract = True
@@ -24,7 +24,7 @@ class Device(models.Model):
 ## Access Point Model
 class APManage(models.Manager):
 	def isUp(self):
-		return super(APManage, self).filter(lastTouched__gte=(timezone.now(USE_TZ=True) - settings.SNMPAPLAP))
+		return super(APManage, self).filter(lastTouched__gte=(timezone.localtime(timezone.now()) - settings.SNMPAPLAP))
 
 class AccessPoint(Device):
 	name = models.CharField(max_length=50, null=True)
@@ -38,7 +38,7 @@ class AccessPoint(Device):
 ## Mobile stations Model
 class MSManage(models.Manager):
 	def isAssociated(self):
-			return super(MSManage, self).filter(lastTouched__gte=(timezone.now(USE_TZ=True) - settings.SNMPMSLAP))
+			return super(MSManage, self).filter(lastTouched__gte=(timezone.localtime(timezone.now()) - settings.SNMPMSLAP))
 
 class MobileStation(Device):
 	DOT11_PROTOCOLS = (('1',"802.11a"),('2',"802.11b"),('3',"802.11g"),('6',"802.11n (2.4Ghz)"),('7',"802.11n (5Ghz)"),('4',"Unknown"),('5',"Mobile"))
@@ -123,15 +123,15 @@ class BadLog(models.Model):
 
 ## Tasks model
 class CurrentTask(models.Model):
-	lastTouched = models.DateTimeField(default=timezone.now())
+	lastTouched = models.DateTimeField(default=timezone.localtime(timezone.now()))
 	name = models.CharField(max_length=25, primary_key=True)
 	status = models.CharField(max_length=10)
  	
 	def touch(self):
-		lastTouched = timezone.now()
+		lastTouched = timezone.localtime(timezone.now())
 
 	def stillActive(self):
-		return (timezone.now(USE_TZ=True) - self.lastTouched) < timedelta(minutes=10)
+		return (timezone.localtime(timezone.now()) - self.lastTouched) < timedelta(minutes=10)
 
 	def __str__(self):
 		return self.name + ": " + ( "active" if self.stillActive() else "inactive") + ' - ' + self.status
