@@ -24,7 +24,7 @@ class Device(models.Model):
 ## Access Point Model
 class APManage(models.Manager):
 	def isUp(self):
-		return super(APManage, self).filter(lastTouched__gte=(timezone.now() - settings.SNMPMSLAP))
+		return super(APManage, self).filter(lastTouched__gte=(timezone.now() - settings.SNMPAPLAP))
 
 class AccessPoint(Device):
 	name = models.CharField(max_length=50, null=True)
