@@ -99,7 +99,7 @@ def getAllAP():
                 result[index].ip = ip
 
     except Exception as e:
-        OperationalError(date=timezone.now(), source='snmpAPDaemon', error=str(e)).save()
+        OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon', error=str(e)).save()
 
     finally:
         for ap in result.values():
@@ -150,7 +150,7 @@ def getAllMS():
 
 
     except Exception as e:
-        OperationalError(date=timezone.now(), source='snmpMSDaemon', error=str(e)).save()
+        OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon', error=str(e)).save()
 
     finally:
         for ms in result.values():
@@ -161,6 +161,7 @@ def getAllMS():
 def snmpAPDaemon(laps=timedelta(hours=1)):
     ''' Background task gathering information on Access Point '''
     task, _ = CurrentTask.objects.get_or_create(name="apdaemon")
+    task.touch()
     while True:
         try:
             getAllAP()
@@ -177,6 +178,7 @@ def snmpMSDaemon(laps=timedelta(minutes=30)):
         laps -- duration between update. Instance of timedelta
     '''
     task, _ = CurrentTask.objects.get_or_create(name="msdaemon")
+    task.touch()
     time.sleep(30)
     while True:
         try:
@@ -200,7 +202,7 @@ def parseMacAdresse(macString):
     if len(result) == 12:
         return result[0:2] + ":" + result[2:4] + ":" + result[4:6] + ":" + result[6:8] + ":" + result[8:10] + ":" +result[10:]
     else:
-        OperationalError(date=timezone.now(), source='snmp macAddress parsing', error=macString).save()
+        OperationalError(date=timezone.localtime(timezone.now()), source='snmp macAddress parsing', error=macString).save()
         return ''
 
 
