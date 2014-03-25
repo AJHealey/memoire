@@ -14,7 +14,7 @@ class Device(models.Model):
 	lastTouched = models.DateTimeField(null=True, default=lambda:(timezone.localtime(timezone.now())) )
 
 	def touch(self):
-		lastTouched = timezone.localtime(timezone.now())
+		self.lastTouched = timezone.localtime(timezone.now())
 
 	class Meta:
 		abstract = True
@@ -128,7 +128,7 @@ class CurrentTask(models.Model):
 	status = models.CharField(max_length=10)
  	
 	def touch(self):
-		lastTouched = timezone.localtime(timezone.now())
+		self.lastTouched = timezone.localtime(timezone.now())
 
 	def stillActive(self):
 		return (timezone.localtime(timezone.now()) - self.lastTouched) < timedelta(minutes=10)
