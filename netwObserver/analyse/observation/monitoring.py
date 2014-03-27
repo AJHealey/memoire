@@ -48,27 +48,32 @@ def customEXP(laps=timedelta(minutes=5)):
 		try:
 			for i,ap in foundAP:
 				try:
-					values[(i*5)+0]=getAPIfLoadRxUtilization(ip='192.168.251.170', ap=ap.index).values()[0]
+					for k,v in getAPIfLoadRxUtilization(ip='192.168.251.170', ap=ap.index).items():
+						values[(i*5)+0] = v
 				except Exception as e:
 					OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=('getAPIfLoadRxUtilization failed on ' + ap.macAddress + ': ' + str(e))).save()
 
 				try:
-					values[(i*5)+1]=getAPIfLoadTxUtilization(ip='192.168.251.170', ap=ap.index).values()[0]
+					for k,v in getAPIfLoadTxUtilization(ip='192.168.251.170', ap=ap.index):
+						values[(i*5)+1] = v
 				except Exception as e:
 					OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=('getAPIfLoadTxUtilization failed on ' + ap.macAddress + ': ' + str(e))).save()
 			
 				try:
-					values[(i*5)+2]=getAPIfLoadChannelUtilization(ip='192.168.251.170', ap=ap.index).values()[0]
+					for k,v in getAPIfLoadChannelUtilization(ip='192.168.251.170', ap=ap.index):
+						values[(i*5)+2] = v
 				except Exception as e:
 					OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=('getAPIfLoadChannelUtilization failed on ' + ap.macAddress + ': ' + str(e))).save()
 				
 				try:
-					values[(i*5)+3]=getAPIfLoadNumOfClients(ip='192.168.251.170', ap=ap.index).values()[0]
+					for k,v in getAPIfLoadNumOfClients(ip='192.168.251.170', ap=ap.index):
+						values[(i*5)+3] = v
 				except Exception as e:
 					OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=('getAPIfLoadNumOfClients failed on ' + ap.macAddress+ ': ' + str(e))).save()
 			
 				try:
-					values[(i*5)+4]=getAPIfPoorSNRClients(ip='192.168.251.170', ap=ap.index).values()[0]
+					for k,v in getAPIfPoorSNRClients(ip='192.168.251.170', ap=ap.index):
+						values[(i*5)+4] = v
 				except Exception as e:
 					OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=('getAPIfPoorSNRClients failed on ' + ap.macAddress + ': ' + str(e))).save()
 			
