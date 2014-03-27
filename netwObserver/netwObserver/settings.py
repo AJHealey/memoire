@@ -90,6 +90,7 @@ STATICFILES_DIRS = (
 )
 
 ## User Settings
-SNMPAPLAP = 59
-SNMPMSLAP = 30
+from datetime import timedelta
+SNMPAPLAP = timedelta(hours=1)
+SNMPMSLAP = timedelta(minutes=30)
 

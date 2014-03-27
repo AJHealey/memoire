@@ -14,8 +14,9 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "netwObserver.settings")
 ### Start-up code (technique inspired by "http://eldarion.com/blog/2013/02/14/entry-point-hook-django-projects/") ###
 from threading import Thread
 from gatherer.snmp.getter import snmpAPDaemon, snmpMSDaemon
-Thread(target=snmpAPDaemon).start()
-Thread(target=snmpMSDaemon).start()
+from django.conf import settings
+Thread(target=snmpAPDaemon, kwargs={'laps':settings.SNMPAPLAP}).start()
+Thread(target=snmpMSDaemon, kwargs={'laps':settings.SNMPMSLAP}).start()
 
 
 
