@@ -212,6 +212,7 @@ def getAllMS():
             if index in result:
                 result[index].dot11protocol = proto
 
+        '''
         # Link to AP
         tmp = getMobileStationAPMacAddress(ip=wism[0])
         for index, apMac in tmp.items():
@@ -219,7 +220,7 @@ def getAllMS():
                 apMac = parseMacAdresse(apMac)
                 if not apMac == '': 
                     result[index].ap, created = AccessPoint.objects.get_or_create(macAddress=apMac)
-
+                    '''
 
     except Exception as e:
         OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon', error=str(e)).save()
