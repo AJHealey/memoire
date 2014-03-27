@@ -27,15 +27,15 @@ def customEXP(laps=timedelta(minutes=5)):
 
     # Main loop gathering the information
     while True:
-    	values = [0,0,0,0,0]*len(observedAP)
+		values = [0,0,0,0,0]*len(observedAP)
 
 		foundAP = []
-    	for i,mac in enumerate(MACAdresses):
+		for i,mac in enumerate(MACAdresses):
 			try:
-	            ap = AccessPoint.objects.get(macAddress=mac)
-	            foundAP.append((i,ap))
-	        except:
-	            OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error='Not found AP: ' + mac).save()
+				ap = AccessPoint.objects.get(macAddress=mac)
+				foundAP.append((i,ap))
+			except:
+				OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error='Not found AP: ' + mac).save()
 
 
         try:
@@ -65,7 +65,7 @@ def customEXP(laps=timedelta(minutes=5)):
                 except Exception as e:
                     OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=('getAPIfPoorSNRClients failed on ' + ap + ': ' + str(e))).save()
             
-       		values = [None] + values
+			values = [None] + values
             rrd.update(tuple(values))            
             time.sleep(laps.total_seconds())
 
