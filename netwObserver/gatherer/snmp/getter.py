@@ -103,7 +103,7 @@ def getAPIfLoadNumOfClients(ip, port=161, community='snmpstudentINGI', ap=''):
         if index[:-2] not in result:
             result[index[:-2]] = 0
 
-        result[index[:-2]] += noUsers
+        result[index[:-2]] += int(noUsers)
 
     return result
 
@@ -117,7 +117,7 @@ def getAPIfPoorSNRClients(ip, port=161, community='snmpstudentINGI', ap=''):
         if index[:-2] not in result:
             result[index[:-2]] = 0
 
-        result[index[:-2]] += noUsers
+        result[index[:-2]] += int(noUsers)
 
     return result
 

@@ -3,6 +3,7 @@ from gatherer.snmp.getter import getAPIfLoadRxUtilization, getAPIfLoadTxUtilizat
 import RRDtool
 from datetime import timedelta
 from django.utils import timezone
+import time
 
 
 def customEXP(laps=timedelta(minutes=5)):
@@ -72,7 +73,7 @@ def customEXP(laps=timedelta(minutes=5)):
 					OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=('getAPIfPoorSNRClients failed on ' + ap.macAddress + ': ' + str(e))).save()
 			
 			values = [None] + values
-			rrd.update(tuple(values))            
+			rrd.update([tuple(values)])            
 			time.sleep(laps.total_seconds())
 
 		except Exception as e:
