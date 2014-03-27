@@ -1,5 +1,5 @@
 from gatherer.models import AccessPoint, OperationalError
-from gatherer.snmp import getAPIfLoadRxUtilization, getAPIfLoadTxUtilization, getAPIfLoadChannelUtilization, getAPIfLoadNumOfClients, getAPIfPoorSNRClients
+from gatherer.snmp.getter import getAPIfLoadRxUtilization, getAPIfLoadTxUtilization, getAPIfLoadChannelUtilization, getAPIfLoadNumOfClients, getAPIfPoorSNRClients
 import rrdtool
 from datetime import timedelta
 
