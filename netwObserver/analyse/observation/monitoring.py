@@ -1,6 +1,6 @@
 from gatherer.models import AccessPoint, OperationalError
 from gatherer.snmp.getter import getAPIfLoadRxUtilization, getAPIfLoadTxUtilization, getAPIfLoadChannelUtilization, getAPIfLoadNumOfClients, getAPIfPoorSNRClients
-import rrdtool
+import RRDtool
 from datetime import timedelta
 
 
@@ -15,7 +15,7 @@ def customEXP(laps=timedelta(minutes=5)):
 
 	# Generate the Data Source for RRDtool
 	dsList = []
-	for i in range(len(observedAP)):
+	for i in range(len(MACAdresses)):
 		# No of user per AP
 		dsList.append('DS:rxUtilizationAP'+ str(i) +':GAUGE:600:0:100')
 		dsList.append('DS:txUtilizationAP'+ str(i) +':GAUGE:600:0:100')
@@ -27,7 +27,7 @@ def customEXP(laps=timedelta(minutes=5)):
 
 	# Main loop gathering the information
 	while True:
-		values = [0,0,0,0,0]*len(observedAP)
+		values = [0,0,0,0,0]*len(MACAdresses)
 
 		foundAP = []
 		for i,mac in enumerate(MACAdresses):
