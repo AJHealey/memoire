@@ -12,7 +12,7 @@ def customEXP(laps=timedelta(minutes=5)):
 	'''
 	
 	# Get the AP entities
-	MACAdresses = ['88:75:56:c6:00:00']
+	MACAdresses = ['b8:38:61:43:91:50']
 
 	# Generate the Data Source for RRDtool
 	dsList = []
@@ -20,9 +20,9 @@ def customEXP(laps=timedelta(minutes=5)):
 		# No of user per AP
 		dsList.append('DS:rxUtilizationAP'+ str(i) +':GAUGE:600:0:100')
 		dsList.append('DS:txUtilizationAP'+ str(i) +':GAUGE:600:0:100')
-		dsList.append('DS:channelUtilizationAP'+ str(i) +':GAUGE:600:0:100')
-		dsList.append('DS:noOfClientsAP'+ str(i) +':GAUGE:600:0:U')
-		dsList.append('DS:noOfPoorSNRClientsAP'+ str(i) +':GAUGE:600:0:U')
+		dsList.append('DS:channelAP'+ str(i) +':GAUGE:600:0:100')
+		dsList.append('DS:noOfClients'+ str(i) +':GAUGE:600:0:U')
+		dsList.append('DS:noOfPoorSNR'+ str(i) +':GAUGE:600:0:U')
 
 	try:
 		rrd = RRDtool.create('experiment2803.rrd', '--no-overwrite' ,'--start', 'now', '--step', '300', 'RRA:AVERAGE:0.5:1:15000', dsList)
