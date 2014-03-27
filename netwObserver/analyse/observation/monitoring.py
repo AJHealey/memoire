@@ -2,6 +2,7 @@ from gatherer.models import AccessPoint, OperationalError
 from gatherer.snmp.getter import getAPIfLoadRxUtilization, getAPIfLoadTxUtilization, getAPIfLoadChannelUtilization, getAPIfLoadNumOfClients, getAPIfPoorSNRClients
 import RRDtool
 from datetime import timedelta
+from django.utils import timezone
 
 
 def customEXP(laps=timedelta(minutes=5)):
