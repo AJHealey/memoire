@@ -24,7 +24,7 @@ def customEXP(laps=timedelta(minutes=5)):
 		dsList.append('DS:noOfPoorSNRClientsAP'+ str(i) +':GAUGE:600:0:U')
 
 	try:
-		rrd = RRDtool.create('experiment28-03.rrd', '--no-overwrite' ,'--start', 'now', '--step', '300', 'RRA:AVERAGE:0.5:1:15000', dsList)
+		rrd = RRDtool.create('experiment2803.rrd', '--no-overwrite' ,'--start', 'now', '--step', '300', 'RRA:AVERAGE:0.5:1:15000', dsList)
 	except Exception as e:
 		OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=str(e)).save()
 			
