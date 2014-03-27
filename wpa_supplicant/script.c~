@@ -287,13 +287,13 @@ static void loop() {
 	execute(ACTION_OPEN_CONNECTION);
 	execute(ACTION_CREATE_NETWORKS);
 	for(i = 0; i < 2; i++) {
-		sleep(3);
+		sleep(10);
 		execute(ACTION_DISCONNECT);
 		execute(ACTION_CONNECT_EDUROAM);
-		sleep(3);
+		sleep(10);
 		execute(ACTION_DISCONNECT);
 		execute(ACTION_CONNECT_UCLOUVAIN);
-		sleep(3);
+		sleep(10);
 		execute(ACTION_DISCONNECT);
 		execute(ACTION_CONNECT_STUDENT);
 	}
