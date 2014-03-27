@@ -56,7 +56,7 @@ def customEXP(laps=timedelta(minutes=5)):
 
 				try:
 					tmp = getAPIfLoadTxUtilization(ip='192.168.251.170', ap=ap.index)
-					for k in :
+					for k in tmp:
 						values[(i*5)+1] = tmp[k]
 				except Exception as e:
 					OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=('getAPIfLoadTxUtilization failed on ' + ap.macAddress + ': ' + str(e))).save()
