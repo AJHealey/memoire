@@ -13,7 +13,7 @@ def customEXP(laps=timedelta(minutes=5)):
 	'''
 	
 	# Get the AP entities
-	MACAdresses = ['b8:38:61:43:91:50']
+	MACAdresses = ['b8:38:61:43:91:50', 'b8:38:61:3c:25:80', 'b8:38:61:43:8f:b0']
 
 	# Generate the Data Source for RRDtool
 	dsList = []
