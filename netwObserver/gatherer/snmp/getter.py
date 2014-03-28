@@ -60,6 +60,8 @@ def getAPIfLoadRxUtilization(ip, port=161, community='snmpstudentINGI', ap=''):
         receiver is busy operating on packets. It is a number 
         from 0-100 representing a load from 0 to 1.) 
     """
+    return walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.1' + ap, port=port, community=community)
+    '''
     result = {}
     for index, rx in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.1' + ap, port=port, community=community).items():
         if index[:-2] not in result:
@@ -67,7 +69,7 @@ def getAPIfLoadRxUtilization(ip, port=161, community='snmpstudentINGI', ap=''):
 
         result[index[:-2]] += (float(rx)/2)
 
-    return result
+    return result'''
 
 def getAPIfLoadTxUtilization(ip, port=161, community='snmpstudentINGI', ap=''):
     """ This is the percentage of time the Airespace AP
