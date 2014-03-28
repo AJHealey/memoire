@@ -6,7 +6,7 @@ from django.utils import timezone
 import time
 
 
-def customEXP(laps=timedelta(minutes=5)):
+def customEXP(laps=timedelta(minutes=1)):
 	''' Experiment on the science 10 from the March 28th 2013
 
 		Generate information every five minues to the observed AccessPoint
@@ -26,7 +26,7 @@ def customEXP(laps=timedelta(minutes=5)):
 		dsList.append('DS:noOfPoorSNR'+ str(i) +':GAUGE:600:0:U')
 
 	try:
-		rrd = RRDtool.create('/srv/memoire/experiment2803.rrd' ,'--start', 'now', '--step', '300', 'RRA:AVERAGE:0.5:1:15000', dsList)
+		rrd = RRDtool.create('/srv/memoire/experiment2803.rrd' ,'--start', 'now', '--step', '60', 'RRA:AVERAGE:0.5:1:1500', dsList)
 	except Exception as e:
 		OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=str(e)).save()
 		return	
