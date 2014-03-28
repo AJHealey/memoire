@@ -91,4 +91,4 @@ def customEXP(laps=timedelta(minutes=5)):
 			time.sleep(laps.total_seconds())
 
 if __name__ == '__main__':
-	print getAPIfLoadRxUtilization(ip='192.168.251.170', ap=ap.index)
+	print(getAPIfLoadRxUtilization(ip='192.168.251.170', ap=ap.index))
