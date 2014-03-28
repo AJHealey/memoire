@@ -15,6 +15,8 @@ def customEXP(laps=timedelta(minutes=1)):
 	# Get the AP entities
 	MACAdresses = ['b8:38:61:43:91:50', 'b8:38:61:3c:25:80', 'b8:38:61:43:8f:b0']
 
+	f = open("/srv/memoire/exp.txt", 'w')
+
 	# Generate the Data Source for RRDtool
 	dsList = []
 	for i in range(len(MACAdresses)):
@@ -72,6 +74,7 @@ def customEXP(laps=timedelta(minutes=1)):
 				except Exception as e:
 					OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=('getAPIfPoorSNRClients failed on ' + ap.macAddress + ': ' + str(e))).save()
 			
+			f.write(str(values)+'\n')
 			values = [None] + values
 			rrd.update([tuple(values)])            
 			time.sleep(laps.total_seconds())
