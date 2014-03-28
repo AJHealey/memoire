@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from django.utils import timezone
 from django.conf import settings
+from django.db import IntegrityError
 
 from pysnmp.entity.rfc3413.oneliner import cmdgen
 from gatherer.models import AccessPoint, MobileStation, OperationalError, CurrentTask
@@ -155,7 +156,12 @@ def getAllAP():
         # Get All Access Points (Mac Address)
         tmp = getApMacAddresses(ip=wism[0])
         for index, mac in tmp.items():
-            result[index], created = AccessPoint.objects.get_or_create(macAddress=parseMacAdresse(mac), index=("."+index))
+            try:
+                result[index], created = AccessPoint.objects.get_or_create(macAddress=parseMacAdresse(mac))
+            except IntegrityError:
+                result[index] = MobileStation.objects.get(macAddress=mac)
+            finally:
+                result[index].index = "." + index
 
         
         # Add names    
@@ -188,7 +194,14 @@ def getAllMS():
         for index, mac in tmp.items():
             mac = parseMacAdresse(mac)
             if not mac == '':
-                result[index], created = MobileStation.objects.get_or_create(macAddress=mac, index=("."+index))
+                # Handle possible race condition (get_or_create not thread safe)
+                try:
+                    result[index], created = MobileStation.objects.get_or_create(macAddress=mac)
+                except IntegrityError:
+                    result[index] = MobileStation.objects.get(macAddress=mac)
+
+                finally:
+                    result[index].index = "." + index
 
        
         # Add names    
