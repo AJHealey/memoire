@@ -91,7 +91,7 @@ def getAPIfLoadChannelUtilization(ip, port=161, community='snmpstudentINGI', ap=
         result = 0
         tmp = walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.3'+ap, port=port, community=community).items()
         for k,v in tmp:
-            result += v/len(tmp)
+            result += float(v)/len(tmp)
         return {ap[1:] : result}
     else:
         result = {}
