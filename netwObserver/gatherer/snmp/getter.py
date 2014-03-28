@@ -87,14 +87,21 @@ def getAPIfLoadTxUtilization(ip, port=161, community='snmpstudentINGI', ap=''):
 
 def getAPIfLoadChannelUtilization(ip, port=161, community='snmpstudentINGI', ap=''):
     """ Channel Utilization """
-    result = {}
-    for index, ch in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.3' + ap, port=port, community=community).items():
-        if index[:-2] not in result:
-            result[index[:-2]] = 0
+    if ap != '':
+        result = 0
+        tmp = walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.3', port=port, community=community).items()
+        for k,v in tmp:
+            result[k] += v/len(tmp)
+        return {ap[1:] : result}
+    else:
+        result = {}
+        for index, ch in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.3', port=port, community=community).items():
+            if index[:-2] not in result:
+                result[index[:-2]] = 0
 
-        result[index[:-2]] += (float(ch)/2)
+            result[index[:-2]] += (float(ch)/2)
 
-    return result
+        return result
 
 def getAPIfLoadNumOfClients(ip, port=161, community='snmpstudentINGI', ap=''):
     """ This is the number of clients attached to this Airespace
