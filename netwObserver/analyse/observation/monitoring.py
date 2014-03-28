@@ -48,37 +48,27 @@ def customEXP(laps=timedelta(minutes=5)):
 		try:
 			for i,ap in foundAP:
 				try:
-					tmp = getAPIfLoadRxUtilization(ip='192.168.251.170', ap=ap.index)
-					for k in tmp:
-						values[(i*5)+0] = tmp[k]
+					values[(i*5)+0] = getAPIfLoadRxUtilization(ip='192.168.251.170', ap=ap.index)[ap.index[1:]]
 				except Exception as e:
 					OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=('getAPIfLoadRxUtilization failed on ' + ap.macAddress + ': ' + str(e))).save()
 
 				try:
-					tmp = getAPIfLoadTxUtilization(ip='192.168.251.170', ap=ap.index)
-					for k in tmp:
-						values[(i*5)+1] = tmp[k]
+					values[(i*5)+1] = getAPIfLoadTxUtilization(ip='192.168.251.170', ap=ap.index)[ap.index[1:]]
 				except Exception as e:
 					OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=('getAPIfLoadTxUtilization failed on ' + ap.macAddress + ': ' + str(e))).save()
 			
 				try:
-					tmp = getAPIfLoadChannelUtilization(ip='192.168.251.170', ap=ap.index)
-					for k in tmp:
-						values[(i*5)+2] = tmp[k]
+					values[(i*5)+2] = getAPIfLoadChannelUtilization(ip='192.168.251.170', ap=ap.index)[ap.index[1:]]
 				except Exception as e:
 					OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=('getAPIfLoadChannelUtilization failed on ' + ap.macAddress + ': ' + str(e))).save()
 				
 				try:
-					tmp = getAPIfLoadNumOfClients(ip='192.168.251.170', ap=ap.index)
-					for k in tmp:
-						values[(i*5)+3] = tmp[k]
+					values[(i*5)+3] = getAPIfLoadNumOfClients(ip='192.168.251.170', ap=ap.index)[ap.index[1:]]
 				except Exception as e:
 					OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=('getAPIfLoadNumOfClients failed on ' + ap.macAddress+ ': ' + str(e))).save()
 			
 				try:
-					tmp = getAPIfPoorSNRClients(ip='192.168.251.170', ap=ap.index)
-					for k in tmp:
-						values[(i*5)+4] = tmp[k]
+					values[(i*5)+4] = getAPIfPoorSNRClients(ip='192.168.251.170', ap=ap.index)[ap.index[1:]]
 				except Exception as e:
 					OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=('getAPIfPoorSNRClients failed on ' + ap.macAddress + ': ' + str(e))).save()
 			
