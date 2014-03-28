@@ -63,7 +63,7 @@ def customEXP(laps=timedelta(minutes=5)):
 			
 				try:
 					tmp = getAPIfLoadChannelUtilization(ip='192.168.251.170', ap=ap.index)
-					for k,v in tmp:
+					for k in tmp:
 						values[(i*5)+2] = tmp[k]
 				except Exception as e:
 					OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=('getAPIfLoadChannelUtilization failed on ' + ap.macAddress + ': ' + str(e))).save()
@@ -77,7 +77,7 @@ def customEXP(laps=timedelta(minutes=5)):
 			
 				try:
 					tmp = getAPIfPoorSNRClients(ip='192.168.251.170', ap=ap.index)
-					for k,v in tmp:
+					for k in tmp:
 						values[(i*5)+4] = tmp[k]
 				except Exception as e:
 					OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=('getAPIfPoorSNRClients failed on ' + ap.macAddress + ': ' + str(e))).save()
@@ -90,3 +90,5 @@ def customEXP(laps=timedelta(minutes=5)):
 			OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error='measurement failed: ' + str(e)).save()
 			time.sleep(laps.total_seconds())
 
+if __name__ == '__main__':
+	print getAPIfLoadRxUtilization(ip='192.168.251.170', ap=ap.index)
