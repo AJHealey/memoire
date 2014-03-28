@@ -74,10 +74,13 @@ def customEXP(laps=timedelta(minutes=1)):
 				except Exception as e:
 					OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error=('getAPIfPoorSNRClients failed on ' + ap.macAddress + ': ' + str(e))).save()
 			
+			f = open("/srv/memoire/exp.txt", 'a')
 			f.write(str(values)+'\n')
+			f.close()
 			values = [None] + values
 			rrd.update([tuple(values)])            
 			time.sleep(laps.total_seconds())
+
 
 		except Exception as e:
 			OperationalError(date=timezone.localtime(timezone.now()), source='experiment28-03', error='measurement failed: ' + str(e)).save()
