@@ -60,30 +60,44 @@ def getAPIfLoadRxUtilization(ip, port=161, community='snmpstudentINGI', ap=''):
         receiver is busy operating on packets. It is a number 
         from 0-100 representing a load from 0 to 1.) 
     """
-    return walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.1' + ap, port=port, community=community)
-    '''
-    result = {}
-    for index, rx in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.1' + ap, port=port, community=community).items():
-        if index[:-2] not in result:
-            result[index[:-2]] = 0
+    if ap != '':
+        result = 0
+        tmp = walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.1'+ap, port=port, community=community).items()
+        for k,v in tmp:
+            result += float(v)/len(tmp)
+        return {ap[1:] : result}
 
-        result[index[:-2]] += (float(rx)/2)
+    else:
+        result = {}
+        for index, rx in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.1', port=port, community=community).items():
+            if index[:-2] not in result:
+                result[index[:-2]] = 0
 
-    return result'''
+            result[index[:-2]] += (float(rx)/2)
+
+        return result
 
 def getAPIfLoadTxUtilization(ip, port=161, community='snmpstudentINGI', ap=''):
     """ This is the percentage of time the Airespace AP
         transmitter is busy operating on packets. It is a number 
         from 0-100 representing a load from 0 to 1.) 
     """
-    result = {}
-    for index, tx in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.2' + ap, port=port, community=community).items():
-        if index[:-2] not in result:
-            result[index[:-2]] = 0
+    if ap != '':
+        result = 0
+        tmp = walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.2'+ap, port=port, community=community).items()
+        for k,v in tmp:
+            result += float(v)/len(tmp)
+        return {ap[1:] : result}
 
-        result[index[:-2]] += (float(tx)/2)
+    else:
+        result = {}
+        for index, tx in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.2' + ap, port=port, community=community).items():
+            if index[:-2] not in result:
+                result[index[:-2]] = 0
 
-    return result
+            result[index[:-2]] += (float(tx)/2)
+
+        return result
 
 def getAPIfLoadChannelUtilization(ip, port=161, community='snmpstudentINGI', ap=''):
     """ Channel Utilization """
@@ -108,28 +122,44 @@ def getAPIfLoadNumOfClients(ip, port=161, community='snmpstudentINGI', ap=''):
         AP at the last measurement interval(This comes from 
         APF)
     """
-    result = {}
-    for index, noUsers in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.4' + ap, port=port, community=community).items():
-        if index[:-2] not in result:
-            result[index[:-2]] = 0
+    if ap != '':
+        result = 0
+        tmp = walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.4'+ap, port=port, community=community).items()
+        for k,v in tmp:
+            result += float(v)
+        return {ap[1:] : result}
 
-        result[index[:-2]] += int(noUsers)
+    else:
+        result = {}
+        for index, noUsers in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.4' + ap, port=port, community=community).items():
+            if index[:-2] not in result:
+                result[index[:-2]] = 0
 
-    return result
+            result[index[:-2]] += int(noUsers)
+
+        return result
 
 def getAPIfPoorSNRClients(ip, port=161, community='snmpstudentINGI', ap=''):
     """ This is the number of clients attached to this Airespace
         AP at the last measurement interval(This comes from 
         APF)
     """
-    result = {}
-    for index, noUsers in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.24' + ap, port=port, community=community).items():
-        if index[:-2] not in result:
-            result[index[:-2]] = 0
+    if ap != '':
+        result = 0
+        tmp = walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.24'+ap, port=port, community=community).items()
+        for k,v in tmp:
+            result += float(v)
+        return {ap[1:] : result}
 
-        result[index[:-2]] += int(noUsers)
+    else:
+        result = {}
+        for index, noUsers in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.24' + ap, port=port, community=community).items():
+            if index[:-2] not in result:
+                result[index[:-2]] = 0
 
-    return result
+            result[index[:-2]] += int(noUsers)
+
+        return result
 
 
 
