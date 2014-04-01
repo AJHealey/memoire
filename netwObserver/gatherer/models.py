@@ -12,6 +12,7 @@ class Device(models.Model):
 	macAddress = macField.MACAddressField(unique=True)
 	ip = models.GenericIPAddressField(null=True)
 	lastTouched = models.DateTimeField(null=True, default=lambda:(timezone.localtime(timezone.now())) )
+	index = models.CharField(max_length=20) 
 
 	def touch(self):
 		self.lastTouched = timezone.localtime(timezone.now())
@@ -29,10 +30,13 @@ class APManage(models.Manager):
 class AccessPoint(Device):
 	name = models.CharField(max_length=50, null=True)
 	location = models.CharField(max_length=50, null=True)
-	
+
 	objects = APManage()
 	def __str__(self):
 		return str(self.name) + " : " + str(self.macAddress) + ' (' + str(self.ip) + ')'
+	
+	def isUp(self):
+		return lastTouched > (timezone.localtime(timezone.now()) - settings.SNMPAPLAP)
 
 
 ## Mobile stations Model
@@ -123,7 +127,7 @@ class BadLog(models.Model):
 
 ## Tasks model
 class CurrentTask(models.Model):
-	lastTouched = models.DateTimeField(default=timezone.localtime(timezone.now()))
+	lastTouched = models.DateTimeField(default=lambda:(timezone.localtime(timezone.now())))
 	name = models.CharField(max_length=25, primary_key=True)
 	status = models.CharField(max_length=10)
  	

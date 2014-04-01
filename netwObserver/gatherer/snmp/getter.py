@@ -1,8 +1,10 @@
 import time
+
 from datetime import timedelta
 
 from django.utils import timezone
 from django.conf import settings
+from django.db import IntegrityError
 
 from pysnmp.entity.rfc3413.oneliner import cmdgen
 from gatherer.models import AccessPoint, MobileStation, OperationalError, CurrentTask
@@ -53,6 +55,114 @@ def getApLocation(ip, port=161, community='snmpstudentINGI'):
     """ Location of the access point (if configured) """
     return walker(ip,'1.3.6.1.4.1.14179.2.2.1.1.4', port=port, community=community)
 
+def getAPIfLoadRxUtilization(ip, port=161, community='snmpstudentINGI', ap=''):
+    """ This is the percentage of time the Airespace AP
+        receiver is busy operating on packets. It is a number 
+        from 0-100 representing a load from 0 to 1.) 
+    """
+    if ap != '':
+        result = 0
+        tmp = walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.1'+ap, port=port, community=community).items()
+        for k,v in tmp:
+            result += float(v)/len(tmp)
+        return {ap[1:] : result}
+
+    else:
+        result = {}
+        for index, rx in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.1', port=port, community=community).items():
+            if index[:-2] not in result:
+                result[index[:-2]] = 0
+
+            result[index[:-2]] += (float(rx)/2)
+
+        return result
+
+def getAPIfLoadTxUtilization(ip, port=161, community='snmpstudentINGI', ap=''):
+    """ This is the percentage of time the Airespace AP
+        transmitter is busy operating on packets. It is a number 
+        from 0-100 representing a load from 0 to 1.) 
+    """
+    if ap != '':
+        result = 0
+        tmp = walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.2'+ap, port=port, community=community).items()
+        for k,v in tmp:
+            result += float(v)/len(tmp)
+        return {ap[1:] : result}
+
+    else:
+        result = {}
+        for index, tx in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.2' + ap, port=port, community=community).items():
+            if index[:-2] not in result:
+                result[index[:-2]] = 0
+
+            result[index[:-2]] += (float(tx)/2)
+
+        return result
+
+def getAPIfLoadChannelUtilization(ip, port=161, community='snmpstudentINGI', ap=''):
+    """ Channel Utilization """
+    if ap != '':
+        result = 0
+        tmp = walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.3'+ap, port=port, community=community).items()
+        for k,v in tmp:
+            result += float(v)/len(tmp)
+        return {ap[1:] : result}
+    else:
+        result = {}
+        for index, ch in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.3', port=port, community=community).items():
+            if index[:-2] not in result:
+                result[index[:-2]] = 0
+
+            result[index[:-2]] += (float(ch)/2)
+
+        return result
+
+def getAPIfLoadNumOfClients(ip, port=161, community='snmpstudentINGI', ap=''):
+    """ This is the number of clients attached to this Airespace
+        AP at the last measurement interval(This comes from 
+        APF)
+    """
+    if ap != '':
+        result = 0
+        tmp = walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.4'+ap, port=port, community=community).items()
+        for k,v in tmp:
+            result += float(v)
+        return {ap[1:] : result}
+
+    else:
+        result = {}
+        for index, noUsers in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.4' + ap, port=port, community=community).items():
+            if index[:-2] not in result:
+                result[index[:-2]] = 0
+
+            result[index[:-2]] += int(noUsers)
+
+        return result
+
+def getAPIfPoorSNRClients(ip, port=161, community='snmpstudentINGI', ap=''):
+    """ This is the number of clients attached to this Airespace
+        AP at the last measurement interval(This comes from 
+        APF)
+    """
+    if ap != '':
+        result = 0
+        tmp = walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.24'+ap, port=port, community=community).items()
+        for k,v in tmp:
+            result += float(v)
+        return {ap[1:] : result}
+
+    else:
+        result = {}
+        for index, noUsers in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.24' + ap, port=port, community=community).items():
+            if index[:-2] not in result:
+                result[index[:-2]] = 0
+
+            result[index[:-2]] += int(noUsers)
+
+        return result
+
+
+
 ## Mobile Stations Requests
 def getMobileStationMacAddresses(ip, port=161, community='snmpstudentINGI'):
     """ Mac Address of each station connected to an AP """
@@ -75,6 +185,8 @@ def getMobileStationAPMacAddress(ip, port=161, community='snmpstudentINGI'):
     return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.4', port=port, community=community)
 
 
+
+
 def getAllAP():
     ''' Cross reference all the information on the Access Point and update the database '''
 
@@ -83,7 +195,12 @@ def getAllAP():
         # Get All Access Points (Mac Address)
         tmp = getApMacAddresses(ip=wism[0])
         for index, mac in tmp.items():
-            result[index], created = AccessPoint.objects.get_or_create(macAddress=parseMacAdresse(mac))
+            try:
+                result[index], created = AccessPoint.objects.get_or_create(macAddress=parseMacAdresse(mac))
+            except IntegrityError:
+                result[index] = MobileStation.objects.get(macAddress=mac)
+            finally:
+                result[index].index = "." + index
 
         
         # Add names    
@@ -116,7 +233,14 @@ def getAllMS():
         for index, mac in tmp.items():
             mac = parseMacAdresse(mac)
             if not mac == '':
-                result[index], created = MobileStation.objects.get_or_create(macAddress=mac)
+                # Handle possible race condition (get_or_create not thread safe)
+                try:
+                    result[index], created = MobileStation.objects.get_or_create(macAddress=mac)
+                except IntegrityError:
+                    result[index] = MobileStation.objects.get(macAddress=mac)
+
+                finally:
+                    result[index].index = "." + index
 
        
         # Add names    
@@ -140,6 +264,7 @@ def getAllMS():
             if index in result:
                 result[index].dot11protocol = proto
 
+        '''
         # Link to AP
         tmp = getMobileStationAPMacAddress(ip=wism[0])
         for index, apMac in tmp.items():
@@ -147,7 +272,7 @@ def getAllMS():
                 apMac = parseMacAdresse(apMac)
                 if not apMac == '': 
                     result[index].ap, created = AccessPoint.objects.get_or_create(macAddress=apMac)
-
+                    '''
 
     except Exception as e:
         OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon', error=str(e)).save()
@@ -168,6 +293,7 @@ def snmpAPDaemon(laps=timedelta(hours=1)):
             task.touch()
             time.sleep(laps.total_seconds())
         except:
+            OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon', error='Laps failed').save()
             time.sleep(10*laps.total_seconds())
 
 
@@ -186,8 +312,8 @@ def snmpMSDaemon(laps=timedelta(minutes=30)):
             task.touch()
             time.sleep(laps.total_seconds())
         except:
+            OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon', error='Laps failed').save()
             time.sleep(10*laps.total_seconds())
-
 
 
 
