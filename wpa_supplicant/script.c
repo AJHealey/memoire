@@ -1,6 +1,6 @@
 
 #include "wpa_ctrl/wpa_ctrl.h"
-#include "script2.h"
+#include "script.h"
 
 /* 
  * Insert the logs into the logfile
@@ -283,10 +283,21 @@ static void open_connection() {
  */
 static void loop() {
 	int i;
+	char reply[BUF];
+	size_t reply_length;
+	enum wpa_event event;
+
+	reply_length = BUF-1;
+	
+
 	execute(ACTION_BOOT);
 	execute(ACTION_OPEN_CONNECTION);
 	execute(ACTION_CREATE_NETWORKS);
 	for(i = 0; i < 2; i++) {
+		wpa_ctrl_recv(ctrl, reply, &reply_length);
+		reply[reply_length] = '\0';
+		printf("Reply: %s\n");
+
 		sleep(3);
 		execute(ACTION_DISCONNECT);
 		execute(ACTION_CONNECT_EDUROAM);
