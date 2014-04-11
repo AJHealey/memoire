@@ -12,7 +12,7 @@ void timeDiff(struct timeb start, struct timeb end, struct timeb *result)
 /*
  * Compares if 2 strings match each other
  */
-int match_str(const char *s1, const char *s2) {
+int match(const char *s1, const char *s2) {
 	return !strncmp(s1, s2, strlen(s2));
 }
 

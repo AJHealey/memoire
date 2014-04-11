@@ -11,7 +11,6 @@ struct timeb wpa_start, wpa_end, dhcp_start, dhcp_end, wpa_time, dhcp_time;
 enum log_events {
 	LOG_CUSTOM_INFO,
 	LOG_BOOT,
-	LOG_TRY_CONNECTION,
 	LOG_CONNECTED,
 	LOG_DISCONNECTED,
 	LOG_CONNECTION_LOST,
