@@ -71,13 +71,16 @@ static void parse_event(const char *reply) {
 			event = reply;
 		}
 	}
-
+	log_event(LOG_CUSTOM_INFO, event);
 	if(match(event, WPA_EVENT_CONNECTED)) {
-		char arg[BUF];
+		log_event(LOG_CONNECTED, "Blibli");
+		system("udhcpc -t 0 -i wlan0");
+		dhcp = 1;
+
+		/*char arg[BUF];
 		sprintf(arg, "wpa_s time: %ldsec %.3ums, dhcp time: %ldsec %.3ums", addr, wpa_time.time, wpa_time.millitm, dhcp_time.time, dhcp_time.millitm);
-		log_event(LOG_CONNECTED, arg);
-	}
-	
+		log_event(LOG_CONNECTED, arg);*/
+	}	
 }
 
 /*
@@ -85,9 +88,6 @@ static void parse_event(const char *reply) {
  */
 static void execute_action(enum wpa_action action, const char * ssid) {
 	switch(action) {
-		case ACTION_BOOT_PROCESS:
-			boot_process();
-			break;
 		case ACTION_CONNECT_STUDENT:
 			connect_student();
 			break;
@@ -137,13 +137,17 @@ static void commands(char *cmd)
 
 
 /*
+ * TODO A RETIRER
  * Starts wpa_supplicant with student.UCLouvain config file in
  * background and starts the DHCP negociation
  */
 void boot_process() {
+	int ret;
 	system("killall hostapd");
 	ftime(&wpa_start);
-	system("wpa_supplicant -B -D nl80211 -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant_maison.conf");
+	ret = system("wpa_supplicant -B -D nl80211 -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant_maison.conf");
+	
+	printf("I: %d\n", ret);	
 	ftime(&wpa_end);
 	ftime(&dhcp_start);
 	system("udhcpc -t 0 -i wlan0");
@@ -302,6 +306,7 @@ void *wpa_loop(void *p_data) {
 	fd_set ctrl_fds;
 	struct timeval timeout;
 	
+	system("wpa_supplicant -B -D nl80211 -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant_maison.conf");
 	ctrl = wpa_ctrl_open(DEFAULT_CTRL_IFACE);
 	if(ctrl == NULL) {
 		log_event(LOG_ERROR, "Unable to open wpa_supplicant control interface");
@@ -324,7 +329,7 @@ void *wpa_loop(void *p_data) {
 		FD_ZERO(&ctrl_fds);
 		ctrl_fd = wpa_ctrl_get_fd(ctrl);
 		FD_SET(ctrl_fd, &ctrl_fds);
-		timeout.tv_sec = 5;
+		timeout.tv_sec = 30;
 		timeout.tv_usec = 0;
 		//Wait for event
 		r = select(ctrl_fd+1, &ctrl_fds, NULL, &ctrl_fds, &timeout);
@@ -336,7 +341,7 @@ void *wpa_loop(void *p_data) {
 				if(wpa_ctrl_request(ctrl, "PING", strlen("PING"), reply, &reply_len, NULL))
 					reply_len = 0;
 				reply[reply_len] = '\0';
-				if(match(reply, "PONG", strlen("PONG"))) {
+				if(!match(reply, "PONG", strlen("PONG"))) {
 					log_event(LOG_ERROR, "wpa_supplicant not responding\n");
 				}
 				break;
@@ -360,15 +365,15 @@ void *wpa_loop(void *p_data) {
  *******************************/
 
 
-void *connectMaison(void * p_data) {
+void *loop_test(void * p_data) {
 	while(1) {
-		printf("Before\n");
-		sleep(10);
+		sleep(15);
 		printf("Disconnect\n");
 		commands("DISCONNECT");
-		printf("Before 3\n");
-		sleep(3);
+		dhcp = 0;
+		sleep(5);
 		printf("Reconnect\n");
+		if(dhcp == 1)
 		commands("SELECT_NETWORK 0");
 	}
 	return NULL;
@@ -379,25 +384,27 @@ void *connectMaison(void * p_data) {
 int main(int argc, char ** argv) {
 	log_event(LOG_CUSTOM_INFO, "Starting script");
 	int r = 0;
+
 	pthread_t wpa_thread, loop_thread;
-
-	execute_action(ACTION_BOOT_PROCESS, "");
-
-	printf("Creation du thread wpa_supplicant\n");
-	r = pthread_create(&wpa_thread, NULL, connectMaison, NULL);
+	r = pthread_create(&wpa_thread, NULL, wpa_loop, NULL);
 	if(!r) {
-		sleep(2);
-		printf("Creation du thread loop\n");
-		r = pthread_create(&loop_thread, NULL, wpa_loop, NULL);
-		if(r)
-			fprintf(stderr, "%s", strerror(r));
+		while(1) {
+			if(dhcp == 1) {
+				printf("Starting loop\n");
+				r = pthread_create(&loop_thread, NULL, loop_test, NULL);
+				if(r)
+					fprintf(stderr, "%s", strerror(r));
+				break;
+			}
+			else
+				sleep(1);
+		}
 	}
 	else 
-		fprintf(stderr, "%s", strerror(r));	
+		fprintf(stderr, "%s", strerror(r));
 
 	pthread_join(wpa_thread, NULL);
-	pthread_join(wpa_thread, NULL);
-
+	pthread_join(loop_thread, NULL);
 	closelog();
 
 	return 0;

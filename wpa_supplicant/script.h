@@ -7,6 +7,7 @@
 
 struct wpa_ctrl *ctrl;
 struct timeb wpa_start, wpa_end, dhcp_start, dhcp_end, wpa_time, dhcp_time;
+int dhcp = 0;
 
 enum log_events {
 	LOG_CUSTOM_INFO,
@@ -22,7 +23,6 @@ enum log_events {
 };
 
 enum wpa_action {
-	ACTION_BOOT_PROCESS,
 	ACTION_CONNECT_STUDENT,
 	ACTION_CONNECT_EDUROAM,
 	ACTION_CONNECT_UCLOUVAIN,
