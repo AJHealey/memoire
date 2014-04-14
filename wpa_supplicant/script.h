@@ -14,6 +14,8 @@ enum log_events {
 	LOG_BOOT,
 	LOG_TRY_CONNECTION,
 	LOG_CONNECTED,
+	LOG_WPA_TIME,
+	LOG_DHCP_TIME,
 	LOG_DISCONNECTED,
 	LOG_CONNECTION_LOST,
 	LOG_CONNECTION_REESTABLISHED,
@@ -35,7 +37,7 @@ static void log_event();
 static void parse_event();
 static void execute_action();
 static void commands();
-static void boot_process();
+static void get_status();
 static void create_networks();
 static void config_network();
 static void connect_eduroam();

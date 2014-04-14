@@ -20,7 +20,7 @@ static void log_event(enum log_events log, const char *arg) {
 			syslog(LOG_NOTICE, "Starting script");
 			break;
 		case LOG_CONNECTED:
-			syslog(LOG_NOTICE, "Interface connected to network BSSID: '%s'", arg);
+			syslog(LOG_NOTICE, "Interface connected to network: '%s'", arg);
 			break;
 		case LOG_DISCONNECTED:
 			syslog(LOG_NOTICE, "Interface disconnected");

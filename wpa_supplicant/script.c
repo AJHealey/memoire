@@ -5,9 +5,9 @@
 
 /*
  * TODO : Continuer le parsing de event 
- * TODO : Problème timing ?
+ * TODO : Structure pour stocker les infos d'un réseau pour afficher ?
  * TODO : Log ou txt ?
- * 
+ * TODO : function status pour récupérer le SSID (disconnect)
  */
 
 
@@ -29,13 +29,19 @@ static void log_event(enum log_events log, const char *arg) {
 			syslog(LOG_NOTICE, "<Boot> Connected to: %s", arg);
 			break;
 		case LOG_TRY_CONNECTION:
-			syslog(LOG_NOTICE, "Trying: %s", arg);
+			syslog(LOG_NOTICE, "Trying to connect to network: %s", arg);
 			break;
 		case LOG_CONNECTED:
-			syslog(LOG_NOTICE, "Connected: %s", arg);
+			syslog(LOG_NOTICE, "Connected to network BSSID: %s", arg);
+			break;
+		case LOG_WPA_TIME:
+			syslog(LOG_NOTICE, "<WPA_SUPP> Connection to '%s' in %ldsec %.3ums", arg, wpa_time.time, wpa_time.millitm);
+			break;
+		case LOG_DHCP_TIME:
+			syslog(LOG_NOTICE, "<DHCP> IP address obtained in %ldsec %.3ums", dhcp_time.time, dhcp_time.millitm);
 			break;
 		case LOG_DISCONNECTED:
-			syslog(LOG_NOTICE, "Disconnected from: %s", arg);
+			syslog(LOG_NOTICE, "Disconnected from network: %s", arg);
 			break;
 		case LOG_CONNECTION_LOST:
 			syslog(LOG_NOTICE, "Connection Lost: %s", arg);
@@ -59,9 +65,9 @@ static void log_event(enum log_events log, const char *arg) {
  * Parse all the event received from wpa_supplicant and execute the resulting action
  */
 static void parse_event(const char *reply) {
-	//Removing priority level <.>
 	const char *event, *addr;
 	event = reply;
+	/*Removing priority level < > from event*/
 	if(*event == '<') {
 		event = strchr(event, '>');
 		if(event) {
@@ -71,16 +77,38 @@ static void parse_event(const char *reply) {
 			event = reply;
 		}
 	}
-	log_event(LOG_CUSTOM_INFO, event);
+	//log_event(LOG_CUSTOM_INFO, event);
 	if(match(event, WPA_EVENT_CONNECTED)) {
-		log_event(LOG_CONNECTED, "Blibli");
-		system("udhcpc -t 0 -i wlan0");
-		dhcp = 1;
+		/*Get network BSSID*/
+		char bssid[17];
+		memcpy(bssid, &event[37], 17);
+		log_event(LOG_CONNECTED, bssid);
+		log_event(LOG_WPA_TIME, bssid);
 
-		/*char arg[BUF];
-		sprintf(arg, "wpa_s time: %ldsec %.3ums, dhcp time: %ldsec %.3ums", addr, wpa_time.time, wpa_time.millitm, dhcp_time.time, dhcp_time.millitm);
-		log_event(LOG_CONNECTED, arg);*/
-	}	
+		/*Start udhcpc for IP address*/
+		ftime(&dhcp_start);
+		system("udhcpc -t 0 -i wlan0");
+		ftime(&dhcp_end);
+		timeDiff(dhcp_start, dhcp_end, &dhcp_time);
+		log_event(LOG_DHCP_TIME,"");
+		dhcp = 1;
+	}
+	else if(match(event, "Trying")) {
+		char *ssid, *event_tmp, bssid[17], arg[256];
+		/*Get network BSSID*/
+		memcpy(bssid, &event[25], 17);
+
+		/*Get network SSID*/
+		event_tmp = strdup(event);
+		ssid = strtok(event_tmp, "'");
+		ssid = strtok(NULL, "'");
+		sprintf(arg,"'%s' (BSSID: %s)", ssid, bssid);
+		log_event(LOG_TRY_CONNECTION, arg);
+	}
+	/*TODO Event never sent by wpa_supplicant */
+	else if (match(event, WPA_EVENT_DISCONNECTED)) {
+		printf("Event disco\n");
+	}
 }
 
 /*
@@ -125,37 +153,17 @@ static void commands(char *cmd)
 	int ret;
 	
 	if(ctrl == NULL) {
-		//log_event(LOG_ERROR, "Interface not connected to wpa_supplicant");
+		log_event(LOG_ERROR, "Interface not connected to wpa_supplicant");
 		exit(-1);
 	}
 	ret = wpa_ctrl_request(ctrl, cmd, os_strlen(cmd), reply, &len, NULL);
 	if(ret < 0) {
-		//log_event(LOG_ERROR, ("Command '%s' timed out or failed", cmd));
+		log_event(LOG_ERROR, ("Command '%s' timed out or failed", cmd));
 		exit(-1);
 	}
 }
 
 
-/*
- * TODO A RETIRER
- * Starts wpa_supplicant with student.UCLouvain config file in
- * background and starts the DHCP negociation
- */
-void boot_process() {
-	int ret;
-	system("killall hostapd");
-	ftime(&wpa_start);
-	ret = system("wpa_supplicant -B -D nl80211 -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant_maison.conf");
-	
-	printf("I: %d\n", ret);	
-	ftime(&wpa_end);
-	ftime(&dhcp_start);
-	system("udhcpc -t 0 -i wlan0");
-	ftime(&dhcp_end);
-	timeDiff(wpa_start, wpa_end, &wpa_time);
-	timeDiff(dhcp_start, dhcp_end, &dhcp_time);
-	log_event(LOG_TRY_CONNECTION, "student.UCLouvain");
-}
 
 
 /*
@@ -306,7 +314,10 @@ void *wpa_loop(void *p_data) {
 	fd_set ctrl_fds;
 	struct timeval timeout;
 	
+	ftime(&wpa_start);
 	system("wpa_supplicant -B -D nl80211 -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant_maison.conf");
+	ftime(&wpa_end);
+	timeDiff(wpa_start, wpa_end, &wpa_time);
 	ctrl = wpa_ctrl_open(DEFAULT_CTRL_IFACE);
 	if(ctrl == NULL) {
 		log_event(LOG_ERROR, "Unable to open wpa_supplicant control interface");
@@ -367,14 +378,20 @@ void *wpa_loop(void *p_data) {
 
 void *loop_test(void * p_data) {
 	while(1) {
-		sleep(15);
+		sleep(10);
 		printf("Disconnect\n");
+		//action_event("DISCONNECT");
 		commands("DISCONNECT");
 		dhcp = 0;
 		sleep(5);
 		printf("Reconnect\n");
-		if(dhcp == 1)
+		ftime(&wpa_start);
 		commands("SELECT_NETWORK 0");
+		ftime(&wpa_end);
+		timeDiff(wpa_start, wpa_end, &wpa_time);
+		while(dhcp != 1) { //Waiting for DHCP
+			sleep(1);
+		}
 	}
 	return NULL;
 }
@@ -382,6 +399,7 @@ void *loop_test(void * p_data) {
 
 
 int main(int argc, char ** argv) {
+	system("killall hostapd");
 	log_event(LOG_CUSTOM_INFO, "Starting script");
 	int r = 0;
 
