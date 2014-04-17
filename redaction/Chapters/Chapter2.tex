@@ -1,39 +1,38 @@
 % Chapter Template
 
-\chapter{Working Environment Overview} % Main chapter title
+\chapter{Working Environment} % Main chapter title
 
 \label{Chapter2} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
 
-\lhead{Chapter 2. \emph{Working Environment Overview}} % Change X to a consecutive number; this is for the header on each page - perhaps a shortened title
+\lhead{Chapter 2. \emph{Working Environment}} % Change X to a consecutive number; this is for the header on each page - perhaps a shortened title
 
 %----------------------------------------------------------------------------------------
 %	SECTION 1
 %----------------------------------------------------------------------------------------
 
-\section{UCL Internet Infrastructure}
-The Catholic University of Louvain (UCL) is one of the biggest universities in Belgium. It gathers almost 30.000 students and about 10.000 other members from staff to teachers and researchers.\\
+\section{UCL's wireless infrastructure}
 
-The university also owns several student campus. The headquarters of the UCL is located in the city of Louvain-la-Neuve. The campus gathering the health sciences is located in Woluwe-Saint-Lambert and more recently the cities of Tournai and Mons as well as Charleroi were added to the list.\\
-
-Faced with such a scale, it is vital for the Catholic Univeristy of Louvain to develop a reliable and efficient Internet connection and wireless network able to deliver a connectivity throughout its campus and all users at all time.\\
-
-The purpose the University enrolled in is to provide an Internet access and a connectivity according to the type of user who wants to connect. To do this, there are 3 main networks at the Catholic University of Louvain, each with a different SSID.\\
-
-The univeristy also participates in the projet \texttt{eduroam} (which stands for education roaming). Eduroam is the secure, world-wide roaming access service developed for the international research and education community\cite{eduroam1}.\\
-
-The eduroam system is a RADIUS-based infrastructure that uses the 802.1X security technology to allow for inter-institutional roaming. It allows the users visiting another institution connected to eduroam to log on to the WLAN using the same credentials the user would use if he were at his home institution\cite{eduroam2}.\\
-The Catholic University of Louvain thus has a fourth network available with the SSID \texttt{eduroam} allowing the foreign students to be able to get an Internet connection at any time on the university locations.\\
-The available networks at UCL are the following:
+\subsection{Overview}
+On its Louvain-la-Neuve's campus area, the Catholic University of Louvain offers 4 different networks, with different SSIDs, that are reserved to certain parts of users according to their category. Those available networks are the following:
 \begin{itemize}
-	\item \texttt{student.UCLouvain}: Only for the students enrolled for the current year at UCL.
-	\item \texttt{UCLouvain}: Only for university staff as well as for the researchers.
-	\item \texttt{visiteurs.UCLouvain}: Accessible for guests invited by the university.
-	\item \texttt{eduroam}: Education Roaming access.
+	\item[-] \texttt{student.UCLouvain}: Available for the students enrolled at UCL.
+	\item[-] \texttt{UCLouvain}: Reserved for university's professors and the researchers.
+	\item[-] \texttt{UCLouvain-prive}: Limited access to check the UCL's wireless configuration page or to download required program for Windows XP and Vista.
+	\item[-] \texttt{visiteurs.UCLouvain}: Accessible for guests invited by the university.
+	\item[-] \texttt{eduroam}: Internation education roaming access.
 \end{itemize}
 
+Security is an important issue at the university and several measures are regularly taken by the SRI team in order to keep the integrity and the consistency of the UCL's network untouched. As an example, Windows has decided on the 8th of April 2014 to end the XP's support and updates leaving all the remaining laptops running this operating system unprotected to possible external threats\cite{windows}. The problem with that Windows' decision is that those computers might become more vulnerable to security risks and viruses and if a contaminated host connects to the UCL's network it can cause serious damages to the overall infrastructure depending on what the virus is programmed to do. This is why the SRI team took the decision to block the wireless access to any device that still uses Windows XP after the 8th of April.
+
+The main way of protecting the network infrastructure from possible threats that has been installed and configured by the SRI team is the use of the IEEE 802.1X standard providing an authentication mechanism for the devices that want to connect to a UCL's network.\\
+Basically, every student, professor or researcher needs a special WiFi username and a password to connect to one of the networks. The username is composed of two parts, on one side the general login the user has received from the university's administrative system when he had enrolled himself, and on the other side the following part \texttt{@wifi.uclouvain.be}. With that username, the user also needs a password, which is the same has the password he uses to connect to the university's web site. Without those credentials or if the user misspell he's username or password, it is impossible for him to connect to the UCL's wireless network.
+
+This kind of authentication mechanism is only possible if the infrastructure has several key entities that are going to handle all of this security process.
 
 
-\section{Hardware infrastructure}
+
+
+\subsection{Design}
 Using the network monitoring software InterMapper\cite{intermapper} we see that the UCL network is composed of seven neighborhood routers (CtPythagore, CtHalles, CtLew, CtStevin, CtCarnoy, CtMichotte and CtSH1C). Six of them are present on the Louvain-la-Neuve campus and only CtLew is on the Wolluwé Campus. Those routers task is only routing.\\
 
 Internet access is provided by Belnet via a 10GBit ethernet link directly connected to the CtPythagore. There is also a second 3GBit ethernet link connected to the CtHalles router but this link is never used. It is only a backup link in case of failure of the main one.\\
@@ -49,7 +48,7 @@ Here is a simplified representation of the UCL network infrastructure:
 	\includegraphics[width=.9\linewidth]{Pictures/Chapter2/infrastructure.png}
 \end{figure}
 
-\subsection{Network Topology}
+\section{Network Topology}
 Here is the representation of the network topology:
 \begin{figure}[H]
 	\includegraphics[width=.9\linewidth]{Pictures/Chapter2/topology.png}
