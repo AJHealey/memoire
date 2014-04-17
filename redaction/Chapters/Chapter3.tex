@@ -16,15 +16,15 @@ The Extensible Authentication Protocol is a flexible authentication framework de
 \section{802.1X}
 It's a IEEE standard that provides an authentication mechanism to devices on LAN or WLAN. Before explaining the standard, we will define the three parties involved.
 \begin{itemize}
-	\item[\texttt{Supplicant}] The client device that wants to connect to the network.
-	\item[\texttt{Authentication Server}] The server that validates the credentials of the supplicants and determines the rights of the user.
-	\item[\texttt{Authenticator}] A network device like a switch or an access point that is between the supplicant and the authentication server.
+	\item[-]\texttt{Supplicant}: The client device that wants to connect to the network.
+	\item[-]\texttt{Authentication Server}: The server that validates the credentials of the supplicants and determines the rights of the user.
+	\item[-]\texttt{Authenticator}: A network device like a switch or an access point that is between the supplicant and the authentication server.
 \end{itemize} 
 802.1X is a port-based authentication protocol. Once a client connects to a publicly accessible port, the access control allows only the EAP traffic through that port. EAP is used to authenticate the supplicant and if the server grants the authorization to the supplicant, it can have access to the other services.
 Each port have two state
 \begin{itemize}
-\item[Authorized] In this state, the supplicant is authenticated and have access to all its services.
-\item[Unauthorized] The supplicant is not authorized and can only exchange EAP traffic with the authenticator.
+\item[-]\texttt{Authorized}: In this state, the supplicant is authenticated and have access to all its services.
+\item[-]\texttt{Unauthorized}: The supplicant is not authorized and can only exchange EAP traffic with the authenticator.
 \end{itemize}
 
 \section{RADIUS}
