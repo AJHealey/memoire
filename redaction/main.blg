@@ -4,54 +4,54 @@ The top-level auxiliary file: main.aux
 The style file: unsrtnat.bst
 Database file #1: Bibliographie/Bibliography.bib.bib
 Warning--entry type for "eduroam1" isn't style-file defined
---line 31 of file Bibliographie/Bibliography.bib.bib
+--line 45 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "eduroam2" isn't style-file defined
---line 40 of file Bibliographie/Bibliography.bib.bib
+--line 54 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "intermapper" isn't style-file defined
---line 47 of file Bibliographie/Bibliography.bib.bib
+--line 61 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "snmp" isn't style-file defined
---line 53 of file Bibliographie/Bibliography.bib.bib
+--line 67 of file Bibliographie/Bibliography.bib.bib
 Warning--empty year in intermapper
 Warning--empty year in snmp
-You've used 7 entries,
+You've used 8 entries,
             2481 wiz_defined-function locations,
-            593 strings with 5489 characters,
-and the built_in function-call counts, 2079 in all, are:
-= -- 178
-> -- 79
+            602 strings with 5718 characters,
+and the built_in function-call counts, 2457 in all, are:
+= -- 204
+> -- 112
 < -- 6
-+ -- 36
-- -- 22
-* -- 116
-:= -- 337
-add.period$ -- 28
-call.type$ -- 7
-change.case$ -- 12
-chr.to.int$ -- 7
-cite$ -- 9
-duplicate$ -- 113
-empty$ -- 211
-format.name$ -- 33
-if$ -- 448
++ -- 48
+- -- 32
+* -- 147
+:= -- 402
+add.period$ -- 32
+call.type$ -- 8
+change.case$ -- 14
+chr.to.int$ -- 8
+cite$ -- 10
+duplicate$ -- 127
+empty$ -- 241
+format.name$ -- 44
+if$ -- 526
 int.to.chr$ -- 1
-int.to.str$ -- 8
+int.to.str$ -- 9
 missing$ -- 6
-newline$ -- 49
-num.names$ -- 21
-pop$ -- 74
+newline$ -- 55
+num.names$ -- 24
+pop$ -- 86
 preamble$ -- 1
-purify$ -- 7
+purify$ -- 8
 quote$ -- 0
-skip$ -- 81
+skip$ -- 89
 stack$ -- 0
-substring$ -- 14
-swap$ -- 15
+substring$ -- 16
+swap$ -- 18
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 40
+type$ -- 47
 warning$ -- 2
-while$ -- 14
+while$ -- 16
 width$ -- 0
-write$ -- 104
+write$ -- 118
 (There were 6 warnings)

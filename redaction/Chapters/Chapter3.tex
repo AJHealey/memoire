@@ -9,10 +9,23 @@
 %----------------------------------------------------------------------------------------
 %	SECTION 1
 %----------------------------------------------------------------------------------------
+The purpose of this chapter is to present briefly the protocol or concepts that could be used throughout this paper.
+\section{EAP}
+The Extensible Authentication Protocol is a flexible authentication framework defined on the RFC3748 \cite{rfc3748}. EAP was designed to work without the IP protocol and provides support only for the transport of authentication protocols. The idea behind EAP was to creates a framework that supports several authentication methods and to separates the ahtentication methods from the transport.
 
 \section{802.1X}
-
-
+It's a IEEE standard that provides an authentication mechanism to devices on LAN or WLAN. Before explaining the standard, we will define the three parties involved.
+\begin{itemize}
+	\item[\texttt{Supplicant}] The client device that wants to connect to the network.
+	\item[\texttt{Authentication Server}] The server that validates the credentials of the supplicants and determines the rights of the user.
+	\item[\texttt{Authenticator}] A network device like a switch or an access point that is between the supplicant and the authentication server.
+\end{itemize} 
+802.1X is a port-based authentication protocol. Once a client connects to a publicly accessible port, the access control allows only the EAP traffic through that port. EAP is used to authenticate the supplicant and if the server grants the authorization to the supplicant, it can have access to the other services.
+Each port have two state
+\begin{itemize}
+\item[Authorized] In this state, the supplicant is authenticated and have access to all its services.
+\item[Unauthorized] The supplicant is not authorized and can only exchange EAP traffic with the authenticator.
+\end{itemize}
 
 \section{RADIUS}
 
@@ -27,7 +40,7 @@
 
 \section{SNMP}
 
-The Simple Network Management Protocol is an application layer protocol that facilitates the exchange of management information between network devices \cite{snmp}. It is part of the TCP/IP protocol suite and it is mainly used by network administrators to get information about devices on the network and the network performances. These information help the administrators to resolve problems on the network or simply to manage it.\\
+The Simple Network Management Protocol is an application layer protocol that facilitates the exchange of management information between network devices \cite{snmp}. It is part of the TCP/IP protocol suite and it is mainly used by network administrators to get information about devices on the network and the network performances. These information help the administrators to resolve problems on the network or simply to manage it.
 A SNMP network has three main components:
 
 \begin{itemize}
