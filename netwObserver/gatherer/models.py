@@ -94,40 +94,42 @@ class RadiusEvent(models.Model):
 	server = models.CharField(max_length=25)
 	radiusType = models.CharField(max_length=2, choices=RADIUS_TYPES) #TODO choice
 	
-	login = models.CharField(max_length=128,null=True)
-	message = models.CharField(max_length=128,null=True)
+	login = models.CharField(max_length=128, default="")
+	message = models.CharField(max_length=128,default="")
 
 	def __str__(self):
 		return "" + self.radiusType + " : " +  self.login
 
 	class Meta:
-		unique_together = (('date', 'microsecond', 'login'),)
+		unique_together = (('date', 'microsecond', 'login', 'message'),)
 
 ## DHCP model
 class DHCPEvent(models.Model):
-	DHCP_TYPES = (("log","Syslog"), ("war","Warning"), ("dis","DHCPDISCOVER"), ("off","DHCPDISCOVER"), ("req","DHCPREQUEST"), ("ack","DHCPACK"), ("nak","DHCPNAK"), ("inf", "DHCPINFORM"))
+	DHCP_TYPES = (("log","Syslog"), ("war","Warning"), ("dis","Discover"), ("off","Offer"), ("req","Request"), ("ack","Ack"), ("nak","Nak"), ("inf", "Inform"))
 
 	date = models.DateTimeField()
 	microsecond = models.DecimalField(max_digits=6, decimal_places=0)
 
 	server = models.CharField(max_length=10)
 	device = macField.MACAddressField(null=True)
-	dhcpType = models.CharField(max_length=10)
+	dhcpType = models.CharField(max_length=3, choices=DHCP_TYPES)
 	ip = models.GenericIPAddressField(null=True)
 	message = models.CharField(max_length=256, null=True)
 
 	class Meta:
 		unique_together = (('date', 'microsecond', 'server'),)
 
+
 ## Wism model
 class WismEvent(models.Model):
+	SEVERITY_MEANING = ((0,'Emergency: System is unusable'),(1,'Alert: Action must be taken immediately'), (2,'Critical: Critical conditions'), (3,'Error: Error conditions'), (4,'Warning: Warning conditions'), (5,'Notice: Normal but significant condition'), (6,'Informational: Informational messages'), (7,'Debug: Debug-level messages'))
 	date = models.DateTimeField()
 	microsecond = models.DecimalField(max_digits=6, decimal_places=0)
 	
 	wismIp = models.GenericIPAddressField()
 
 	category = models.CharField(max_length=10)
-	severity = models.DecimalField(max_digits=1,decimal_places=0)
+	severity = models.DecimalField(max_digits=1,decimal_places=0, choices=SEVERITY_MEANING)
 	mnemo = models.CharField(max_length=56)
 
 	message = models.CharField(max_length=256)

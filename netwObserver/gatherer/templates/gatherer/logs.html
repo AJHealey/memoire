@@ -38,11 +38,11 @@
 			</thead>
 			<tbody>
 				{% for event in dhcpEvent %}
-				<tr {% if event.dhcpType == 'Ack' %}class="success"{%elif event.dhcpType == 'Discover' and event.message %}class="warning" data-toggle="tooltip" data-placement="bottom" title="{{event.message}}"{%elif event.dhcpType == 'Log'%}class='info' data-toggle="tooltip" data-placement="bottom" title="{{event.message}}"{%endif%}>
-					<th>{%if event.dhcpType == 'Discover' and event.message %}<span class="glyphicon glyphicon-warning-sign"></span>{%endif%}</th>
+				<tr {% if event.dhcpType == 'ack' %}class="success"{% elif event.dhcpType == 'inf' %}class="info"{%elif event.dhcpType == 'dis' and event.message %}class="warning" data-toggle="tooltip" data-placement="bottom" title="{{event.message}}"{%elif event.dhcpType == 'log'%}class='info' data-toggle="tooltip" data-placement="bottom" title="{{event.message}}"{%endif%}>
+					<th>{%if event.dhcpType == 'dis' and event.message %}<span class="glyphicon glyphicon-warning-sign"></span>{%endif%}</th>
 					<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
 					<td>{{event.server}}</td>
-					<td>{{event.dhcpType}}</td>
+					<td>{{event.get_dhcpType_display}}</td>
 					<td>{{event.ip|default_if_none:"-"}}</td>
 					<td>{{event.device.macAddress}}</td>
 				</tr>
@@ -71,29 +71,29 @@
 			</thead>
 			<tbody>
 				{% for event in radiusEvent %}
-					{%if event.radiusType == 'error' %}
+					{%if event.radiusType == 'er' %}
 					<tr class='danger'>
 						<td><span class="glyphicon glyphicon-warning-sign"></span></td>
 						<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
 						<td>{{event.message}}</td>
 					</tr>
-					{%elif event.radiusType == 'notice' %}
+					{%elif event.radiusType == 'no' %}
 					<tr class='info'>
 						<td><span class="glyphicon glyphicon-eye-open"></span></td>
 						<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
 						<td>{{event.message}}</td>
 					</tr>
-					{%elif event.radiusType == 'info' %}
+					{%elif event.radiusType == 'in' %}
 					<tr>
 						<td><span class="glyphicon glyphicon-book"></span></td>
 						<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
 						<td>{{event.message}}</td>
 					</tr>
 					{%else%}
-					<tr {% if event.radiusType == 'OK' %}class="success"{%elif event.radiusType == 'KO' %}class="warning"{%endif%}>
-						<td>{% if event.radiusType == 'OK' %}<span class="glyphicon glyphicon-ok"></span>{%elif event.radiusType == 'KO' %}<span class="glyphicon glyphicon-remove"></span>{%endif%}</td>
+					<tr {% if event.radiusType == 'ok' %}class="success"{%elif event.radiusType == 'ko' %}class="warning"{%endif%}>
+						<td>{% if event.radiusType == 'ok' %}<span class="glyphicon glyphicon-ok"></span>{%elif event.radiusType == 'ko' %}<span class="glyphicon glyphicon-remove"></span>{%endif%}</td>
 						<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
-						<td>{% if event.radiusType == 'OK' %}{{event.user.login}}{%elif event.radiusType == 'KO' %}{{event.message}}{%endif%}</td>
+						<td>{% if event.radiusType == 'ok' %}{{event.login}}{%elif event.radiusType == 'ko' %}{{event.login}}{%endif%}</td>
 					</tr>
 					{%endif%}
 				{% endfor %}
@@ -139,12 +139,12 @@
 						
 					{%else%}
 					>
-						<td></span></td>
+						<td></td>
 					{%endif%}
 						<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
 						<td>{{event.wismIp}}</td>
 						<td>{{event.category}}</td>
-						<td data-toggle="tooltip" data-placement="bottom" title="{{sevMeaning|get:event.severity}}">{{event.severity}}</td>
+						<td data-toggle="tooltip" data-placement="bottom" title="{{event.get_severity_display}}">{{event.severity}}</td>
 						<td data-toggle="tooltip" data-placement="bottom" title="{{event.message}}">{{event.mnemo}}</td>
 					</tr>
 				{% endfor %}

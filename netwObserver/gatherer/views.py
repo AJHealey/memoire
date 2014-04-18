@@ -41,7 +41,7 @@ def logs(request, cat='dhcp', page=1, perpage=100, filters={}):
 
 	## DHCP Logs
 	if cat == 'dhcp':
-		tmpQuery = DHCPEvent.objects.order_by('-date')
+		tmpQuery = DHCPEvent.objects.order_by('-date','-microsecond')
 		
 		if "filterDate" in filters:
 			tmpQuery = tmpQuery.filter(date__gte=filters['filterDate'][0])
@@ -63,7 +63,7 @@ def logs(request, cat='dhcp', page=1, perpage=100, filters={}):
 
 	## Radius Logs
 	elif cat == 'radius':
-		tmpQuery = RadiusEvent.objects.order_by('-date')
+		tmpQuery = RadiusEvent.objects.order_by('-date','-microsecond')
 		p = Paginator(tmpQuery,perpage)
 		try:
 			context['radiusEvent'] = p.page(page)
@@ -75,7 +75,7 @@ def logs(request, cat='dhcp', page=1, perpage=100, filters={}):
 	## Wism Logs
 	elif cat == 'wism':
 		context['sevMeaning'] = SEVERITYMEANING
-		tmpQuery = WismEvent.objects.order_by('-date')
+		tmpQuery = WismEvent.objects.order_by('-date','-microsecond')
 		p = Paginator(tmpQuery,perpage)
 		try:
 			context['wismEvent'] = p.page(page)

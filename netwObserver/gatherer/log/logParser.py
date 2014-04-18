@@ -29,9 +29,13 @@ def wismParser(infos):
 		logType += " " + infos[i]
 		i += 1
 
+	i += 1
+
 	# Common category of logs
 	if logType[0] == '*' and logType[-1] == ':':
-		category = infos[7].replace("%", "").replace("-", " ").replace(":","").split()
+		while '%' not in infos[i]:
+			i += 1
+		category = infos[i].replace("%", "").replace("-", " ").replace(":","").split()
 		
 		severity = int(float(category[1]))
 		mnemo = category[2]
@@ -86,13 +90,16 @@ def radiusParser(infos):
 				i += 1
 			i += 1
 
-		# message contains the given login
-		message = infos[i][1:-1].lower()
+		login = infos[i]
+		while ']' not in login:
+			i += 1
+			login += infos[i]
+
 		if tmp.startswith("ok"):
-			return RadiusEvent(date=date, microsecond=date.microsecond, login=message, radiusType='ok')
+			return RadiusEvent(date=date, microsecond=date.microsecond, login=login[1:-1], radiusType='ok')
 
 		elif tmp.startswith("incorrect"):
-			return RadiusEvent(date=date, microsecond=date.microsecond, login=message, radiusType='ko')
+			return RadiusEvent(date=date, microsecond=date.microsecond, login=login[1:-1], radiusType='ko')
 
 		else:
 			raise Exception("DHCP unknown login action.")
@@ -220,7 +227,9 @@ def dhcpParser(infos):
 
 		# Client just want to know the local options
 		elif infos[3] == "DHCPINFORM":
-			return None
+			ipInformed = infos[5]
+			via = infos[7]
+			return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, dhcpType='inf',  ip=ipInformed)
 
 		else :
 			tmp = ' '.join(infos[2:])
