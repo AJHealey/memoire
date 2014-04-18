@@ -45,8 +45,8 @@ class RAPManage(models.Manager):
 		return super(APManage, self).filter(lastTouched__gte=(timezone.localtime(timezone.now()) - settings.SNMPAPLAP))
 
 class RogueAccessPoint(Device):
-	RAP_STATES = {'0' : 'Initializing', '1' : 'Pending', '2' : 'Alert', '3' : 'Detected Lrad', '4' : 'Known', '5' : 'Acknowledge', '6' : 'Contained', '7' : 'Threat', '8' : 'Contained Pending', '9' : 'Known Contained', '10' : 'Trusted Missing'} 
-	RAP_TYPES = {'0' : 'Access Point', '1' : 'Ad Hoc'}
+	RAP_STATES = (('0','Initializing'), ('1','Pending'), ('2','Alert'), ('3','Detected Lrad'), ('4','Known'), ('5','Acknowledge'), ('6','Contained'), ('7','Threat'), ('8','Contained Pending'), ('9','Known Contained'), ('10','Trusted Missing')) 
+	RAP_TYPES = (('0','Access Point'), ('1','Ad Hoc'))
 
 	ssid = models.CharField(max_length=50, null=True)
 	state = models.CharField(max_length=2, choices=RAP_STATES, null=True)
@@ -86,11 +86,13 @@ class MobileStation(Device):
 # Log Models
 ## Radius Model
 class RadiusEvent(models.Model):
+	RADIUS_TYPES = (("ok","Login Ok"),("ko","Login Incorrect"),("er","Error"),("no","Notice"),("in","Information"))
+
 	date = models.DateTimeField()
 	microsecond = models.DecimalField(max_digits=6, decimal_places=0)
 
 	server = models.CharField(max_length=25)
-	radiusType = models.CharField(max_length=10) #TODO choice
+	radiusType = models.CharField(max_length=2, choices=RADIUS_TYPES) #TODO choice
 	
 	login = models.CharField(max_length=128,null=True)
 	message = models.CharField(max_length=128,null=True)
@@ -103,6 +105,8 @@ class RadiusEvent(models.Model):
 
 ## DHCP model
 class DHCPEvent(models.Model):
+	DHCP_TYPES = (("log","Syslog"), ("war","Warning"), ("dis","DHCPDISCOVER"), ("off","DHCPDISCOVER"), ("req","DHCPREQUEST"), ("ack","DHCPACK"), ("nak","DHCPNAK"), ("inf", "DHCPINFORM"))
+
 	date = models.DateTimeField()
 	microsecond = models.DecimalField(max_digits=6, decimal_places=0)
 

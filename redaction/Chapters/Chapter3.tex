@@ -20,22 +20,18 @@ It's a IEEE standard that provides an authentication mechanism to devices on LAN
 	\item[-]\texttt{Authentication Server}: The server that validates the credentials of the supplicants and determines the rights of the user.
 	\item[-]\texttt{Authenticator}: A network device like a switch or an access point that is between the supplicant and the authentication server.
 \end{itemize} 
-802.1X is a port-based authentication protocol. Once a client connects to a publicly accessible port, the access control allows only the EAP traffic through that port. EAP is used to authenticate the supplicant and if the server grants the authorization to the supplicant, it can have access to the other services.
-Each port have two state
+802.1X is a port-based authentication protocol. Once a client connects to a publicly accessible port, the authenticator allows only the EAP traffic through that port. EAP is used to authenticate the supplicant and if the authentication server grants the authorization to the supplicant, it can have access to the other services.
+Each port have two state:
 \begin{itemize}
-\item[-]\texttt{Authorized}: In this state, the supplicant is authenticated and have access to all its services.
-\item[-]\texttt{Unauthorized}: The supplicant is not authorized and can only exchange EAP traffic with the authenticator.
+\item \texttt{Authorized}: In this state, the supplicant is authenticated and have access to all its services.
+\item \texttt{Unauthorized}: The supplicant is not authorized and can only exchange EAP traffic with the authenticator.
 \end{itemize}
+
 
 \section{RADIUS}
 
 
 \section{WiSM}
-
-
-
-\section{DHCP}
-
 
 
 \section{SNMP}
@@ -59,5 +55,3 @@ A SNMP network has three main components:
 
 All the network objects are described and organized hierarchically in a Management Information Base (MIB). There are MIBs for each set of related network entites that can be managed. These MIBs are accessed using a network-management protocol such as SNMP.
 
-
-\section{Problems encountered}

@@ -264,7 +264,7 @@ def getAllMS():
             if index in result:
                 result[index].dot11protocol = proto
 
-        '''
+        
         # Link to AP
         tmp = getMobileStationAPMacAddress(ip=wism[0])
         for index, apMac in tmp.items():
@@ -272,7 +272,7 @@ def getAllMS():
                 apMac = parseMacAdresse(apMac)
                 if not apMac == '': 
                     result[index].ap, created = AccessPoint.objects.get_or_create(macAddress=apMac)
-                    '''
+                    
 
     except Exception as e:
         OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon', error=str(e)).save()
@@ -312,7 +312,7 @@ def snmpMSDaemon(laps=timedelta(minutes=30)):
             task.touch()
             time.sleep(laps.total_seconds())
         except:
-            OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon', error='Laps failed').save()
+            OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon', error='Loop failed').save()
             time.sleep(10*laps.total_seconds())
 
 
