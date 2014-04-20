@@ -1,4 +1,4 @@
-\begin{thebibliography}{8}
+\begin{thebibliography}{10}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -63,5 +63,11 @@ Windows.
 \newblock Windows xp support has ended.
 \newblock URL
   \url{http://windows.microsoft.com/en-us/windows/end-support-help}.
+
+\bibitem[Machaka et~al.(2011)Machaka, Bagula, and Wet]{article1}
+P.~Machaka, A.~Bagula, and N.~De Wet.
+\newblock A highly scalable monitoring tool for wi-fi networks.
+\newblock In \emph{SATNAC 2011}, East London International Convention Centre,
+  South Africa, 4-7 September 2011.
 
 \end{thebibliography}

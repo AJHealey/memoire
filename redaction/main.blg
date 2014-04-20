@@ -4,102 +4,57 @@ The top-level auxiliary file: main.aux
 The style file: unsrtnat.bst
 Database file #1: Bibliographie/Bibliography.bib.bib
 Warning--entry type for "eduroam1" isn't style-file defined
---line 45 of file Bibliographie/Bibliography.bib.bib
+--line 46 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "eduroam2" isn't style-file defined
---line 54 of file Bibliographie/Bibliography.bib.bib
+--line 55 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "intermapper" isn't style-file defined
---line 61 of file Bibliographie/Bibliography.bib.bib
+--line 62 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "snmp" isn't style-file defined
-<<<<<<< HEAD
---line 67 of file Bibliographie/Bibliography.bib.bib
-Warning--empty year in intermapper
-Warning--empty year in snmp
-You've used 8 entries,
-            2481 wiz_defined-function locations,
-            602 strings with 5718 characters,
-and the built_in function-call counts, 2457 in all, are:
-= -- 204
-> -- 112
-< -- 6
-+ -- 48
-- -- 32
-* -- 147
-:= -- 402
-add.period$ -- 32
-call.type$ -- 8
-change.case$ -- 14
-chr.to.int$ -- 8
-cite$ -- 10
-duplicate$ -- 127
-empty$ -- 241
-format.name$ -- 44
-if$ -- 526
-int.to.chr$ -- 1
-int.to.str$ -- 9
-missing$ -- 6
-newline$ -- 55
-=======
---line 53 of file Bibliographie/Bibliography.bib.bib
+--line 68 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "windows" isn't style-file defined
---line 59 of file Bibliographie/Bibliography.bib.bib
+--line 74 of file Bibliographie/Bibliography.bib.bib
 Warning--empty year in intermapper
 Warning--empty year in snmp
 Warning--empty year in windows
-You've used 8 entries,
+You've used 10 entries,
             2481 wiz_defined-function locations,
-            597 strings with 5590 characters,
-and the built_in function-call counts, 2335 in all, are:
-= -- 199
-> -- 86
+            612 strings with 5998 characters,
+and the built_in function-call counts, 3067 in all, are:
+= -- 252
+> -- 140
 < -- 7
-+ -- 40
-- -- 24
-* -- 127
-:= -- 375
-add.period$ -- 31
-call.type$ -- 8
-change.case$ -- 14
-chr.to.int$ -- 8
-cite$ -- 11
-duplicate$ -- 127
-empty$ -- 241
-format.name$ -- 36
-if$ -- 504
++ -- 60
+- -- 40
+* -- 185
+:= -- 497
+add.period$ -- 38
+call.type$ -- 10
+change.case$ -- 18
+chr.to.int$ -- 10
+cite$ -- 13
+duplicate$ -- 163
+empty$ -- 307
+format.name$ -- 54
+if$ -- 659
 int.to.chr$ -- 1
-int.to.str$ -- 9
-missing$ -- 6
-newline$ -- 54
->>>>>>> 8550f8c6dbce76fe0c7794f2fbf34175366b032e
-num.names$ -- 24
-pop$ -- 86
+int.to.str$ -- 11
+missing$ -- 7
+newline$ -- 65
+num.names$ -- 30
+pop$ -- 111
 preamble$ -- 1
-purify$ -- 8
+purify$ -- 10
 quote$ -- 0
-<<<<<<< HEAD
-skip$ -- 89
+skip$ -- 109
 stack$ -- 0
-substring$ -- 16
-swap$ -- 18
-=======
-skip$ -- 94
-stack$ -- 0
-substring$ -- 16
-swap$ -- 17
->>>>>>> 8550f8c6dbce76fe0c7794f2fbf34175366b032e
+substring$ -- 20
+swap$ -- 23
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 47
-<<<<<<< HEAD
-warning$ -- 2
-while$ -- 16
-width$ -- 0
-write$ -- 118
-(There were 6 warnings)
-=======
+type$ -- 61
 warning$ -- 3
-while$ -- 16
+while$ -- 20
 width$ -- 0
-write$ -- 115
+write$ -- 142
 (There were 8 warnings)
->>>>>>> 8550f8c6dbce76fe0c7794f2fbf34175366b032e
