@@ -1,4 +1,4 @@
-\begin{thebibliography}{10}
+\begin{thebibliography}{11}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -69,5 +69,10 @@ P.~Machaka, A.~Bagula, and N.~De Wet.
 \newblock A highly scalable monitoring tool for wi-fi networks.
 \newblock In \emph{SATNAC 2011}, East London International Convention Centre,
   South Africa, 4-7 September 2011.
+
+\bibitem[Jiujun~Cheng and Yan(2014)]{article2}
+Junjun Liu Qingyang~Zhang Jiujun~Cheng, Liufei~Hu and Chendan Yan.
+\newblock A new mechanism for network monitoring and shielding in wireless lan.
+\newblock \emph{Mathematical Problems in Engineering, vol. 2014}, 2014.
 
 \end{thebibliography}
