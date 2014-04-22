@@ -28,45 +28,45 @@ Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan"
 while executing---line 1315 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
 while executing---line 1315 of file unsrtnat.bst
-You've used 11 entries,
+You've used 12 entries,
             2481 wiz_defined-function locations,
-            617 strings with 6193 characters,
-and the built_in function-call counts, 3366 in all, are:
-= -- 277
-> -- 155
+            627 strings with 6529 characters,
+and the built_in function-call counts, 3873 in all, are:
+= -- 316
+> -- 194
 < -- 8
-+ -- 66
-- -- 44
-* -- 202
-:= -- 546
-add.period$ -- 41
-call.type$ -- 11
-change.case$ -- 20
-chr.to.int$ -- 11
-cite$ -- 14
-duplicate$ -- 181
-empty$ -- 335
-format.name$ -- 61
-if$ -- 723
++ -- 80
+- -- 56
+* -- 253
+:= -- 634
+add.period$ -- 46
+call.type$ -- 12
+change.case$ -- 22
+chr.to.int$ -- 12
+cite$ -- 15
+duplicate$ -- 200
+empty$ -- 373
+format.name$ -- 74
+if$ -- 827
 int.to.chr$ -- 1
-int.to.str$ -- 12
-missing$ -- 8
-newline$ -- 70
-num.names$ -- 33
-pop$ -- 120
+int.to.str$ -- 13
+missing$ -- 9
+newline$ -- 77
+num.names$ -- 36
+pop$ -- 125
 preamble$ -- 1
-purify$ -- 11
+purify$ -- 12
 quote$ -- 0
-skip$ -- 121
+skip$ -- 131
 stack$ -- 0
-substring$ -- 22
-swap$ -- 25
+substring$ -- 45
+swap$ -- 27
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 68
+type$ -- 75
 warning$ -- 3
-while$ -- 22
+while$ -- 25
 width$ -- 0
-write$ -- 154
+write$ -- 171
 (There were 6 error messages)
