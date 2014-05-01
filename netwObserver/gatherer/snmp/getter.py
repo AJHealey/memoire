@@ -135,7 +135,7 @@ def getAPIfLoadNumOfClients(ip, port=161, community='snmpstudentINGI', ap=''):
             if index[:-2] not in result:
                 result[index[:-2]] = 0
 
-            result[index[:-2]] += int(noUsers)
+            result[index[:-2]] += float(noUsers)
 
         return result
 
@@ -157,7 +157,7 @@ def getAPIfPoorSNRClients(ip, port=161, community='snmpstudentINGI', ap=''):
             if index[:-2] not in result:
                 result[index[:-2]] = 0
 
-            result[index[:-2]] += int(noUsers)
+            result[index[:-2]] += float(noUsers)
 
         return result
 
@@ -207,9 +207,9 @@ def getAllAP():
         tmp = getApNames(ip=wism[0])
         for index, name in tmp.items():
             if index in result:
-                try:
-                    result[index].name = name.decode()
-                except:
+                if "b\'" in name:
+                    result[index].name = name[2:-1]
+                else:
                     result[index].name = name
 
         # Add IP
