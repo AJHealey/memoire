@@ -1,4 +1,4 @@
-from gatherer.models import WismEvent, MobileStation
+from gatherer.models import WismEvent, MobileStation, AccessPoint
 
 
 def getWismLogByType():
