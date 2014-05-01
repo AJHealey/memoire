@@ -27,4 +27,9 @@ def getUserByDot11Protocol():
 
 	return stats
 
+def getHotAP(number=5):
+	result = {}
+	for ap in AccessPoint.objects.isUp().order_by('numOfClients')[:number]:
+		result[ap.name] = ap.numOfClients
+	return result
 

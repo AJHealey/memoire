@@ -153,7 +153,7 @@ def getAPIfPoorSNRClients(ip, port=161, community='snmpstudentINGI', ap=''):
 
     else:
         result = {}
-        for index, noUsers in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.24' + ap, port=port, community=community).items():
+        for index, noUsers in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.24', port=port, community=community).items():
             if index[:-2] not in result:
                 result[index[:-2]] = 0
 
@@ -207,13 +207,28 @@ def getAllAP():
         tmp = getApNames(ip=wism[0])
         for index, name in tmp.items():
             if index in result:
-                result[index].name = name
+                try:
+                    result[index].name = name.decode()
+                except:
+                    result[index].name = name
 
         # Add IP
         tmp = getApIPs(ip=wism[0])
         for index, ip in tmp.items():
             if index in result:
                 result[index].ip = ip
+
+        # Add numOfClients
+        tmp = getAPIfLoadNumOfClients(ip=wism[0])
+        for index, num in tmp.items():
+            if index in result:
+                result[index].numOfClients = num
+
+        # Add number Of poor SNR Clients
+        tmp = getAPIfPoorSNRClients(ip=wism[0])
+        for index, num in tmp.items():
+            if index in result:
+                result[index].numOfPoorSNRClients = num
 
     except Exception as e:
         OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon', error=str(e)).save()
