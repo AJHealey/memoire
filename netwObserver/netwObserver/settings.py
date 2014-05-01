@@ -89,7 +89,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = "/srv/static/"
 MEDIA_URL = '/media/'
-MEDIA_ROOT = './media/'
+MEDIA_ROOT = '/srv/media/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
  )
