@@ -62,8 +62,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', 
         'NAME': 'memoire',
-        'USER': 'memoire',
-        'PASSWORD': 'memoireTest',
+        'USER': 'root',
+        'PASSWORD': 'memoire',
         'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
         'PORT': '3306',
     }
