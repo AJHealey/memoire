@@ -34,6 +34,13 @@ Like most of the modern web frameworks, Django is built using \emph{Object-relat
 \subsection{MySql}
 Even if most of the time we don't make direct transaction with the database, it's important to chose the right DBMS\footnote{Database Management System}. At the beginning, the capacity of the application were quite limited and we used SqLite\footnote{\url{https://sqlite.org/}}. SqLite has the particularity to not use a client-server model. It directly manage inside the application and it's the one use by default in Django. It fit really well to small applications because all is internally managed et it doesn't require to install an external DBMS to handle the transactions. But quickly, we reach the limits of SqLite and we chose to migrate to MySql. NetwObserver generate several threads and make a lot of concurrent access to the database. Such utilization is not adapted to SqLite and made the application unstable. The main issue was that, when the application gathers its data, it needs to be still available to the user. SqLite have some difficulties to handle insertion of a lot of new entries while getting concurrent requests from the users.
 
+\subsection{Gatherer}
+\subsubsection{Logs Parser}
+\subsubsection{SNMP}
+\subsubsection{Active Monitoring}
+
+\subsection{Analyse}
+
 \section{Active Probe}
 \subsection{Linksys Router}
 \subsection{OpenWrt}
