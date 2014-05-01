@@ -6,9 +6,44 @@
 
 \lhead{Chapter 5. \emph{Monitoring Tool - Part 2}} 
 
+\section{NetwObserver}
+The first step in the development was to select the technologies adapted to the problem. As we had a lot of log to parse, we have started the implementation using Python. Python has a strong integration of the strings and lists. It's quite easy to generate a parser of logs and keeping the code neat thanks to its very simple syntax.
+As more feature were added, we need to structure the system in a way that make it easily accessible. It's a monitoring tools and it has to be accessible from everywhere and easy to use. So, we decided to implemented it as a web application. This application would be usable from every computer without any installation and the network administrators could manage and maintain it directly on the server. An update would be accessible directly for every users.
 
-\section{Equipment used}
+\subsection{Django: A High-Level Python Web Framework}
+As presented by its developers, Django is a "web framework for perfectionist with deadlines"\footnote{\url{https://www.djangoproject.com/}}. Django allow to achieve a modular structure quite easily and provide all the developers need to add new components in the application. A Django application is composed of several modules that exists independently and interact with each other through the database.
+Moreover, Django adhere to the DRY\footnote{\url{http://c2.com/cgi/wiki?DontRepeatYourself}} principle.
+\begin{description}
+  \item[Don't Repeat Yourself] \hfill \\
+  Every piece of knowledge must have a single, unambiguous, authoritative representation within a system.
+\end{description}
+When we use this framework, we focus on writing and defining each element one time on the right place. Maintainability is another important component of our system. Having duplication all over the code make it difficult to maintain and to keep coherent.
+Django used a variation of the Model-View-Controller model called \emph{Model-View-Template}\cite{mvt}. The main difference is that Django is not about states. Browser don't evolve from one state to another, every request are done from scratch. In MVC, Controller update the View and the Model accordingly to the events. That's not the case here because each time something is modified (e.g a new insertion in the database) we start from the beginning. It's not a defect, it's how HTTP work.
 
+\begin{description}
+\item[Model] \hfill \\
+The first element that composed the application are the entities manipulated by the application. A model is a representation of an element of the domain. Each model encapsulates all the data and information required to understand it.
+\item[View] \hfill \\
+The main task of the views is to handle the HTTP requests. It receives a HTTP request and returns a HTTP response.
+\item[Template] \hfill \\
+It represents the HTTP response. It provide a generic answer and the View fulfil the missing parts (most of the time by interrogating the database).
+\end{description}
 
+Like most of the modern web frameworks, Django is built using \emph{Object-relational mapping} technique. The purpose is to make a bridge between the object manipulated by Python and the database entries. The architecture respects an \emph{Active-record pattern} that tied each object to a row in the database. It allow to focus on the logic of the application and to code easier. We can do more with less code. The main drawback of such pattern, it's that developers tend to forget the database behind it. Even if Django is optimised to translate object in database entity (and in the other way around), it important to design the model by designing the database. Every access is translate by Django but poor request could lead to really poor performance.
 
-\section{Testbed conditions}
+\subsection{MySql}
+Even if most of the time we don't make direct transaction with the database, it's important to chose the right DBMS\footnote{Database Management System}. At the beginning, the capacity of the application were quite limited and we used SqLite\footnote{\url{https://sqlite.org/}}. SqLite has the particularity to not use a client-server model. It directly manage inside the application and it's the one use by default in Django. It fit really well to small applications because all is internally managed et it doesn't require to install an external DBMS to handle the transactions. But quickly, we reach the limits of SqLite and we chose to migrate to MySql. NetwObserver generate several threads and make a lot of concurrent access to the database. Such utilization is not adapted to SqLite and made the application unstable. The main issue was that, when the application gathers its data, it needs to be still available to the user. SqLite have some difficulties to handle insertion of a lot of new entries while getting concurrent requests from the users.
+
+\section{Active Probe}
+\subsection{Linksys Router}
+\subsection{OpenWrt}
+
+\section{Communication}
+The probe and the server have to exchange information. As we have wanted to create a modular tool, we chose to encrypt all the data sent between the server and the probes. If the active monitoring device capture sensible contents, there must be no security vulnerability like eavesdropping or man in the middle attack.
+The first constraint that appeared was the weak computation power of the probe. In consequence, we had to keep the encryption as easy to perform as possible. So, we have looked into symmetric cryptographic techniques. But in the other hand, as we have several probes, it could be difficult to manage and exchange the keys unlike in asymmetric cryptography. Our choice was to take the best of both world and implement a protocol using hybrid encryption.
+In definitive, we used RSA and AES encryption.
+\subsection{RSA}
+\subsection{AES}
+\subsection{Transaction Protocol}
+\subsection{OpenSSL}
+\subsection{PyCrypto}
