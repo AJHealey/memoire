@@ -31,7 +31,6 @@ def walker(ip, oib, port=161, community='snmpstudentINGI'):
             ))
         else:
             result = {}
-            print(len(varBindTable))
             for varBindTableRow in varBindTable:
                 for name, val in varBindTableRow:
                     result[name.prettyPrint()[len(oib)+1:]] = val.prettyPrint()
@@ -351,6 +350,7 @@ def parseMacAdresse(macString):
 #####
 if __name__ == '__main__':
     import sys
+
     for ap in getAPIfLoadNumOfClients(wism[0]):
         print(str(ap))
        
