@@ -131,7 +131,7 @@ def getAPIfLoadNumOfClients(ip, port=161, community='snmpstudentINGI', ap=''):
 
     else:
         result = {}
-        for index, noUsers in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.4' + ap, port=port, community=community).items():
+        for index, noUsers in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.4', port=port, community=community).items():
             if index[:-2] not in result:
                 result[index[:-2]] = 0
 
@@ -351,6 +351,6 @@ def parseMacAdresse(macString):
 #####
 if __name__ == '__main__':
     import sys
-    for ap in getMobileStationAPMacAddress(wism[0]):
+    for ap in getAPIfLoadNumOfClients(wism[0]):
         print(str(ap))
        
