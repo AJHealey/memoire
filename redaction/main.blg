@@ -15,10 +15,10 @@ Warning--entry type for "windows" isn't style-file defined
 --line 74 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "mvt" isn't style-file defined
 --line 110 of file Bibliographie/Bibliography.bib.bib
-Warning--entry type for "octopussy" isn't style-file defined
---line 117 of file Bibliographie/Bibliography.bib.bib
-Warning--entry type for "syslogCisco" isn't style-file defined
---line 123 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "eduroamRadius" isn't style-file defined
+--line 118 of file Bibliographie/Bibliography.bib.bib
+Warning--I didn't find a database entry for "eduoramRadius"
+Warning--I didn't find a database entry for "syslogCisco"
 Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" has a comma at the end for entry article2
 while executing---line 1233 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
@@ -34,47 +34,46 @@ Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan"
 while executing---line 1315 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
 while executing---line 1315 of file unsrtnat.bst
-Warning--empty year in octopussy
-Warning--empty year in syslogCisco
-You've used 15 entries,
+Warning--empty year in eduroamRadius
+You've used 14 entries,
             2481 wiz_defined-function locations,
-            640 strings with 6917 characters,
-and the built_in function-call counts, 4654 in all, are:
-= -- 382
-> -- 215
-< -- 11
-+ -- 93
-- -- 62
-* -- 292
-:= -- 751
-add.period$ -- 55
-call.type$ -- 15
-change.case$ -- 28
+            641 strings with 6816 characters,
+and the built_in function-call counts, 4386 in all, are:
+= -- 359
+> -- 208
+< -- 10
++ -- 88
+- -- 60
+* -- 275
+:= -- 711
+add.period$ -- 52
+call.type$ -- 14
+change.case$ -- 26
 chr.to.int$ -- 14
-cite$ -- 20
-duplicate$ -- 242
-empty$ -- 463
-format.name$ -- 83
-if$ -- 998
-int.to.chr$ -- 2
-int.to.str$ -- 16
+cite$ -- 18
+duplicate$ -- 228
+empty$ -- 433
+format.name$ -- 80
+if$ -- 940
+int.to.chr$ -- 1
+int.to.str$ -- 15
 missing$ -- 9
-newline$ -- 92
-num.names$ -- 45
-pop$ -- 159
+newline$ -- 87
+num.names$ -- 42
+pop$ -- 149
 preamble$ -- 1
-purify$ -- 15
+purify$ -- 14
 quote$ -- 0
-skip$ -- 166
+skip$ -- 156
 stack$ -- 0
-substring$ -- 51
-swap$ -- 35
+substring$ -- 49
+swap$ -- 31
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 96
-warning$ -- 5
-while$ -- 31
+type$ -- 89
+warning$ -- 4
+while$ -- 29
 width$ -- 0
-write$ -- 207
+write$ -- 194
 (There were 6 error messages)

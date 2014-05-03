@@ -10,9 +10,10 @@
 %	SECTION 1
 %----------------------------------------------------------------------------------------
 
+%http://www.cisco.com/web/FR/documents/pdfs/livres_blancs/mobilite_sans_fil/Protocole_LWAPP.pdf
+
 \section{UCL's wireless infrastructure}
 
-\subsection{Overview}
 On its Louvain-la-Neuve's campus area, the Catholic University of Louvain offers five different networks, each with a different SSID, that are reserved to certain parts of users according to their category. Those available networks are the following:
 \begin{itemize}
 	\item[-] \texttt{student.UCLouvain}: Available for the students enrolled at UCL.
@@ -24,28 +25,71 @@ On its Louvain-la-Neuve's campus area, the Catholic University of Louvain offers
 
 Security is an important issue and an everyday struggle at the university and several measures are regularly taken by the SRI team in order to keep the integrity and the consistency of the UCL's network preserved. As an example, Microsoft has decided on the 8th of April 2014 to end the Windows XP's support and updates leaving all the remaining laptops running this operating system unprotected to possible external threats\cite{windows}. The problem with that Microsoft's decision is that those outdated computers might become more vulnerable to security risks and viruses. It could become a real problem for the university's network because if a contaminated host connects to the network it can cause serious damages to the overall infrastructure depending on what the virus is programmed to do. This is why the SRI team took the decision to block the wireless access to any device that still uses Windows XP since the 8th of April.
 
-The main way of protecting the network infrastructure from exterior threats that has been installed and configured by the SRI team is the use of the IEEE 802.1X standard providing an authentication mechanism for all the devices that want to connect to a UCL's wireless network.
+The main way of protecting the network infrastructure from exterior threats that has been installed and configured by the SRI team is the use of the \texttt{IEEE 802.1X} standard providing an authentication mechanism for all the devices that want to connect to a UCL's wireless network.
 Basically, every student, professor, researcher or staff members needs a special WiFi username and a password to connect to one of the networks. The username is composed of two parts, on one side the login the user has received from the university's administrative system when he enrolled himself, and on the other side the following part \texttt{@wifi.uclouvain.be}. With that username, the user also needs a password. This password is the same as the password he uses to connect to his personnal virtual office on the university's web site. Without those credentials it is impossible to connect to the UCL's wireless network.
 
-This kind of authentication mechanism is only possible if the infrastructure has several key entities that are going to handle all this security authentication process. Those entities are an authentication server and an authenticator. Typically an authentication server is a host that supports the RADIUS and  EAP protocols. In the case of the UCL's infrastructure there are also two servers that support the LDAP (\textit{Lightweight Directory Access Protocol}) protocol where all the information about the students, professors, researchers and staff members of the UCL are stored. Among those data, we find the users' credentials that ensure a wireless connection authentication and access. The authenticator is the access point that handles the connection request from the user and a Cisco controller that handles all the connection process. The authenticator part is the security guard for the network since the client is not allowed to the protected side of the network until it's identity has been validated and authorized.
+This kind of authentication mechanism is only possible if the infrastructure has several key entities that are going to handle all this security authentication process. Those entities are an authentication server and an authenticator. Typically an authentication server is a host that supports the \texttt{RADIUS} and  \texttt{EAP} protocols. In the case of the UCL's infrastructure the authenticator is composed of two servers that support the \texttt{LDAP} (\textit{Lightweight Directory Access Protocol}) protocol where all the information about the students, professors, researchers and staff members of the UCL are stored. Among those data, we find the users' credentials that ensure a wireless connection authentication and access. The authenticator are the access point that handles the connection request from the user and a Cisco controller that handles all the connection process. The authenticator part is the security guard for the network since the client is not allowed to the protected side of the network until it's identity has been validated and authorized.
 
-
-\section{Network Topology}
-Unlike the Woluwe's campus where an Aruba Networks controler is used, the SRI team has chosen to use with a Cisco wireless LAN controler (WLC) for the university's network in Louvain-la-Neuve.
+Let's keep in mind that these controller and access point do not play in the real world of the authentication itself. They are called the \textit{Authenticator} because that is where the client asks for authentication but it do not authenticate the client. The device that authenticate the client is the \textit{Authentication Server}.
 
 
 
-Here is the representation of the network topology:
+\section{Authentication process}
+As explained before, with the \texttt{IEEE 802.1X} standard, there are two key parts, the \textit{Authenticator} and the \textit{Authentication Server}. A third one can be added to this list and is called the \textit{Supplicant}. The supplicant is simply the wireless client that asks for an authentication to have access to the protected network. Then authentication process works in several key steps and uses different protocols.
+
+First of all, the client who wants to access the network needs to make a special request to the controller (i.e. the authenticator). During that step the protocols that are used between the supplicant and the authenticator are a combination \texttt{IEEE 802.1X} and \texttt{EAP}. The \texttt{IEEE 802.1X} protocol allows the authenticator to refuse any access to the network for the supplicant as long as the authentication server has not authenticated the client and accepted to open the access. The \texttt{EAP} protocol (\textit{Extensible Authentication Protocol}) defines a standard for the messages that are going to be exchanged between the supplicant and the authentication server. Those messages are encapsulated inside the \texttt{IEEE 802.1X} and this encapsulation is known as \texttt{EAPOL} (\textit{EAP over LANs}).
+
+To be more precise, the two types of \texttt{EAP} methods used within the UCL's network security management are \texttt{EAP-TTLS} (\textit{EAP-Tunneled Transport Layer Security}) and \texttt{PEAP} (\textit{Protected Extensible Authentication Protocol}). The principle of those methods is that only the authentication server uses a \texttt{X.509} certificate. When the client starts an authentication process, he uses the server certificate to encrypt all the messages he is going to send to the authentication server. In other words, this certificate is used as a key for encrypting the communication between the supplicant and the authentication server. It is also used to authenticate the authentication server (i.e. to verify that the server the client is talking to is really the UCL's server that authenticate the clients).
+
+
+Second, once the authenticator has received the request from the supplicant, he has to forward it to the authenticator server. The protocol used between the authenticator and the authentication server is the \texttt{RADIUS} protocol. All the requests made by the supplicant, in \texttt{IEEE 802.1X/EAP} messages, are translated into \texttt{RADIUS} and forwarded to the authentication server. The authenticator server then grants the access or not to the client and sends back a response to the authenticator telling it to open the network access to the client.
+
+
+The following figure shows the network architecture organization and topology at the Catholic University of Louvain.
 \begin{figure}[H]
 	\includegraphics[width=.9\linewidth]{Pictures/Chapter2/topology.png}
+	\caption{UCL's network topology}
+\end{figure}
+
+
+\subsection{student.UCLouvain authentication chain}
+To illustrate how the whole authentication process works, let's take a closer look to what happens when a student wants to connect to the \texttt{student.UCLouvain} network.
+As detailed above, this network is protected by the \texttt{IEEE 802.1X} authentication process. Thus the client first needs to authentication himself before being able to access the Internet on this network.
+As a reminder, the client who wants to connect the network is called the \textit{supplicant}. This supplicant is going to first make a standard \texttt{802.11} association with the authenticator. The authenticator is composed of the access point to which the supplicant is trying to connect and the WLAN controller that is going to handle the whole authentication request. Once this association has been made, the authenticator understands that the supplicant wants to get access to the network and thus a \texttt{IEEE 802.1X} session between them is started. At this state, only \texttt{802.1X} traffic is allowed. 
+
+The first message the supplicant is going to send to the authenticator is an \texttt{EAPOL-Start} frame in order to initiate the authentication process. When the authenticator receives that frame, it sends an \texttt{EAP-Request Identity} frame to the supplicant that answers with a \texttt{EAP-Response Identity} frame containng the supplicant's identity. The authenticator encapsulates this response in a \texttt{RADIUS Access-Request} packet and forwards it to the authenticator server.
+
+Once the authentication server receives that packet it sends a \texttt{RADIUS Access Challenge} back to the authenticator containing an \texttt{EAP Request} specifying the type of \texttt{EAP} method to use (typically \texttt{TTLS} or \texttt{PEAP}) to validate the identity of the supplicant and how the credentials are submitted. The authentication server also sends its certificate during that negociation. The authenticator encapsulates that \texttt{EAP Request} in an \texttt{EAPOL} frame and sends it to the supplicant.
+
+Since the supplicant has a copy of the server certificate, it can checks if the one received during the negociation is the same in order to authenticate the server's identity. Once its identity has been proved, the supplicant builds a \texttt{TLS-encrypted} tunnel with the authenticator tunnel. It then sends its credential (username and password) inside this channel.
+
+The authentication server validates the username and password of the supplicant and sends back a \texttt{RADIUS Access-Accept} packet to the authenticator that sends a \texttt{EAP-Success} frame to the supplicant and by doing so, completing the process of authentication and allowing the user to access the Internet.
+
+The following figure represents the main steps of the authentication process for the \texttt{student.UCLouvain} network:
+
+\begin{figure}[H]
+	\includegraphics[width=.9\linewidth]{Pictures/Chapter2/student.png}
+	\caption{student.UCLouvain authentication process}
+\end{figure}
+
+
+\subsection{eduroam authentication chain}
+Let's take another authentication process example with the \texttt{eduroam} network.
+As explained in \cite{eduoramRadius}, the \texttt{eduroam} project is "\textit{A wolrdwide federation of} \texttt{RADIUS} \textit{ servers facilitating network access for roaming academic affiliates using} \texttt{IEEE 802.1X} \textit{as the vehicle. eduroam's use of} \texttt{802.1X} \textit{in concert with} \texttt{RADIUS} \textit{means the network is built around well understood, established, and easy to manage standards which are often already deployed within the network infrastructure of educational institutions}".
+
+Since \texttt{eduroam} is also using the \texttt{IEEE 802.1X}, when a client want to connect to the network, he is not able to pass any traffic other than \texttt{802.1X} until his request is accepted by the authentication server. As for the UCL's network, the communication between the supplicant and the authenticator also involves \texttt{EAP} conversation. The supplicant sends its \texttt{EAP} messages to the authenticator that forwards them to the authentication server in the form of a \texttt{RADIUS} request. To ensure the protection of the credentials and information sent during the authentication negociation, a \texttt{SSL} tunnel is created between the supplicant and the authentication server.
+
+As a student from another university than the Catholic University of Louvain can access and connect to the eduroam network from inside the Louvain-la-Neuve campus, the local authentication server is not the one that is going to handle the authentication request. Indeed, if the user comes from a university in Spain, for example, its authentication request will be forwarded to the authentication server of his own university. The \texttt{RADIUS} protocol supports that forwarding in its proxy mode. To prevent any administrators not responsible for the handling of the authentication request, the \texttt{SSL} tunnel is propagated throughout the \texttt{RADIUS} infrastructure. Thanks to that tunnel, the intermadiate authenticator does not handle sensitive information during the authentication process.
+
+Here is a representation of the authentication request's communications between the supplicant, the authenticator and the authentication server with \texttt{RADIUS} proxying:
+\begin{figure}[H]
+	\includegraphics[width=1\linewidth]{Pictures/Chapter2/eduroam1.png}
+	\caption{eduroam authentication process}
 \end{figure}
 
 
 
-
-
-
-\subsection{Design}
+\section{Infrastructure architecture}
 Using the network monitoring software InterMapper\cite{intermapper} we see that the UCL network is composed of seven neighborhood routers (CtPythagore, CtHalles, CtLew, CtStevin, CtCarnoy, CtMichotte and CtSH1C). Six of them are present on the Louvain-la-Neuve campus and only CtLew is on the Wolluwé Campus. Those routers task is only routing.\\
 
 Internet access is provided by Belnet via a 10GBit ethernet link directly connected to the CtPythagore. There is also a second 3GBit ethernet link connected to the CtHalles router but this link is never used. It is only a backup link in case of failure of the main one.
@@ -63,6 +107,3 @@ Here is a simplified representation of the UCL network infrastructure:
 
 
 
-
-
-\section{Understanding the passive and active logs}

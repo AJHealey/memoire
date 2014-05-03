@@ -1,4 +1,4 @@
-\begin{thebibliography}{15}
+\begin{thebibliography}{14}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -52,9 +52,9 @@ InterMapper.
 \newblock Intermapper web server.
 \newblock URL \url{http://micronoc.sri.ucl.ac.be/~admin/map_screen.html}.
 
-\bibitem[Cisco({\natexlab{a}})]{snmp}
+\bibitem[Cisco()]{snmp}
 Cisco.
-\newblock Simple network management protocol, {\natexlab{a}}.
+\newblock Simple network management protocol.
 \newblock URL
   \url{http://docwiki.cisco.com/wiki/Simple_Network_Management_Protocol}.
 
@@ -92,15 +92,9 @@ Luke Plant.
 \newblock URL
   \url{http://lukeplant.me.uk/blog/posts/mvc-is-not-a-helpful-analogy-for-django/}.
 
-\bibitem[Thebert()]{octopussy}
-Sebastien Thebert.
-\newblock Octopussy: Open source log management solution.
-\newblock URL \url{http://www.octopussy.pm/}.
-
-\bibitem[Cisco({\natexlab{b}})]{syslogCisco}
-Cisco.
-\newblock Cisco wireless lan controller system message guide, {\natexlab{b}}.
-\newblock URL
-  \url{http://www.cisco.com/c/en/us/td/docs/wireless/controller/message/guide/controller_smg.html}.
+\bibitem[US()]{eduroamRadius}
+Eduroam US.
+\newblock Eduroam - a technical overview.
+\newblock URL \url{https://www.eduroam.us/technical_overview}.
 
 \end{thebibliography}
