@@ -38,7 +38,7 @@ path {
       				data.addColumn('string', 'Protocol');
       				data.addColumn('number', 'People');
       				data.addRows([
-        				{%for attribut, value in infos.proto.items%}
+        				{%for attribut, value in ms.proto.items%}
 						['{{attribut}}', {{value}}],
 						{%endfor%}
         				
