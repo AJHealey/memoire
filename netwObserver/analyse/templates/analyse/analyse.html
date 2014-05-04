@@ -11,11 +11,6 @@ path {
 
 {% block customHeader %}
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-<script type="text/javascript">
-  // Load the Visualization API library and the piechart library.
-  google.load('visualization', '1.0', {'packages':['corechart']});
-  google.setOnLoadCallback(drawChart);
-</script>
 {% endblock %}
 
 {% block content %}
@@ -32,6 +27,11 @@ path {
 
 		{%elif ms%}
 			<script type="text/javascript">
+			    // Load the Visualization API and the piechart package.
+      			google.load('visualization', '1.0', {'packages':['corechart']});
+      
+      			// Set a callback to run when the Google Visualization API is loaded.
+      			google.setOnLoadCallback(drawChart);
 				function drawChart() {
 
       				var data = new google.visualization.DataTable();

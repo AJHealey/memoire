@@ -125,7 +125,7 @@ def getAPIfLoadNumOfClients(ip, port=161, community='snmpstudentINGI', ap=''):
         result = 0
         tmp = walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.4'+ap, port=port, community=community).items()
         for k,v in tmp:
-            result += float(v)
+            result += int(v)
         return {ap[1:] : result}
 
     else:
@@ -134,7 +134,7 @@ def getAPIfLoadNumOfClients(ip, port=161, community='snmpstudentINGI', ap=''):
             if index[:-2] not in result:
                 result[index[:-2]] = 0
 
-            result[index[:-2]] += float(noUsers)
+            result[index[:-2]] += int(noUsers)
 
         return result
 
@@ -147,7 +147,7 @@ def getAPIfPoorSNRClients(ip, port=161, community='snmpstudentINGI', ap=''):
         result = 0
         tmp = walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.24'+ap, port=port, community=community).items()
         for k,v in tmp:
-            result += float(v)
+            result += int(v)
         return {ap[1:] : result}
 
     else:
@@ -156,7 +156,7 @@ def getAPIfPoorSNRClients(ip, port=161, community='snmpstudentINGI', ap=''):
             if index[:-2] not in result:
                 result[index[:-2]] = 0
 
-            result[index[:-2]] += float(noUsers)
+            result[index[:-2]] += int(noUsers)
 
         return result
 
