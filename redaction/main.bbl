@@ -1,4 +1,4 @@
-\begin{thebibliography}{14}
+\begin{thebibliography}{15}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -92,9 +92,15 @@ Luke Plant.
 \newblock URL
   \url{http://lukeplant.me.uk/blog/posts/mvc-is-not-a-helpful-analogy-for-django/}.
 
-\bibitem[US()]{eduroamRadius}
-Eduroam US.
-\newblock Eduroam - a technical overview.
-\newblock URL \url{https://www.eduroam.us/technical_overview}.
+\bibitem[Thebert(2014)]{octopussy}
+Sebastien Thebert.
+\newblock Octopussy: Open source log management solution, 2014.
+\newblock URL \url{http://www.octopussy.pm/}.
+
+\bibitem[Cisco(2008)]{syslogCisco}
+Cisco.
+\newblock Cisco wireless lan controller system message guide, 2008.
+\newblock URL
+  \url{http://www.cisco.com/c/en/us/td/docs/wireless/controller/message/guide/controller_smg.html}.
 
 \end{thebibliography}
