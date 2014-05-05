@@ -9,24 +9,37 @@
 %----------------------------------------------------------------------------------------
 %	SECTION 1
 %----------------------------------------------------------------------------------------
-The purpose of this chapter is to present briefly the protocol or concepts that could be used throughout this paper.
-\section{EAP}
-The Extensible Authentication Protocol is a flexible authentication framework defined on the RFC3748 \cite{rfc3748}. EAP was designed to work without the IP protocol and provides support only for the transport of authentication protocols. The idea behind EAP was to creates a framework that supports several authentication methods and to separates the ahtentication methods from the transport.
+The purpose of this chapter is to present the different protocols or concepts that are used throughout this thesis.
 
-\section{802.1X}
+\section{IEEE 802.1X}
 %http://www.blackhat.com/presentations/win-usa-03/bh-win-03-riley-wireless/bh-win-03-riley.pdf
-It's a IEEE standard that provides an authentication mechanism to devices on LAN or WLAN. Before explaining the standard, we will define the three parties involved.
+\texttt{802.1X} is a Port-based Network Access Control that is part of the \texttt{IEEE 802.1} group of networking protocols. Basically, it is a way of securing a network access and doing authentication over ports to devices wishing to attach to a LAN or a WLAN. It offers an effective framework for authenticating and controlling user traffic to a protected network.
+
+The \texttt{802.1X} authentication process architecture involves three main components:
 \begin{itemize}
-	\item[-]\texttt{Supplicant}: The client device that wants to connect to the network.
-	\item[-]\texttt{Authentication Server}: The server that validates the credentials of the supplicants and determines the rights of the user.
-	\item[-]\texttt{Authenticator}: A network device like a switch or an access point that is between the supplicant and the authentication server.
+	\item[-]\texttt{A supplicant}: The client device that wants to connect to the network (LAN or WLAN).
+	\item[-]\texttt{An authenticator}: A network device like an Ethernet switch or an access point that is between the supplicant and the authentication server. It purpose is to interact with the authentication server. It receives \texttt{EAP} messages, encapsulates them into \texttt{RADIUS} messages and forwards them to the authentication server.
+	\item[-]\texttt{An authentication server}: It is the key part of that authentication process. This server support receives the authentication request from the authenticator and interacts with him in order to receive more information or credentials for the supplicant. It is the only one that can grant access or not to the protected network to the user.
 \end{itemize} 
-802.1X is a port-based authentication protocol. Once a client connects to a publicly accessible port, the authenticator allows only the EAP traffic through that port. EAP is used to authenticate the supplicant and if the authentication server grants the authorization to the supplicant, it can have access to the other services.
-Each port have two state:
-\begin{itemize}
-\item \texttt{Authorized}: In this state, the supplicant is authenticated and have access to all its services.
-\item \texttt{Unauthorized}: The supplicant is not authorized and can only exchange EAP traffic with the authenticator.
-\end{itemize}
+
+This protocol is called \textit{Port-based Network Access Control} because the ports of the switch are configured in a certain way. Indeed, before being totally open, they only accept \texttt{EAP} messages. The idea is that each port is divided into two different parts. One part is the \textit{controlled} part of the port and the other is the \textit{uncontrolled} part of the port. The main idea is that all the \texttt{EAP} messages go through this uncontrolled port.
+
+\texttt{802.1X} works either for WLAN or LAN authentication but the authentication flow is not exactly the same.
+For WLAN authentication, the first thing the supplicant does is to associate with the access point using standard \texttt{802.11} communication. It then sends its information inside \texttt{EAP} messages to the authenticator through the uncontrolled port. The authenticator encapsulates those messages into \texttt{RADIUS} packets and sends them to the authentication server. Then, after having set up a secure and encrypted tunnel with the supplicant, the authentication server starts communicating with it (to receive its username and password for example). The server then queries its database and finally, if the user is know, it asks the autenticator to open completely the port so that the user can access the requested VLAN.
+The following figure represents this authentication mechanism for WLAN.
+
+\begin{figure}[H]
+	\includegraphics[width=.7\linewidth]{Pictures/Chapter3/802.png}
+	\caption{\texttt{802.1X} authentication mechanism for WLAN}
+\end{figure}
+
+For LAN authentication it is a bit different. Indeed, the user directly connects to the switch through Ethernet. The switch then passes all the supplicant information to the authentication server. The authentication server and the switch exchange authentication and then the server queries its database and asks the switch to open the port or not.
+We can see that there is a major difference between WLAN and LAN authentication mechanisms. Indeed, in LAN, there are absolutely no communications between the authentication server and the supplicant. All the communications are done only between the switch and the server, while in WLAN, the authentication server directly communicates with the supplicant through a secured and an encrypted tunnel. 
+
+
+\section{EAP}
+\textit{The Extensible Authentication Protocol} is a flexible authentication framework defined on the RFC3748 \cite{rfc3748}. EAP was designed to work without the IP protocol and provides support only for the transport of authentication protocols. The idea behind EAP was to creates a framework that supports several authentication methods and to separates the ahtentication methods from the transport.
+
 
 
 \section{RADIUS}
