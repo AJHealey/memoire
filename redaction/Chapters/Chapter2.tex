@@ -109,20 +109,26 @@ Still we have given a little overview of the LAN authentication process because 
 
 
 \section{Infrastructure architecture}
-Using the network monitoring software InterMapper\cite{intermapper} we see that the UCL network is composed of seven neighborhood routers (CtPythagore, CtHalles, CtLew, CtStevin, CtCarnoy, CtMichotte and CtSH1C). Six of them are present on the Louvain-la-Neuve campus and only CtLew is on the Wolluwé Campus. Those routers task is only routing.\\
+In the Catholic University of Louvain's network infrastructure architecture, the Internet access is provided by Belnet via a 10Gbit Ethernet link. This link is connected to one of the seven \textit{neighborhood routers} called \texttt{CtPythagore}. There is also a second 3Gbit Ethernet link connected to another neighborhood router called \texttt{CtHalles}. This second link is never used and is, in fact, a backup link in case of a failure of the main one.
 
-Internet access is provided by Belnet via a 10GBit ethernet link directly connected to the CtPythagore. There is also a second 3GBit ethernet link connected to the CtHalles router but this link is never used. It is only a backup link in case of failure of the main one.
+The other neighborhood routers are \texttt{CtLew}, \texttt{CtStevin}, \texttt{CtCarnoy}, \texttt{CtMichotte} and \texttt{CtSHI1C}. They are all on the Louvain-la-Neuve campus expect for \texttt{CtLew} that lies on the Woluwe campus in Brussels. These are the campus' main routers that only do routing tasks.
+The infrastructures also contains two main servers called \texttt{CtTier2} and \texttt{CtAquarium} that are datacentres containing the \texttt{RADIUS} and \texttt{LDAP} servers.
 
-The infrastrucutre also has two main servers which are CtTier2 and CtAquarium. Those main servers are datacentres that contain the RADIUS servers as well as the LDAP servers.
+Then for each building there is a main switch and that is directly connected to one of those seven routers. Each of those switches has 48 ports that are connected to the access points inside the concerned building.
+Concretely, in each building we find ethernet plugs that are connected to what we call \textit{concentration points}. Those points contain commutators that is connected to the building main switch.
 
-Then for each building there is a switch and this switch is directly connected to one of the seven routers. Each of those switches has 48 ports that are connected to the access points inside the concerned building.\\
-Concretely, in each building we find ethernet plugs that are connected to what we call concentration points. Those points contain commutators that is connected to the building switch that is connected to one of the main routers.\\
-An important point to mention is that the network is not a full mesh.
+The following figure given by the network monitoring software \texttt{InterMapper}\cite{intermapper} shows the network infrastructure architecture of the university. We can clearly see the seven neighborhood routers, the datacenters and the main switches.
 
-Here is a simplified representation of the UCL network infrastructure:
 \begin{figure}[H]
-	\includegraphics[width=.9\linewidth]{Pictures/Chapter2/infrastructure.png}
+	\includegraphics[width=1\linewidth]{Pictures/Chapter2/infra.png}
+	\caption{UCL's network infrastructure architecture}
 \end{figure}
+
+%TODO
+%Here is a simplified representation of the UCL network infrastructure:
+%\begin{figure}[H]
+%	\includegraphics[width=.9\linewidth]{Pictures/Chapter2/infrastructure.png}
+%\end{figure}
 
 
 
