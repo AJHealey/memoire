@@ -11,6 +11,14 @@
 %----------------------------------------------------------------------------------------
 The purpose of this chapter is to present the different protocols or concepts that are used throughout this thesis.
 
+\section{EAP}
+Used in 802.1X.
+After the client as associated with the AP he goes into the controlled port
+
+
+
+\textit{The Extensible Authentication Protocol} is a flexible authentication framework defined on the RFC3748 \cite{rfc3748}. EAP was designed to work without the IP protocol and provides support only for the transport of authentication protocols. The idea behind EAP was to creates a framework that supports several authentication methods and to separates the ahtentication methods from the transport.
+
 \section{IEEE 802.1X}
 %http://www.blackhat.com/presentations/win-usa-03/bh-win-03-riley-wireless/bh-win-03-riley.pdf
 \texttt{802.1X} is a Port-based Network Access Control that is part of the \texttt{IEEE 802.1} group of networking protocols. Basically, it is a way of securing a network access and doing authentication over ports to devices wishing to attach to a LAN or a WLAN. It offers an effective framework for authenticating and controlling user traffic to a protected network.
@@ -35,10 +43,6 @@ The following figure represents this authentication mechanism for WLAN.
 
 For LAN authentication it is a bit different. Indeed, the user directly connects to the switch through Ethernet. The switch then passes all the supplicant information to the authentication server. The authentication server and the switch exchange authentication and then the server queries its database and asks the switch to open the port or not.
 We can see that there is a major difference between WLAN and LAN authentication mechanisms. Indeed, in LAN, there are absolutely no communications between the authentication server and the supplicant. All the communications are done only between the switch and the server, while in WLAN, the authentication server directly communicates with the supplicant through a secured and an encrypted tunnel. 
-
-
-\section{EAP}
-\textit{The Extensible Authentication Protocol} is a flexible authentication framework defined on the RFC3748 \cite{rfc3748}. EAP was designed to work without the IP protocol and provides support only for the transport of authentication protocols. The idea behind EAP was to creates a framework that supports several authentication methods and to separates the ahtentication methods from the transport.
 
 
 
