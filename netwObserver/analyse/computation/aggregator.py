@@ -33,3 +33,8 @@ def getHotAP(number=5):
 		result[ap.name] = ap.numOfClients
 	return result
 
+def getNbrOfUsers():
+	return MobileStation.objects.isAssociated().count()
+
+def getNbrOfAP():
+	return AccessPoint.objects.isUp().count()

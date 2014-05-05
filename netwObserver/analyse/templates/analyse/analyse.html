@@ -17,21 +17,25 @@ path {
 <div class='row' style="margin-top:20px;">
 	<div class="col-md-2">
 		<ul class="nav nav-pills nav-stacked">
-			<li {% if cat == 'ms' %}class="active"{%endif%}><a href="{% url 'analyse' 'ms' %}">Mobile Stations</a></li>
+			<li {% if cat == 'General' %}class="active"{%endif%}><a href="{% url 'analyse' 'gen' %}">General</a></li>
+			<li {% if cat == 'ms' %}class="active"{%endif%}><a href="{% url 'analyse' 'wifi' %}">Wifi</a></li>
 			<li {% if cat == 'wism' %}class="active"{%endif%}><a href="{% url 'analyse' 'wism' %}">Wism</a></li>
 		</ul>
 	</div>
 
 	<div id="graph" class="col-md-10">
-		{% if wism %}
+		
+		{% if gen %}
+		{% elif wism %}
 
-		{%elif ms%}
+		{%elif wifi%}
 			<script type="text/javascript">
 			    // Load the Visualization API and the piechart package.
       			google.load('visualization', '1.0', {'packages':['corechart']});
       
       			// Set a callback to run when the Google Visualization API is loaded.
       			google.setOnLoadCallback(drawProtoChart);
+
 				function drawProtoChart() {
 
       				var data = new google.visualization.DataTable();
@@ -53,6 +57,9 @@ path {
       				chart.draw(data, options);
       			}
 			</script>
+
+
+
 			<div id="protochart_div" style="width:400; height:300"></div>
 		{%endif%}
 	</div>

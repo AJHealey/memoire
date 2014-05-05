@@ -84,11 +84,22 @@ The \emph{probe} module manages the connection with the probes. When a probe wan
 \subsection{OpenWrt}
 
 \section{Communication between Server and Probes}
-The probe and the server have to exchange information. As we have wanted to create a modular tool, we chose to encrypt all the data sent between the server and the probes. If the active monitoring device capture sensible contents, there must be no security vulnerability like eavesdropping or man in the middle attack.
-The first constraint that appeared was the weak computation power of the probe. In consequence, we had to keep the encryption as easy to perform as possible. So, we have looked into symmetric cryptographic techniques. But in the other hand, as we have several probes, it could be difficult to manage and exchange the keys unlike in asymmetric cryptography. Our choice was to take the best of both world and implement a protocol using hybrid encryption.
-In definitive, we used RSA and AES encryption.
+The probes and the server have to exchange information. As we wanted to create a modular tool, we have chosen to encrypt all the data sent between the server and the probes. If the active monitoring device capture sensible contents, there must be no security vulnerabilities like \emph{eavesdropping} or \emph{man-in-the-middle attack}.
+The first constraint that appeared was the weak computation power of the probes. In consequence, we had to keep the encryption as easy to perform as possible. So, we have looked into \emph{symmetric cryptographic} techniques. But in the other hand, as we have several probes, it could be difficult to manage and exchange the keys unlike in asymmetric cryptography. Our choice was to take the best of both worlds and implement a protocol using hybrid encryption.
+In definitive, we used RSA and AES encryption together.
 \subsection{RSA}
+RSA\footnote{\url{http://www.google.com/patents/US4405829}} is one of the most used \emph{public-key cryptosystem}. Its name comes from its three designers: Ron Rivest, Adi Shamir, and Leonard Adleman. The algorithm involves two key: a \emph{public key} known by everybody and a \emph{private key} kept secret. The safety ensured by the technique comes from the difficulty of the factoring problem (factoring the product of two large prime numbers).
+The main advantage against symmetric cryptography is that the public key used for the encryption can be known by everybody and so make the problem of key exchange a lot easier. To make the explication clearer we will present a simple example occurring between Alice and Bob.
+\begin{enumerate}
+\item Alice give her public key to Bob.
+\item Bob wants to transmit a encrypted message to Alice. He uses the Alice's \emph{public key} to encrypt the message.
+\item Bob sends his message to Alice. Even if people intercept the transmission and have the public key, they couldn't decrypt it.
+\item Alice receives the message and decrypt it with her private key which she have kept secret.
+\end{enumerate}
+The key is 2048 bits long and each entity has its own pair of keys (i.e. the server and each probe). The server will known the authorized probes by having their private keys and will use them to encrypt the AES key (see below).
+The main drawback of such encryption is that the computations are quite heavy to perform. Which is against our previous requirements. That's why we only use it to encrypt and exchange a symmetric key that will be used for the exchange of data.
 \subsection{AES}
+The symmetric algorithm used is AES which stands for Advanced Encryption Standard. We chose a size of 256 bits for the keys which is quite correct for our utilization. The idea is to permute the bits of the message using the key. The operations performed are lighter than the ones used by RSA and so make it more adapted to be used on the probes.
 \subsection{Transaction Protocol}
 \subsection{OpenSSL}
 \subsection{PyCrypto}
