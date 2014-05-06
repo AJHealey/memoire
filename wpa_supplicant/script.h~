@@ -8,8 +8,10 @@
 
 struct wpa_ctrl *ctrl;
 struct timeb wpa_start, wpa_end, dhcp_start, dhcp_end, wpa_time, dhcp_time;
-int dhcp = 0;
+struct tm tm;
 time_t now;
+int dhcp = 0;
+int close_file = 0;
 FILE *f;
 
 enum log_events {
@@ -53,6 +55,7 @@ static void connect_visiteurs();
 static void connect_prive();
 void *connection_loop();
 void *wpa_loop();
+void *write_log();
 
 
 

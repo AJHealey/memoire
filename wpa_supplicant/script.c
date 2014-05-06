@@ -3,7 +3,6 @@
 #include <pthread.h>
 
 
-
 /* 
  * Insert the logs into the logfile
  */
@@ -130,7 +129,7 @@ static void parse_event(const char *reply) {
 	}
 
 	/* DISCONNECTED FROM NETWORK */
-	else if (match(event, WPA_EVENT_DISCONNECTED)) {
+	else if (match(event, WPA_EVENT_DISCONNECTED)) 
 		char bssid[18];
 		memset(bssid, 0, 18);
 		memcpy(bssid, &event[30], 17);
@@ -184,6 +183,7 @@ static void execute_action(enum wpa_action action, const char * ssid) {
 			commands("DISABLE_NETWORK 2");
 			commands("DISABLE_NETWORK 3");
 			commands("DISABLE_NETWORK 4");
+			commands("DISABLE_NETWORK 5");
 			log_event(LOG_DISCONNECTED, ssid);
 			dhcp = 0;
 			break;
@@ -222,24 +222,26 @@ static void commands(char *cmd)
 
 /*
  * Create the configuration for all the networks
- * ID=0: student.UCLouvain
  * ID=1: eduroam
  * ID=2: UCLouvain
  * ID=3: visiteurs.UCLouvain
  * ID=4: UCLouvain-prive
+ * ID=5: student.UCLouvain
  */
 static void create_networks() {
 	int i;
-	for(i = 0; i < 4; i++) {
+	for(i = 0; i < 5; i++) {
 		commands("ADD_NETWORK");
 	}
 	config_network(1, "eduroam", "WPA-EAP", "PEAP", "CCMP", "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", "peaplabel=0", "auth=MSCHAPV2", NULL);
 
-	config_network(2, "UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP", NULL);	
+	config_network(2, "UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP", NULL);
 	
 	config_network(3, "visiteurs.UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP", NULL);
 
 	config_network(4, "UCLouvain-prive", "NONE", NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+	config_network(5, "student.UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP", NULL);
 }
 
 
@@ -297,9 +299,9 @@ static void create_networks() {
  * Connects wpa_supplicant to the student.UCLouvain network
  */
 static void connect_student() {
-	commands("ENABLE_NETWORK 0");
+	commands("ENABLE_NETWORK 5");
 	ftime(&wpa_start);
-	commands("SELECT_NETWORK 0");
+	commands("SELECT_NETWORK 5");
 	while(dhcp != 1) {
 		sleep(1);
 	}
@@ -379,7 +381,8 @@ void *wpa_loop(void *p_data) {
 		log_event(LOG_ERROR, "wpa_ctrl_attach timeout");
 		exit(-1);
 	}
-	
+	/* Creation of the list of networks */
+	execute_action(ACTION_CREATE_NETWORKS, NULL);
 	//Loop for incoming events from wpa_supplicant
 	while(1) {
 		FD_ZERO(&ctrl_fds);
@@ -405,6 +408,7 @@ void *wpa_loop(void *p_data) {
 				reply_len = BUF-1;
 				wpa_ctrl_recv(ctrl, reply, &reply_len);
 				reply[reply_len] = '\0';
+				//printf("[-] %s\n", reply);
 				parse_event(reply);
 				break;
 		}
@@ -414,14 +418,8 @@ void *wpa_loop(void *p_data) {
 	return NULL;
 }
 
-
-
-/*******************************
- * TESTING AREA
- *******************************/
-
-
 void *connection_loop(void * p_data) {
+	int close = 0;
 	while(1) {
 		sleep(DELAY);
 		printf("Disconnection from student\n");
@@ -451,20 +449,25 @@ void *connection_loop(void * p_data) {
 		printf("Disconnection from UCLouvain-prive\n");
 		execute_action(ACTION_DISCONNECT, "UCLouvain-prive");
 		sleep(DELAY);
-		printf("Closing file");
-		fclose(f);
 		printf("Connect to student.UCLouvain\n");
 		execute_action(ACTION_CONNECT_STUDENT, NULL);
 		sleep(DELAY);
+		if(close == 0) {
+			fclose(f);
+			//TODO send file
+			//TODO f = fopen("log.txt", "w");
+			f = fopen("logs2.txt","w");
+		}
+		close = 0;
+		close += 1;
 	}
 	return NULL;
 }
 
 
-
 int main(int argc, char ** argv) {
 	system("killall hostapd");
-	//log_event(LOG_CUSTOM_INFO, "Starting script");
+	pthread_t wpa_thread, loop_thread;
 	int r = 0;
 
 	/* FILE */
@@ -473,15 +476,12 @@ int main(int argc, char ** argv) {
 		printf("Error opening file\n");
 		exit(1);
 	}	
-
-	pthread_t wpa_thread, loop_thread;
+	
 	r = pthread_create(&wpa_thread, NULL, wpa_loop, NULL);
 	if(!r){
 		while(1) {
 			if(dhcp == 1) {
 				printf("Starting loop\n");
-				/* Create all the networks */
-				execute_action(ACTION_CREATE_NETWORKS, NULL);
 				r = pthread_create(&loop_thread, NULL, connection_loop, NULL);
 				if(r)
 					fprintf(stderr, "%s", strerror(r));
@@ -496,7 +496,6 @@ int main(int argc, char ** argv) {
 
 	pthread_join(wpa_thread, NULL);
 	pthread_join(loop_thread, NULL);
-	closelog();
 
 	return 0;
 }
