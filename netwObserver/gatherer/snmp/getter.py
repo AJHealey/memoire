@@ -73,7 +73,7 @@ def getAPIfTypeface(ip, port=161, community='snmpstudentINGI'):
 		tmp = index.rfind('.')
 		if index[:tmp] not in result:
 			result[index[:tmp]] = {}
-		result[index[:tmp]][tmp:] = int(ifType)
+		result[index[:tmp]][index[tmp:]] = int(ifType)
 	return result
 
 def getAPIfLoadChannelUtilization(ip, port=161, community='snmpstudentINGI'):
@@ -89,7 +89,7 @@ def getAPIfLoadChannelUtilization(ip, port=161, community='snmpstudentINGI'):
 		tmp = index.rfind('.')
 		if index[:tmp] not in result:
 			result[index[:tmp]] = {}
-		result[index[:tmp]][tmp:] = int(load)
+		result[index[:tmp]][index[tmp:]] = int(load)
 	return result
 
 
@@ -103,7 +103,7 @@ def getAPIfLoadNumOfClients(ip, port=161, community='snmpstudentINGI', ap=''):
 		tmp = index.rfind('.')
 		if index[:tmp] not in result:
 			result[index[:tmp]] = {}
-		result[index[:tmp]][tmp:] = int(noUsers)
+		result[index[:tmp]][index[tmp:]] = int(noUsers)
 	return result
 
 
@@ -117,7 +117,7 @@ def getAPIfPoorSNRClients(ip, port=161, community='snmpstudentINGI', ap=''):
 		tmp = index.rfind('.')
 		if index[:tmp] not in result:
 			result[index[:tmp]] = {}
-		result[index[:tmp]][tmp:] = int(noUsers)
+		result[index[:tmp]][index[tmp:]] = int(noUsers)
 	return result
 
 def getAPIfLoadRxUtilization(ip, port=161, community='snmpstudentINGI', ap=''):
@@ -130,7 +130,7 @@ def getAPIfLoadRxUtilization(ip, port=161, community='snmpstudentINGI', ap=''):
 		tmp = index.rfind('.')
 		if index[:tmp] not in result:
 			result[index[:tmp]] = {}
-		result[index[:tmp]][tmp:] = int(rx)
+		result[index[:tmp]][index[tmp:]] = int(rx)
 	return result
 
 
@@ -144,7 +144,7 @@ def getAPIfLoadTxUtilization(ip, port=161, community='snmpstudentINGI', ap=''):
 		tmp = index.rfind('.')
 		if index[:tmp] not in result:
 			result[index[:tmp]] = {}
-		result[index[:tmp]][tmp:] = int(tx)
+		result[index[:tmp]][index[tmp:]] = int(tx)
 	return result
 
 def getAPEthernetRxTotalBytes(ip, port=161, community='snmpstudentINGI', ap=''):
