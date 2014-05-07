@@ -291,7 +291,7 @@ def getAllAP():
 			if index in result:
 				result[index].ethernetTxTotalBytes = b
 	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap IP', error=str(e)).save()
+		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap Tx Total Bytes', error=str(e)).save()
 
 	# Add AP Rx bytes counter
 	try:
@@ -300,7 +300,7 @@ def getAllAP():
 			if index in result:
 				result[index].ethernetRxTotalBytes = b
 	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap IP', error=str(e)).save()
+		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap Rx Total Bytes', error=str(e)).save()
 
 	# Add Interface Types and create the interface if required
 	try:
@@ -562,7 +562,7 @@ def parseMacAdresse(macString):
 		return result[0:2] + ":" + result[2:4] + ":" + result[4:6] + ":" + result[6:8] + ":" + result[8:10] + ":" +result[10:]
 	else:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmp macAddress parsing', error=macString).save()
-		return ''
+		raise Exception()
 
 
 
