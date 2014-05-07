@@ -100,6 +100,22 @@ class MobileStation(Device):
 	def __str__(self):
 		return str(self.macAddress) + ' on ' + str(self.ssid)
 
+## SNMP Snapshot
+class APSnapshot(models.Model):
+	ap = models.ForeignKey(AccessPoint)
+	date = models.DateTimeField(default=lambda:(timezone.localtime(timezone.now())))
+
+	ethernetRxTotalBytes = models.DecimalField(max_digits=10, decimal_places=0, default=0)
+	ethernetTxTotalBytes = models.DecimalField(max_digits=10, decimal_places=0, default=0)
+
+class APIfSnapshot(models.Model):
+	apsnapshot = models.ForeignKey(APSnapshot)
+	apinterface = models.ForeignKey(APInterface)
+	channelUtilization = models.DecimalField(max_digits=3, decimal_places=0, default=0)
+	numOfClients = models.DecimalField(max_digits=4, decimal_places=0, default=0)
+	numOfPoorSNRClients = models.DecimalField(max_digits=4, decimal_places=0, default=0)
+	txUtilization = models.DecimalField(max_digits=3, decimal_places=0, default=0)
+	rxUtilization = models.DecimalField(max_digits=3, decimal_places=0, default=0)
 
 
 

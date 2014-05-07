@@ -514,6 +514,27 @@ def getAllRAP():
 		rap.touch()
 		rap.save()
 
+###########################################################################################################################
+### Snapshot ###
+############################################################################################################################
+def apSnapshot():
+	for ap in AccessPoint.objects.all():
+		snap = APSnapshot(ap=ap)
+		snap.ethernetRxTotalBytes = ap.ethernetRxTotalBytes
+		snap.ethernetTxTotalBytes = ap.ethernetTxTotalBytes
+		snap.save()
+		for interface in ap.apinterface_set:
+			ifsnap = APIfSnapshot(apsnapshot=snap, apinterface=interface)
+			ifsnap.channelUtilization = interface.channelUtilization
+			ifsnap.numOfClients = interface.numOfClients
+			ifsnap.numOfPoorSNRClients = interface.numOfPoorSNRClients
+			ifsnap.rxUtilization = interface.rxUtilization
+			ifsnap.save()
+
+
+
+
+
 ############################################################################################################################
 ### Daemon Methods ###
 ############################################################################################################################
@@ -525,6 +546,7 @@ def snmpAPDaemon(laps=timedelta(minutes=15)):
 	while True:
 		try:
 			getAllAP()
+			apSnapshot()
 			task.touch()
 			time.sleep(laps.total_seconds())
 		except:
