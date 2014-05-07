@@ -523,7 +523,7 @@ def apSnapshot():
 		snap.ethernetRxTotalBytes = ap.ethernetRxTotalBytes
 		snap.ethernetTxTotalBytes = ap.ethernetTxTotalBytes
 		snap.save()
-		for interface in ap.apinterface_set:
+		for interface in ap.apinterface_set.all():
 			ifsnap = APIfSnapshot(apsnapshot=snap, apinterface=interface)
 			ifsnap.channelUtilization = interface.channelUtilization
 			ifsnap.numOfClients = interface.numOfClients
