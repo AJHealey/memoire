@@ -284,6 +284,23 @@ def getAllAP():
 	except Exception as e:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap Ethernet Link Speed', error=str(e)).save()
 
+	# Add AP Tx bytes counter
+	try:
+		tmp = getAPEthernetTxTotalBytes(ip=wism[0])
+		for index, b in tmp.items():
+			if index in result:
+				result[index].ethernetTxTotalBytes = b
+	except Exception as e:
+		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap IP', error=str(e)).save()
+
+	# Add AP Rx bytes counter
+	try:
+		tmp = getAPEthernetRxTotalBytes(ip=wism[0])
+		for index, b in tmp.items():
+			if index in result:
+				result[index].ethernetRxTotalBytes = b
+	except Exception as e:
+		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap IP', error=str(e)).save()
 
 	# Add Interface Types and create the interface if required
 	try:
