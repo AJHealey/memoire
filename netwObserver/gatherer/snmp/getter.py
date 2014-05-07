@@ -69,7 +69,7 @@ def getAPIfTypeface(ip, port=161, community='snmpstudentINGI'):
 	"""
 
 	result = {}
-	for index, ifType in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.3', port=port, community=community).items():
+	for index, ifType in walker(ip,'1.3.6.1.4.1.14179.2.2.2.1.2', port=port, community=community).items():
 		tmp = index.rfind('.')
 		if index[:tmp] not in result:
 			result[index[:tmp]] = {}
