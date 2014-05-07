@@ -277,10 +277,12 @@ def getAllAP():
 		tmp = getAPEthernetLinkSpeed(ip=wism[0])
 		for index, speed in tmp.items():
 			if index in result:
-				if speed  == 100:
+				if speed  == 10:
 					result[index].etherneLinkSpeed = 'm'
+				elif speed  == 100:
+					result[index].etherneLinkSpeed = 'M'
 				elif speed == 1000:
-					result[index].etherneLinkSpeed = 'G'
+					result[index].etherneLinkSpeed = 'g'
 	except Exception as e:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap Ethernet Link Speed', error=str(e)).save()
 

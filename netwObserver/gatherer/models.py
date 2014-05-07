@@ -28,7 +28,7 @@ class APManage(models.Manager):
 		return super(APManage, self).filter(lastTouched__gte=(timezone.localtime(timezone.now()) - settings.SNMPAPLAP))
 
 class AccessPoint(Device):
-	ETHERNETLINKTYPE = (('m','100 Mbps'),('G','1 Gbps'))
+	ETHERNETLINKTYPE = (('m','10 Mbps'),('M','100 Mbps'),('g','1 Gbps'))
 
 	name = models.CharField(max_length=50, null=True)
 	location = models.CharField(max_length=50, null=True)
