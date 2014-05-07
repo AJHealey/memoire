@@ -48,7 +48,7 @@ class AccessPoint(Device):
 class APInterface(models.Model):
 	TYPES = ((1,'Dot11b'),(2,'Dot11a'),(4,'Ultra-Wide Band'))
 
-	index = name = models.CharField(max_length=3)
+	index = models.CharField(max_length=3)
 	ap = models.ForeignKey(AccessPoint)
 	ifType = models.DecimalField(max_digits=1, decimal_places=0, choices=TYPES,null=True)
 	
