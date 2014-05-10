@@ -12,7 +12,7 @@ class Device(models.Model):
 	macAddress = macField.MACAddressField(unique=True)
 	ip = models.GenericIPAddressField(null=True)
 	lastTouched = models.DateTimeField(null=True, default=lambda:(timezone.localtime(timezone.now())) )
-	index = models.CharField(max_length=20) 
+	index = models.CharField(max_length=20, null=True) 
 
 	def touch(self):
 		self.lastTouched = timezone.localtime(timezone.now())
@@ -33,7 +33,7 @@ class AccessPoint(Device):
 	name = models.CharField(max_length=50, null=True)
 	location = models.CharField(max_length=50, null=True)
 
-	ethernetLinkSpeed = models.DecimalField(max_digits=5, decimal_places=0, choices=ETHERNETLINKTYPE)
+	ethernetLinkSpeed = models.DecimalField(max_digits=5, decimal_places=0, choices=ETHERNETLINKTYPE, null=True)
 	ethernetRxTotalBytes = models.DecimalField(max_digits=10, decimal_places=0, default=0)
 	ethernetTxTotalBytes = models.DecimalField(max_digits=10, decimal_places=0, default=0)
 
