@@ -28,8 +28,14 @@ class APManage(models.Manager):
 		return super(APManage, self).filter(lastTouched__gte=(timezone.localtime(timezone.now()) - settings.SNMPAPLAP))
 
 class AccessPoint(Device):
+	ETHERNETLINKTYPE = (('m','10 Mbps'),('M','100 Mbps'),('g','1 Gbps'))
+
 	name = models.CharField(max_length=50, null=True)
 	location = models.CharField(max_length=50, null=True)
+
+	etherneLinkSpeed = models.CharField(max_length=1, null=True, choices=ETHERNETLINKTYPE)
+	ethernetRxTotalBytes = models.DecimalField(max_digits=10, decimal_places=0, default=0)
+	ethernetTxTotalBytes = models.DecimalField(max_digits=10, decimal_places=0, default=0)
 
 	objects = APManage()
 	def __str__(self):
@@ -37,6 +43,20 @@ class AccessPoint(Device):
 	
 	def isUp(self):
 		return lastTouched > (timezone.localtime(timezone.now()) - settings.SNMPAPLAP)
+
+## Access Point Interface Model
+class APInterface(models.Model):
+	TYPES = ((1,'Dot11b'),(2,'Dot11a'),(4,'Ultra-Wide Band'))
+
+	index = models.CharField(max_length=3)
+	ap = models.ForeignKey(AccessPoint)
+	ifType = models.DecimalField(max_digits=1, decimal_places=0, choices=TYPES,null=True)
+	
+	channelUtilization = models.DecimalField(max_digits=3, decimal_places=0, default=0)
+	numOfClients = models.DecimalField(max_digits=4, decimal_places=0, default=0)
+	numOfPoorSNRClients = models.DecimalField(max_digits=4, decimal_places=0, default=0)
+	txUtilization = models.DecimalField(max_digits=3, decimal_places=0, default=0)
+	rxUtilization = models.DecimalField(max_digits=3, decimal_places=0, default=0)
 
 
 ## Rogue Access Point Model
@@ -53,6 +73,8 @@ class RogueAccessPoint(Device):
 	apType = models.CharField(max_length=1, choices=RAP_TYPES, null=True)
 	onNetwork = models.BooleanField(default=False) #This attribute specifies if the Rogue is on Wired Network or not.
 	nbrOfClients = models.DecimalField(max_digits=3, decimal_places=0)
+
+	closestAp = models.ForeignKey(AccessPoint, null= True)
 
 	objects = RAPManage()
 	def __str__(self):
@@ -78,6 +100,22 @@ class MobileStation(Device):
 	def __str__(self):
 		return str(self.macAddress) + ' on ' + str(self.ssid)
 
+## SNMP Snapshot
+class APSnapshot(models.Model):
+	ap = models.ForeignKey(AccessPoint)
+	date = models.DateTimeField(default=lambda:(timezone.localtime(timezone.now())))
+
+	ethernetRxTotalBytes = models.DecimalField(max_digits=10, decimal_places=0, default=0)
+	ethernetTxTotalBytes = models.DecimalField(max_digits=10, decimal_places=0, default=0)
+
+class APIfSnapshot(models.Model):
+	apsnapshot = models.ForeignKey(APSnapshot)
+	apinterface = models.ForeignKey(APInterface)
+	channelUtilization = models.DecimalField(max_digits=3, decimal_places=0, default=0)
+	numOfClients = models.DecimalField(max_digits=4, decimal_places=0, default=0)
+	numOfPoorSNRClients = models.DecimalField(max_digits=4, decimal_places=0, default=0)
+	txUtilization = models.DecimalField(max_digits=3, decimal_places=0, default=0)
+	rxUtilization = models.DecimalField(max_digits=3, decimal_places=0, default=0)
 
 
 

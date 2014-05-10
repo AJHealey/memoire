@@ -5,6 +5,8 @@
 \label{Chapter4} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
 
 \lhead{Chapter 4. \emph{Monitoring Tool - Part 1}}
+\section{Requirements}
+\subsection{System Goals}
 
 \section{Architecture}
 The system have two very distinct entities. The first part is the one responsible for gathering information. This component handles the responsibility to keep the operational database up to date and in a consistent state. The other side of the application is the one managing the analysis made with the information gathered.
@@ -36,8 +38,6 @@ The database have to be capable of representing each kind of information and man
 As the gatherer only put available information together, it doesn't bring anything new. In the other side, the analyse component will use the data and the links between them to extract useful information about the network. For example, the SNMP shows the people associated with an access point but only an analysis through time will allow us to detect and even forecast overload in the network. This component will manage the analyse on the database and storing the result over the time.
 
 \subsubsection{Utilization Statistics}
-
-
 
 \subsubsection{Event Statistics}
 

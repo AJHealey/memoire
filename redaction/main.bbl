@@ -1,4 +1,4 @@
-\begin{thebibliography}{12}
+\begin{thebibliography}{15}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -85,5 +85,22 @@ Keren Tan, Chris McDonald, Bennet Vance, Chrisil Arackaparambil, Sergey Bratus,
   (1):\penalty0 216--229, 2014.
 \newblock ISSN 1536-1233.
 \newblock \doi{http://doi.ieeecomputersociety.org/10.1109/TMC.2012.237}.
+
+\bibitem[Plant(2013)]{mvt}
+Luke Plant.
+\newblock Mvc is not a helpful analogy for django, 2013.
+\newblock URL
+  \url{http://lukeplant.me.uk/blog/posts/mvc-is-not-a-helpful-analogy-for-django/}.
+
+\bibitem[Thebert(2014)]{octopussy}
+Sebastien Thebert.
+\newblock Octopussy: Open source log management solution, 2014.
+\newblock URL \url{http://www.octopussy.pm/}.
+
+\bibitem[Cisco(2008)]{syslogCisco}
+Cisco.
+\newblock Cisco wireless lan controller system message guide, 2008.
+\newblock URL
+  \url{http://www.cisco.com/c/en/us/td/docs/wireless/controller/message/guide/controller_smg.html}.
 
 \end{thebibliography}

@@ -1,14 +1,111 @@
 % Chapter Template
-
 \chapter{Monitoring Tool - Implementation and Deployment} % Main chapter title
 
 \label{Chapter5} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
 
 \lhead{Chapter 5. \emph{Monitoring Tool - Part 2}} 
 
+\section{NetwObserver}
+The first step in the development was to select the technologies adapted to the problem. As we had a lot of log to parse, we have started the implementation using Python. Python has a strong integration of the strings and lists. It's quite easy to generate a parser of logs and keeping the code neat thanks to its very simple syntax.
+As more feature were added, we need to structure the system in a way that make it easily accessible. It's a monitoring tools and it has to be accessible from everywhere and easy to use. So, we decided to implemented it as a web application. This application would be usable from every computer without any installation and the network administrators could manage and maintain it directly on the server. An update would be accessible directly for every users.
 
-\section{Equipment used}
+\subsection{Django: A High-Level Python Web Framework}
+As presented by its developers, Django is a "web framework for perfectionist with deadlines"\footnote{\url{https://www.djangoproject.com/}}. Django allow to achieve a modular structure quite easily and provide all the developers need to add new components in the application. A Django application is composed of several modules that exists independently and interact with each other through the database.
+Moreover, Django adhere to the DRY\footnote{\url{http://c2.com/cgi/wiki?DontRepeatYourself}} principle.
+\begin{description}
+  \item[Don't Repeat Yourself] \hfill \\
+  Every piece of knowledge must have a single, unambiguous, authoritative representation within a system.
+\end{description}
+When we use this framework, we focus on writing and defining each element one time on the right place. Maintainability is another important component of our system. Having duplication all over the code make it difficult to maintain and to keep coherent.
+Django used a variation of the Model-View-Controller model called \emph{Model-View-Template}\cite{mvt}. The main difference is that Django is not about states. Browser don't evolve from one state to another, every request are done from scratch. In MVC, Controller update the View and the Model accordingly to the events. That's not the case here because each time something is modified (e.g a new insertion in the database) we start from the beginning. It's not a defect, it's how HTTP work.
+
+\begin{description}
+\item[Model] \hfill \\
+The first element that composed the application are the entities manipulated by the application. A model is a representation of an element of the domain. Each model encapsulates all the data and information required to understand it.
+\item[View] \hfill \\
+The main task of the views is to handle the HTTP requests. It receives a HTTP request and returns a HTTP response.
+\item[Template] \hfill \\
+It represents the HTTP response. It provide a generic answer and the View fulfil the missing parts (most of the time by interrogating the database).
+\end{description}
+
+Like most of the modern web frameworks, Django is built using the \emph{Object-relational mapping} technique. The purpose is to make a bridge between the object manipulated by Python and the database entries. The architecture respects an \emph{Active-record pattern} that tied each object to a row in the database. It allow to focus on the logic of the application and to code easier. We can do more with less code. The main drawback of such pattern, it's that developers tend to forget the database behind it. Even if Django is optimised to translate object in database entity (and in the other way around), it important to design the model by thinking about the database hidden behind. Every access is translated by Django but poor request or weak design could lead to really poor performance.
+
+\subsection{MySql}
+Even if most of the time we don't make direct transaction with the database, it's important to chose the right DBMS\footnote{Database Management System}. At the beginning, the capacity of the application were quite limited and we used SqLite\footnote{\url{https://sqlite.org/}}. SqLite has the particularity to not use a client-server model. It is directly managed inside the application and it is the one used by default in Django. It fits really well to small applications because all actions are internally handled and it doesn't require to install an external DBMS to handle the transactions. But quickly, we reach the limits of SqLite and we chose to migrate to MySql. NetwObserver generates several threads and make a lot of concurrent accesses to the database. Such utilization is not adapted to SqLite and made the application unstable. The main issue was that, while the application is gathering its data, it needs to still be available to the users. SqLite have some difficulties to handle insertion of a lot of new entries while getting concurrent requests from the users.
+
+\subsection{Gatherer}
+The main difficulty was to correctly gather the source of information available. For each of them, we had to implement a module to make the interface between the sources and the database. They were quite heterogeneous and the implementation required a deep understanding of them.
+\subsubsection{Logs Parser}
+The first source we have processed were the log files. There are three generators of log file on the network: the controller, the DHCP and the Radius. Actually, there already is a software that gathers the log files and centralized them. The tool is called Octopussy\footnote{http://www.octopussy.pm/} and is a log management solution. It allows the administrators to display the log and access them by specifying criteria like date, source or the gravity of the log. Our \emph{log} module does basically the same thing but with a deeper analysis and understanding of the content of the logs. 
+\paragraph{DHCP}
+The DHCP generates a log for each step of the allocation of an IP address and of course when an error occurred. Typical logs look like this:
+\begin{lstlisting}[frame=single,breaklines=true,caption={DHCP logs}]
+2013-10-21T17:26:00.113154+02:00 dhcp-1 dhcpd: DHCPREQUEST for 192.168.32.43 from cc:fe:3c:26:5c:3f via 192.168.35.253
+2013-10-21T17:26:00.113239+02:00 dhcp-1 dhcpd: DHCPACK on 192.168.32.43 to cc:fe:3c:26:5c:3f via 192.168.35.253
+2013-10-21T17:26:00.196242+02:00 dhcp-1 dhcpd: DHCPDISCOVER from 50:a4:c8:6b:48:c7 via 130.104.175.250: load balance to peer dhcp1-dhcp2
+\end{lstlisting}
+When the application can understand each part of the message, it allows to make more powerful links between them. If we correctly analyse each messages, we can tell, for example, which \emph{dhcpAck} correspond to a \emph{dhcpRequest}. That's a weakness of Octopussy. It can tell you what log are important and filter them but it doesn't make analysis based on the protocol. DHCP defined a succession of actions and being able to trace them make the application capable of detecting more subtle errors. Concretely, the module \emph{log} decompose the message in several part and stock it in a relational database. Even if it could seem simple, having a structured representation of the log is the first step to make better analysis on them.
+
+\paragraph{Radius}
+Radius generates logs about the authentication of the users. The main information here is the \emph{login} entered and the device used for the authentication.
+\begin{lstlisting}[frame=single,breaklines=true,caption={Radius logs}]
+2013-10-21T17:26:00+02:00 radius1.sri.ucl.ac.be radiusd[1523]: [ID 702911 local3.notice] Login OK: [@eur.nl] (from client WiSMPythagore-B port 29 cli e4-d5-3d-89-af-51)
+2013-10-21T17:26:05+02:00 radius1.sri.ucl.ac.be radiusd[17913]: [ID 702911 local4.notice] Login incorrect: [none] (from client WiSMPythagore-A port 29 cli 00-11-e1-db-fb-5d)
+2013-10-21T17:26:07+02:00 radus1.sri.ucl.ac.be radiusd[1523]: [ID 702911 local3.notice] Login OK: [53764smo@eur.nl] (from client WiSMPythagore-B port 29 cli e4-d5-3d-89-af-51)
+\end{lstlisting}
+Which such information we can potentially tell when and where an user was. In the other hand, it could allows to detect a device that tries to connect with different logins. That could be considered as a strange behaviour and would allow to investigate. Like in other modules, it's very important to limit the feature implemented because it could cause a ethical problem. Even if we want to make the application as complete as possible, we need to precisely define what is required and how to de it. These considerations will be discuss further in the last chapter.
+
+\paragraph{Controller}
+The more rich source of logs is the \emph{controller}. With its central position in the infrastructure, it can produce the more detailed messages when an error occurred. As the controller is made by \emph{Cisco}, the meaning of the messages can easily be found on the manufacturer website\cite{syslogCisco}.
+\begin{lstlisting}[frame=single,breaklines=true,caption={Controller logs}]
+2013-10-21T17:26:00.123235+02:00 192.168.251.178 WiSMPythagore-B: *spamReceiveTask: Oct 21 17:26:00.080: %LWAPP-6-CAPWAP_SUPP_VER: spam_lrad.c:1835 Discarding Primary discovery request in LWAPP from AP 00:11:bc:1b:14:00 supporting CAPWAP
+2013-10-21T17:26:00.618291+02:00 192.168.251.178 WiSMPythagore-B: *mmListen: Oct 21 17:26:00.575: %MM-4-PMKCACHE_DEL_FAILED: mm_listen.c:6724 Failed to delete PMK cache entry for station 00:21:6a:86:4b:84 with request from controller 192.168.251.181
+2013-10-21T17:26:00.957695+02:00 192.168.251.178 WiSMPythagore-B: *Dot1x_NW_MsgTask_0: Oct 21 17:26:00.915: %APF-6-RADIUS_OVERRIDE_DISABLED: apf_ms_radius_override.c:204 Radius overrides disabled, ignoring source 2 
+\end{lstlisting}
+The messages generated are very well defined and explained in the related documentation. Their structure is well defined and facilitate the parsing. Each message belong to a category and has a severity level. That allows to filter the useless ones and immediately detect the most important.
+
+\subsubsection{SNMP}
+The other main source of information is the SNMP protocol install on the \emph{controller}. This mechanism delivers a lot of indicators about the current state of the network. An important characteristic is the fact that the information is not the same as the log. While the log file represent continuously the situation and its evolution, the SNMP requests delivers a snapshot of the controller. It's a fixed representation and a comparison with an older one, doesn't give any information about what happened between the two. For example, if we had 30 people connected to an \emph{access point} at a given time and 40 one hour later, we can't conclude that ten new people have connected. Maybe the thirty people left and forty new ones had connected. We highlight this because our first architecture tried to push together the information present in the logs and in the SNMP requests. It was a bad idea because the natures of the information were completely different. It resulted in an incoherent representation of the data and make the analysis wrong or compeltely impossible. To correct this situation, we met Bernard Lambeau and with his advices, we have completely modified our database architecture to make a strong and deliberate separation between the different kind of data.
+
+As said before, SNMP organized the information in a tree way. The classification of the information is quite intuitive but the main difficulty comes from the size of the tree. Once the interesting part of the tree have been identified. A lot of indicators can be gathered.
+
+\paragraph{PySNMP} PySNMP is the module that performs the \emph{SNMP} requests. It's a pure python implementation able to perform all the standard operation i.e.\  \emph{get, set and walk}.
+
+The \emph{snmp} module is mainly a way to create an abstraction with the snmp requests. It implements several methods to gatherer the information and make the links between them. Every request is independent and the module has to be able to know which value correspond to what element. That's the signification of the \emph{index} attribute in the \emph{Device} model.
+
+\subsubsection{Active Monitoring}
+The \emph{probe} module manages the connection with the probes. When a probe want to connect to the server, it answers and performs the authentication. When the authentication succeed, the module will receive the log file generated by the probe. Finally, it will analyse it and translate it in the database.
+
+\subsection{Analyse}
 
 
+\section{Active Probe}
+\subsection{Linksys Router}
+\subsection{OpenWrt}
 
-\section{Testbed conditions}
+\section{Communication between Server and Probes}
+The probes and the server have to exchange information. As we wanted to create a modular tool, we have chosen to encrypt all the data sent between the server and the probes. If the active monitoring device capture sensible contents, there must be no security vulnerabilities like \emph{eavesdropping} or \emph{man-in-the-middle attack}.
+The first constraint that appeared was the weak computation power of the probes. In consequence, we had to keep the encryption as easy to perform as possible. So, we have looked into \emph{symmetric cryptographic} techniques. But in the other hand, as we have several probes, it could be difficult to manage and exchange the keys unlike in asymmetric cryptography. Our choice was to take the best of both worlds and implement a protocol using hybrid encryption.
+In definitive, we used RSA and AES encryption together.
+\subsection{RSA}
+RSA\footnote{\url{http://www.google.com/patents/US4405829}} is one of the most used \emph{public-key cryptosystem}. Its name comes from its three designers: Ron Rivest, Adi Shamir, and Leonard Adleman. The algorithm involves two key: a \emph{public key} known by everybody and a \emph{private key} kept secret. The safety ensured by the technique comes from the difficulty of the factoring problem (factoring the product of two large prime numbers).
+The main advantage against symmetric cryptography is that the public key used for the encryption can be known by everybody and so make the problem of key exchange a lot easier. To make the explication clearer we will present a simple example occurring between Alice and Bob.
+\begin{enumerate}
+\item Alice give her public key to Bob.
+\item Bob wants to transmit a encrypted message to Alice. He uses the Alice's \emph{public key} to encrypt the message.
+\item Bob sends his message to Alice. Even if people intercept the transmission and have the public key, they couldn't decrypt it.
+\item Alice receives the message and decrypt it with her private key which she have kept secret.
+\end{enumerate}
+The key is 2048 bits long and each entity has its own pair of keys (i.e. the server and each probe). The server will known the authorized probes by having their private keys and will use them to encrypt the AES key (see below).
+The main drawback of such encryption is that the computations are quite heavy to perform. Which is against our previous requirements. That's why we only use it to encrypt and exchange a symmetric key that will be used for the exchange of data.
+\subsection{AES}
+The symmetric algorithm used is AES which stands for Advanced Encryption Standard. We chose a size of 256 bits for the keys which is quite correct for our utilization. The idea is to permute the bits of the message using the key. The operations performed are lighter than the ones used by RSA and so make it more adapted to be used on the probes.
+\subsection{Transaction Protocol}
+\subsection{OpenSSL}
+\subsection{PyCrypto}
+
+\section{Deployment}
+
+\subsection{Apache 2}
+
+\subsection{Module WSGI}

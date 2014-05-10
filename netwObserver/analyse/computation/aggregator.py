@@ -1,4 +1,4 @@
-from gatherer.models import WismEvent, MobileStation
+from gatherer.models import WismEvent, MobileStation, AccessPoint
 
 
 def getWismLogByType():
@@ -27,4 +27,14 @@ def getUserByDot11Protocol():
 
 	return stats
 
+def getHotAP(number=5):
+	result = {}
+	for ap in AccessPoint.objects.isUp().order_by('-numOfClients')[:number]:
+		result[ap.name] = ap.numOfClients
+	return result
 
+def getNbrOfUsers():
+	return MobileStation.objects.isAssociated().count()
+
+def getNbrOfAP():
+	return AccessPoint.objects.isUp().count()

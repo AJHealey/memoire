@@ -10,90 +10,58 @@ path {
 {% endblock %}
 
 {% block customHeader %}
-<script src="{% static "analyse/js/d3.v3.min.js" %}"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 {% endblock %}
 
 {% block content %}
 <div class='row' style="margin-top:20px;">
 	<div class="col-md-2">
 		<ul class="nav nav-pills nav-stacked">
-			<li {% if cat == 'ms' %}class="active"{%endif%}><a href="{% url 'analyse' 'ms' %}">Mobile Stations</a></li>
+			<li {% if cat == 'General' %}class="active"{%endif%}><a href="{% url 'analyse' 'gen' %}">General</a></li>
+			<li {% if cat == 'ms' %}class="active"{%endif%}><a href="{% url 'analyse' 'wifi' %}">Wifi</a></li>
 			<li {% if cat == 'wism' %}class="active"{%endif%}><a href="{% url 'analyse' 'wism' %}">Wism</a></li>
 		</ul>
 	</div>
 
 	<div id="graph" class="col-md-10">
-	{% if wism %}
-	<script>
+		
+		{% if gen %}
+		{% elif wism %}
 
-		var width = 960,
-		height = 700,
-		radius = Math.min(width, height) / 2;
+		{%elif wifi%}
+			<script type="text/javascript">
+			    // Load the Visualization API and the piechart package.
+      			google.load('visualization', '1.0', {'packages':['corechart']});
+      
+      			// Set a callback to run when the Google Visualization API is loaded.
+      			google.setOnLoadCallback(drawProtoChart);
 
-		var x = d3.scale.linear()
-		.range([0, 2 * Math.PI]);
+				function drawProtoChart() {
 
-		var y = d3.scale.sqrt()
-		.range([0, radius]);
+      				var data = new google.visualization.DataTable();
+      				data.addColumn('string', 'Protocol');
+      				data.addColumn('number', 'People');
+      				data.addRows([
+        				{%for attribut, value in ms.proto.items%}
+						['{{attribut}}', {{value}}],
+						{%endfor%}
+        				
+      				]);
+      				data.sort([{column: 0}]);
+      				var options = {'title':'802.11 Protocol',
+                    	'width':400,
+                    	'height':300};
 
-		var color = d3.scale.category20c();
+      				var chart = new google.visualization.PieChart(document.getElementById('protochart_div'));
 
-		var svg = d3.select("#graph").append("svg")
-		.attr("width", width)
-		.attr("height", height+25)
-		.append("g")
-		.attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
+      				chart.draw(data, options);
+      			}
+			</script>
 
-		var partition = d3.layout.partition()
-		.value(function(d) { return d.size; });
 
-		var arc = d3.svg.arc()
-		.startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
-		.endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
-		.innerRadius(function(d) { return Math.max(0, y(d.y)); })
-		.outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
-		d3.json("{%static "analyse/data/flare.json" %}", function(error, root) {
-			var path = svg.selectAll("path")
-			.data(partition.nodes(root))
-			.enter().append("path")
-			.attr("d", arc)
-			.style("fill", function(d) { return color((d.children ? d : d.parent).name); })
-			.on("click", click);
-
-			function click(d) {
-				path.transition()
-				.duration(750)
-				.attrTween("d", arcTween(d));
-			}
-		});
-
-		d3.select(self.frameElement).style("height", height + "px");
-
-	// Interpolate the scales!
-	function arcTween(d) {
-		var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
-		yd = d3.interpolate(y.domain(), [d.y, 1]),
-		yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
-		return function(d, i) {
-			return i
-			? function(t) { return arc(d); }
-			: function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
-		};
-	}
-
-	</script>
-	{%elif ms%}
-		{%for element, infos in ms.items %}
-			<h1>{{element}}</h1>
-			<dl class="dl-horizontal">
-			{%for proto, value in infos.items%}
- 				<dt>{{proto}}</dt>
-  					<dd>{{value}}</dd>
-			{%endfor%}
-			</dl>
-		{%endfor%}
-	{%endif%}
+			<div id="protochart_div" style="width:400; height:300"></div>
+		{%endif%}
 	</div>
 </div>
 

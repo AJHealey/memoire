@@ -2,15 +2,30 @@ from django.shortcuts import render
 from analyse.computation import aggregator
 
 # Create your views here.
-def analyse(request, cat='ms'):
+def analyse(request, cat='gen'):
 	context = {}
 	context["cat"] = cat
 	context['app'] = 'analysis'
 
-	if cat == 'ms':
-		context["ms"] = {'802.11 Protocol' : aggregator.getUserByDot11Protocol()}
+	# General Indicators
+	if cat == 'gen':
+		context["gen"] = {'nbrUsers' : aggregator.getNbrOfUsers(), 'nbrAP' : aggregator.getNbrOfAP()}
 
+	# Wifi related issues
+	elif cat == 'wifi':
+		context["ms"] = {'proto' : aggregator.getUserByDot11Protocol(), 'hotAP': aggregator.getHotAP()}
+
+	# Controller related issues
 	elif cat == "wism":
-		context["wism"] = {"pass":'test'}
+		tmp = aggregator.getWismLogByType()
+		context["wism"] = {'logsCount':'test'}
+
+	# DHCP related issues
+	elif cat == 'dhcp':
+		pass
+
+	# Radius related issues
+	elif cat == 'radius':
+		pass
 
 	return render(request, "analyse/analyse.html", context)

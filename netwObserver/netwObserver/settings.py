@@ -62,8 +62,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', 
         'NAME': 'memoire',
-        'USER': 'memoire',
-        'PASSWORD': 'memoireTest',
+        'USER': 'root',
+        'PASSWORD': 'memoire',
         'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
         'PORT': '3306',
     }
@@ -87,11 +87,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = "/srv/static/"
 MEDIA_URL = '/media/'
-MEDIA_ROOT = './media/'
+MEDIA_ROOT = '/srv/media/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
-)
+ )
 
 ## User Settings
 from datetime import timedelta

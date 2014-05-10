@@ -13,6 +13,13 @@ Warning--entry type for "snmp" isn't style-file defined
 --line 68 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "windows" isn't style-file defined
 --line 74 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "mvt" isn't style-file defined
+--line 110 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "octopussy" isn't style-file defined
+--line 117 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "syslogCisco" isn't style-file defined
+--line 124 of file Bibliographie/Bibliography.bib.bib
+Warning--I didn't find a database entry for "eduoramRadius"
 Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" has a comma at the end for entry article2
 while executing---line 1233 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
@@ -28,45 +35,45 @@ Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan"
 while executing---line 1315 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
 while executing---line 1315 of file unsrtnat.bst
-You've used 12 entries,
+You've used 15 entries,
             2481 wiz_defined-function locations,
-            627 strings with 6529 characters,
-and the built_in function-call counts, 3873 in all, are:
-= -- 316
-> -- 194
-< -- 8
-+ -- 80
-- -- 56
-* -- 253
-:= -- 634
-add.period$ -- 46
-call.type$ -- 12
-change.case$ -- 22
-chr.to.int$ -- 12
-cite$ -- 15
-duplicate$ -- 200
-empty$ -- 373
-format.name$ -- 74
-if$ -- 827
+            643 strings with 6947 characters,
+and the built_in function-call counts, 4644 in all, are:
+= -- 382
+> -- 215
+< -- 11
++ -- 92
+- -- 62
+* -- 286
+:= -- 751
+add.period$ -- 55
+call.type$ -- 15
+change.case$ -- 28
+chr.to.int$ -- 15
+cite$ -- 18
+duplicate$ -- 242
+empty$ -- 463
+format.name$ -- 83
+if$ -- 998
 int.to.chr$ -- 1
-int.to.str$ -- 13
+int.to.str$ -- 16
 missing$ -- 9
-newline$ -- 77
-num.names$ -- 36
-pop$ -- 125
+newline$ -- 92
+num.names$ -- 45
+pop$ -- 161
 preamble$ -- 1
-purify$ -- 12
+purify$ -- 15
 quote$ -- 0
-skip$ -- 131
+skip$ -- 167
 stack$ -- 0
-substring$ -- 45
-swap$ -- 27
+substring$ -- 51
+swap$ -- 33
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 75
+type$ -- 96
 warning$ -- 3
-while$ -- 25
+while$ -- 31
 width$ -- 0
-write$ -- 171
+write$ -- 207
 (There were 6 error messages)
