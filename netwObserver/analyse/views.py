@@ -2,6 +2,8 @@ from django.shortcuts import render
 from analyse.computation import aggregator
 from gatherer.models import AccessPoint
 
+from datetime import datetime
+
 # Create your views here.
 def general(request):
 	context = {}
@@ -40,7 +42,7 @@ def wifiAP(request):
 	try:
 		if request.method == 'POST' and 'selectedAP' in request.POST:
 			context["ap"] = AccessPoint.objects.get(id=int(request.POST['selectedAP']))
-			context["apBandwidth"] = getAPData(context["ap"])
+			context["apBandwidth"] = [(datetime.today(),34,34)] #getAPData(context["ap"])
 	except:
 		pass
 
