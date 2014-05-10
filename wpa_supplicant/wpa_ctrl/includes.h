@@ -30,9 +30,13 @@
 #ifndef CONFIG_NATIVE_WINDOWS
 #ifndef CONFIG_TI_COMPILER
 #include <sys/socket.h>
+#include <sys/ioctl.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <net/if.h>
 #include <arpa/inet.h>
+#include <linux/ip.h>
+#include <linux/icmp.h>
 #ifndef __vxworks
 #include <sys/uio.h>
 #include <sys/time.h>
