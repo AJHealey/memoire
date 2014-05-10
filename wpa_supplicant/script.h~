@@ -1,6 +1,6 @@
 
-#ifndef SCRIPT2_H
-#define SCRIPT2_H
+#ifndef SCRIPT_H
+#define SCRIPT_H
 
 #define DEFAULT_CTRL_IFACE "/tmp/run/wpa_supplicant/wlan0"
 #define BUF 1024
@@ -8,22 +8,26 @@
 
 struct wpa_ctrl *ctrl;
 struct timeb wpa_start, wpa_end, dhcp_start, dhcp_end, wpa_time, dhcp_time;
-int dhcp = 0;
+struct tm tm;
 time_t now;
+int dhcp = 0;
 FILE *f;
 
 enum log_events {
-	LOG_CUSTOM_INFO,
-	LOG_TRY_CONNECTION,
+	LOG_START,
+	LOG_STOP,
+	LOG_SSID,
+	LOG_BSSID,
 	LOG_CONNECTED,
 	LOG_WPA_TIME,
 	LOG_DHCP_TIME,
-	LOG_DISCONNECTED,
-	LOG_DISCONNECTED_BSSID,
-	LOG_EAP_SUCCESS,
-	LOG_EAP_FAILED,
-	LOG_CERT_FAILED,
-	LOG_TERMINATE,
+	LOG_PING_START,
+	LOG_PING_GOOGLE,
+	LOG_PING_GMAIL,
+	LOG_PING_ADE,
+	LOG_PING_UCLOUVAIN,
+	LOG_PING_ICAMPUS,
+	LOG_PING_STOP,
 	LOG_FAILED,
 	LOG_ERROR,
 };
@@ -36,23 +40,27 @@ enum wpa_action {
 	ACTION_CONNECT_PRIVE,
 	ACTION_DISCONNECT,
 	ACTION_CREATE_NETWORKS,
-	ACTION_MAKE_LOG
 };
 
-static void log_event();
-static void parse_event();
-static void execute_action();
-static void commands();
-static void get_status();
+/* Prototypes */
+static void log_event(enum log_events log, const char *arg);
+static void parse_event(const char *reply);
+static void execute_action(enum wpa_action action, const char *ssid);
+static void commands(char *cmd);
 static void create_networks();
-static void config_network();
+static void config_network(int network, char *ssid, char *key_mgmt, char *eap, char *pairwise, char *identity, char *password, char *ca_cert, char *phase1, char *phase2);
 static void connect_student();
 static void connect_eduroam();
 static void connect_uclouvain();
 static void connect_visiteurs();
 static void connect_prive();
-void *connection_loop();
-void *wpa_loop();
+static char *get_ip();
+static char *dest_ip(const char *addr);
+static int ping_routine(const char *addr);
+static void ping_loop();
+void *wpa_loop(void *p_data);
+void *connection_loop(void *p_data);
+
 
 
 

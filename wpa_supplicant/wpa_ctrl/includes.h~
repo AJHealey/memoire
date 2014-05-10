@@ -33,9 +33,12 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <linux/ip.h>
+#include <linux/icmp.h>
 #ifndef __vxworks
 #include <sys/uio.h>
 #include <sys/time.h>
+#include <sys/timeb.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/un.h>
