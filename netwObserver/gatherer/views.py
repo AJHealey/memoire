@@ -11,7 +11,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from gatherer.log.logParser import parser
 from gatherer.snmp.getter import getAllAP
-from gatherer.models import RadiusEvent, DHCPEvent, WismEvent, MobileStation, AccessPoint, BadLog
+from gatherer.models import RadiusEvent, DHCPEvent, WismEvent, MobileStation, AccessPoint, RogueAccessPoint, BadLog
 
 from django.conf import settings
 
@@ -99,6 +99,16 @@ def snmp(request, cat='ap', page=1, perpage=100):
 			context['ap'] = p.page(1)
 		except EmptyPage:
 			context['ap'] = p.page(p.num_pages)
+
+	elif cat == 'rap':
+		tmpQuery = RogueAccessPoint.objects.order_by('-numOfClients')
+		p = Paginator(tmpQuery,perpage)
+		try:
+			context['rap'] = p.page(page)
+		except PageNotAnInteger:
+			context['rap'] = p.page(1)
+		except EmptyPage:
+			context['rap'] = p.page(p.num_pages)
 
 	elif cat == 'ms':
 		tmpQuery = MobileStation.objects.isAssociated().order_by('macAddress')

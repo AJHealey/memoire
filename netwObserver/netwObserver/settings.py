@@ -62,8 +62,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', 
         'NAME': 'memoire',
-        'USER': 'root',
-        'PASSWORD': 'memoire',
+        'USER': 'memoire',
+        'PASSWORD': 'memoireTest',
         'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
         'PORT': '3306',
     }
@@ -97,5 +97,6 @@ STATICFILES_DIRS = (
 ## User Settings
 from datetime import timedelta
 SNMPAPLAP = timedelta(hours=1)
+SNMPRAPLAP = timedelta(hours=2)
 SNMPMSLAP = timedelta(minutes=30)
 
