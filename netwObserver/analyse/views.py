@@ -35,7 +35,7 @@ def wifiAP(request):
 	context['cat'] = 'wifi'
 	context['section'] = 'ap'
 
-	context["allAP"] = {}
+	context["allAP"] = AccessPoint.objects.all()
 
 	try:
 		if request.method == 'POST' and 'selectedAP' in request.POST:

@@ -33,6 +33,7 @@
           <th>Name</th>
           <th>Mac Address</th>
           <th>IP</th>
+          <th>Link</th>
         </tr>
       </thead>
       <tbody>
@@ -42,6 +43,7 @@
           <td>{{point.name}}</td>
           <td>{{point.macAddress}}</td>
           <td>{{point.ip}}</td>
+          <td>{{point.get_ethernetLinkSpeed_display}}</td>
         </tr>
         {% endfor %}
       </tbody>

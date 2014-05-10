@@ -237,7 +237,7 @@ def getAllAP():
 		tmp = getAPEthernetLinkSpeed(ip=wism[0])
 		for index, speed in tmp.items():
 			if index in result:
-				result[index].etherneLinkSpeed = speed
+				result[index].ethernetLinkSpeed = speed
 	except Exception as e:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap Ethernet Link Speed', error=str(e)).save()
 
@@ -561,6 +561,9 @@ def parseMacAdresse(macString):
 		for c in result[2:-1]:
 			tmp += hex(ord(c))[2:]
 		result = tmp
+
+	else:
+		OperationalError(date=timezone.localtime(timezone.now()), source='snmp macAddress parsing', error=macString).save()
 
 
 	if len(result) == 12:
