@@ -71,7 +71,7 @@ class RAPManage(models.Manager):
 class RogueAccessPoint(Device):
 
 	ssid = models.CharField(max_length=50, null=True)
-	nbrOfClients = models.DecimalField(max_digits=3, decimal_places=0)
+	nbrOfClients = models.DecimalField(max_digits=3, decimal_places=0, null=True)
 	closestAp = models.ForeignKey(AccessPoint, null= True)
 
 	objects = RAPManage()
