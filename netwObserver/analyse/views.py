@@ -42,7 +42,7 @@ def wifiAP(request):
 	try:
 		if request.method == 'POST' and 'selectedAP' in request.POST:
 			context["ap"] = AccessPoint.objects.get(id=int(request.POST['selectedAP']))
-			context["apBandwidth"] = len(getAPData(context["ap"]))
+			context["apBandwidth"] = 'test' #len(getAPData(context["ap"]))
 	except:
 		pass
 
