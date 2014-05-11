@@ -39,12 +39,9 @@ def wifiAP(request):
 
 	context["allAP"] = AccessPoint.objects.all().order_by('name')
 
-	try:
-		if request.method == 'POST' and 'selectedAP' in request.POST:
-			context["ap"] = AccessPoint.objects.get(id=int(request.POST['selectedAP']))
-			context["apBandwidth"] = getAPData(context["ap"])[0]['rx']
-	except:
-		pass
+	if request.method == 'POST' and 'selectedAP' in request.POST:
+		context["ap"] = AccessPoint.objects.get(id=int(request.POST['selectedAP']))
+		context["apBandwidth"] = getAPData(context["ap"])[0]['rx']
 
 	return render(request, "analyse/wifiAP.html", context)
 
