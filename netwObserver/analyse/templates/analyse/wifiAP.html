@@ -32,8 +32,8 @@
 		
 		var data = google.visualization.arrayToDataTable([
 		  ['Time', 'Rx Speed', 'Tx Speed', 'Interface Speed'],
-		  {%for date, rxspeed, txspeed in apBandwidth%}
-		  [new Date({{date.year}},{{date.month}},{{date.day}},{{date.hour}},{{date.minute}},{{date.second}}), {{rxspeed}}, {{txspeed}}, {{ap.ethernetLinkSpeed}}],
+		  {%for log in apBandwidth%}
+		  [new Date({{log.date.year}},{{log.date.month}},{{log.date.day}},{{log.date.hour}},{{log.date.minute}},{{log.date.second}}), {{log.rx}}, {{log.tx}}, {{ap.ethernetLinkSpeed}}],
 		  {%endfor%}
 		]);
 
@@ -47,10 +47,9 @@
 	  }
 </script>
 
-Test : {{ap.name}}
-{{apBandwidth}}
-
-
+{%for log in apBandwidth%}
+[new Date({{log.date.year}},{{log.date.month}},{{log.date.day}},{{log.date.hour}},{{log.date.minute}},{{log.date.second}}), {{log.rx}}, {{log.tx}}, {{ap.ethernetLinkSpeed}}],
+{%endfor%}
 
 <div id="bandwidthchart_div" style="width: 900px; height: 500px;"></div>
 {%endif%}
