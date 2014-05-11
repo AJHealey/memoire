@@ -82,7 +82,7 @@ def getAPData(ap, timePerRange=timedelta(hours=1)):
 				else:
 					txSpeed = (((ethernetTxTotalBytesEnd - ethernetTxTotalBytesStart)/timePerRange.seconds)*8)
 				
-				result.append((datetimeStartRange+timePerRange/2, float(rxSpeed)/1000, float(txSpeed)/1000))
+				result.append({'date':datetimeStartRange+timePerRange/2, 'rx':float(rxSpeed)/1000, 'tx':float(txSpeed)/1000))
 
 				# Start new range
 				datetimeStartRange = snap.date
