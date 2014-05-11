@@ -62,6 +62,9 @@ class APInterface(models.Model):
 	numOfClients = models.DecimalField(max_digits=4, decimal_places=0, default=0)
 	numOfPoorSNRClients = models.DecimalField(max_digits=4, decimal_places=0, default=0)
 
+	class Meta:
+		unique_together = (('ap', 'index'),)
+
 
 ## Rogue Access Point Model
 class RAPManage(models.Manager):
