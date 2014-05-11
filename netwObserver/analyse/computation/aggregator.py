@@ -57,10 +57,10 @@ def getAPData(ap, timePerRange=timedelta(hours=1)):
 		datetimeStartRange = snapshots[0].date
 		
 		ethernetRxTotalBytesStart = snapshots[0].ethernetRxTotalBytes
-		ethernetRxTotalBytesEnd = 0
+		ethernetRxTotalBytesEnd = snapshots[0].ethernetRxTotalBytes
 		
 		ethernetTxTotalBytesStart = snapshots[0].ethernetTxTotalBytes
-		ethernetTxTotalBytesEnd = 0
+		ethernetTxTotalBytesEnd = snapshots[0].ethernetTxTotalBytes
 
 		for snap in snapshots:
 			if snap.date < (datetimeStartRange + timePerRange):
@@ -68,6 +68,7 @@ def getAPData(ap, timePerRange=timedelta(hours=1)):
 				ethernetTxTotalBytesEnd = snap.ethernetTxTotalBytes
 
 			else:
+				#Counter32 Wrapping
 				if ethernetRxTotalBytesStart > ethernetRxTotalBytesEnd:
 					rxSpeed = (MAX_VALUE_SNMP_COUNTER32 - ethernetRxTotalBytesStart) + ethernetRxTotalBytesEnd
 				else:
@@ -76,9 +77,18 @@ def getAPData(ap, timePerRange=timedelta(hours=1)):
 				if ethernetTxTotalBytesStart > ethernetTxTotalBytesEnd:
 					txSpeed = (MAX_VALUE_SNMP_COUNTER32 - ethernetTxTotalBytesStart) + ethernetTxTotalBytesEnd
 				else:
-					txSpeed = ((ethernetRxTotalBytesEnd - ethernetTxTotalBytesStart)/timePerRange.seconds)*8
+					txSpeed = ((ethernetTxTotalBytesEnd - ethernetTxTotalBytesStart)/timePerRange.seconds)*8
 				
-				result.append((datetimeStartRange+timePerRange/2, rxSpeed, txSpeed))
+				result.append((datetimeStartRange+timePerRange/2, int(rxSpeed), int(txSpeed)))
+
+				# Start new range
+				datetimeStartRange = snap.date
+				ethernetRxTotalBytesStart = snap.ethernetRxTotalBytes
+				ethernetRxTotalBytesEnd = snap.ethernetRxTotalBytes
+				ethernetTxTotalBytesStart = snap.ethernetTxTotalBytes
+				ethernetTxTotalBytesEnd = snap.ethernetTxTotalBytes
+
+
 
 
 	except ObjectDoesNotExist:
