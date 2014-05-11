@@ -47,7 +47,9 @@
 	  }
 </script>
 
-{{apBandwidth}}
+{%for date, rxspeed, txspeed in apBandwidth%}
+{{rxspeed}}
+{%endfor%}
 
 
 
