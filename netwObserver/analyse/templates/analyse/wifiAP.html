@@ -46,9 +46,9 @@
 		chart.draw(data, options);
 	  }
 </script>
-{%for date, rxspeed, txspeed in apBandwidth%}
-new Date({{date.year}},{{date.month}},{{date.day}},{{date.hour}},{{date.minute}},{{date.second}}), {{rxspeed}}, {{txspeed}}, {{ap.ethernetLinkSpeed}}],
-{%endfor%}
+
+{{apBandwidth}}
+
 
 
 <div id="bandwidthchart_div" style="width: 900px; height: 500px;"></div>
