@@ -340,6 +340,8 @@ def getAllAP():
 	for ap in result.values():
 		ap.touch()
 		ap.save()
+		apSnapshot(ap)
+
 	for ap in resultInterfaces.values():
 		for i in ap.values():
 			i.save()
@@ -477,18 +479,18 @@ def getAllRAP():
 ###########################################################################################################################
 ### Snapshot ###
 ############################################################################################################################
-def apSnapshot():
-	for ap in AccessPoint.objects.all():
-		snap = APSnapshot(ap=ap)
-		snap.ethernetRxTotalBytes = ap.ethernetRxTotalBytes
-		snap.ethernetTxTotalBytes = ap.ethernetTxTotalBytes
-		snap.save()
-		for interface in ap.apinterface_set.all():
-			ifsnap = APIfSnapshot(apsnapshot=snap, apinterface=interface)
-			ifsnap.channelUtilization = interface.channelUtilization
-			ifsnap.numOfClients = interface.numOfClients
-			ifsnap.numOfPoorSNRClients = interface.numOfPoorSNRClients
-			ifsnap.save()
+def apSnapshot(ap):
+	
+	snap = APSnapshot(ap=ap)
+	snap.ethernetRxTotalBytes = ap.ethernetRxTotalBytes
+	snap.ethernetTxTotalBytes = ap.ethernetTxTotalBytes
+	snap.save()
+	for interface in ap.apinterface_set.all():
+		ifsnap = APIfSnapshot(apsnapshot=snap, apinterface=interface)
+		ifsnap.channelUtilization = interface.channelUtilization
+		ifsnap.numOfClients = interface.numOfClients
+		ifsnap.numOfPoorSNRClients = interface.numOfPoorSNRClients
+		ifsnap.save()
 
 
 ############################################################################################################################
@@ -502,7 +504,6 @@ def snmpAPDaemon(laps=timedelta(minutes=20)):
 	while True:
 		try:
 			getAllAP()
-			apSnapshot()
 			task.touch()
 			time.sleep(laps.total_seconds())
 		except:
