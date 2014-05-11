@@ -70,14 +70,16 @@ def getAPData(ap, timePerRange=timedelta(hours=1)):
 			else:
 				#Counter32 Wrapping
 				if ethernetRxTotalBytesStart > ethernetRxTotalBytesEnd:
-					rxSpeed = (MAX_VALUE_SNMP_COUNTER32 - ethernetRxTotalBytesStart) + ethernetRxTotalBytesEnd
+					total = ((MAX_VALUE_SNMP_COUNTER32 - ethernetRxTotalBytesStart) + ethernetRxTotalBytesEnd)
+					rxspeed = ((total/timePerRange.seconds)*8)/1000
 				else:
-					rxSpeed = ((ethernetRxTotalBytesEnd - ethernetRxTotalBytesStart)/timePerRange.seconds)*8
+					rxSpeed = (((ethernetRxTotalBytesEnd - ethernetRxTotalBytesStart)/timePerRange.seconds)*8)/1000
 				
 				if ethernetTxTotalBytesStart > ethernetTxTotalBytesEnd:
-					txSpeed = (MAX_VALUE_SNMP_COUNTER32 - ethernetTxTotalBytesStart) + ethernetTxTotalBytesEnd
+					total = ((MAX_VALUE_SNMP_COUNTER32 - ethernetTxTotalBytesStart) + ethernetTxTotalBytesEnd)
+					txSpeed = ((total/timePerRange.seconds)*8)/1000
 				else:
-					txSpeed = ((ethernetTxTotalBytesEnd - ethernetTxTotalBytesStart)/timePerRange.seconds)*8
+					txSpeed = (((ethernetTxTotalBytesEnd - ethernetTxTotalBytesStart)/timePerRange.seconds)*8)/1000
 				
 				result.append((datetimeStartRange+timePerRange/2, int(rxSpeed), int(txSpeed)))
 
