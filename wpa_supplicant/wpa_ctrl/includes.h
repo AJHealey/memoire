@@ -33,10 +33,10 @@
 #include <sys/ioctl.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/ip_icmp.h>
 #include <net/if.h>
 #include <arpa/inet.h>
-#include <linux/ip.h>
-#include <linux/icmp.h>
 #ifndef __vxworks
 #include <sys/uio.h>
 #include <sys/time.h>

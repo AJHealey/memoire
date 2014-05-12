@@ -24,8 +24,23 @@ static void log_event(enum log_events log, const char *arg) {
 			fprintf(f, "\t\"ssid\": \"%s\",\n", arg);
 			break;
 
-		case LOG_BSSID:
-			fprintf(f, "\t\"bssid\": \"%s\",\n", arg);
+		case LOG_TRIED: {
+			struct ap_tried *ptr = first;
+			fprintf(f, "\t\"tried\": [ ");
+			/* Display all the BSSID tried */
+			while(ptr != NULL) {
+				fprintf(f, "\"%s\"", ptr->bssid);
+				/* JSON syntax */
+				if(first->num != 1) {
+					fprintf(f, ", ");
+					first->num -= 1;
+				}
+				else
+					fprintf(f, " ");
+				ptr = ptr->next;
+			}
+			fprintf(f, "],\n");
+			}
 			break;
 
 		case LOG_CONNECTED:
@@ -113,7 +128,7 @@ static void parse_event(const char *reply) {
 
 		/*Start udhcpc for IP address*/
 		ftime(&dhcp_start);
-		system("udhcpc -t 0 -i wlan0");
+		system("udhcpc -t 0 -i wlan0 -C");
 		ftime(&dhcp_end);
 		timeDiff(dhcp_start, dhcp_end, &dhcp_time);
 		log_event(LOG_DHCP_TIME,NULL);
@@ -122,21 +137,57 @@ static void parse_event(const char *reply) {
 	
 	/* TRYING NETWORK CONNECTION */
 	else if(match(event, "Trying")) {
-		char *ssid, *event_tmp, bssid[18], arg[256];
-		/*Get network BSSID*/
+		char *ssid, *event_tmp, bssid[18];
+		
+		/* Get BSSID */
 		memset(bssid, 0, 18);
 		memcpy(bssid, &event[25], 17);
 
-		/*Get network SSID*/
+		/* Get SSID */
 		event_tmp = strdup(event);
 		ssid = strtok(event_tmp, "'");
 		ssid = strtok(NULL, "'");
-		//sprintf(arg,"'%s' (BSSID: %s)", ssid, bssid);
-		//log_event(LOG_TRY_CONNECTION, arg);
-		
-		log_event(LOG_SSID, ssid);
-		log_event(LOG_BSSID, bssid);
+		ssid_log = ssid;
 
+		struct ap_tried *ptr = (struct ap_tried*) malloc (sizeof(struct ap_tried));
+		ptr->bssid = malloc(strlen(bssid)+1);
+
+		/* First AP tried */
+		if(first == NULL) {
+			strcpy(ptr->bssid, bssid);
+			ptr->next = NULL;
+			first = curr = ptr;
+			first->num = 1;
+		}
+		/* Other APs tried */
+		else {
+			strcpy(ptr->bssid, bssid);
+			first->num += 1;
+			ptr->next = NULL;
+			curr->next = ptr;
+			curr = ptr;
+		}
+		
+	}
+	/* Association accepted with AP */
+	else if(match(event, "Associated")) {
+		char bssid[18];
+		/*Get network BSSID*/
+		memset(bssid, 0, 18);
+		memcpy(bssid, &event[16], 17);
+		
+		log_event(LOG_SSID, ssid_log);
+		log_event(LOG_TRIED, NULL);
+		
+		/* Free AP Tried linked List */
+		struct ap_tried *current = first;
+		struct ap_tried *tmp;
+		while(current != NULL) {
+			tmp = current->next;
+			free(current);
+			current = tmp;
+		}
+		first = NULL;
 	}
 }
 
@@ -161,6 +212,7 @@ static void execute_action(enum wpa_action action, const char * ssid) {
 			connect_prive();
 			break;
 		case ACTION_DISCONNECT:
+			log_event(LOG_STOP, NULL);
 			commands("DISCONNECT");
 			commands("DISABLE_NETWORK 0");
 			commands("DISABLE_NETWORK 1");
@@ -192,8 +244,9 @@ static void commands(char *cmd)
 	}
 	ret = wpa_ctrl_request(ctrl, cmd, os_strlen(cmd), reply, &len, NULL);
 	if(ret < 0) {
-		log_event(LOG_ERROR, ("Command '%s' timed out or failed", cmd));
-		exit(-1);
+		/* Wpa_supplicant timed out. Restart command */
+		commands(cmd);
+		
 	}
 }
 
@@ -379,25 +432,103 @@ unsigned short in_cksum(unsigned short *addr, int len) {
 	return (answer);
 }
 
+/*static void noresp(int ign) {
+	printf("No response from %s\n", hostname);
+}
+
+static void ping(const char *host) {
+	struct hostent *h;
+	struct sockaddr_in pingaddr;
+	struct icmp *pkt;
+	int pingsock, c;
+	char packet[DEFDATALEN + MAXIPLEN + MAXICMPLEN];
+	
+	if((pingsock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0) {
+		perror("Ping: creating a raw socket");
+		exit(1);
+	}
+
+	memset(&pingaddr, 0, sizeof(struct sockaddr_in));
+	
+	pingaddr.sin_family = AF_INET;
+	if(!(h = gethostbyname(host))) {
+		fprintf(stderr, "ping: unknown host");
+		exit(1);
+	}
+
+	memcpy(&pingaddr.sin_addr, h->h_addr, sizeof(pingaddr.sin_addr));
+	hostname = h->h_name;
+
+	pkt = (struct icmp *) packet;
+	memset(pkt, 0, sizeof(packet));
+	pkt->icmp_type = ICMP_ECHO;
+	pkt->icmp_cksum = in_cksum((unsigned short *) pkt, sizeof(packet));
+	
+	c = sendto(pingsock, packet, sizeof(packet), 0, (struct sockaddr *) &pingaddr, sizeof(struct sockaddr_in));
+	if(c < 0 || c != sizeof(packet)) {
+		if(c < 0)
+			perror("ping: sendto");
+		fprintf(stderr, "ping: write incomplete\n");
+		exit(1);
+	}
+
+	signal(SIGALRM, noresp);
+	alarm(1);
+	while(1) {
+		struct sockaddr_in from;
+		size_t fromlen = sizeof(from);
+		
+		if((c = recvfrom(pingsock, packet, sizeof(packet), 0, (struct sockaddr *)&from, &fromlen)) < 0) {
+			if(errno == EINTR)
+				continue;
+			perror("ping: recvfrom");
+			continue;
+		}
+		if(c >= 76) {
+			struct iphdr *iphdr = (struct iphdr *)packet;
+			pkt = (struct icmp *)(packet + (iphdr->ihl << 2));
+			if(pkt->icmp_type == ICMP_ECHOREPLY)
+				break;
+		}
+	}
+	printf("%s is alive\n", hostname);
+	return;
+
+}
+
+
+*/
+
+
+
+
+
 /*
  * Ping method
  * Inspired from www.cboard.cprogramming.com/networking-device-communication/41635-ping-program.html
  */
-static int ping_routine(const char *addr) {
+static int ping(const char *addr) {
 	char src[20];
 	char dest[20];
+	int sockfd, optval, addrlen, size;
+	char *buf, *packet;
 	struct iphdr *ip;
 	struct iphdr *reply;
 	struct icmphdr *icmp;
 	struct sockaddr_in sock, connection;
-	int sockfd, optval, addrlen, size;
-	char *buf, *packet;
+
 	strncpy(src, get_ip(), 20); //Get router IP
+	printf("1\n");
 	strncpy(dest, addr, 20); //Get IP addr of destination
+	printf("2\n");
 	buf = malloc(sizeof(struct iphdr) + sizeof(struct icmphdr));
+	printf("3\n");
 	packet = malloc(sizeof(struct iphdr) + sizeof(struct icmphdr));
-	ip = (struct iphdr *) packet;	
+	printf("4\n");
+	ip = (struct iphdr *) packet;
+	printf("5\n");	
 	icmp = (struct icmphdr *) (packet + sizeof(struct iphdr));
+	printf("6\n");
 
 	ip->ihl = 5;
 	ip->version = 4;
@@ -410,12 +541,15 @@ static int ping_routine(const char *addr) {
 	ip->saddr = inet_addr(src);
 	ip->daddr = inet_addr(dest);
 	
+	printf("7\n");
 	if((sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) == -1) {
 		perror("Socket");
 		exit(EXIT_FAILURE);
 	}
-
+	printf("8\n");	
+	
 	setsockopt(sockfd, IPPROTO_IP, IP_HDRINCL, &optval, sizeof(int));
+	printf("9\n");
 	icmp->type = ICMP_ECHO;
 	icmp->code = 0;
 	icmp->un.echo.id = random();
@@ -425,12 +559,13 @@ static int ping_routine(const char *addr) {
 
 	connection.sin_family = AF_INET;
 	connection.sin_addr.s_addr = inet_addr(dest);
-	
+	printf("10\n");
 	sendto(sockfd, packet, ip->tot_len, 0, (struct sockaddr *)&connection, sizeof(struct sockaddr));
-	
+	printf("11\n");
 	addrlen = sizeof(connection);
-	
+	printf("12\n");
 	if((size = recvfrom(sockfd, buf, sizeof(struct iphdr) + sizeof(struct icmphdr), 0, (struct sockaddr *)&connection, &addrlen)) == -1) {
+		printf("13\n");
 		free(packet);
 		free(buf);
 		close(sockfd);
@@ -447,8 +582,11 @@ static int ping_routine(const char *addr) {
 }
 
 static void ping_loop() {
+	printf("PING\n");
 	log_event(LOG_PING_START, NULL);
-	if(ping_routine("194.78.0.59") == 0)
+	ping("google.be");
+	ping("icampus.uclouvain.be");
+	/*if(ping_routine("194.78.0.59") == 0)
 		log_event(LOG_PING_GOOGLE, "OK");
 	else 
 		log_event(LOG_PING_GOOGLE, "DOWN");
@@ -468,7 +606,7 @@ static void ping_loop() {
 		log_event(LOG_PING_ICAMPUS, "OK");
 	else
 		log_event(LOG_PING_ICAMPUS, "DOWN");
-	log_event(LOG_PING_STOP, NULL);
+	log_event(LOG_PING_STOP, NULL);*/
 }
 
 
@@ -482,10 +620,10 @@ void *wpa_loop(void *p_data) {
 	struct timeval timeout;
 	
 	ftime(&wpa_start);
-	//system("wpa_supplicant -B -D nl80211 -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant_student.UCLouvain.conf");
-
 	log_event(LOG_START, NULL);
-	system("wpa_supplicant -B -D nl80211 -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant_maison.conf");
+	system("wpa_supplicant -B -D nl80211 -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant_student.UCLouvain.conf");
+
+	
 	ctrl = wpa_ctrl_open(DEFAULT_CTRL_IFACE);
 	if(ctrl == NULL) {
 		log_event(LOG_ERROR, "Unable to open wpa_supplicant control interface");
@@ -529,7 +667,7 @@ void *wpa_loop(void *p_data) {
 				reply_len = BUF-1;
 				wpa_ctrl_recv(ctrl, reply, &reply_len);
 				reply[reply_len] = '\0';
-				//printf("[-] %s\n", reply);
+				printf("[-] %s\n", reply);
 				parse_event(reply);
 				break;
 		}
@@ -542,6 +680,7 @@ void *wpa_loop(void *p_data) {
 void *connection_loop(void * p_data) {
 	int close = 0;
 	while(1) {
+		ping_loop();
 		sleep(DELAY);
 		printf("Disconnection from student\n");
 		execute_action(ACTION_DISCONNECT, "student.UCLouvain");
@@ -573,13 +712,15 @@ void *connection_loop(void * p_data) {
 		printf("Connect to student.UCLouvain\n");
 		execute_action(ACTION_CONNECT_STUDENT, NULL);
 		sleep(DELAY);
-		if(close == 0) {
+		if(close == 1) {
+			printf("SAVE\n");
+			log_event(LOG_STOP, NULL);
 			fclose(f);
 			//TODO send file
 			//TODO f = fopen("log.txt", "w");
 			f = fopen("logs2.txt","w");
+			close = 0;
 		}
-		close = 0;
 		close += 1;
 	}
 	return NULL;
@@ -640,8 +781,7 @@ int main(int argc, char ** argv) {
 		while(1) {
 			if(dhcp == 1) {
 				printf("Starting loop\n");
-				//r = pthread_create(&loop_thread, NULL, connection_loop, NULL);
-				r = pthread_create(&loop_thread, NULL, maison, NULL);
+				r = pthread_create(&loop_thread, NULL, connection_loop, NULL);
 				if(r)
 					fprintf(stderr, "%s", strerror(r));
 				break;

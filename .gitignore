@@ -8,4 +8,4 @@ __pycache__/
 *.bbl
 *.blg
 *.pdf
-
+*.fdb_latexmk
