@@ -1,0 +1,37 @@
+{% extends "gatherer/snmp.html" %}
+{% load staticfiles %}
+
+{%block category%}
+<table class="table table-striped table-hover">
+	<thead>
+		<tr>
+			<th></th>
+			<th>Mac Address</th>
+			<th>IP</th>
+			<th>SSID</th>
+			<th>Wifi Protocol</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for station in ms %}
+		<tr>
+			<td></td>
+			<td>{{station.macAddress}}</td>
+			<td>{{station.ip}}</td>
+			<td>{{station.ssid}}</td>
+			<td>{{station.get_dot11protocol_display}}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+<footer>
+	{{ms|length}} entr{{ ms|pluralize:'y,ies' }}
+	{%if ms.paginator.num_pages > 1 %}
+	<p class="text-center">Page {{ ms.number }} of {{ ms.paginator.num_pages }}</p>
+	<ul class="pager">
+		<li class="previous{%if not ms.has_previous%} disabled{%endif%}"><a href="{%if ms.has_previous%}{% url 'mssnmp' ms.previous_page_number %}{%else%}#{%endif%}">Previous</a></li>
+		<li class="next{%if not ms.has_next%} disabled{%endif%}"><a href="{%if ms.has_next%}{% url 'mssnmp' ms.next_page_number %}{%else%}#{%endif%}">Next</a></li>
+	</ul>
+	{%endif%}
+</footer>
+{%endblock%}

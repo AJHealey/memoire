@@ -1,0 +1,38 @@
+{% extends "gatherer/snmp.html" %}
+{% load staticfiles %}
+
+{%block category%}
+<table class="table table-striped table-hover">
+	<thead>
+		<tr>
+			<th></th>
+			<th>Name</th>
+			<th>Mac Address</th>
+			<th>IP</th>
+			<th>Link</th>
+		</tr>
+	</thead>
+ 	<tbody>
+		{% for point in ap %}
+		<tr>
+			<td></td>
+			<td>{{point.name}}</td>
+			<td>{{point.macAddress}}</td>
+			<td>{{point.ip}}</td>
+			<td>{{point.get_ethernetLinkSpeed_display}}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+<footer>
+	{{ap|length}} entr{{ ap|pluralize:'y,ies' }}
+	{%if ap.paginator.num_pages > 1 %}
+	<p class="text-center">Page {{ ap.number }} of {{ ap.paginator.num_pages }}</p>
+	<ul class="pager">
+		<li class="previous{%if not ap.has_previous%} disabled{%endif%}"><a href="{%if ap.has_previous%}{% url 'apsnmp' ap.previous_page_number %}{%else%}#{%endif%}">Previous</a></li>
+		<li class="next{%if not ap.has_next%} disabled{%endif%}"><a href="{%if ap.has_next%}{% url 'apsnmp' ap.next_page_number %}{%else%}#{%endif%}">Next</a></li>
+	</ul>
+ 	{%endif%}
+</footer>
+{%endblock%}
+

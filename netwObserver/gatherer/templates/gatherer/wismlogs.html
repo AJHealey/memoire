@@ -1,0 +1,57 @@
+{% extends "gatherer/logs.html" %}
+{% load staticfiles %}
+{% load gatherer_extra_tags %}
+
+{%block logs%}
+
+<table class="table table-striped table-hover">
+	<thead>
+		<tr>
+			<th></th>
+			<th>Date</th>
+			<th>IP</th>
+			<th>Category</th>
+			<th>Severity</th>
+			<th>Mnemo</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for event in wismEvent %}
+			<tr 
+			{%if event.severity <= 2 %}
+			class='danger'>
+				<td><span class="glyphicon glyphicon-fire"></span></td>
+				
+			{%elif event.severity <= 4 %}
+			class='warning'>
+				<td><span class="glyphicon glyphicon-warning-sign"></span></td>
+				
+			{%elif event.severity <= 5 %}
+			class='info'>
+				<td><span class="glyphicon glyphicon-eye-open"></span></td>
+				
+			{%else%}
+			>
+				<td></td>
+			{%endif%}
+				<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
+				<td>{{event.wismIp}}</td>
+				<td>{{event.category}}</td>
+				<td data-toggle="tooltip" data-placement="bottom" title="{{event.get_severity_display}}">{{event.severity}}</td>
+				<td data-toggle="tooltip" data-placement="bottom" title="{{event.message}}">{{event.mnemo}}</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+<footer>
+	{{wismEvent|length}} entr{{ wismEvent|pluralize:'y,ies' }}
+	{%if wismEvent.paginator.num_pages > 1 %}
+	<div class="text-center">Page {{ wismEvent.number }} of {{ wismEvent.paginator.num_pages }}</div>
+	<ul class="pager">
+		<li class="previous{%if not wismEvent.has_previous%} disabled{%endif%}"><a href="{%if wismEvent.has_previous%}{% url 'wismlogs' wismEvent.previous_page_number %}{%else%}#{%endif%}">Newer</a></li>
+		<li class="next{%if not wismEvent.has_next%} disabled{%endif%}"><a href="{%if wismEvent.has_next%}{% url 'wismlogs' wismEvent.next_page_number %}{%else%}#{%endif%}">Older</a></li>
+	</ul>
+	{%endif%}
+</footer>
+
+{%endblock%}

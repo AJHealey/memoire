@@ -1,0 +1,35 @@
+{% extends "gatherer/snmp.html" %}
+{% load staticfiles %}
+
+{%block category%}
+<table class="table table-striped table-hover">
+	<thead>
+		<tr>
+			<th></th>
+			<th>SSID</th>
+			<th>Clients</th>
+			<th>Closest Access Point</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for point in rap %}
+		<tr>
+			<td></td>
+			<td>{{point.ssid}}</td>
+			<td>{{point.nbrOfClients}}</td>
+			<td>{{point.closestAp.name}}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+<footer>
+	{{rap|length}} entr{{ rap|pluralize:'y,ies' }}
+	{%if rap.paginator.num_pages > 1 %}
+	<p class="text-center">Page {{ rap.number }} of {{ rap.paginator.num_pages }}</p>
+	<ul class="pager">
+		<li class="previous{%if not rap.has_previous%} disabled{%endif%}"><a href="{%if rap.has_previous%}{% url 'rapsnmp' rap.previous_page_number %}{%else%}#{%endif%}">Previous</a></li>
+		<li class="next{%if not rap.has_next%} disabled{%endif%}"><a href="{%if rap.has_next%}{% url 'rapsnmp' rap.next_page_number %}{%else%}#{%endif%}">Next</a></li>
+	</ul>
+	{%endif%}
+</footer>
+{%endblock%}
