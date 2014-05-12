@@ -1,31 +1,82 @@
 from django.shortcuts import render
 from analyse.computation import aggregator
+from gatherer.models import AccessPoint
+
+from datetime import datetime
 
 # Create your views here.
-def analyse(request, cat='gen'):
+def general(request):
 	context = {}
-	context["cat"] = cat
+	context['app'] = 'analysis'
+	context['cat'] = 'gen'
+	
+	context['nbrUsers'] = aggregator.getNbrOfUsers()
+	context['nbrAP'] = aggregator.getNbrOfAP()
+
+	return render(request, "analyse/general.html", context)
+
+def controller(request):
+	context = {}
+	context["cat"] = 'controller'
 	context['app'] = 'analysis'
 
-	# General Indicators
-	if cat == 'gen':
-		context["gen"] = {'nbrUsers' : aggregator.getNbrOfUsers(), 'nbrAP' : aggregator.getNbrOfAP()}
+	return render(request, "analyse/controller.html", context)
 
-	# Wifi related issues
-	elif cat == 'wifi':
-		context["ms"] = {'proto' : aggregator.getUserByDot11Protocol(), 'hotAP': aggregator.getHotAP()}
 
-	# Controller related issues
-	elif cat == "wism":
-		tmp = aggregator.getWismLogByType()
-		context["wism"] = {'logsCount':'test'}
+def wifiOverview(request):
+	context= {}
+	context['app'] = 'analysis'
+	context['cat'] = 'wifi'
+	context['section'] = 'overview'
 
-	# DHCP related issues
-	elif cat == 'dhcp':
-		pass
+	return render(request, "analyse/wifiOverview.html", context)
 
-	# Radius related issues
-	elif cat == 'radius':
-		pass
+def wifiAP(request):
+	context= {}
+	context['app'] = 'analysis'
+	context['cat'] = 'wifi'
+	context['section'] = 'ap'
 
-	return render(request, "analyse/analyse.html", context)
+	context["allAP"] = AccessPoint.objects.all().order_by('name')
+
+	if request.method == 'POST' and 'selectedAP' in request.POST:
+		context["ap"] = AccessPoint.objects.get(id=int(request.POST['selectedAP']))
+		context["apBandwidth"] = aggregator.getAPData(context["ap"])
+
+	return render(request, "analyse/wifiAP.html", context)
+
+def wifiRAP(request):
+	context= {}
+	context['app'] = 'analysis'
+	context['cat'] = 'wifi'
+	context['section'] = 'rap'
+
+	return render(request, "analyse/wifiRAP.html", context)
+
+def wifiUsers(request):
+	context= {}
+	context['app'] = 'analysis'
+	context['cat'] = 'wifi'
+	context['section'] = 'users'
+
+	context["proto"] = aggregator.getUsersByDot11Protocol()
+	context["ssid"] = aggregator.getUsersBySSID()
+
+	return render(request, "analyse/wifiUsers.html", context)
+
+
+def dhcp(request):
+	context= {}
+	context['app'] = 'analysis'
+	context['cat'] = 'dhcp'
+
+	return render(request, "analyse/dhcp.html", context)
+
+
+
+def radius(request):
+	context= {}
+	context['app'] = 'analysis'
+	context['cat'] = 'radius'
+
+	return render(request, "analyse/radius.html", context)

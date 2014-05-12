@@ -12,7 +12,7 @@ class Device(models.Model):
 	macAddress = macField.MACAddressField(unique=True)
 	ip = models.GenericIPAddressField(null=True)
 	lastTouched = models.DateTimeField(null=True, default=lambda:(timezone.localtime(timezone.now())) )
-	index = models.CharField(max_length=20) 
+	index = models.CharField(max_length=20, null=True) 
 
 	def touch(self):
 		self.lastTouched = timezone.localtime(timezone.now())
@@ -28,12 +28,12 @@ class APManage(models.Manager):
 		return super(APManage, self).filter(lastTouched__gte=(timezone.localtime(timezone.now()) - settings.SNMPAPLAP))
 
 class AccessPoint(Device):
-	ETHERNETLINKTYPE = (('m','10 Mbps'),('M','100 Mbps'),('g','1 Gbps'))
+	ETHERNETLINKTYPE = ((10,'10 Mbps'),(100,'100 Mbps'),(1000,'1 Gbps'))
 
 	name = models.CharField(max_length=50, null=True)
 	location = models.CharField(max_length=50, null=True)
 
-	etherneLinkSpeed = models.CharField(max_length=1, null=True, choices=ETHERNETLINKTYPE)
+	ethernetLinkSpeed = models.DecimalField(max_digits=5, decimal_places=0, choices=ETHERNETLINKTYPE, null=True)
 	ethernetRxTotalBytes = models.DecimalField(max_digits=10, decimal_places=0, default=0)
 	ethernetTxTotalBytes = models.DecimalField(max_digits=10, decimal_places=0, default=0)
 
@@ -43,6 +43,12 @@ class AccessPoint(Device):
 	
 	def isUp(self):
 		return lastTouched > (timezone.localtime(timezone.now()) - settings.SNMPAPLAP)
+
+	def nbrOfClients(self):
+		result = 0
+		for i in self.apinterface_set:
+			result += i.numOfClients
+		return result
 
 ## Access Point Interface Model
 class APInterface(models.Model):
@@ -55,8 +61,9 @@ class APInterface(models.Model):
 	channelUtilization = models.DecimalField(max_digits=3, decimal_places=0, default=0)
 	numOfClients = models.DecimalField(max_digits=4, decimal_places=0, default=0)
 	numOfPoorSNRClients = models.DecimalField(max_digits=4, decimal_places=0, default=0)
-	txUtilization = models.DecimalField(max_digits=3, decimal_places=0, default=0)
-	rxUtilization = models.DecimalField(max_digits=3, decimal_places=0, default=0)
+
+	class Meta:
+		unique_together = (('ap', 'index'),)
 
 
 ## Rogue Access Point Model
@@ -65,15 +72,9 @@ class RAPManage(models.Manager):
 		return super(APManage, self).filter(lastTouched__gte=(timezone.localtime(timezone.now()) - settings.SNMPAPLAP))
 
 class RogueAccessPoint(Device):
-	RAP_STATES = (('0','Initializing'), ('1','Pending'), ('2','Alert'), ('3','Detected Lrad'), ('4','Known'), ('5','Acknowledge'), ('6','Contained'), ('7','Threat'), ('8','Contained Pending'), ('9','Known Contained'), ('10','Trusted Missing')) 
-	RAP_TYPES = (('0','Access Point'), ('1','Ad Hoc'))
 
 	ssid = models.CharField(max_length=50, null=True)
-	state = models.CharField(max_length=2, choices=RAP_STATES, null=True)
-	apType = models.CharField(max_length=1, choices=RAP_TYPES, null=True)
-	onNetwork = models.BooleanField(default=False) #This attribute specifies if the Rogue is on Wired Network or not.
-	nbrOfClients = models.DecimalField(max_digits=3, decimal_places=0)
-
+	nbrOfClients = models.DecimalField(max_digits=3, decimal_places=0, null=True)
 	closestAp = models.ForeignKey(AccessPoint, null= True)
 
 	objects = RAPManage()
@@ -81,7 +82,7 @@ class RogueAccessPoint(Device):
 		return str(self.name) + " : " + str(self.macAddress) + ' (' + str(self.ip) + ')'
 	
 	def isUp(self):
-		return lastTouched > (timezone.localtime(timezone.now()) - settings.SNMPAPLAP)
+		return lastTouched > (timezone.localtime(timezone.now()) - settings.SNMPRAPLAP)
 
 
 ## Mobile stations Model
@@ -114,8 +115,6 @@ class APIfSnapshot(models.Model):
 	channelUtilization = models.DecimalField(max_digits=3, decimal_places=0, default=0)
 	numOfClients = models.DecimalField(max_digits=4, decimal_places=0, default=0)
 	numOfPoorSNRClients = models.DecimalField(max_digits=4, decimal_places=0, default=0)
-	txUtilization = models.DecimalField(max_digits=3, decimal_places=0, default=0)
-	rxUtilization = models.DecimalField(max_digits=3, decimal_places=0, default=0)
 
 
 

@@ -14,10 +14,11 @@ wism = ['192.168.251.170']
 
 """
 	This module offers an abstraction to perform the SNMP requests
-
 """
 
+## Helper Functions
 def walker(ip, oib, port=161, community='snmpstudentINGI'):
+	"""Perform a SNMP Walk Command"""
 	cmdGen = cmdgen.CommandGenerator()
 
 	errorIndication, errorStatus, errorIndex, varBindTable = cmdGen.nextCmd(
@@ -41,6 +42,32 @@ def walker(ip, oib, port=161, community='snmpstudentINGI'):
 					result[name.prettyPrint()[len(oib)+1:]] = val.prettyPrint()
 			return result
 
+def walkByInterface(ip, oib, port=161, community='snmpstudentINGI'):
+	"""
+	return - a dictionary where each index is the index of the APs
+			each entries is also a dictionary where each 
+			entries are an interface of the AP
+	"""
+	result = {}
+	for index, value in walker(ip=ip, oib=oib, port=port, community=community).items():
+		tmp = index.rfind('.')
+		if index[:tmp] not in result:
+			result[index[:tmp]] = {}
+		result[index[:tmp]][index[tmp:]] = int(value)
+	return result
+
+def walkByInterfaceWithAggregation(ip, oib, port=161, community='snmpstudentINGI'):
+	"""
+	return - a dictionary where each index is the index of the APs
+			each entries is the aggregated value of all the interfaces
+	"""
+	result = {}
+	for index, value in walker(ip=ip, oib=oib, port=port, community=community).items():
+		tmp = index.rfind('.')
+		if index[:tmp] not in result:
+			result[index[:tmp]] = 0
+		result[index[:tmp]] += int(value)
+	return result
 
 ## Access Points Requests
 def getApNames(ip, port=161, community='snmpstudentINGI'):
@@ -61,127 +88,60 @@ def getApLocation(ip, port=161, community='snmpstudentINGI'):
 
 ## AP Interfaces
 def getAPIfTypeface(ip, port=161, community='snmpstudentINGI'):
-	""" Interface Type 
-
-		return - a dictionary where each index is the index of the APs
-				 each entries is also a dictionary where each 
-				 entries are an interface type
-	"""
-
-	result = {}
-	for index, ifType in walker(ip,'1.3.6.1.4.1.14179.2.2.2.1.2', port=port, community=community).items():
-		tmp = index.rfind('.')
-		if index[:tmp] not in result:
-			result[index[:tmp]] = {}
-		result[index[:tmp]][index[tmp:]] = int(ifType)
-	return result
+	""" Interface Type """
+	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.2.1.2', port=port, community=community)
 
 def getAPIfLoadChannelUtilization(ip, port=161, community='snmpstudentINGI'):
-	""" Channel Utilization 
-
-		return - a dictionary where each index is the index of the APs
-				 each entries is also a dictionary where each 
-				 entries are an interface
-	"""
-
-	result = {}
-	for index, load in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.3', port=port, community=community).items():
-		tmp = index.rfind('.')
-		if index[:tmp] not in result:
-			result[index[:tmp]] = {}
-		result[index[:tmp]][index[tmp:]] = int(load)
-	return result
-
+	""" Channel Utilization """
+	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.3', port=port, community=community)
 
 def getAPIfLoadNumOfClients(ip, port=161, community='snmpstudentINGI', ap=''):
 	""" This is the number of clients attached to this Airespace
 		AP at the last measurement interval(This comes from 
 		APF)
 	"""
-	result = {}
-	for index, noUsers in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.4', port=port, community=community).items():
-		tmp = index.rfind('.')
-		if index[:tmp] not in result:
-			result[index[:tmp]] = {}
-		result[index[:tmp]][index[tmp:]] = int(noUsers)
-	return result
-
+	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.4', port=port, community=community)
 
 def getAPIfPoorSNRClients(ip, port=161, community='snmpstudentINGI', ap=''):
 	""" This is the number of clients attached to this Airespace
 		AP at the last measurement interval(This comes from 
 		APF)
 	"""
-	result = {}
-	for index, noUsers in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.24', port=port, community=community).items():
-		tmp = index.rfind('.')
-		if index[:tmp] not in result:
-			result[index[:tmp]] = {}
-		result[index[:tmp]][index[tmp:]] = int(noUsers)
-	return result
+	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.24', port=port, community=community)
 
 def getAPIfLoadRxUtilization(ip, port=161, community='snmpstudentINGI', ap=''):
 	""" This is the percentage of time the Airespace AP
 		receiver is busy operating on packets. It is a number 
 		from 0-100 representing a load from 0 to 1.) 
 	"""
-	result = {}
-	for index, rx in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.1', port=port, community=community).items():
-		tmp = index.rfind('.')
-		if index[:tmp] not in result:
-			result[index[:tmp]] = {}
-		result[index[:tmp]][index[tmp:]] = int(rx)
-	return result
-
+	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.1', port=port, community=community)
 
 def getAPIfLoadTxUtilization(ip, port=161, community='snmpstudentINGI', ap=''):
 	""" This is the percentage of time the Airespace AP
 		transmitter is busy operating on packets. It is a number 
 		from 0-100 representing a load from 0 to 1.) 
 	"""
-	result = {}
-	for index, tx in walker(ip,'1.3.6.1.4.1.14179.2.2.13.1.2' + ap, port=port, community=community).items():
-		tmp = index.rfind('.')
-		if index[:tmp] not in result:
-			result[index[:tmp]] = {}
-		result[index[:tmp]][index[tmp:]] = int(tx)
-	return result
+	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.2' + ap, port=port, community=community)
 
 def getAPEthernetRxTotalBytes(ip, port=161, community='snmpstudentINGI', ap=''):
 	""" This is the total number of bytes in the
 		error-free packets received on the ethernet
 		interface of the AP
 	"""
-	result = {}
-	for index, tx in walker(ip,'1.3.6.1.4.1.9.9.513.1.2.2.1.13' + ap, port=port, community=community).items():
-		tmp = index.rfind('.')
-		if index[:tmp] not in result:
-			result[index[:tmp]] = 0
-		result[index[:tmp]] = int(tx)
-	return result 
+	return walkByInterfaceWithAggregation(ip=ip, oib='1.3.6.1.4.1.9.9.513.1.2.2.1.13', port=port, community=community)
+
 
 def getAPEthernetTxTotalBytes(ip, port=161, community='snmpstudentINGI', ap=''):
 	""" This is the total number of bytes in the
 		error-free packets received on the ethernet
 		interface of the AP
 	"""
-	result = {}
-	for index, tx in walker(ip,'1.3.6.1.4.1.9.9.513.1.2.2.1.14' + ap, port=port, community=community).items():
-		tmp = index.rfind('.')
-		if index[:tmp] not in result:
-			result[index[:tmp]] = 0
-		result[index[:tmp]] = int(tx)
-	return result
+	return walkByInterfaceWithAggregation(ip=ip, oib='1.3.6.1.4.1.9.9.513.1.2.2.1.14', port=port, community=community)
+
 
 def getAPEthernetLinkSpeed(ip, port=161, community='snmpstudentINGI', ap=''):
 	""" Speed of the interface """
-	result = {}
-	for index, speed in walker(ip,'1.3.6.1.4.1.9.9.513.1.2.2.1.11' + ap, port=port, community=community).items():
-		tmp = index.rfind('.')
-		if index[:tmp] not in result:
-			result[index[:tmp]] = 0
-		result[index[:tmp]] = int(speed)
-	return result
+	return walkByInterfaceWithAggregation(ip=ip, oib='1.3.6.1.4.1.9.9.513.1.2.2.1.11', port=port, community=community)
 
 ## Mobile Stations Requests
 def getMobileStationMacAddresses(ip, port=161, community='snmpstudentINGI'):
@@ -235,19 +195,19 @@ def getAllAP():
 	''' Cross reference all the information on the Access Points and update the database '''
 
 	result = {}
+	resultInterfaces = {}
 	# Get All Access Points (Mac Address)
 	try:       
 		tmp = getApMacAddresses(ip=wism[0])
 		for index, mac in tmp.items():
 			mac = parseMacAdresse(mac)
-			if not mac == '':
-				try:
-					result[index], created = AccessPoint.objects.get_or_create(macAddress=mac)
-				except IntegrityError:
-					# get_or_create is not thread safe
-					result[index] = AccessPoint.objects.get(macAddress=mac)
-				finally:
-					result[index].index = "." + index
+			try:
+				result[index], created = AccessPoint.objects.get_or_create(macAddress=mac)
+			except IntegrityError:
+				# get_or_create is not thread safe
+				result[index] = AccessPoint.objects.get(macAddress=mac)
+			finally:
+				result[index].index = "." + index
 	except Exception as e:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap Mac Address', error=str(e)).save()
 	
@@ -277,12 +237,7 @@ def getAllAP():
 		tmp = getAPEthernetLinkSpeed(ip=wism[0])
 		for index, speed in tmp.items():
 			if index in result:
-				if speed  == 10:
-					result[index].etherneLinkSpeed = 'm'
-				elif speed  == 100:
-					result[index].etherneLinkSpeed = 'M'
-				elif speed == 1000:
-					result[index].etherneLinkSpeed = 'g'
+				result[index].ethernetLinkSpeed = speed
 	except Exception as e:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap Ethernet Link Speed', error=str(e)).save()
 
@@ -308,16 +263,18 @@ def getAllAP():
 	try:
 		tmp = getAPIfTypeface(ip=wism[0])
 		for apIndex, interfaces in tmp.items():
-			for ifIndex, ifType in interfaces.items():
-				try:
-					interface, created = APInterface.objects.get_or_create(index=ifIndex, ap=result[apIndex])
+			if apIndex in result:
+				if apIndex not in resultInterfaces:
+					resultInterfaces[apIndex] = {}
 
-				except IntegrityError:
-					# get_or_create is not thread safe
-					interface = APInterface.objects.get(index=ifIndex, ap=result[apIndex])
+				for ifIndex, ifType in interfaces.items():
+					try:
+						resultInterfaces[apIndex][ifIndex], created = APInterface.objects.get_or_create(index=ifIndex, ap=result[apIndex])
+					except IntegrityError:
+						# get_or_create is not thread safe
+						resultInterfaces[apIndex][ifIndex] = APInterface.objects.get(index=ifIndex, ap=result[apIndex])
 
-				interface.ifType = ifType
-				interface.save() 
+					resultInterfaces[apIndex][ifIndex].ifType = ifType
 	except Exception as e:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - AP Interface Types', error=str(e)).save()
 
@@ -326,11 +283,10 @@ def getAllAP():
 	try:
 		tmp = getAPIfLoadChannelUtilization(ip=wism[0])
 		for apIndex, interfaces in tmp.items():
-			for ifIndex, load in interfaces.items():
-				if apIndex in result:
-					interface = APInterface.objects.get(index=ifIndex, ap=result[apIndex])
-					interface.channelUtilization = load
-					interface.save()
+			if apIndex in resultInterfaces:
+				for ifIndex, load in interfaces.items():
+					if ifIndex in resultInterfaces[apIndex]:
+						resultInterfaces[apIndex][ifIndex].channelUtilization = load
 	except Exception as e:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - AP Channel Utilization', error=str(e)).save()
 
@@ -339,11 +295,10 @@ def getAllAP():
 	try:
 		tmp = getAPIfLoadNumOfClients(ip=wism[0])
 		for apIndex, interfaces in tmp.items():
-			for ifIndex, num in interfaces.items():
-				if apIndex in result:
-					interface = APInterface.objects.get(index=ifIndex, ap=result[apIndex])
-					interface.numOfClients = num
-					interface.save()
+			if apIndex in resultInterfaces:
+				for ifIndex, num in interfaces.items():
+					if ifIndex in resultInterfaces[apIndex]:
+						resultInterfaces[apIndex][ifIndex].numOfClients = num
 	except Exception as e:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap Nbr Of Clients', error=str(e)).save()
 	
@@ -351,11 +306,10 @@ def getAllAP():
 	try:
 		tmp = getAPIfPoorSNRClients(ip=wism[0])
 		for apIndex, interfaces in tmp.items():
-			for ifIndex, num in interfaces.items():
-				if apIndex in result:
-					interface = APInterface.objects.get(index=ifIndex, ap=result[apIndex])
-					interface.numOfPoorSNRClients = num
-					interface.save()
+			if apIndex in resultInterfaces:
+				for ifIndex, num in interfaces.items():
+					if ifIndex in resultInterfaces[apIndex]:
+						resultInterfaces[apIndex][ifIndex].numOfPoorSNRClients = num
 	except Exception as e:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - AP Poor SNR Clients', error=str(e)).save()
 
@@ -363,11 +317,10 @@ def getAllAP():
 	try:
 		tmp = getAPIfLoadTxUtilization(ip=wism[0])
 		for apIndex, interfaces in tmp.items():
-			for ifIndex, load in interfaces.items():
-				if apIndex in result:
-					interface = APInterface.objects.get(index=ifIndex, ap=result[apIndex])
-					interface.txUtilization = load
-					interface.save()
+			if apIndex in resultInterfaces:
+				for ifIndex, load in interfaces.items():
+					if ifIndex in resultInterfaces[apIndex]:
+						resultInterfaces[apIndex][ifIndex].txUtilization = load
 	except Exception as e:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - AP Transmission Utilization', error=str(e)).save()
 
@@ -375,19 +328,23 @@ def getAllAP():
 	try:
 		tmp = getAPIfLoadRxUtilization(ip=wism[0])
 		for apIndex, interfaces in tmp.items():
-			for ifIndex, load in interfaces.items():
-				if apIndex in result:
-					interface = APInterface.objects.get(index=ifIndex, ap=result[apIndex])
-					interface.rxUtilization = load
-					interface.save()
+			if apIndex in resultInterfaces:
+				for ifIndex, load in interfaces.items():
+					if ifIndex in resultInterfaces[apIndex]:
+						resultInterfaces[apIndex][ifIndex].rxUtilization = load
 	except Exception as e:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - AP Reception Utilization', error=str(e)).save()
 
 
-	# Update all the APs
+	# Update all the AP and interface
 	for ap in result.values():
 		ap.touch()
 		ap.save()
+		apSnapshot(ap)
+
+	for ap in resultInterfaces.values():
+		for i in ap.values():
+			i.save()
 
 
 def getAllMS():
@@ -446,8 +403,7 @@ def getAllMS():
 		for index, apMac in tmp.items():
 			if index in result:
 				apMac = parseMacAdresse(apMac)
-				if not apMac == '': 
-					result[index].ap, created = AccessPoint.objects.get_or_create(macAddress=apMac)
+				result[index].ap, created = AccessPoint.objects.get_or_create(macAddress=apMac)
 	except Exception as e:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon - MS Associated AP', error=str(e)).save()
 
@@ -457,6 +413,7 @@ def getAllMS():
 		ms.save()
 
 
+
 def getAllRAP():
 	''' Cross reference all the information on the Rogue Access Points and update the database '''
 	result = {}
@@ -464,8 +421,9 @@ def getAllRAP():
 	try:       
 		tmp = getRAPMacAddresses(ip=wism[0])
 		for index, mac in tmp.items():
+			mac = parseMacAdresse(mac)
 			try:
-				result[index], created = RogueAccessPoint.objects.get_or_create(macAddress=parseMacAdresse(mac))
+				result[index], created = RogueAccessPoint.objects.get_or_create(macAddress=mac)
 			except IntegrityError:
 				# get_or_create is not thread safe
 				result[index] = RogueAccessPoint.objects.get(macAddress=mac)
@@ -502,7 +460,11 @@ def getAllRAP():
 			apMac = parseMacAdresse(apMac)
 			if index in result:
 				try:
+					result[index].closestAp, created = AccessPoint.objects.get_or_create(macAddress=apMac)
+				
+				except IntegrityError:
 					result[index].closestAp = AccessPoint.objects.get(macAddress=apMac)
+				
 				except ObjectDoesNotExist:
 					pass
 	except Exception as e:
@@ -517,40 +479,35 @@ def getAllRAP():
 ###########################################################################################################################
 ### Snapshot ###
 ############################################################################################################################
-def apSnapshot():
-	for ap in AccessPoint.objects.all():
-		snap = APSnapshot(ap=ap)
-		snap.ethernetRxTotalBytes = ap.ethernetRxTotalBytes
-		snap.ethernetTxTotalBytes = ap.ethernetTxTotalBytes
-		snap.save()
-		for interface in ap.apinterface_set.all():
-			ifsnap = APIfSnapshot(apsnapshot=snap, apinterface=interface)
-			ifsnap.channelUtilization = interface.channelUtilization
-			ifsnap.numOfClients = interface.numOfClients
-			ifsnap.numOfPoorSNRClients = interface.numOfPoorSNRClients
-			ifsnap.rxUtilization = interface.rxUtilization
-			ifsnap.save()
-
-
-
+def apSnapshot(ap):
+	
+	snap = APSnapshot(ap=ap)
+	snap.ethernetRxTotalBytes = ap.ethernetRxTotalBytes
+	snap.ethernetTxTotalBytes = ap.ethernetTxTotalBytes
+	snap.save()
+	for interface in ap.apinterface_set.all():
+		ifsnap = APIfSnapshot(apsnapshot=snap, apinterface=interface)
+		ifsnap.channelUtilization = interface.channelUtilization
+		ifsnap.numOfClients = interface.numOfClients
+		ifsnap.numOfPoorSNRClients = interface.numOfPoorSNRClients
+		ifsnap.save()
 
 
 ############################################################################################################################
 ### Daemon Methods ###
 ############################################################################################################################
 
-def snmpAPDaemon(laps=timedelta(minutes=15)):
+def snmpAPDaemon(laps=timedelta(minutes=20)):
 	''' Background task gathering information on Access Point '''
 	task, _ = CurrentTask.objects.get_or_create(name="apdaemon")
 	task.touch()
 	while True:
 		try:
 			getAllAP()
-			apSnapshot()
 			task.touch()
 			time.sleep(laps.total_seconds())
 		except:
-			OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon', error='Laps failed').save()
+			OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon', error='Lap failed').save()
 			time.sleep(10*laps.total_seconds())
 
 
@@ -565,25 +522,54 @@ def snmpMSDaemon(laps=timedelta(minutes=30)):
 	time.sleep(30)
 	while True:
 		try:
+			getAllRAP()
+			task.touch()
+			time.sleep(laps.total_seconds())
+		except:
+			OperationalError(date=timezone.localtime(timezone.now()), source='snmpRAPDaemon', error='Lap failed').save()
+			time.sleep(10*laps.total_seconds())
+
+
+def snmpRAPDaemon(laps=timedelta(hours=2)):
+	''' Background task gathering information on Rogue Access Point 
+
+		Argument:
+		laps -- duration between update. Instance of timedelta
+	'''
+	task, _ = CurrentTask.objects.get_or_create(name="rapdaemon")
+	task.touch()
+	time.sleep(300)
+	while True:
+		try:
 			getAllMS()
 			task.touch()
 			time.sleep(laps.total_seconds())
 		except:
-			OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon', error='Loop failed').save()
+			OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon', error='Lap failed').save()
 			time.sleep(10*laps.total_seconds())
-
 
 
 ###### Auxiliary Methods #######
 def parseMacAdresse(macString):
-	''' Parse a mac address in hexadecimal into canonical form '''
+	''' Parse a mac address in hexadecimal or byte into canonical form '''
 	result = macString
 
 	if result.startswith('0x'):
 		result = result[2:]
 
+	elif result.startswith("b'"):
+		tmp = ""
+		for c in result[2:-1]:
+			tmp += hex(ord(c))[2:]
+		result = tmp
+
+	else:
+		OperationalError(date=timezone.localtime(timezone.now()), source='snmp macAddress parsing', error=macString).save()
+
+
 	if len(result) == 12:
-		return result[0:2] + ":" + result[2:4] + ":" + result[4:6] + ":" + result[6:8] + ":" + result[8:10] + ":" +result[10:]
+		return "%s:%s:%s:%s:%s:%s" % (result[0:2],result[2:4],result[4:6],result[6:8],result[8:10],result[10:])
+	
 	else:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmp macAddress parsing', error=macString).save()
 		raise Exception()

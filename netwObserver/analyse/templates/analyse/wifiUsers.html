@@ -1,0 +1,55 @@
+{% extends "analyse/wifi.html" %}
+{% load staticfiles %}
+
+{% block section %}
+<script type="text/javascript">
+	// Load the Visualization API and the piechart package.
+	google.load('visualization', '1.0', {'packages':['corechart']});
+
+	// Set a callback to run when the Google Visualization API is loaded.
+	google.setOnLoadCallback(drawProtoChart);
+	google.setOnLoadCallback(drawSSIDChart);
+
+	function drawProtoChart() {
+
+		var data = new google.visualization.DataTable();
+		data.addColumn('string', 'Protocol');
+		data.addColumn('number', 'People');
+		data.addRows([
+			{%for attribut, value in proto.items%}
+			['{{attribut}}', {{value}}],
+			{%endfor%}
+			]);
+		data.sort([{column: 0}]);
+		var options = {'title':'802.11 Protocol',
+			'width':400,
+			'height':300};
+
+		var chart = new google.visualization.PieChart(document.getElementById('protochart_div'));
+
+		chart.draw(data, options);
+	}
+
+	function drawSSIDChart() {
+
+		var data = new google.visualization.DataTable();
+		data.addColumn('string', 'SSID');
+		data.addColumn('number', 'People');
+		data.addRows([
+			{%for attribut, value in ssid.items%}
+			['{{attribut}}', {{value}}],
+			{%endfor%}
+			]);
+		data.sort([{column: 0}]);
+		var options = {'title':'SSID',
+			'width':400,
+			'height':300};
+
+		var chart = new google.visualization.PieChart(document.getElementById('ssidchart_div'));
+
+		chart.draw(data, options);
+	}
+</script>
+<div id="ssidchart_div" style="width:400; height:300"></div>
+<div id="protochart_div" style="width:400; height:300"></div>
+{%endblock%}
