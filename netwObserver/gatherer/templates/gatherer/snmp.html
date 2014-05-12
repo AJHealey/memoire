@@ -19,110 +19,15 @@
 <div class='row'>
   <div class="col-md-2">
     <ul class="nav nav-pills nav-stacked">
-      <li {% if cat == 'ap' %}class="active"{%endif%}><a href="{% url 'snmp' 'ap' %}">Access Point</a></li>
-      <li {% if cat == 'ms' %}class="active"{%endif%}><a href="{% url 'snmp' 'ms' %}">Mobile Station</a></li>
-      <li {% if cat == 'rap' %}class="active"{%endif%}><a href="{% url 'snmp' 'rap' %}">Rogue AP</a></li>
+      <li {% if cat == 'ap' %}class="active"{%endif%}><a href="{% url 'apsnmp' %}">Access Point</a></li>
+      <li {% if cat == 'ms' %}class="active"{%endif%}><a href="{% url 'mssnmp' %}">Mobile Station</a></li>
+      <li {% if cat == 'rap' %}class="active"{%endif%}><a href="{% url 'rapsnmp' %}">Rogue AP</a></li>
     </ul>
   </div>
   <div class="col-md-10">
-    {% if ap %}
-    <table class="table table-striped table-hover">
-      <thead>
-        <tr>
-          <th></th>
-          <th>Name</th>
-          <th>Mac Address</th>
-          <th>IP</th>
-          <th>Link</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for point in ap %}
-        <tr>
-          <td></td>
-          <td>{{point.name}}</td>
-          <td>{{point.macAddress}}</td>
-          <td>{{point.ip}}</td>
-          <td>{{point.get_ethernetLinkSpeed_display}}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <footer>
-      {{ap|length}} entr{{ ap|pluralize:'y,ies' }}
-      {%if ap.paginator.num_pages > 1 %}
-      <p class="text-center">Page {{ ap.number }} of {{ ap.paginator.num_pages }}</p>
-      <ul class="pager">
-          <li class="previous{%if not ap.has_previous%} disabled{%endif%}"><a href="{%if ap.has_previous%}{% url 'snmp' 'ap' ap.previous_page_number %}{%else%}#{%endif%}">Previous</a></li>
-          <li class="next{%if not ap.has_next%} disabled{%endif%}"><a href="{%if ap.has_next%}{% url 'snmp' 'ap' ap.next_page_number %}{%else%}#{%endif%}">Next</a></li>
-      </ul>
-      {%endif%}
-    </footer>
-    {% elif rap %}
-    <table class="table table-striped table-hover">
-      <thead>
-        <tr>
-          <th></th>
-          <th>SSID</th>
-          <th>Clients</th>
-          <th>Closest Access Point</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for point in rap %}
-        <tr>
-          <td></td>
-          <td>{{point.ssid}}</td>
-          <td>{{point.nbrOfClients}}</td>
-          <td>{{point.closestAp.name}}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <footer>
-      {{rap|length}} entr{{ rap|pluralize:'y,ies' }}
-      {%if rap.paginator.num_pages > 1 %}
-      <p class="text-center">Page {{ rap.number }} of {{ rap.paginator.num_pages }}</p>
-      <ul class="pager">
-          <li class="previous{%if not rap.has_previous%} disabled{%endif%}"><a href="{%if rap.has_previous%}{% url 'snmp' 'rap' rap.previous_page_number %}{%else%}#{%endif%}">Previous</a></li>
-          <li class="next{%if not rap.has_next%} disabled{%endif%}"><a href="{%if rap.has_next%}{% url 'snmp' 'rap' rap.next_page_number %}{%else%}#{%endif%}">Next</a></li>
-      </ul>
-      {%endif%}
-    </footer>
-    {%elif ms %}
-    <table class="table table-striped table-hover">
-      <thead>
-        <tr>
-          <th></th>
-          <th>Mac Address</th>
-          <th>IP</th>
-          <th>SSID</th>
-          <th>Wifi Protocol</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for station in ms %}
-        <tr>
-          <td></td>
-          <td>{{station.macAddress}}</td>
-          <td>{{station.ip}}</td>
-          <td>{{station.ssid}}</td>
-          <td>{{station.get_dot11protocol_display}}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <footer>
-      {{ms|length}} entr{{ ms|pluralize:'y,ies' }}
-      {%if ms.paginator.num_pages > 1 %}
-      <p class="text-center">Page {{ ms.number }} of {{ ms.paginator.num_pages }}</p>
-      <ul class="pager">
-          <li class="previous{%if not ms.has_previous%} disabled{%endif%}"><a href="{%if ms.has_previous%}{% url 'snmp' 'ms' ms.previous_page_number %}{%else%}#{%endif%}">Previous</a></li>
-          <li class="next{%if not ms.has_next%} disabled{%endif%}"><a href="{%if ms.has_next%}{% url 'snmp' 'ms' ms.next_page_number %}{%else%}#{%endif%}">Next</a></li>
-      </ul>
-      {%endif%}
-    </footer>
-    {%endif%}
+  {%block category%}
+
+  {%endblock%}
   </div>
 </div>
 

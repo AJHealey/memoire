@@ -4,11 +4,26 @@ from gatherer import views
 
 urlpatterns = patterns('',
 	url(r'^$', views.index, name='index'),
-	url(r'^logs/$', views.logs, name='logs'),
-	url(r'^logs/(?P<cat>\S+)/(?P<page>\d+)', views.logs, name='logs'),
-    url(r'^logs/(?P<cat>\S+)', views.logs, name='logs'),
-    url(r'^snmp/$', views.snmp, name='snmp'),
-    url(r'^snm/(?P<cat>\S+)/(?P<page>\d+)', views.snmp, name='snmp'),
- 	url(r'^snmp/(?P<cat>\S+)', views.snmp, name='snmp'),
+	url(r'^logs/$', views.dhcplogs, name='logs'),
+
+	url(r'^logs/wism/(?P<page>\d+)', views.wismlogs, name='wismlogs'),
+	url(r'^logs/wism/', views.wismlogs, name='wismlogs'),
+
+	url(r'^logs/dhcp/(?P<page>\d+)', views.dhcplogs, name='dhcplogs'),
+	url(r'^logs/dhcp/', views.dhcplogs, name='dhcplogs'),
+	
+	url(r'^logs/radius/(?P<page>\d+)', views.radiuslogs, name='radiuslogs'),
+	url(r'^logs/radius/', views.radiuslogs, name='radiuslogs'),
+	
+	url(r'^snmp/$', views.apsnmp, name='snmp'),
+
+	url(r'^snmp/ap/(?P<page>\d+)', views.apsnmp, name='apsnmp'),
+	url(r'^snmp/ap', views.apsnmp, name='apsnmp'),
+
+	url(r'^snmp/ms/(?P<page>\d+)', views.mssnmp, name='mssnmp'),
+	url(r'^snmp/ms', views.mssnmp, name='mssnmp'),
+
+	url(r'^snmp/rap/(?P<page>\d+)', views.rapsnmp, name='rapsnmp'),
+	url(r'^snmp/rap', views.rapsnmp, name='rapsnmp'),
 
 )

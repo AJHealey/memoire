@@ -37,11 +37,11 @@ int main(int argc, char *argv[]) {
 
 	RSA *privateKey = getPrivateKey();
 
-	printf("[*] Phase 1\n");
+	//printf("[*] Phase 1\n");
 	// Phase 1 : Probe send its identity
 	write(sockfd, IDENTITY, 1); 
 
-	printf("[*] Phase 2 & 3\n");
+	//printf("[*] Phase 2 & 3\n");
 	// Phase 2 : Reception of the encrypted AES key
 	read(sockfd, recvBuff, 256);
 	// Decryption of the AES key
@@ -57,12 +57,12 @@ int main(int argc, char *argv[]) {
 	memset(decryptedIV,0,256);
 	result = RSA_private_decrypt(256,recvBuff,decryptedIV,privateKey,RSA_NO_PADDING);
 
-	printf("[+] AES + IV received.\n");
+	//printf("[+] AES + IV received.\n");
 	write(sockfd, "1", 1);
 	
 	
 	// Phase 4 : Data Transmission
-	printf("[*] Phase 4\n");
+	//printf("[*] Phase 4\n");
 	EVP_CIPHER_CTX *ctx;
 	int len, ciphertext_len;
 	char *plaintext = "{:}}";
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
 	// Send data size
 	write(sockfd, &ciphertext_len, 4); 
 	read(sockfd, recvBuff, 1);
-	printf("[+] Size Acked.\n");
+	//printf("[+] Size Acked.\n");
 
 	// Send Data
 	write(sockfd, ciphertext, ciphertext_len);
@@ -107,16 +107,6 @@ int main(int argc, char *argv[]) {
 	free(decryptedIV);
 	free(ciphertext);
 	close(sockfd);
-
-	// DEBUG
-	/*
-	int i;
-	printf("[*] Decyphered AES key: ");
-	for(i = 0; i<32; i++) {
-		printf("%x ", decryptedAESKey[i] & 0xff);
-	} 
-	printf("\n");
-	*/
 
 }
 

@@ -32,93 +32,118 @@ def index(request):
 
 	return render(request, "gatherer/index.html", context)
 
-def logs(request, cat='dhcp', page=1, perpage=100, filters={}):
+def wismlogs(request, page=1, perpage=100, filters={}):
 	context = {}
 	context['app'] = 'gatherer'
-	context['cat'] = cat
+	context['cat'] = 'wism'
 
-	context['filters'] = filters
+	context['sevMeaning'] = SEVERITYMEANING
+	tmpQuery = WismEvent.objects.order_by('-date','-microsecond')
+	
+	p = Paginator(tmpQuery,perpage)
+	try:
+		context['wismEvent'] = p.page(page)
+	except PageNotAnInteger:
+		context['wismEvent'] = p.page(1)
+	except EmptyPage:
+		context['wismEvent'] = p.page(p.num_pages)
 
-	## DHCP Logs
-	if cat == 'dhcp':
-		tmpQuery = DHCPEvent.objects.order_by('-date','-microsecond')
-		
-		if "filterDate" in filters:
-			tmpQuery = tmpQuery.filter(date__gte=filters['filterDate'][0])
-			tmpQuery = tmpQuery.filter(date__gte=filters['filterDate'][1])
-		if 'filterIP' in filters:
-			tmpQuery = tmpQuery.filter(ip__exact=filters['filterIP'])
-		if 'filterType' in filters:
-			tmpQuery = tmpQuery.filter(dhcpType__exact=filters['filterType'])
-		if 'filterDevice' in filters:
-			tmpQuery = tmpQuery.filter(device_macAddress=filters['filterDevice'])
-		
-		p = Paginator(tmpQuery,perpage)
-		try:
-			context['dhcpEvent'] = p.page(page)
-		except PageNotAnInteger:
-			context['dhcpEvent'] = p.page(1)
-		except EmptyPage:
-			context['dhcpEvent'] = p.page(p.num_pages)
+	return render(request, "gatherer/wismlogs.html", context)
 
-	## Radius Logs
-	elif cat == 'radius':
-		tmpQuery = RadiusEvent.objects.order_by('-date','-microsecond')
-		p = Paginator(tmpQuery,perpage)
-		try:
-			context['radiusEvent'] = p.page(page)
-		except PageNotAnInteger:
-			context['radiusEvent'] = p.page(1)
-		except EmptyPage:
-			context['radiusEvent'] = p.page(p.num_pages)
 
-	## Wism Logs
-	elif cat == 'wism':
-		context['sevMeaning'] = SEVERITYMEANING
-		tmpQuery = WismEvent.objects.order_by('-date','-microsecond')
-		p = Paginator(tmpQuery,perpage)
-		try:
-			context['wismEvent'] = p.page(page)
-		except PageNotAnInteger:
-			context['wismEvent'] = p.page(1)
-		except EmptyPage:
-			context['wismEvent'] = p.page(p.num_pages)
 
-	return render(request, "gatherer/logs.html", context)
-
-def snmp(request, cat='ap', page=1, perpage=100):
+def radiuslogs(request, page=1, perpage=100, filters={}):
 	context = {}
 	context['app'] = 'gatherer'
-	context['cat'] = cat
-	if cat == 'ap':
-		tmpQuery = AccessPoint.objects.isUp().order_by('name')
-		p = Paginator(tmpQuery,perpage)
-		try:
-			context['ap'] = p.page(page)
-		except PageNotAnInteger:
-			context['ap'] = p.page(1)
-		except EmptyPage:
-			context['ap'] = p.page(p.num_pages)
+	context['cat'] = 'radius'
 
-	elif cat == 'rap':
-		tmpQuery = RogueAccessPoint.objects.order_by('-numOfClients')
-		p = Paginator(tmpQuery,perpage)
-		try:
-			context['rap'] = p.page(page)
-		except PageNotAnInteger:
-			context['rap'] = p.page(1)
-		except EmptyPage:
-			context['rap'] = p.page(p.num_pages)
+	tmpQuery = RadiusEvent.objects.order_by('-date','-microsecond')
+	p = Paginator(tmpQuery,perpage)
+	try:
+		context['radiusEvent'] = p.page(page)
+	except PageNotAnInteger:
+		context['radiusEvent'] = p.page(1)
+	except EmptyPage:
+		context['radiusEvent'] = p.page(p.num_pages)
 
-	elif cat == 'ms':
-		tmpQuery = MobileStation.objects.isAssociated().order_by('macAddress')
-		p = Paginator(tmpQuery,perpage)
-		try:
-			context['ms'] = p.page(page)
-		except PageNotAnInteger:
-			context['ms'] = p.page(1)
-		except EmptyPage:
-			context['ms'] = p.page(p.num_pages)
+	return render(request, "gatherer/radiuslogs.html", context)
+
+def dhcplogs(request, page=1, perpage=100, filters={}):
+	context = {}
+	context['app'] = 'gatherer'
+	context['cat'] = 'dhcp'
+
+	tmpQuery = DHCPEvent.objects.order_by('-date','-microsecond')
+		
+	if "filterDate" in filters:
+		tmpQuery = tmpQuery.filter(date__gte=filters['filterDate'][0])
+		tmpQuery = tmpQuery.filter(date__gte=filters['filterDate'][1])
+	if 'filterIP' in filters:
+		tmpQuery = tmpQuery.filter(ip__exact=filters['filterIP'])
+	if 'filterType' in filters:
+		tmpQuery = tmpQuery.filter(dhcpType__exact=filters['filterType'])
+	if 'filterDevice' in filters:
+		tmpQuery = tmpQuery.filter(device_macAddress=filters['filterDevice'])
+	
+	p = Paginator(tmpQuery,perpage)
+	try:
+		context['dhcpEvent'] = p.page(page)
+	except PageNotAnInteger:
+		context['dhcpEvent'] = p.page(1)
+	except EmptyPage:
+		context['dhcpEvent'] = p.page(p.num_pages)
 
 
-	return render(request, "gatherer/snmp.html", context)
+	return render(request, "gatherer/dhcplogs.html", context)
+
+
+def apsnmp(request, page=1, perpage=100):
+	context = {}
+	context['app'] = 'gatherer'
+	context['cat'] = 'ap'
+
+	tmpQuery = AccessPoint.objects.isUp().order_by('name')
+	p = Paginator(tmpQuery,perpage)
+	try:
+		context['ap'] = p.page(page)
+	except PageNotAnInteger:
+		context['ap'] = p.page(1)
+	except EmptyPage:
+		context['ap'] = p.page(p.num_pages)
+
+	return render(request, "gatherer/apsnmp.html", context)
+
+def mssnmp(request, page=1, perpage=100):
+	context = {}
+	context['app'] = 'gatherer'
+	context['cat'] = 'ms'
+
+	tmpQuery = MobileStation.objects.isAssociated().order_by('macAddress')
+	p = Paginator(tmpQuery,perpage)
+	try:
+		context['ms'] = p.page(page)
+	except PageNotAnInteger:
+		context['ms'] = p.page(1)
+	except EmptyPage:
+		context['ms'] = p.page(p.num_pages)
+
+	return render(request, "gatherer/mssnmp.html", context)
+
+
+
+def rapsnmp(request, page=1, perpage=100):
+	context = {}
+	context['app'] = 'gatherer'
+	context['cat'] = 'rap'
+
+	tmpQuery = RogueAccessPoint.objects.order_by('-numOfClients')
+	p = Paginator(tmpQuery,perpage)
+	try:
+		context['rap'] = p.page(page)
+	except PageNotAnInteger:
+		context['rap'] = p.page(1)
+	except EmptyPage:
+		context['rap'] = p.page(p.num_pages)
+
+	return render(request, "gatherer/rapsnmp.html", context)
+

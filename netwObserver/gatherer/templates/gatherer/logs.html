@@ -17,150 +17,17 @@
 <div class='row'>
 	<div class="col-md-1">
 		<ul class="nav nav-pills nav-stacked">
-			<li {% if cat == 'dhcp' %}class="active"{%endif%}><a href="{% url 'logs' 'dhcp' %}">DHCP</a></li>
-			<li {% if cat == 'radius' %}class="active"{%endif%}><a href="{% url 'logs' 'radius' %}">Radius</a></li>
-			<li {% if cat == 'wism' %}class="active"{%endif%}><a href="{% url 'logs' 'wism' %}">Wism</a></li>
+			<li {% if cat == 'dhcp' %}class="active"{%endif%}><a href="{% url 'dhcplogs' %}">DHCP</a></li>
+			<li {% if cat == 'radius' %}class="active"{%endif%}><a href="{% url 'radiuslogs' %}">Radius</a></li>
+			<li {% if cat == 'wism' %}class="active"{%endif%}><a href="{% url 'wismlogs' %}">Wism</a></li>
 		</ul>
 	</div>
 
 	<div class="col-md-11">
-		{% if dhcpEvent %}
-		<table class="table table-striped table-hover">
-			<thead>
-				<tr>
-					<th></th>
-					<th>Date</th>
-					<th>DHCP Server</th>
-					<th>Type</th>
-					<th>IP</th>
-					<th>Device</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for event in dhcpEvent %}
-				<tr {% if event.dhcpType == 'ack' %}class="success"{% elif event.dhcpType == 'inf' %}class="info"{%elif event.dhcpType == 'dis' and event.message %}class="warning" data-toggle="tooltip" data-placement="bottom" title="{{event.message}}"{%elif event.dhcpType == 'log'%}class='info' data-toggle="tooltip" data-placement="bottom" title="{{event.message}}"{%endif%}>
-					<th>{%if event.dhcpType == 'dis' and event.message %}<span class="glyphicon glyphicon-warning-sign"></span>{%endif%}</th>
-					<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
-					<td>{{event.server}}</td>
-					<td>{{event.get_dhcpType_display}}</td>
-					<td>{{event.ip|default_if_none:"-"}}</td>
-					<td>{{event.device.macAddress}}</td>
-				</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-		<footer>
-			{{dhcpEvent|length}} entr{{ dhcpEvent|pluralize:'y,ies' }}
-			{%if dhcpEvent.paginator.num_pages > 1 %}
-			<p class="text-center">Page {{ dhcpEvent.number }} of {{ dhcpEvent.paginator.num_pages }}</p>
-			<ul class="pager">
-  				<li class="previous{%if not dhcpEvent.has_previous%} disabled{%endif%}"><a href="{%if dhcpEvent.has_previous%}{% url 'logs' 'dhcp' dhcpEvent.previous_page_number %}{%else%}#{%endif%}">Newer</a></li>
-  				<li class="next{%if not dhcpEvent.has_next%} disabled{%endif%}"><a href="{%if dhcpEvent.has_next%}{% url 'logs' 'dhcp' dhcpEvent.next_page_number %}{%else%}#{%endif%}">Older</a></li>
-			</ul>
-			{%endif%}
-		</footer>
+		{%block logs%}
 
-		{% elif radiusEvent %}
-		<table class="table table-striped table-hover">
-			<thead>
-				<tr>
-					<th></th>
-					<th>Date</th>
-					<th>Login</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for event in radiusEvent %}
-					{%if event.radiusType == 'er' %}
-					<tr class='danger'>
-						<td><span class="glyphicon glyphicon-warning-sign"></span></td>
-						<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
-						<td>{{event.message}}</td>
-					</tr>
-					{%elif event.radiusType == 'no' %}
-					<tr class='info'>
-						<td><span class="glyphicon glyphicon-eye-open"></span></td>
-						<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
-						<td>{{event.message}}</td>
-					</tr>
-					{%elif event.radiusType == 'in' %}
-					<tr>
-						<td><span class="glyphicon glyphicon-book"></span></td>
-						<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
-						<td>{{event.message}}</td>
-					</tr>
-					{%else%}
-					<tr {% if event.radiusType == 'ok' %}class="success"{%elif event.radiusType == 'ko' %}class="warning"{%endif%}>
-						<td>{% if event.radiusType == 'ok' %}<span class="glyphicon glyphicon-ok"></span>{%elif event.radiusType == 'ko' %}<span class="glyphicon glyphicon-remove"></span>{%endif%}</td>
-						<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
-						<td>{% if event.radiusType == 'ok' %}{{event.login}}{%elif event.radiusType == 'ko' %}{{event.login}}{%endif%}</td>
-					</tr>
-					{%endif%}
-				{% endfor %}
-			</tbody>
-		</table>
-		<footer>
-			{{radiusEvent|length}} entr{{ radiusEvent|pluralize:'y,ies' }}
-			{%if radiusEvent.paginator.num_pages > 1 %}
-			<div class="text-center">Page {{ radiusEvent.number }} of {{ radiusEvent.paginator.num_pages }}</div>
-			<ul class="pager">
-  				<li class="previous{%if not radiusEvent.has_previous%} disabled{%endif%}"><a href="{%if radiusEvent.has_previous%}{% url 'logs' 'radius' radiusEvent.previous_page_number %}{%else%}#{%endif%}">Newer</a></li>
-  				<li class="next{%if not radiusEvent.has_next%} disabled{%endif%}"><a href="{%if radiusEvent.has_next%}{% url 'logs' 'radius' radiusEvent.next_page_number %}{%else%}#{%endif%}">Older</a></li>
-			</ul>
-			{%endif%}
-		</footer>
-
-		{% elif wismEvent %}
-		<table class="table table-striped table-hover">
-			<thead>
-				<tr>
-					<th></th>
-					<th>Date</th>
-					<th>IP</th>
-					<th>Category</th>
-					<th>Severity</th>
-					<th>Mnemo</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for event in wismEvent %}
-					<tr 
-					{%if event.severity <= 2 %}
-					class='danger'>
-						<td><span class="glyphicon glyphicon-fire"></span></td>
-						
-					{%elif event.severity <= 4 %}
-					class='warning'>
-						<td><span class="glyphicon glyphicon-warning-sign"></span></td>
-						
-					{%elif event.severity <= 5 %}
-					class='info'>
-						<td><span class="glyphicon glyphicon-eye-open"></span></td>
-						
-					{%else%}
-					>
-						<td></td>
-					{%endif%}
-						<td>{{event.date|date:"D d M Y H:i:s"}}:{{event.microsecond}}</td>
-						<td>{{event.wismIp}}</td>
-						<td>{{event.category}}</td>
-						<td data-toggle="tooltip" data-placement="bottom" title="{{event.get_severity_display}}">{{event.severity}}</td>
-						<td data-toggle="tooltip" data-placement="bottom" title="{{event.message}}">{{event.mnemo}}</td>
-					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-		<footer>
-			{{wismEvent|length}} entr{{ wismEvent|pluralize:'y,ies' }}
-			{%if wismEvent.paginator.num_pages > 1 %}
-			<div class="text-center">Page {{ wismEvent.number }} of {{ wismEvent.paginator.num_pages }}</div>
-			<ul class="pager">
-  				<li class="previous{%if not wismEvent.has_previous%} disabled{%endif%}"><a href="{%if wismEvent.has_previous%}{% url 'logs' 'wism' wismEvent.previous_page_number %}{%else%}#{%endif%}">Newer</a></li>
-  				<li class="next{%if not wismEvent.has_next%} disabled{%endif%}"><a href="{%if wismEvent.has_next%}{% url 'logs' 'wism' wismEvent.next_page_number %}{%else%}#{%endif%}">Older</a></li>
-			</ul>
-			{%endif%}
-		</footer>
-		{% endif %}
+		
+		{%endblock%}
 	</div>
 
 </div>
