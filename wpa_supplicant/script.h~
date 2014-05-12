@@ -6,6 +6,9 @@
 #define BUF 1024
 #define DELAY 10
 
+
+
+
 struct wpa_ctrl *ctrl;
 struct timeb wpa_start, wpa_end, dhcp_start, dhcp_end, wpa_time, dhcp_time;
 struct tm tm;

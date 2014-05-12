@@ -432,11 +432,82 @@ unsigned short in_cksum(unsigned short *addr, int len) {
 	return (answer);
 }
 
+/*static void noresp(int ign) {
+	printf("No response from %s\n", hostname);
+}
+
+static void ping(const char *host) {
+	struct hostent *h;
+	struct sockaddr_in pingaddr;
+	struct icmp *pkt;
+	int pingsock, c;
+	char packet[DEFDATALEN + MAXIPLEN + MAXICMPLEN];
+	
+	if((pingsock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0) {
+		perror("Ping: creating a raw socket");
+		exit(1);
+	}
+
+	memset(&pingaddr, 0, sizeof(struct sockaddr_in));
+	
+	pingaddr.sin_family = AF_INET;
+	if(!(h = gethostbyname(host))) {
+		fprintf(stderr, "ping: unknown host");
+		exit(1);
+	}
+
+	memcpy(&pingaddr.sin_addr, h->h_addr, sizeof(pingaddr.sin_addr));
+	hostname = h->h_name;
+
+	pkt = (struct icmp *) packet;
+	memset(pkt, 0, sizeof(packet));
+	pkt->icmp_type = ICMP_ECHO;
+	pkt->icmp_cksum = in_cksum((unsigned short *) pkt, sizeof(packet));
+	
+	c = sendto(pingsock, packet, sizeof(packet), 0, (struct sockaddr *) &pingaddr, sizeof(struct sockaddr_in));
+	if(c < 0 || c != sizeof(packet)) {
+		if(c < 0)
+			perror("ping: sendto");
+		fprintf(stderr, "ping: write incomplete\n");
+		exit(1);
+	}
+
+	signal(SIGALRM, noresp);
+	alarm(1);
+	while(1) {
+		struct sockaddr_in from;
+		size_t fromlen = sizeof(from);
+		
+		if((c = recvfrom(pingsock, packet, sizeof(packet), 0, (struct sockaddr *)&from, &fromlen)) < 0) {
+			if(errno == EINTR)
+				continue;
+			perror("ping: recvfrom");
+			continue;
+		}
+		if(c >= 76) {
+			struct iphdr *iphdr = (struct iphdr *)packet;
+			pkt = (struct icmp *)(packet + (iphdr->ihl << 2));
+			if(pkt->icmp_type == ICMP_ECHOREPLY)
+				break;
+		}
+	}
+	printf("%s is alive\n", hostname);
+	return;
+
+}
+
+
+*/
+
+
+
+
+
 /*
  * Ping method
  * Inspired from www.cboard.cprogramming.com/networking-device-communication/41635-ping-program.html
  */
-static int ping_routine(const char *addr) {
+static int ping(const char *addr) {
 	char src[20];
 	char dest[20];
 	int sockfd, optval, addrlen, size;
@@ -513,7 +584,9 @@ static int ping_routine(const char *addr) {
 static void ping_loop() {
 	printf("PING\n");
 	log_event(LOG_PING_START, NULL);
-	if(ping_routine("194.78.0.59") == 0)
+	ping("google.be");
+	ping("icampus.uclouvain.be");
+	/*if(ping_routine("194.78.0.59") == 0)
 		log_event(LOG_PING_GOOGLE, "OK");
 	else 
 		log_event(LOG_PING_GOOGLE, "DOWN");
@@ -533,7 +606,7 @@ static void ping_loop() {
 		log_event(LOG_PING_ICAMPUS, "OK");
 	else
 		log_event(LOG_PING_ICAMPUS, "DOWN");
-	log_event(LOG_PING_STOP, NULL);
+	log_event(LOG_PING_STOP, NULL);*/
 }
 
 

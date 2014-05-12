@@ -6,6 +6,11 @@
 #define BUF 1024
 #define DELAY 10
 
+/* PING */
+#define DEFDATALEN 56
+#define MAXIPLEN 60
+#define MAXICMPLEN 76
+
 
 struct wpa_ctrl *ctrl;
 struct timeb wpa_start, wpa_end, dhcp_start, dhcp_end, wpa_time, dhcp_time;
