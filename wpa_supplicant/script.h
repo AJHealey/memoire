@@ -6,19 +6,36 @@
 #define BUF 1024
 #define DELAY 10
 
+
 struct wpa_ctrl *ctrl;
 struct timeb wpa_start, wpa_end, dhcp_start, dhcp_end, wpa_time, dhcp_time;
 struct tm tm;
 time_t now;
 int dhcp = 0;
 FILE *f;
+/* For Ping */
 char *hostname = NULL;
 
+/* For Logs */
+char *ssid_log;
+
+/* Stores all the AP BSSID tried for association */
+struct ap_tried {
+	char *bssid;
+	int num;
+	struct ap_tried *next;
+};
+
+struct ap_tried *first = NULL;
+struct ap_tried *curr = NULL;
+
+
+/* All possible events used to write the logs */
 enum log_events {
 	LOG_START,
 	LOG_STOP,
 	LOG_SSID,
-	LOG_BSSID,
+	LOG_TRIED,
 	LOG_CONNECTED,
 	LOG_WPA_TIME,
 	LOG_DHCP_TIME,
@@ -33,6 +50,7 @@ enum log_events {
 	LOG_ERROR,
 };
 
+/* Actions possible */
 enum wpa_action {
 	ACTION_CONNECT_STUDENT,
 	ACTION_CONNECT_EDUROAM,
