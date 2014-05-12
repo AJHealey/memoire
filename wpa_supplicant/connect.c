@@ -18,7 +18,7 @@ RSA * getPrivateKey();
 int main(int argc, char *argv[]) {
 	int sockfd = 0;
 	char recvBuff[1024];
-	memset(recvBuff,0,1024);
+	memset(recvBuff,'\0',1024);
 
 	if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("[-]Could not create socket.\n");
@@ -31,15 +31,17 @@ int main(int argc, char *argv[]) {
 	to.sin_port = htons(SERVERPORT);
 
 	if (connect(sockfd, (struct sockaddr *)&to , sizeof(to)) < 0){
-		perror("[-] Connection error.");
-		return 1;
+		perror("[-]Could not connect to the server.\n");
+        return 1;
 	}
 
 	RSA *privateKey = getPrivateKey();
 
+	printf("[*] Phase 1\n");
 	// Phase 1 : Probe send its identity
-	write(sockfd, IDENTITY, strlen(IDENTITY)); 
+	write(sockfd, IDENTITY, 1); 
 
+	printf("[*] Phase 2 & 3\n");
 	// Phase 2 : Reception of the encrypted AES key
 	read(sockfd, recvBuff, 256);
 	// Decryption of the AES key
@@ -55,10 +57,16 @@ int main(int argc, char *argv[]) {
 	memset(decryptedIV,0,256);
 	result = RSA_private_decrypt(256,recvBuff,decryptedIV,privateKey,RSA_NO_PADDING);
 
+	printf("[+] AES + IV received.\n");
+	write(sockfd, "1", 1);
+	
+	
 	// Phase 4 : Data Transmission
+	printf("[*] Phase 4\n");
 	EVP_CIPHER_CTX *ctx;
 	int len, ciphertext_len;
-	char *plaintext = "test";
+	char *plaintext = "{:}}";
+
 	char *ciphertext = (char *)malloc(strlen(plaintext) + 16);
 
 	if( !(ctx = EVP_CIPHER_CTX_new()) ) {
@@ -83,25 +91,16 @@ int main(int argc, char *argv[]) {
 	} 
   	ciphertext_len += len;
 
+
+	// Send data size
+	write(sockfd, &ciphertext_len, 4); 
+	read(sockfd, recvBuff, 1);
+	printf("[+] Size Acked.\n");
+
+	// Send Data
 	write(sockfd, ciphertext, ciphertext_len);
 
 
-	// Phase 5 : Integrity check
-	char integrityHash[32];
-	SHA256(ciphertext, ciphertext_len, integrityHash);
-
-	int i;
-	printf("[*] SHA256: ");
-	for(i = 0; i<32; i++) {
-		printf("%x ", integrityHash[i] & 0xff);
-	} 
-	printf("\n");
-	
-	int tmp = write(sockfd, integrityHash, 32);
-	printf("%d\n", tmp);
-
-
-	read(sockfd, recvBuff, 2);
 	// Free all the malloc !
 	EVP_CIPHER_CTX_free(ctx);
 	free(decryptedAESKey);

@@ -12,7 +12,7 @@ PRIVKEY = '../../credentials/memKey.pem'
 PUBKEY = '../../credentials/memKey.pub'
 PROBEKEY = '../../credentials/authorizedProbes/probe1Key.pub'
 
-def step1(privkeypath=PRIVKEY, pubkeypath=PUBKEY):
+def responder(privkeypath=PRIVKEY, pubkeypath=PUBKEY):
 	# Load RSA keys
 	with open(privkeypath, 'rb') as privatefile, open(pubkeypath, 'rb') as publicfile:
 		privkey = privatefile.read()
@@ -24,7 +24,7 @@ def step1(privkeypath=PRIVKEY, pubkeypath=PUBKEY):
 	#create the server socket
 	serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	#bind the socket
-	serversocket.bind(('127.0.0.1', PROBEPORT))
+	serversocket.bind(('0.0.0.0', PROBEPORT))
 	serversocket.listen(5)
 
 	running = True
@@ -37,18 +37,20 @@ def step1(privkeypath=PRIVKEY, pubkeypath=PUBKEY):
 
 
 def handler(clientsocket):
+	
 	# Generate an AES cypher
 	aeskey = Random.new().read(32) # AES key with random 256 bits key
 	iv = Random.new().read(AES.block_size) # 128 bits iv (random)
 	aesCypher = AES.new(aeskey, AES.MODE_CBC, iv)
-
+	
+	#print("[+] Connection established")
 	# Phase 1 : Probe send its identity
-	identity = clientsocket.recv(1).decode() # identity of the probe
+	identity = clientsocket.recv(1) # identity of the probe
 	#print("[+] Identity received: %s" % identity)
 
-	probPublicKey = getProbePublicKey(identity) # probe public key
 
 	# Phase 2 : Send the encrypted AES key to the probe
+	probPublicKey = getProbePublicKey(identity) # probe public key
 	encryptedAESKey, = probPublicKey.encrypt(aeskey,'None')
 	clientsocket.send(encryptedAESKey)
 
@@ -62,21 +64,27 @@ def handler(clientsocket):
 	#print("[*] test string: %s" % (''.join( [ "%02X " % ord(x) for x in pad("test") ] )))
 	#print("[*] test encryption: %s" % (''.join( [ "%02X " % x for x in aesCypher.encrypt(pad("test")) ] )))
 	
+	ack = clientsocket.recv(1)
+	if ack != '1':
+		#print("[-] AES + IV Issue: %s (%s)" % (ack,len(ack)))
+		raise Exception("AES + IV transmission issue")	
+	#print("[+] AES + IV Acked: %s" % ack)	
+	
 	# Phase 4 : Data Transmission
 	aesCypher = AES.new(aeskey, AES.MODE_CBC, iv) # Need to regenerate the cipher to decrypt	
-	data = clientsocket.recv(MAX_DATA_RECEIVED)
-	print("[*] Data received (%s): %s" % (len(data),''.join( [ "%02X " % x for x in data ] )))
+	
+	dataSize = int.from_bytes(clientsocket.recv(4),byteorder='little')
+	#print("[*] Size received (%s)" % dataSize)
+	
+	clientsocket.send(b'1')
+
+	data = clientsocket.recv(dataSize)
+	#print("[*] Data received (%s): %s" % (len(data),''.join( [ "%02X " % x for x in data ] )))
 	decryptedData = unpad(aesCypher.decrypt(data))
-	print("[*] Data decripted (%s): %s" % (len(decryptedData),''.join( [ "%s" % chr(x) for x in decryptedData ] )))
+	#print("[*] Data decripted (%s): %s" % (len(decryptedData),''.join( [ "%s" % chr(x) for x in decryptedData ] )))
 	
-	data = clientsocket.recv(MAX_DATA_RECEIVED)
-	# Phase 5 : Integrity check
-	
-	print("[*] SHA256 Hash (%s): %s" % (len(data),''.join( [ "%02X " % x for x in data ] )))
-	#print("[*] Cyphered IV sent (%s): %s" % (len(encryptedIV),''.join( [ "%02X " % x for x in cypherIV ] )))
-	
-	#answer = clientsocket.recv(32)
 	clientsocket.close()
+	#print("[*] Connection closed.")
 	result = ""
 
 def getProbePublicKey(identity):
@@ -88,4 +96,4 @@ def getProbePublicKey(identity):
 
 
 if __name__ == '__main__':
-	step1()
+	responder()
