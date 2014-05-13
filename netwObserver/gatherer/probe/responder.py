@@ -79,13 +79,13 @@ def handler(clientsocket):
 
 	data = clientsocket.recv(dataSize)
 	while len(data) < dataSize :
-		data += clientsocket.recv(dataSize)
+		data += clientsocket.recv(dataSize-len(data))
 
 	print(len(data))
 	#print("[*] Data received (%s): %s" % (len(data),''.join( [ "%02X " % x for x in data ] )))
 	decryptedData = unpad(aesCypher.decrypt(data))
-	print("[*] Data decripted (%s):\n%s" % (len(decryptedData),''.join( [ "%s" % chr(x) for x in decryptedData ] )))
-	
+	print("[*] Data decripted (%s):\n%s" % (len(decryptedData), decryptedData)))
+	#''.join( [ "%s" % chr(x) for x in decryptedData ]
 	clientsocket.close()
 	#print("[*] Connection closed.")
 
