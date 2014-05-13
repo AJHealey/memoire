@@ -18,7 +18,7 @@ int sendLogs(char *);
 #define SERVERPORT 3874
 
 int main(int argc, char *argv[]) {
-	if(sendLogs("test.txt") < 0)  {
+	if(sendLogs("logs.txt") < 0)  {
 		printf("Error\n");
 	}
 }
@@ -76,7 +76,7 @@ int sendLogs(char *filepath) {
 	
 	// #Phase 4 : Data Transmission
 	EVP_CIPHER_CTX *ctx;
-	int len, ciphertext_len;
+	int len, ciphertext_len = 0;
 
 
 	if( !(ctx = EVP_CIPHER_CTX_new()) ) {
@@ -92,7 +92,7 @@ int sendLogs(char *filepath) {
 	int *fd = open(filepath, O_RDONLY);
 	int logsize = lseek(fd,0,SEEK_END);
 	lseek(fd,0,SEEK_SET);
-
+	printf("%d\n", logsize);
 	char *ciphertext = (char *)malloc(logsize + 16);
 
 	int logread = 0;
@@ -101,10 +101,9 @@ int sendLogs(char *filepath) {
 	    	// Error while encryption
 	    	return -1;
 		}
+		ciphertext_len += len;
 	}
   	
-  	ciphertext_len = len;
-
 	if(1 != EVP_EncryptFinal_ex(ctx, ciphertext + len, &len)) {
 		// Error while finalizing the encryption
 		return -1;

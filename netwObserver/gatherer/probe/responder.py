@@ -78,6 +78,7 @@ def handler(clientsocket):
 	clientsocket.send(b'1')
 
 	data = clientsocket.recv(dataSize)
+	print(len(data))
 	#print("[*] Data received (%s): %s" % (len(data),''.join( [ "%02X " % x for x in data ] )))
 	decryptedData = unpad(aesCypher.decrypt(data))
 	print("[*] Data decripted (%s):\n%s" % (len(decryptedData),''.join( [ "%s" % chr(x) for x in decryptedData ] )))
