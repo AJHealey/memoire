@@ -7,7 +7,7 @@ from time import sleep
 import base64
 
 MAX_DATA_RECEIVED = 2000
-PROBEPORT = 45678
+PROBEPORT = 3874
 PRIVKEY = '../../credentials/memKey.pem'
 PUBKEY = '../../credentials/memKey.pub'
 PROBEKEY = '../../credentials/authorizedProbes/probe1Key.pub'
@@ -31,7 +31,6 @@ def responder(privkeypath=PRIVKEY, pubkeypath=PUBKEY):
 	while running:
 		#accept connections from outside
 		(clientsocket, address) = serversocket.accept()
-		#print("[+] Connection received.")
 		Thread(target=handler, args=(clientsocket,)).start()
 
 
@@ -45,7 +44,7 @@ def handler(clientsocket):
 	
 	#print("[+] Connection established")
 	# Phase 1 : Probe send its identity
-	identity = clientsocket.recv(1) # identity of the probe
+	identity = int.from_bytes(clientsocket.recv(4),byteorder='little') # identity of the probe
 	#print("[+] Identity received: %s" % identity)
 
 
@@ -65,23 +64,23 @@ def handler(clientsocket):
 	#print("[*] test encryption: %s" % (''.join( [ "%02X " % x for x in aesCypher.encrypt(pad("test")) ] )))
 	
 	ack = clientsocket.recv(1)
-	if ack != '1':
+	#if ack != '1':
 		#print("[-] AES + IV Issue: %s (%s)" % (ack,len(ack)))
-		raise Exception("AES + IV transmission issue")	
-	#print("[+] AES + IV Acked: %s" % ack)	
+		#raise Exception("AES + IV transmission issue")	
+	print("[+] AES + IV Acked: %s" % ack)	
 	
 	# Phase 4 : Data Transmission
 	aesCypher = AES.new(aeskey, AES.MODE_CBC, iv) # Need to regenerate the cipher to decrypt	
 	
 	dataSize = int.from_bytes(clientsocket.recv(4),byteorder='little')
-	#print("[*] Size received (%s)" % dataSize)
+	print("[*] Size received (%s)" % dataSize)
 	
 	clientsocket.send(b'1')
 
 	data = clientsocket.recv(dataSize)
 	#print("[*] Data received (%s): %s" % (len(data),''.join( [ "%02X " % x for x in data ] )))
 	decryptedData = unpad(aesCypher.decrypt(data))
-	#print("[*] Data decripted (%s): %s" % (len(decryptedData),''.join( [ "%s" % chr(x) for x in decryptedData ] )))
+	print("[*] Data decripted (%s): %s" % (len(decryptedData),''.join( [ "%s" % chr(x) for x in decryptedData ] )))
 	
 	clientsocket.close()
 	#print("[*] Connection closed.")
