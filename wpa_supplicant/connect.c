@@ -6,9 +6,11 @@
 #include <openssl/sha.h>
 #include <string.h>
 #include <stdio.h>
-
+#include <sys/stat.h> 
+#include <fcntl.h>
 
 RSA * getPrivateKey();
+int sendLogs(char *);
 
 #define KEYFILE "probe1Key.pem"
 #define IDENTITY 1
@@ -16,6 +18,12 @@ RSA * getPrivateKey();
 #define SERVERPORT 3874
 
 int main(int argc, char *argv[]) {
+	if(sendLogs("test.txt") < 0)  {
+		printf("Error\n");
+	}
+}
+
+int sendLogs(char *filepath) {
 	int sockfd = 0, identity = IDENTITY;
 	char recvBuff[1024];
 	memset(recvBuff,'\0',1024);
@@ -69,9 +77,7 @@ int main(int argc, char *argv[]) {
 	// #Phase 4 : Data Transmission
 	EVP_CIPHER_CTX *ctx;
 	int len, ciphertext_len;
-	char *plaintext = "New Google Doodles Store! Enjoy 20ff ALL Doodle Gifts! Use Code: GOOGLEDOODLE";
 
-	char *ciphertext = (char *)malloc(strlen(plaintext) + 16);
 
 	if( !(ctx = EVP_CIPHER_CTX_new()) ) {
 		// Unable to initialize the cipher
@@ -83,10 +89,20 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
-	if(1 != EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, strlen(plaintext))) {
-    	// Error while encryption
-    	return -1;
+	int *fd = open(filepath, O_RDONLY);
+	int logsize = lseek(fd,0,SEEK_END);
+	lseek(fd,0,SEEK_SET);
+
+	char *ciphertext = (char *)malloc(logsize + 16);
+
+	int logread = 0;
+	while( (logread=read(fd, recvBuff, 56)) > 0 ) {
+		if(1 != EVP_EncryptUpdate(ctx, ciphertext, &len, recvBuff, logread)) {
+	    	// Error while encryption
+	    	return -1;
+		}
 	}
+  	
   	ciphertext_len = len;
 
 	if(1 != EVP_EncryptFinal_ex(ctx, ciphertext + len, &len)) {
