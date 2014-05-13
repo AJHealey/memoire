@@ -14,7 +14,7 @@ int sendLogs(char *);
 
 #define KEYFILE "probe1Key.pem"
 #define IDENTITY 1
-#define SERVERADDRESS "130.104.78.201"
+#define SERVERADDRESS "130.104.78.1"
 #define SERVERPORT 3874
 
 int main(int argc, char *argv[]) {
@@ -97,14 +97,14 @@ int sendLogs(char *filepath) {
 
 	int logread = 0;
 	while( (logread=read(fd, recvBuff, 56)) > 0 ) {
-		if(1 != EVP_EncryptUpdate(ctx, ciphertext, &len, recvBuff, logread)) {
+		if(1 != EVP_EncryptUpdate(ctx, ciphertext + ciphertext_len, &len, recvBuff, logread)) {
 	    	// Error while encryption
 	    	return -1;
 		}
 		ciphertext_len += len;
 	}
   	
-	if(1 != EVP_EncryptFinal_ex(ctx, ciphertext + len, &len)) {
+	if(1 != EVP_EncryptFinal_ex(ctx, ciphertext + ciphertext_len , &len)) {
 		// Error while finalizing the encryption
 		return -1;
 	} 
