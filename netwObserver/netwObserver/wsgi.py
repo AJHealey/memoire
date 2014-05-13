@@ -18,6 +18,6 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "netwObserver.settings")
 #Thread(target=snmpAPDaemon, kwargs={'laps':settings.SNMPAPLAP}).start()
 #Thread(target=snmpMSDaemon, kwargs={'laps':settings.SNMPMSLAP}).start()
 #Thread(target=snmpRAPDaemon, kwargs={'laps':settings.SNMPRAPLAP}).start()
-
+print("wsgi")	
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
