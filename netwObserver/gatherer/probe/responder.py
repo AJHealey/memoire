@@ -80,7 +80,7 @@ def handler(clientsocket):
 	data = clientsocket.recv(dataSize)
 	#print("[*] Data received (%s): %s" % (len(data),''.join( [ "%02X " % x for x in data ] )))
 	decryptedData = unpad(aesCypher.decrypt(data))
-	print("[*] Data decripted (%s):\n %s" % (len(decryptedData),''.join( [ "%s" % chr(x) for x in decryptedData ] )))
+	print("[*] Data decripted (%s):\n%s" % (len(decryptedData),''.join( [ "%s" % chr(x) for x in decryptedData ] )))
 	
 	clientsocket.close()
 	#print("[*] Connection closed.")
