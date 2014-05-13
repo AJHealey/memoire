@@ -67,13 +67,13 @@ def handler(clientsocket):
 	#if ack != '1':
 		#print("[-] AES + IV Issue: %s (%s)" % (ack,len(ack)))
 		#raise Exception("AES + IV transmission issue")	
-	print("[+] AES + IV Acked: %s" % ack)	
+	#print("[+] AES + IV Acked: %s" % ack)	
 	
 	# Phase 4 : Data Transmission
 	aesCypher = AES.new(aeskey, AES.MODE_CBC, iv) # Need to regenerate the cipher to decrypt	
 	
 	dataSize = int.from_bytes(clientsocket.recv(4),byteorder='little')
-	print("[*] Size received (%s)" % dataSize)
+	#print("[*] Size received (%s)" % dataSize)
 	
 	clientsocket.send(b'1')
 
@@ -85,7 +85,7 @@ def handler(clientsocket):
 	decryptedData = unpad(aesCypher.decrypt(data))
 	decryptedDataPrettyForm = ''.join([ "%s" % chr(x) for x in decryptedData])
 
-	print("[*] Data decripted (%s):\n%s" % (len(decryptedData), decryptedDataPrettyForm))
+	#print("[*] Data decripted (%s):\n%s" % (len(decryptedData), decryptedDataPrettyForm))
 	
 	clientsocket.close()
 	#print("[*] Connection closed.")

@@ -14,7 +14,7 @@ int sendLogs(char *);
 
 #define KEYFILE "probe1Key.pem"
 #define IDENTITY 1
-#define SERVERADDRESS "130.104.78.1"
+#define SERVERADDRESS "130.104.78.201"
 #define SERVERPORT 3874
 
 int main(int argc, char *argv[]) {
@@ -92,7 +92,6 @@ int sendLogs(char *filepath) {
 	int *fd = open(filepath, O_RDONLY);
 	int logsize = lseek(fd,0,SEEK_END);
 	lseek(fd,0,SEEK_SET);
-	printf("%d\n", logsize);
 	char *ciphertext = (char *)malloc(logsize + 16);
 
 	int logread = 0;
