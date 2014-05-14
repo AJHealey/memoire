@@ -3,6 +3,9 @@ from gatherer.models import OperationalError
 from gatherer.snmp import getter
 from celery import shared_task
 
+@shared_task
+def debug():
+	print("OK")
 
 @shared_task
 def snmpAPDaemon():

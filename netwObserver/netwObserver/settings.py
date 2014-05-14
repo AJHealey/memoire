@@ -100,6 +100,10 @@ CELERYBEAT_SCHEDULE = {
         'task': 'gatherer.tasks.snmpAPDaemon',
         'schedule': SNMPAPLAP,
     },
+    'snmp-debug': {
+        'task': 'gatherer.tasks.debug',
+        'schedule': timedelta(seconds=15),
+    }
 }
 
 
