@@ -97,11 +97,11 @@ BROKER_URL = 'django://'
 
 CELERYBEAT_SCHEDULE = {
     'snmp-ap-daemon': {
-        'task': 'tasks.snmpAPDaemon',
+        'task': 'gatherer.tasks.snmpAPDaemon',
         'schedule': SNMPAPLAP,
     },
     'snmp-debug': {
-        'task': 'tasks.debug',
+        'task': 'gatherer.tasks.debug',
         'schedule': timedelta(seconds=15),
     }
 }
