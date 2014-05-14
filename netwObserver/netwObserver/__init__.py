@@ -1,3 +1,5 @@
+ from __future__ import absolute_import
+
   # For PyMySQL
 try:
 	import pymysql
