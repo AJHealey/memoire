@@ -18,8 +18,6 @@ struct tm tm;
 time_t now;
 int dhcp = 0;
 FILE *f;
-/* For Ping */
-char *hostname = NULL;
 
 /* For Logs */
 char *ssid_log;
@@ -47,6 +45,8 @@ enum log_events {
 	LOG_PING_START,
 	LOG_PING_GOOGLE,
 	LOG_PING_GMAIL,
+	LOG_PING_GITHUB,
+	LOG_PING_GITHUBSSL,
 	LOG_PING_ADE,
 	LOG_PING_UCLOUVAIN,
 	LOG_PING_ICAMPUS,
@@ -78,10 +78,7 @@ static void connect_eduroam();
 static void connect_uclouvain();
 static void connect_visiteurs();
 static void connect_prive();
-static char *get_ip();
-static char *dest_ip(const char *addr);
-static int ping_routine(const char *addr);
-static void ping_loop();
+static int checkService(char *host, const char *port);
 void *wpa_loop(void *p_data);
 void *connection_loop(void *p_data);
 

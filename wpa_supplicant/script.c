@@ -58,27 +58,35 @@ static void log_event(enum log_events log, const char *arg) {
 			break;
 
 		case LOG_PING_START:
-			fprintf(f, "\t\"ping\": {\n");
+			fprintf(f, "\t\"services\": {\n");
 			break;
 
 		case LOG_PING_GOOGLE:
-			fprintf(f, "\t\t\"google\": \"%s\",\n", arg);
+			fprintf(f, "\t\t\"google.be\": \"%s\",\n", arg);
 			break;
 
 		case LOG_PING_GMAIL:
-			fprintf(f, "\t\t\"gmail\": \"%s\",\n", arg);
+			fprintf(f, "\t\t\"smtp.gmail.com\": \"%s\",\n", arg);
+			break;
+
+		case LOG_PING_GITHUB:
+			fprintf(f, "\t\t\"github.com\": \"%s\",\n", arg);
+			break;
+
+		case LOG_PING_GITHUBSSL:
+			fprintf(f, "\t\t\"ssl.github.com\": \"%s\",\n", arg);
 			break;
 
 		case LOG_PING_ADE:
-			fprintf(f, "\t\t\"ade expert\": \"%s\",\n", arg);
+			fprintf(f, "\t\t\"horaire.sgsi.ucl.ac.be\": \"%s\",\n", arg);
 			break;
 
 		case LOG_PING_UCLOUVAIN:
-			fprintf(f, "\t\t\"uclouvain\": \"%s\",\n", arg);
+			fprintf(f, "\t\t\"uclouvain.e\": \"%s\",\n", arg);
 			break;
 
 		case LOG_PING_ICAMPUS:
-			fprintf(f, "\t\t\"icampus\": \"%s\",\n", arg);
+			fprintf(f, "\t\t\"icampus.uclouvain.be\": \"%s\",\n", arg);
 			break;
 
 		case LOG_PING_STOP:
@@ -393,220 +401,46 @@ static void connect_prive() {
 	}
 }
 
-/* Get IP address */
-static char * get_ip() {
-	int fd;
-	struct ifreq ifr;
-	fd = socket(AF_INET, SOCK_DGRAM, 0);
-	ifr.ifr_addr.sa_family = AF_INET;
-	strncpy(ifr.ifr_name, "wlan0", IFNAMSIZ-1);
-	ioctl(fd, SIOCGIFADDR, &ifr);
-	close(fd);
-	return inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
-}
-
-/* Get Destination IP address */
-static char * dest_ip(const char *addr) {
-	struct hostent *h;
-	h = gethostbyname(addr);
-	return inet_ntoa(*(struct in_addr *)h->h_addr);
-}
-
-unsigned short in_cksum(unsigned short *addr, int len) {
-	register int sum = 0;
-	u_short answer = 0;
-	register u_short *w = addr;
-	register int nleft = len;
-
-	while(nleft > 1) {
-		sum += *w++;
-		nleft -= 2;
-	}
-	if(nleft == 1) {
-		*(u_char *)(&answer) = *(u_char *)w;
-		sum += answer;
-	}
-	sum = (sum >> 16) + (sum & 0xffff);
-	sum += (sum >> 16);
-	answer = ~sum;
-	return (answer);
-}
-
-/*static void noresp(int ign) {
-	printf("No response from %s\n", hostname);
-}
-
-static void ping(const char *host) {
-	struct hostent *h;
-	struct sockaddr_in pingaddr;
-	struct icmp *pkt;
-	int pingsock, c;
-	char packet[DEFDATALEN + MAXIPLEN + MAXICMPLEN];
-	
-	if((pingsock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0) {
-		perror("Ping: creating a raw socket");
-		exit(1);
-	}
-
-	memset(&pingaddr, 0, sizeof(struct sockaddr_in));
-	
-	pingaddr.sin_family = AF_INET;
-	if(!(h = gethostbyname(host))) {
-		fprintf(stderr, "ping: unknown host");
-		exit(1);
-	}
-
-	memcpy(&pingaddr.sin_addr, h->h_addr, sizeof(pingaddr.sin_addr));
-	hostname = h->h_name;
-
-	pkt = (struct icmp *) packet;
-	memset(pkt, 0, sizeof(packet));
-	pkt->icmp_type = ICMP_ECHO;
-	pkt->icmp_cksum = in_cksum((unsigned short *) pkt, sizeof(packet));
-	
-	c = sendto(pingsock, packet, sizeof(packet), 0, (struct sockaddr *) &pingaddr, sizeof(struct sockaddr_in));
-	if(c < 0 || c != sizeof(packet)) {
-		if(c < 0)
-			perror("ping: sendto");
-		fprintf(stderr, "ping: write incomplete\n");
-		exit(1);
-	}
-
-	signal(SIGALRM, noresp);
-	alarm(1);
-	while(1) {
-		struct sockaddr_in from;
-		size_t fromlen = sizeof(from);
-		
-		if((c = recvfrom(pingsock, packet, sizeof(packet), 0, (struct sockaddr *)&from, &fromlen)) < 0) {
-			if(errno == EINTR)
-				continue;
-			perror("ping: recvfrom");
-			continue;
-		}
-		if(c >= 76) {
-			struct iphdr *iphdr = (struct iphdr *)packet;
-			pkt = (struct icmp *)(packet + (iphdr->ihl << 2));
-			if(pkt->icmp_type == ICMP_ECHOREPLY)
-				break;
-		}
-	}
-	printf("%s is alive\n", hostname);
-	return;
-
-}
-
-
-*/
-
-
-
-
-
-/*
- * Ping method
- * Inspired from www.cboard.cprogramming.com/networking-device-communication/41635-ping-program.html
+/* 
+ * Check if services are available or not
  */
-static int ping(const char *addr) {
-	char src[20];
-	char dest[20];
-	int sockfd, optval, addrlen, size;
-	char *buf, *packet;
-	struct iphdr *ip;
-	struct iphdr *reply;
-	struct icmphdr *icmp;
-	struct sockaddr_in sock, connection;
-
-	strncpy(src, get_ip(), 20); //Get router IP
-	printf("1\n");
-	strncpy(dest, addr, 20); //Get IP addr of destination
-	printf("2\n");
-	buf = malloc(sizeof(struct iphdr) + sizeof(struct icmphdr));
-	printf("3\n");
-	packet = malloc(sizeof(struct iphdr) + sizeof(struct icmphdr));
-	printf("4\n");
-	ip = (struct iphdr *) packet;
-	printf("5\n");	
-	icmp = (struct icmphdr *) (packet + sizeof(struct iphdr));
-	printf("6\n");
-
-	ip->ihl = 5;
-	ip->version = 4;
-	ip->tos = 0;
-	ip->tot_len = sizeof(struct iphdr) + sizeof(struct icmphdr);
-	ip->id = htons(0);
-	ip->frag_off = 0;
-	ip->ttl = 64;
-	ip->protocol = IPPROTO_ICMP;
-	ip->saddr = inet_addr(src);
-	ip->daddr = inet_addr(dest);
+static int checkService(char *host, const char *port) {
+	int sockfd;
+	struct sockaddr_in serv_addr;
+	char *host_name;
+	struct hostent *hostptr;
+	struct in_addr *ptr;
+	unsigned short port_number;
 	
-	printf("7\n");
-	if((sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) == -1) {
-		perror("Socket");
-		exit(EXIT_FAILURE);
-	}
-	printf("8\n");	
 	
-	setsockopt(sockfd, IPPROTO_IP, IP_HDRINCL, &optval, sizeof(int));
-	printf("9\n");
-	icmp->type = ICMP_ECHO;
-	icmp->code = 0;
-	icmp->un.echo.id = random();
-	icmp->un.echo.sequence = 0;
-	icmp->checksum = in_cksum((unsigned short *)icmp, sizeof(struct icmphdr));
-	ip->check = in_cksum((unsigned short *)ip, sizeof(struct iphdr));
+	port_number = atoi(port);
 
-	connection.sin_family = AF_INET;
-	connection.sin_addr.s_addr = inet_addr(dest);
-	printf("10\n");
-	sendto(sockfd, packet, ip->tot_len, 0, (struct sockaddr *)&connection, sizeof(struct sockaddr));
-	printf("11\n");
-	addrlen = sizeof(connection);
-	printf("12\n");
-	if((size = recvfrom(sockfd, buf, sizeof(struct iphdr) + sizeof(struct icmphdr), 0, (struct sockaddr *)&connection, &addrlen)) == -1) {
-		printf("13\n");
-		free(packet);
-		free(buf);
-		close(sockfd);
-		return -1;
-		
-	}
-	else {
-		printf("Received %d byte reply from %s:\n", size, dest);
-		free(packet);
-		free(buf);
-		close(sockfd);
+	if((hostptr = (struct hostent *) gethostbyname(host)) == NULL) {
 		return 0;
 	}
-}
+	host_name = host;
 
-static void ping_loop() {
-	printf("PING\n");
-	log_event(LOG_PING_START, NULL);
-	ping("google.be");
-	ping("icampus.uclouvain.be");
-	/*if(ping_routine("194.78.0.59") == 0)
-		log_event(LOG_PING_GOOGLE, "OK");
-	else 
-		log_event(LOG_PING_GOOGLE, "DOWN");
-	if(ping_routine("173.194.34.150") == 0) 
-		log_event(LOG_PING_GMAIL, "OK");
-	else	
-		log_event(LOG_PING_GMAIL, "DOWN");
-	if(ping_routine("130.10.4.5.81")) 
-		log_event(LOG_PING_ADE, "OK");
-	else
-		log_event(LOG_PING_ADE, "DOWN");
-	if(ping_routine("130.104.5.100") == 0)
-		log_event(LOG_PING_UCLOUVAIN, "OK");
-	else
-		log_event(LOG_PING_UCLOUVAIN, "DOWN");
-	if(ping_routine("130.104.5.70") == 0)
-		log_event(LOG_PING_ICAMPUS, "OK");
-	else
-		log_event(LOG_PING_ICAMPUS, "DOWN");
-	log_event(LOG_PING_STOP, NULL);*/
+	ptr = (struct in_addr *)*(hostptr->h_addr_list);
+
+	memset((char *) &serv_addr, 0, sizeof(serv_addr));
+	serv_addr.sin_family = AF_INET;
+	serv_addr.sin_addr.s_addr = ptr->s_addr;
+	serv_addr.sin_port = htons(port_number);
+
+	//Create communication endpoint
+	if((sockfd = socket(AF_INET, SOCK_STREAM, 0))<0) {
+		return 0;
+	}
+	
+	//Connect to server
+	if(connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+		return 0;
+	}
+	else {
+		printf("OK\n");
+		return 1;
+	}
+	close(sockfd);
 }
 
 
@@ -677,28 +511,74 @@ void *wpa_loop(void *p_data) {
 	return NULL;
 }
 
+/*
+ * Loop to check availability
+ */
+void services_loop() {
+	log_event(LOG_PING_START, NULL);
+	if(checkService("google.be", "443") == 1)
+		log_event(LOG_PING_GOOGLE, "available");
+	else
+		log_event(LOG_PING_GOOGLE, "unavailable");
+
+	if(checkService("smtp.gmail.com", "587") == 1)
+		log_event(LOG_PING_GMAIL, "available");
+	else
+		log_event(LOG_PING_GMAIL, "unavailable");
+
+	if(checkService("github.com", "22") == 1)
+		log_event(LOG_PING_GITHUB, "available");
+	else
+		log_event(LOG_PING_GITHUB, "unavailable");
+
+	if(checkService("ssl.github.com", "443") == 1)
+		log_event(LOG_PING_GITHUBSSL, "available");
+	else
+		log_event(LOG_PING_GITHUBSSL, "unavailable");
+	
+	if(checkService("horaire.sgsi.ucl.ac", "8080") == 1)
+		log_event(LOG_PING_ADE, "available");
+	else
+		log_event(LOG_PING_ADE, "unavailable");
+
+	if(checkService("uclouvain.be", "443") == 1)
+		log_event(LOG_PING_UCLOUVAIN, "available");
+	else
+		log_event(LOG_PING_UCLOUVAIN, "unavailable");
+
+	if(checkService("icampus.uclouvain.be", "443") == 1)
+		log_event(LOG_PING_ICAMPUS, "available");
+	else
+		log_event(LOG_PING_ICAMPUS, "unavailable");
+
+	log_event(LOG_PING_STOP, NULL);	
+}
+
 void *connection_loop(void * p_data) {
 	int close = 0;
+	services_loop();
 	while(1) {
-		ping_loop();
 		sleep(DELAY);
 		printf("Disconnection from student\n");
 		execute_action(ACTION_DISCONNECT, "student.UCLouvain");
 		sleep(DELAY);
 		printf("Connect to eduroam\n");
 		execute_action(ACTION_CONNECT_EDUROAM, NULL);
+		services_loop();
 		sleep(DELAY);
 		printf("Disconnection from eduroam\n");
 		execute_action(ACTION_DISCONNECT, "eduroam");
 		sleep(DELAY);
 		printf("Connect to UCLouvain\n");
 		execute_action(ACTION_CONNECT_UCLOUVAIN, NULL);
+		services_loop();
 		sleep(DELAY);
 		printf("Disconnection from UCLouvain\n");
 		execute_action(ACTION_DISCONNECT, "UCLouvain");
 		sleep(DELAY);
 		printf("Connect to visiteurs.UCLouvain\n");
 		execute_action(ACTION_CONNECT_VISITEURS, NULL);
+		services_loop();
 		sleep(DELAY);
 		printf("Disconnection from visiteurs.UCLouvain\n");
 		execute_action(ACTION_DISCONNECT, "visiteurs.UCLouvain");
@@ -711,6 +591,7 @@ void *connection_loop(void * p_data) {
 		sleep(DELAY);
 		printf("Connect to student.UCLouvain\n");
 		execute_action(ACTION_CONNECT_STUDENT, NULL);
+		services_loop();
 		sleep(DELAY);
 		if(close == 1) {
 			printf("SAVE\n");
@@ -725,43 +606,6 @@ void *connection_loop(void * p_data) {
 	}
 	return NULL;
 }
-
-//TODO supprimer
-void *maison(void *p_data) {
-	int close = 0;
-	ping_loop();
-	sleep(DELAY);
-	printf("Deconnection\n");
-	commands("DISABLE_NETWORK 0");
-	dhcp = 0;
-
-	while(1) {
-		sleep(DELAY);
-		log_event(LOG_START, NULL);
-		commands("ENABLE_NETWORK 0");
-		ftime(&wpa_start);
-		printf("Connection\n");
-		commands("SELECT_NETWORK 0");
-		while(dhcp != 1) {
-			sleep(1);
-		}
-		ping_loop();
-		sleep(DELAY);
-		printf("Deconnection\n");
-		commands("DISABLE_NETWORK 0");
-		dhcp = 0;
-		if(close == 2) {
-			printf("SAVE\n");
-			log_event(LOG_STOP, NULL);
-			fclose(f);
-			f = fopen("logs2.txt", "w");
-			
-			close = 0;
-		}
-		close += 1;
-	}
-}
-
 
 
 int main(int argc, char ** argv) {

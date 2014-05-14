@@ -11,7 +11,7 @@ clean:
 wpa_ctrl.o: common.h os.h wpa_debug.h wpabuf.h includes.h build_config.h wpa_ctrl.h wpa_ctrl.c
 os_unix.o: os.h includes.h build_config.h os_unix.c
 log_sender.o: includes.h log_sender.c
-utils.o: includes.h ../script.h utils.c
+utils.o: includes.h utils.c
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) $(CTRLFLAGS) $< -o $@
