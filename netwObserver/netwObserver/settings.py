@@ -37,8 +37,11 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'djcelery',
+    'kombu.transport.django',
     'gatherer',
-    'analyse'
+    'analyse',
+    'south'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -83,9 +86,15 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.6/howto/static-files/
 
+## Celery
+CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
+BROKER_URL = 'django://'
+
+
+
+## Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.6/howto/static-files/
 STATIC_URL = '/static/'
 STATIC_ROOT = "/srv/static/"
 MEDIA_URL = '/media/'
@@ -93,6 +102,8 @@ MEDIA_ROOT = '/srv/media/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
  )
+
+
 
 ## User Settings
 from datetime import timedelta
