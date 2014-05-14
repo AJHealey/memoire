@@ -1,27 +1,35 @@
 from datetime import datetime,timedelta
 
-from gatherer.models import WismEvent, MobileStation, AccessPoint, APSnapshot, APIfSnapshot
+from gatherer.models import WismEvent, DHCPEvent, RadiusEvent, MobileStation, AccessPoint, APSnapshot, APIfSnapshot
 from django.core.exceptions import ObjectDoesNotExist
 
 
 MAX_VALUE_SNMP_COUNTER32 = 4294967295
 
-def getWismLogByType():
+## Logs Aggregators
+def getWismLogsByCategory():
 	stats = {}
-	logs = WismEvent.objects
-	categories = logs.distinct('category').values_list('category',flat=True).order_by('category')
+	## Logs More important than informational (level 5 at least)
+	logs = WismEvent.objects.filter(severity__lte=5)
+	categories = logs.values_list('category', flat=True).distinct()
 	for cat in categories:
-		stats[cat] = {}
-
-		for element in logs.filter(category__exact=cat).distinct('severity','mnemo').values('severity','mnemo'):
-			severity = element['severity']
-			mnemo = element['mnemo']
-			if not severity in stats[cat]:
-				stats[cat][severity] = {}
-			
-			stats[cat][severity][mnemo] = logs.filter(category__exact=cat, severity__exact=severity, mnemo__exact=mnemo).count()
+		stats[cat] = logs.filter(category=cat).count()
 
 	return stats
+
+def getDhcpLogByType():
+	stats = {}
+	for t, display in DHCPEvent.DHCP_TYPES:
+		tmp = DHCPEvent.objects.filter(dhcpType=t).count()
+		if tmp > 0:
+			stats[display] = tmp
+	return stats
+
+def getRadiusSuccessRate():
+	return {
+		"Success" : RadiusEvent.objects.filter(radiusType="ok").count(),
+		"Failed" : RadiusEvent.objects.filter(radiusType="ko").count(),
+	}
 
 ## Users Aggregators 
 def getUsersByDot11Protocol():
