@@ -1,4 +1,27 @@
-#include "includes.h"
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <openssl/rsa.h>
+#include <openssl/evp.h>
+#include <openssl/sha.h>
+#include <string.h>
+#include <stdio.h>
+#include <sys/stat.h> 
+#include <fcntl.h>
+
+RSA * getPrivateKey();
+int sendLogs(char *);
+
+#define KEYFILE "probe1Key.pem"
+#define IDENTITY 1
+#define SERVERADDRESS "130.104.78.201"
+#define SERVERPORT 3874
+
+int main(int argc, char *argv[]) {
+	if(sendLogs("logs.txt") < 0)  {
+		printf("Error\n");
+	}
+}
 
 int sendLogs(char *filepath) {
 	int sockfd = 0, identity = IDENTITY;

@@ -5,6 +5,9 @@
 /* Include possible build time configuration before including anything else */
 #include "build_config.h"
  
+#include <openssl/rsa.h>
+#include <openssl/evp.h>
+#include <openssl/sha.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -44,6 +47,9 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/un.h>
+#include <sys/stat.h> 
+#include <fcntl.h>
+
 #endif /* __vxworks */
 #endif /* CONFIG_TI_COMPILER */
 #endif /* CONFIG_NATIVE_WINDOWS */

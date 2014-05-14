@@ -2,6 +2,7 @@ CC = mips-openwrt-linux-uclibc-gcc
 LD = mips-openwrt-linux-uclibc-ld
 OBJS = wpa_ctrl.o os_unix.o log_sender.o utils.o
 CTRLFLAGS = -DCONFIG_CTRL_IFACE -DCONFIG_CTRL_IFACE_UNIX
+CFLAGS = -I/usr/include
 
 all: $(OBJS)
 
