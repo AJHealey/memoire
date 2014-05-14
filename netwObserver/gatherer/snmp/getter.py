@@ -477,7 +477,7 @@ def getAllRAP():
 		rap.save()
 
 ###########################################################################################################################
-### Snapshot ###
+### Snapshots ###
 ############################################################################################################################
 def apSnapshot(ap):
 	
@@ -491,62 +491,6 @@ def apSnapshot(ap):
 		ifsnap.numOfClients = interface.numOfClients
 		ifsnap.numOfPoorSNRClients = interface.numOfPoorSNRClients
 		ifsnap.save()
-
-
-############################################################################################################################
-### Daemon Methods ###
-############################################################################################################################
-
-def snmpAPDaemon(laps=timedelta(minutes=20)):
-	''' Background task gathering information on Access Point '''
-	task, _ = CurrentTask.objects.get_or_create(name="apdaemon")
-	task.touch()
-	while True:
-		try:
-			getAllAP()
-			task.touch()
-			time.sleep(laps.total_seconds())
-		except:
-			OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon', error='Lap failed').save()
-			time.sleep(10*laps.total_seconds())
-
-
-def snmpMSDaemon(laps=timedelta(minutes=30)):
-	''' Background task gathering information on Mobile Station 
-
-		Argument:
-		laps -- duration between update. Instance of timedelta
-	'''
-	task, _ = CurrentTask.objects.get_or_create(name="msdaemon")
-	task.touch()
-	time.sleep(30)
-	while True:
-		try:
-			getAllRAP()
-			task.touch()
-			time.sleep(laps.total_seconds())
-		except:
-			OperationalError(date=timezone.localtime(timezone.now()), source='snmpRAPDaemon', error='Lap failed').save()
-			time.sleep(10*laps.total_seconds())
-
-
-def snmpRAPDaemon(laps=timedelta(hours=2)):
-	''' Background task gathering information on Rogue Access Point 
-
-		Argument:
-		laps -- duration between update. Instance of timedelta
-	'''
-	task, _ = CurrentTask.objects.get_or_create(name="rapdaemon")
-	task.touch()
-	time.sleep(300)
-	while True:
-		try:
-			getAllMS()
-			task.touch()
-			time.sleep(laps.total_seconds())
-		except:
-			OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon', error='Lap failed').save()
-			time.sleep(10*laps.total_seconds())
 
 
 ###### Auxiliary Methods #######

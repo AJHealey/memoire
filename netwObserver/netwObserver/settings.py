@@ -93,7 +93,6 @@ SNMPMSLAP = timedelta(minutes=30)
 
 ## Celery
 CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
-CELERY_RESULT_BACKEND='djcelery.backends.cache:CacheBackend'
 BROKER_URL = 'django://'
 
 CELERYBEAT_SCHEDULE = {
