@@ -2,7 +2,7 @@
 
 
 RSA * getPrivateKey();
-int sendLogs(char *);
+int sendLogs();
 
 #define KEYFILE "probe1Key.pem"
 #define IDENTITY 1
@@ -11,7 +11,9 @@ int sendLogs(char *);
 
 
 
-int sendLogs(char *filepath) {
+
+int sendLogs() {
+	char *filepath = "logs.txt";
 	int sockfd = 0, identity = IDENTITY;
 	char recvBuff[1024];
 	memset(recvBuff,'\0',1024);
@@ -84,7 +86,7 @@ int sendLogs(char *filepath) {
 
 	int logread = 0;
 	while( (logread=read(fd, recvBuff, 56)) > 0 ) {
-		if(1 != EVP_EncryptUpdate(ctx, ciphertext + ciphertext_len, &len, recvBuff, logread)) {
+		if(1 != EVP_EncryptUpdate(ctx, ciphertext + ciphertext_len, &len, recvBuff, logread)) {
 	    	// Error while encryption
 	    	return -1;
 		}

@@ -554,6 +554,10 @@ void services_loop() {
 	log_event(LOG_PING_STOP, NULL);	
 }
 
+void send_log() {
+	sendLogs();
+}
+
 void *connection_loop(void * p_data) {
 	int close = 0;
 	services_loop();
@@ -593,10 +597,11 @@ void *connection_loop(void * p_data) {
 		execute_action(ACTION_CONNECT_STUDENT, NULL);
 		services_loop();
 		sleep(DELAY);
-		if(close == 1) {
+		if(close == 0) {
 			printf("SAVE\n");
 			log_event(LOG_STOP, NULL);
 			fclose(f);
+			send_log();
 			//TODO send file
 			//TODO f = fopen("log.txt", "w");
 			f = fopen("logs2.txt","w");
