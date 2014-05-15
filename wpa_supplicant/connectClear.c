@@ -49,7 +49,7 @@ int sendLogs(char *filepath) {
 
 	// Phase 2 : Data sending
 	int *fd = open(filepath, O_RDONLY);
-	int logsize = lseek(fd,0,SEEK_END);
+	unsigned int logsize = lseek(fd,0,SEEK_END);
 	lseek(fd,0,SEEK_SET);
 
 	// Send data size
