@@ -436,7 +436,7 @@ def getAllRAP():
 		tmp = getRAPSSID(ip=wism[0])
 		for index, ssid in tmp.items():
 			if index in result:
-				if 'b\'' in ssid:
+				if ssid.startswith("b'") or ssid.startswith('b"'):
 					result[index].ssid = ssid[2:-1]
 				else:
 					result[index].ssid = ssid
@@ -500,7 +500,7 @@ def parseMacAdresse(macString):
 	if result.startswith('0x'):
 		result = result[2:]
 
-	elif result.startswith("b'"):
+	elif result.startswith("b'") or result.startswith('b"'):
 		tmp = ""
 		for c in result[2:-1]:
 			tmp += "{:02x}:".format(ord(c))

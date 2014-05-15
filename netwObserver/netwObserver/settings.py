@@ -87,7 +87,7 @@ USE_L10N = True
 USE_TZ = True
 
 ## User Settings
-SNMPAPLAP = timedelta(minutes=10)
+SNMPAPLAP = timedelta(minutes=20)
 SNMPRAPLAP = timedelta(hours=2)
 SNMPMSLAP = timedelta(minutes=30)
 
