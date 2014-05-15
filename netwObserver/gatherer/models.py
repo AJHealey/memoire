@@ -176,6 +176,8 @@ class WismEvent(models.Model):
 		unique_together = (('date', 'microsecond', 'wismIp'),)
 
 
+
+
 ## Error Parsing
 class BadLog(models.Model):
 	log = models.CharField(max_length=256)
