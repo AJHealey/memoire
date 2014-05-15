@@ -20,8 +20,8 @@ def snmpAPDaemon():
 			task.touch()
 	except IntegrityError:
 		pass
-	except:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon', error='Lap failed').save()
+	except Exception as e:
+		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon', error='%s' % e).save()
 	finally:
 		apLock.release()
 
@@ -43,8 +43,8 @@ def snmpMSDaemon():
 			task.touch()
 	except IntegrityError:
 		pass
-	except:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon', error='Lap failed').save()
+	except Exception as e:
+		OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon', error='%s' % e).save()
 	finally:
 		msLock.release()
 
@@ -64,8 +64,8 @@ def snmpRAPDaemon():
 			task.touch()
 	except IntegrityError:
 		pass
-	except:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpRAPDaemon', error='Lap failed').save()
+	except Exception as e:
+		OperationalError(date=timezone.localtime(timezone.now()), source='snmpRAPDaemon', error='%s' % e).save()
 	finally:
 		rapLock.release()
 
