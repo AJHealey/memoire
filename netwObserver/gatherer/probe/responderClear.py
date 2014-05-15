@@ -24,26 +24,25 @@ def responder():
 def handler(clientsocket):
 	
 
-	#print("[+] Connection established")
+	print("[+] Connection established")
 	# Phase 1 : Probe send its identity
 	identity = int.from_bytes(clientsocket.recv(4),byteorder='little') # identity of the probe
-	#print("[+] Identity received: %s" % identity)
+	print("[+] Identity received: %s" % identity)
 	clientsocket.send(b'1')
 
 	## Phase 2 = Data receive
 	dataSize = int.from_bytes(clientsocket.recv(4),byteorder='little')
-	#print("[*] Size received (%s)" % dataSize)
+	print("[*] Size received (%s)" % dataSize)
 	clientsocket.send(b'1')
 
 	data = clientsocket.recv(min(dataSize,1024))
-	print("%s" % data.decode())
 
 	while len(data) < dataSize :
 		data += clientsocket.recv(1024)
 
 	clientsocket.close()
 	print("%s" % data.decode())
-	#print("[*] Connection closed.")
+	print("[*] Connection closed.")
 
 
 if __name__ == '__main__':
