@@ -5,9 +5,9 @@
 /* Include possible build time configuration before including anything else */
 #include "build_config.h"
  
-#include <openssl/rsa.h>
-#include <openssl/evp.h>
-#include <openssl/sha.h>
+//#include <openssl/rsa.h>
+//#include <openssl/evp.h>
+//#include <openssl/sha.h>
 //#include <curl/curl.h>
 #include <stdlib.h>
 #include <stdio.h>

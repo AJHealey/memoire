@@ -5,6 +5,7 @@
 #define DEFAULT_CTRL_IFACE "/tmp/run/wpa_supplicant/wlan0"
 #define BUF 1024
 #define DELAY 10
+#define debug_print(args) if (DEBUG) printf(args);
 
 /* PING */
 #define DEFDATALEN 56
@@ -46,6 +47,7 @@ enum log_events {
 	LOG_PING_GOOGLE,
 	LOG_PING_GMAIL,
 	LOG_PING_GITHUB,
+	LOG_PING_GITHUBSSL,
 	LOG_PING_ADE,
 	LOG_PING_UCLOUVAIN,
 	LOG_PING_ICAMPUS,
