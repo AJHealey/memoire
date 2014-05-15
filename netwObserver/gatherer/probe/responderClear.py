@@ -35,7 +35,7 @@ def handler(clientsocket):
 	#print("[*] Size received (%s)" % dataSize)
 	clientsocket.send(b'1')
 
-	data = clientsocket.recv(dataSize)
+	data = clientsocket.recv(min(dataSize,56))
 	while len(data) < dataSize :
 		data += clientsocket.recv(dataSize-len(data))
 
