@@ -65,7 +65,7 @@ def snmpRAPDaemon():
 	except IntegrityError:
 		pass
 	except:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon', error='Lap failed').save()
+		OperationalError(date=timezone.localtime(timezone.now()), source='snmpRAPDaemon', error='Lap failed').save()
 	finally:
 		rapLock.release()
 

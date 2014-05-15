@@ -131,7 +131,7 @@ def mssnmp(request, page=1, perpage=100):
 	return render(request, "gatherer/mssnmp.html", context)
 
 def rapsnmpRefresh(request):
-	Thread(target=snmpRAPDaemon).start()
+	snmpRAPDaemon.delay()
 	return rapsnmp(request)
 
 def rapsnmp(request, page=1, perpage=100):

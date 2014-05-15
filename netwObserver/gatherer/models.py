@@ -201,7 +201,7 @@ class CurrentTask(models.Model):
 		return (timezone.localtime(timezone.now()) - self.lastTouched) < timedelta(minutes=10)
 
 	def __str__(self):
-		return self.name + ": " + ( "active" if self.stillActive() else "inactive") + ' - ' + self.status
+		return self.name + ": " + ( "active" if self.stillActive() else "inactive")
 
 ## Operational Errors Model
 class OperationalError(models.Model):
