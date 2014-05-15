@@ -17,9 +17,11 @@ urlpatterns = patterns('',
 	
 	url(r'^snmp/$', views.apsnmp, name='snmp'),
 
+	url(r'^snmp/ap/refresh', views.apsnmpRefresh, name='aprefresh'),
 	url(r'^snmp/ap/(?P<page>\d+)', views.apsnmp, name='apsnmp'),
 	url(r'^snmp/ap', views.apsnmp, name='apsnmp'),
 
+	url(r'^snmp/ms/refresh', views.mssnmpRefresh, name='msrefresh'),
 	url(r'^snmp/ms/(?P<page>\d+)', views.mssnmp, name='mssnmp'),
 	url(r'^snmp/ms', views.mssnmp, name='mssnmp'),
 

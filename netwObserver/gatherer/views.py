@@ -97,6 +97,9 @@ def dhcplogs(request, page=1, perpage=100, filters={}):
 
 	return render(request, "gatherer/dhcplogs.html", context)
 
+def apsnmpRefresh(request):
+	snmpAPDaemon.delay()
+	return apsnmp(request)
 
 def apsnmp(request, page=1, perpage=100):
 	context = {}
@@ -113,6 +116,10 @@ def apsnmp(request, page=1, perpage=100):
 		context['ap'] = p.page(p.num_pages)
 
 	return render(request, "gatherer/apsnmp.html", context)
+
+def mssnmpRefresh(request):
+	snmpMSDaemon.delay()
+	return mssnmp(request)
 
 def mssnmp(request, page=1, perpage=100):
 	context = {}
