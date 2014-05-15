@@ -190,22 +190,19 @@ class BadLog(models.Model):
 ################## Auxiliary Models #######################
 ## Tasks model
 class CurrentTask(models.Model):
-	lastTouched = models.DateTimeField(default=lambda:(timezone.localtime(timezone.now())))
+	lastTouched = models.DateTimeField(default=lambda:(timezone.now()))
 	name = models.CharField(max_length=25, primary_key=True)
  	
 	def touch(self):
-		self.lastTouched = timezone.localtime(timezone.now())
+		self.lastTouched = timezone.now()
 		self.save()
 
-	def stillActive(self):
-		return (timezone.localtime(timezone.now()) - self.lastTouched) < timedelta(minutes=10)
-
 	def __str__(self):
-		return self.name + ": " + ( "active" if self.stillActive() else "inactive")
+		return self.name
 
 ## Operational Errors Model
 class OperationalError(models.Model):
-	date = models.DateTimeField()
+	date = models.DateTimeField(default=lambda:(timezone.localtime(timezone.now())))
 	source = models.CharField(max_length=25)
 	error = models.CharField(max_length=250)
 

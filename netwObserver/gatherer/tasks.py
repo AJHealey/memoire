@@ -14,8 +14,8 @@ def snmpAPDaemon():
 	''' Background task gathering information on Access Point '''
 	apLock.acquire()
 	try:
-		task, _ = CurrentTask.objects.get_or_create(name="snmpAPDaemon")
-		if task.lastTouched() < (timezone.localtime(timezone.now()) - timedelta(minutes=10)):
+		task, created = CurrentTask.objects.get_or_create(name="snmpAPDaemon")
+		if created or task.lastTouched < (timezone.localtime(timezone.now()) - timedelta(minutes=10)):
 			getter.getAllAP()
 			task.touch()
 	except IntegrityError:
@@ -38,7 +38,7 @@ def snmpMSDaemon():
 	msLock.acquire()
 	try:
 		task, _ = CurrentTask.objects.get_or_create(name="snmpMSDaemon")
-		if task.lastTouched() < (timezone.localtime(timezone.now()) - timedelta(minutes=10)):
+		if task.lastTouched < (timezone.localtime(timezone.now()) - timedelta(minutes=10)):
 			getter.getAllMS()
 			task.touch()
 	except IntegrityError:
@@ -59,7 +59,7 @@ def snmpRAPDaemon():
 	rapLock.acquire()
 	try:
 		task, _ = CurrentTask.objects.get_or_create(name="snmpRAPDaemon")
-		if task.lastTouched() < (timezone.localtime(timezone.now()) - timedelta(minutes=10)):
+		if task.lastTouched < (timezone.now() - timedelta(minutes=10)):
 			getter.getAllRAP()
 			task.touch()
 	except IntegrityError:
