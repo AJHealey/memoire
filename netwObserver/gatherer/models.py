@@ -16,6 +16,7 @@ class Device(models.Model):
 
 	def touch(self):
 		self.lastTouched = timezone.localtime(timezone.now())
+		self.save()
 
 	class Meta:
 		abstract = True
