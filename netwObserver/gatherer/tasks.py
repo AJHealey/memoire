@@ -4,6 +4,7 @@ from gatherer.models import OperationalError
 from django.db import IntegrityError
 from gatherer.snmp import getter
 from celery import shared_task
+from gatherer.models import CurrentTask
 
 @shared_task
 def snmpAPDaemon():
