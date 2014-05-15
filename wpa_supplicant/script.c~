@@ -2,6 +2,7 @@
 #include "script.h"
 #include <pthread.h>
 
+#define DEBUG 1
 
 /* 
  * Insert the logs into the logfile
@@ -13,7 +14,7 @@ static void log_event(enum log_events log, const char *arg) {
 			fprintf(f, "{\n");
 			now = time(NULL);
 			tm = *localtime(&now);
-			fprintf(f, "\t\"date\": \"%d/%d/%d %d:%d:%d\",\n", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+			fprintf(f, "\"date\": \"%d/%d/%d %d:%d:%d\",\n", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 			break;
 
 		case LOG_STOP:
@@ -21,12 +22,12 @@ static void log_event(enum log_events log, const char *arg) {
 			break;
 
 		case LOG_SSID:
-			fprintf(f, "\t\"ssid\": \"%s\",\n", arg);
+			fprintf(f, "\"ssid\": \"%s\",\n", arg);
 			break;
 
 		case LOG_TRIED: {
 			struct ap_tried *ptr = first;
-			fprintf(f, "\t\"tried\": [ ");
+			fprintf(f, "\"tried\": [ ");
 			/* Display all the BSSID tried */
 			while(ptr != NULL) {
 				fprintf(f, "\"%s\"", ptr->bssid);
@@ -44,53 +45,53 @@ static void log_event(enum log_events log, const char *arg) {
 			break;
 
 		case LOG_CONNECTED:
-			fprintf(f, "\t\"connected\": \"%s\",\n", arg);
-			fprintf(f, "\t\"time\": {\n");
+			fprintf(f, "\"connected\": \"%s\",\n", arg);
+			fprintf(f, "\"time\": {\n");
 			break;
 
 		case LOG_WPA_TIME:
-			fprintf(f, "\t\t\"wpa_supplicant\": \"%ldsec %.3ums\",\n", wpa_time.time, wpa_time.millitm);
+			fprintf(f, "\"wpa_supplicant\": \"%ldsec %.3ums\",\n", wpa_time.time, wpa_time.millitm);
 			break;
 
 		case LOG_DHCP_TIME:
-			fprintf(f, "\t\t\"dhcp\": \"%ldsec %.3ums\"\n", dhcp_time.time, dhcp_time.millitm);
-			fprintf(f, "\t},\n");
+			fprintf(f, "\"dhcp\": \"%ldsec %.3ums\"\n", dhcp_time.time, dhcp_time.millitm);
+			fprintf(f, "},\n");
 			break;
 
 		case LOG_PING_START:
-			fprintf(f, "\t\"services\": {\n");
+			fprintf(f, "\"services\": {\n");
 			break;
 
 		case LOG_PING_GOOGLE:
-			fprintf(f, "\t\t\"google.be\": \"%s\",\n", arg);
+			fprintf(f, "\"google.be\": \"%s\",\n", arg);
 			break;
 
 		case LOG_PING_GMAIL:
-			fprintf(f, "\t\t\"smtp.gmail.com\": \"%s\",\n", arg);
+			fprintf(f, "\"smtp.gmail.com\": \"%s\",\n", arg);
 			break;
 
 		case LOG_PING_GITHUB:
-			fprintf(f, "\t\t\"github.com\": \"%s\",\n", arg);
+			fprintf(f, "\"github.com\": \"%s\",\n", arg);
 			break;
 
 		case LOG_PING_GITHUBSSL:
-			fprintf(f, "\t\t\"ssl.github.com\": \"%s\",\n", arg);
+			fprintf(f, "\"ssl.github.com\": \"%s\",\n", arg);
 			break;
 
 		case LOG_PING_ADE:
-			fprintf(f, "\t\t\"horaire.sgsi.ucl.ac.be\": \"%s\",\n", arg);
+			fprintf(f, "\"horaire.sgsi.ucl.ac.be\": \"%s\",\n", arg);
 			break;
 
 		case LOG_PING_UCLOUVAIN:
-			fprintf(f, "\t\t\"uclouvain.e\": \"%s\",\n", arg);
+			fprintf(f, "\"uclouvain.be\": \"%s\",\n", arg);
 			break;
 
 		case LOG_PING_ICAMPUS:
-			fprintf(f, "\t\t\"icampus.uclouvain.be\": \"%s\",\n", arg);
+			fprintf(f, "\"icampus.uclouvain.be\": \"%s\",\n", arg);
 			break;
 
 		case LOG_PING_STOP:
-			fprintf(f, "\t}\n");
+			fprintf(f, "}\n");
 			break;
 
 		case LOG_FAILED:
@@ -437,7 +438,7 @@ static int checkService(char *host, const char *port) {
 		return 0;
 	}
 	else {
-		printf("OK\n");
+		debug_print("OK\n");
 		return 1;
 	}
 	close(sockfd);
@@ -455,7 +456,7 @@ void *wpa_loop(void *p_data) {
 	
 	ftime(&wpa_start);
 	log_event(LOG_START, NULL);
-	system("wpa_supplicant -B -D nl80211 -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant_student.UCLouvain.conf");
+	system("wpa_supplicant -B -D nl80211 -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf");
 
 	
 	ctrl = wpa_ctrl_open(DEFAULT_CTRL_IFACE);
@@ -501,7 +502,7 @@ void *wpa_loop(void *p_data) {
 				reply_len = BUF-1;
 				wpa_ctrl_recv(ctrl, reply, &reply_len);
 				reply[reply_len] = '\0';
-				printf("[-] %s\n", reply);
+				debug_print(reply);
 				parse_event(reply);
 				break;
 		}
@@ -517,45 +518,46 @@ void *wpa_loop(void *p_data) {
 void services_loop() {
 	log_event(LOG_PING_START, NULL);
 	if(checkService("google.be", "443") == 1)
-		log_event(LOG_PING_GOOGLE, "available");
+		log_event(LOG_PING_GOOGLE, "1");
 	else
-		log_event(LOG_PING_GOOGLE, "unavailable");
+		log_event(LOG_PING_GOOGLE, "0");
 
 	if(checkService("smtp.gmail.com", "587") == 1)
-		log_event(LOG_PING_GMAIL, "available");
+		log_event(LOG_PING_GMAIL, "1");
 	else
-		log_event(LOG_PING_GMAIL, "unavailable");
+		log_event(LOG_PING_GMAIL, "0");
 
 	if(checkService("github.com", "22") == 1)
-		log_event(LOG_PING_GITHUB, "available");
+		log_event(LOG_PING_GITHUB, "1");
 	else
-		log_event(LOG_PING_GITHUB, "unavailable");
+		log_event(LOG_PING_GITHUB, "0");
 
 	if(checkService("ssl.github.com", "443") == 1)
-		log_event(LOG_PING_GITHUBSSL, "available");
+		log_event(LOG_PING_GITHUBSSL, "1");
 	else
-		log_event(LOG_PING_GITHUBSSL, "unavailable");
+		log_event(LOG_PING_GITHUBSSL, "0");
 	
-	if(checkService("horaire.sgsi.ucl.ac", "8080") == 1)
+	/*if(checkService("horaire.sgsi.ucl.ac", "8080") == 1)
 		log_event(LOG_PING_ADE, "available");
 	else
-		log_event(LOG_PING_ADE, "unavailable");
+		log_event(LOG_PING_ADE, "unavailable");*/
 
 	if(checkService("uclouvain.be", "443") == 1)
-		log_event(LOG_PING_UCLOUVAIN, "available");
+		log_event(LOG_PING_UCLOUVAIN, "1");
 	else
-		log_event(LOG_PING_UCLOUVAIN, "unavailable");
+		log_event(LOG_PING_UCLOUVAIN, "0");
 
 	if(checkService("icampus.uclouvain.be", "443") == 1)
-		log_event(LOG_PING_ICAMPUS, "available");
+		log_event(LOG_PING_ICAMPUS, "1");
 	else
-		log_event(LOG_PING_ICAMPUS, "unavailable");
+		log_event(LOG_PING_ICAMPUS, "0");
 
 	log_event(LOG_PING_STOP, NULL);	
 }
 
 void send_log() {
-	sendLogs();
+	if(sendLogs("logs.txt") < 0)
+		debug_print("ERROR\n");
 }
 
 void *connection_loop(void * p_data) {
@@ -563,48 +565,51 @@ void *connection_loop(void * p_data) {
 	services_loop();
 	while(1) {
 		sleep(DELAY);
-		printf("Disconnection from student\n");
+		debug_print("Disconnection from student\n");
 		execute_action(ACTION_DISCONNECT, "student.UCLouvain");
 		sleep(DELAY);
-		printf("Connect to eduroam\n");
+
+		debug_print("Connect to eduroam\n");
 		execute_action(ACTION_CONNECT_EDUROAM, NULL);
 		services_loop();
 		sleep(DELAY);
-		printf("Disconnection from eduroam\n");
+		debug_print("Disconnection from eduroam\n");
 		execute_action(ACTION_DISCONNECT, "eduroam");
 		sleep(DELAY);
-		printf("Connect to UCLouvain\n");
+
+		debug_print("Connect to UCLouvain\n");
 		execute_action(ACTION_CONNECT_UCLOUVAIN, NULL);
 		services_loop();
 		sleep(DELAY);
-		printf("Disconnection from UCLouvain\n");
+		debug_print("Disconnection from UCLouvain\n");
 		execute_action(ACTION_DISCONNECT, "UCLouvain");
 		sleep(DELAY);
-		printf("Connect to visiteurs.UCLouvain\n");
+
+		debug_print("Connect to visiteurs.UCLouvain\n");
 		execute_action(ACTION_CONNECT_VISITEURS, NULL);
 		services_loop();
 		sleep(DELAY);
-		printf("Disconnection from visiteurs.UCLouvain\n");
+		debug_print("Disconnection from visiteurs.UCLouvain\n");
 		execute_action(ACTION_DISCONNECT, "visiteurs.UCLouvain");
 		sleep(DELAY);
-		printf("Connect to UCLouvain-prive\n");
+
+		debug_print("Connect to UCLouvain-prive\n");
 		execute_action(ACTION_CONNECT_PRIVE, NULL);
 		sleep(DELAY);
-		printf("Disconnection from UCLouvain-prive\n");
+		debug_print("Disconnection from UCLouvain-prive\n");
 		execute_action(ACTION_DISCONNECT, "UCLouvain-prive");
 		sleep(DELAY);
-		printf("Connect to student.UCLouvain\n");
+
+		debug_print("Connect to student.UCLouvain\n");
 		execute_action(ACTION_CONNECT_STUDENT, NULL);
 		services_loop();
 		sleep(DELAY);
 		if(close == 0) {
-			printf("SAVE\n");
+			debug_print("SAVE\n");
 			log_event(LOG_STOP, NULL);
 			fclose(f);
 			send_log();
-			//TODO send file
-			//TODO f = fopen("log.txt", "w");
-			f = fopen("logs2.txt","w");
+			f = fopen("logs.txt","w");
 			close = 0;
 		}
 		close += 1;
@@ -621,7 +626,7 @@ int main(int argc, char ** argv) {
 	/* FILE */
 	f = fopen("logs.txt", "w");
 	if(f == NULL) {
-		printf("Error opening file\n");
+		debug_print("Error opening file\n");
 		exit(1);
 	}	
 	
@@ -629,7 +634,7 @@ int main(int argc, char ** argv) {
 	if(!r){
 		while(1) {
 			if(dhcp == 1) {
-				printf("Starting loop\n");
+				debug_print("Starting loop\n");
 				r = pthread_create(&loop_thread, NULL, connection_loop, NULL);
 				if(r)
 					fprintf(stderr, "%s", strerror(r));

@@ -5,6 +5,7 @@
 #define DEFAULT_CTRL_IFACE "/tmp/run/wpa_supplicant/wlan0"
 #define BUF 1024
 #define DELAY 10
+#define debug_print(args) if (DEBUG) printf(args)
 
 /* PING */
 #define DEFDATALEN 56
