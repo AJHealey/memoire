@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from django.utils import timezone
 from gatherer.models import OperationalError
 from gatherer.snmp import getter
 from celery import shared_task

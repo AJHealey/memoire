@@ -100,6 +100,14 @@ CELERYBEAT_SCHEDULE = {
         'task': 'gatherer.tasks.snmpAPDaemon',
         'schedule': SNMPAPLAP,
     },
+    'snmp-ms-daemon': {
+        'task': 'gatherer.tasks.snmpMSDaemon',
+        'schedule': SNMPMSLAP,
+    },
+    'snmp-rap-daemon': {
+        'task': 'gatherer.tasks.snmpRAPDaemon',
+        'schedule': SNMPRAPLAP,
+    },
 }
 
 
