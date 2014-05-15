@@ -24,9 +24,9 @@ def snmpMSDaemon():
 		laps -- duration between update. Instance of timedelta
 	'''
 	try:
-		getter.getAllRAP()
+		getter.getAllMS()
 	except:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpRAPDaemon', error='Lap failed').save()
+		OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon', error='Lap failed').save()
 
 
 @shared_task
@@ -37,7 +37,7 @@ def snmpRAPDaemon():
 		laps -- duration between update. Instance of timedelta
 	'''
 	try:
-		getter.getAllMS()
+		getter.getAllRAP()
 	except:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon', error='Lap failed').save()
 
