@@ -59,7 +59,7 @@ def snmpRAPDaemon():
 	rapLock.acquire()
 	try:
 		task, created = CurrentTask.objects.get_or_create(name="snmpRAPDaemon")
-		if created or task.lastTouched < (timezone.now() - timedelta(minutes=10)):
+		if created or task.lastTouched < (timezone.localtime(timezone.now()) - timedelta(minutes=10)):
 			getter.getAllRAP()
 			task.touch()
 	except IntegrityError:
