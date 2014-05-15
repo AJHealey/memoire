@@ -23,6 +23,7 @@ urlpatterns = patterns('',
 	url(r'^snmp/ms/(?P<page>\d+)', views.mssnmp, name='mssnmp'),
 	url(r'^snmp/ms', views.mssnmp, name='mssnmp'),
 
+	url(r'^snmp/rap/refresh', views.rapsnmpRefresh, name='raprefresh'),
 	url(r'^snmp/rap/(?P<page>\d+)', views.rapsnmp, name='rapsnmp'),
 	url(r'^snmp/rap', views.rapsnmp, name='rapsnmp'),
 

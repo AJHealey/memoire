@@ -12,6 +12,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from gatherer.log.logParser import parser
 from gatherer.snmp.getter import getAllAP
 from gatherer.models import RadiusEvent, DHCPEvent, WismEvent, MobileStation, AccessPoint, RogueAccessPoint, BadLog
+from gatherer.tasks import snmpRAPDaemon, snmpMSDaemon, snmpAPDaemon
 
 from django.conf import settings
 
@@ -129,7 +130,9 @@ def mssnmp(request, page=1, perpage=100):
 
 	return render(request, "gatherer/mssnmp.html", context)
 
-
+def rapsnmpRefresh(request):
+	Thread(target=snmpRAPDaemon).start()
+	return rapsnmp(request)
 
 def rapsnmp(request, page=1, perpage=100):
 	context = {}

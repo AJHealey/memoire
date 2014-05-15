@@ -192,7 +192,6 @@ class BadLog(models.Model):
 class CurrentTask(models.Model):
 	lastTouched = models.DateTimeField(default=lambda:(timezone.localtime(timezone.now())))
 	name = models.CharField(max_length=25, primary_key=True)
-	status = models.CharField(max_length=10)
  	
 	def touch(self):
 		self.lastTouched = timezone.localtime(timezone.now())
