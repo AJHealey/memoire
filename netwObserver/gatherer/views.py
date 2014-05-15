@@ -136,7 +136,7 @@ def rapsnmp(request, page=1, perpage=100):
 	context['app'] = 'gatherer'
 	context['cat'] = 'rap'
 
-	tmpQuery = RogueAccessPoint.objects.order_by('-numOfClients')
+	tmpQuery = RogueAccessPoint.objects.order_by('-nbrOfClients','ssid')
 	p = Paginator(tmpQuery,perpage)
 	try:
 		context['rap'] = p.page(page)

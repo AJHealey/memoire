@@ -10,6 +10,8 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from datetime import timedelta
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
@@ -37,10 +39,10 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'kombu.transport.django',
     'djcelery',
     'gatherer',
     'analyse',
-    'south'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -84,12 +86,29 @@ USE_L10N = True
 
 USE_TZ = True
 
-
+## User Settings
+SNMPAPLAP = timedelta(minutes=20)
+SNMPRAPLAP = timedelta(hours=2)
+SNMPMSLAP = timedelta(minutes=30)
 
 ## Celery
 CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
 BROKER_URL = 'django://'
 
+CELERYBEAT_SCHEDULE = {
+    'snmp-ap-daemon': {
+        'task': 'gatherer.tasks.snmpAPDaemon',
+        'schedule': SNMPAPLAP,
+    },
+    'snmp-ms-daemon': {
+        'task': 'gatherer.tasks.snmpMSDaemon',
+        'schedule': SNMPMSLAP,
+    },
+    'snmp-rap-daemon': {
+        'task': 'gatherer.tasks.snmpRAPDaemon',
+        'schedule': SNMPRAPLAP,
+    },
+}
 
 
 ## Static files (CSS, JavaScript, Images)
@@ -104,9 +123,5 @@ STATICFILES_DIRS = (
 
 
 
-## User Settings
-from datetime import timedelta
-SNMPAPLAP = timedelta(hours=1)
-SNMPRAPLAP = timedelta(hours=2)
-SNMPMSLAP = timedelta(minutes=30)
+
 

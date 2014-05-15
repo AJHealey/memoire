@@ -3,5 +3,33 @@
 
 {%block category%}
 
+<script type="text/javascript">
+	// Load the Visualization API and the piechart package.
+	google.load('visualization', '1.0', {'packages':['corechart']});
+
+	// Set a callback to run when the Google Visualization API is loaded.
+	google.setOnLoadCallback(drawCategoryLogs);
+
+	function drawCategoryLogs() {
+
+		var data = new google.visualization.DataTable();
+		data.addColumn('string', 'Category');
+		data.addColumn('number', 'Quantity of logs');
+		data.addRows([
+			{%for cat, qty in byCategory.items%}
+			['{{cat}}', {{qty}}],
+			{%endfor%}
+			]);
+		data.sort([{column: 0}]);
+		var options = {'title':'Wism Logs by Category',
+			'width':900,
+			'height':500};
+
+		var chart = new google.visualization.PieChart(document.getElementById('categorylogs_div'));
+
+		chart.draw(data, options);
+	}
+</script>
+<div id="categorylogs_div" style="width:400; height:300"></div>
 
 {%endblock%}

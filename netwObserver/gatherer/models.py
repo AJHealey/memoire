@@ -16,6 +16,7 @@ class Device(models.Model):
 
 	def touch(self):
 		self.lastTouched = timezone.localtime(timezone.now())
+		self.save()
 
 	class Meta:
 		abstract = True
@@ -73,8 +74,8 @@ class RAPManage(models.Manager):
 
 class RogueAccessPoint(Device):
 
-	ssid = models.CharField(max_length=50, null=True)
-	nbrOfClients = models.DecimalField(max_digits=3, decimal_places=0, null=True)
+	ssid = models.CharField(max_length=50, default='')
+	nbrOfClients = models.DecimalField(max_digits=3, decimal_places=0, default=0)
 	closestAp = models.ForeignKey(AccessPoint, null= True)
 
 	objects = RAPManage()
@@ -193,6 +194,7 @@ class CurrentTask(models.Model):
  	
 	def touch(self):
 		self.lastTouched = timezone.localtime(timezone.now())
+		self.save()
 
 	def stillActive(self):
 		return (timezone.localtime(timezone.now()) - self.lastTouched) < timedelta(minutes=10)

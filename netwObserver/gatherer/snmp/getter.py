@@ -3,7 +3,6 @@ import time
 from datetime import timedelta
 
 from django.utils import timezone
-from django.conf import settings
 from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -437,7 +436,7 @@ def getAllRAP():
 		tmp = getRAPSSID(ip=wism[0])
 		for index, ssid in tmp.items():
 			if index in result:
-				if 'b\'' in ssid:
+				if ssid.startswith("b'") or ssid.startswith('b"'):
 					result[index].ssid = ssid[2:-1]
 				else:
 					result[index].ssid = ssid
@@ -477,7 +476,7 @@ def getAllRAP():
 		rap.save()
 
 ###########################################################################################################################
-### Snapshot ###
+### Snapshots ###
 ############################################################################################################################
 def apSnapshot(ap):
 	
@@ -493,62 +492,6 @@ def apSnapshot(ap):
 		ifsnap.save()
 
 
-############################################################################################################################
-### Daemon Methods ###
-############################################################################################################################
-
-def snmpAPDaemon(laps=timedelta(minutes=20)):
-	''' Background task gathering information on Access Point '''
-	task, _ = CurrentTask.objects.get_or_create(name="apdaemon")
-	task.touch()
-	while True:
-		try:
-			getAllAP()
-			task.touch()
-			time.sleep(laps.total_seconds())
-		except:
-			OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon', error='Lap failed').save()
-			time.sleep(10*laps.total_seconds())
-
-
-def snmpMSDaemon(laps=timedelta(minutes=30)):
-	''' Background task gathering information on Mobile Station 
-
-		Argument:
-		laps -- duration between update. Instance of timedelta
-	'''
-	task, _ = CurrentTask.objects.get_or_create(name="msdaemon")
-	task.touch()
-	time.sleep(30)
-	while True:
-		try:
-			getAllRAP()
-			task.touch()
-			time.sleep(laps.total_seconds())
-		except:
-			OperationalError(date=timezone.localtime(timezone.now()), source='snmpRAPDaemon', error='Lap failed').save()
-			time.sleep(10*laps.total_seconds())
-
-
-def snmpRAPDaemon(laps=timedelta(hours=2)):
-	''' Background task gathering information on Rogue Access Point 
-
-		Argument:
-		laps -- duration between update. Instance of timedelta
-	'''
-	task, _ = CurrentTask.objects.get_or_create(name="rapdaemon")
-	task.touch()
-	time.sleep(300)
-	while True:
-		try:
-			getAllMS()
-			task.touch()
-			time.sleep(laps.total_seconds())
-		except:
-			OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon', error='Lap failed').save()
-			time.sleep(10*laps.total_seconds())
-
-
 ###### Auxiliary Methods #######
 def parseMacAdresse(macString):
 	''' Parse a mac address in hexadecimal or byte into canonical form '''
@@ -557,11 +500,11 @@ def parseMacAdresse(macString):
 	if result.startswith('0x'):
 		result = result[2:]
 
-	elif result.startswith("b'"):
+	elif result.startswith("b'") or result.startswith('b"'):
 		tmp = ""
 		for c in result[2:-1]:
-			tmp += hex(ord(c))[2:]
-		result = tmp
+			tmp += "{:02x}:".format(ord(c))
+		result = tmp[-1]
 
 	else:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmp macAddress parsing', error=macString).save()

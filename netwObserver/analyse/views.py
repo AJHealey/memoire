@@ -20,6 +20,8 @@ def controller(request):
 	context["cat"] = 'controller'
 	context['app'] = 'analysis'
 
+	context['byCategory'] = aggregator.getWismLogsByCategory()
+
 	return render(request, "analyse/controller.html", context)
 
 
@@ -70,13 +72,16 @@ def dhcp(request):
 	context['app'] = 'analysis'
 	context['cat'] = 'dhcp'
 
-	return render(request, "analyse/dhcp.html", context)
+	context['byType'] = aggregator.getDhcpLogByType()
 
+	return render(request, "analyse/dhcp.html", context)
 
 
 def radius(request):
 	context= {}
 	context['app'] = 'analysis'
 	context['cat'] = 'radius'
+
+	context['successRate'] = aggregator.getRadiusSuccessRate()
 
 	return render(request, "analyse/radius.html", context)

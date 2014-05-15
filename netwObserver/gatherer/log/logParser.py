@@ -18,6 +18,7 @@ def wismParser(infos):
 
 	# Remove the colon in the time to be compatible with the strptime method
 	infos[0] = infos[0][:(infos[0].rfind(":"))] + infos[0][(infos[0].rfind(":"))+1:]
+	
 	date = datetime.strptime(infos[0], "%Y-%m-%dT%H:%M:%S.%f%z")
 	
 	ipWism = infos[1]
