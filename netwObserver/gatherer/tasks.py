@@ -14,7 +14,7 @@ def snmpAPDaemon():
 	''' Background task gathering information on Access Point '''
 	apLock.acquire()
 	try:
-		task = CurrentTask.objects.get_or_create(name="snmpAPDaemon")
+		task, _ = CurrentTask.objects.get_or_create(name="snmpAPDaemon")
 		if task.lastTouched() < (timezone.localtime(timezone.now()) - timedelta(minutes=10)):
 			getter.getAllAP()
 			task.touch()
@@ -37,7 +37,7 @@ def snmpMSDaemon():
 	'''
 	msLock.acquire()
 	try:
-		task = CurrentTask.objects.get_or_create(name="snmpMSDaemon")
+		task, _ = CurrentTask.objects.get_or_create(name="snmpMSDaemon")
 		if task.lastTouched() < (timezone.localtime(timezone.now()) - timedelta(minutes=10)):
 			getter.getAllMS()
 			task.touch()
@@ -58,7 +58,7 @@ def snmpRAPDaemon():
 	'''
 	rapLock.acquire()
 	try:
-		task = CurrentTask.objects.get_or_create(name="snmpRAPDaemon")
+		task, _ = CurrentTask.objects.get_or_create(name="snmpRAPDaemon")
 		if task.lastTouched() < (timezone.localtime(timezone.now()) - timedelta(minutes=10)):
 			getter.getAllRAP()
 			task.touch()
