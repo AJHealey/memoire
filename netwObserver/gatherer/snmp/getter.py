@@ -503,8 +503,8 @@ def parseMacAdresse(macString):
 	elif result.startswith("b'"):
 		tmp = ""
 		for c in result[2:-1]:
-			tmp += hex(ord(c))[2:]
-		result = tmp
+			tmp += "{:02x}:".format(ord(c))
+		result = tmp[-1]
 
 	else:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmp macAddress parsing', error=macString).save()

@@ -194,6 +194,7 @@ class CurrentTask(models.Model):
  	
 	def touch(self):
 		self.lastTouched = timezone.localtime(timezone.now())
+		self.save()
 
 	def stillActive(self):
 		return (timezone.localtime(timezone.now()) - self.lastTouched) < timedelta(minutes=10)
