@@ -36,8 +36,10 @@ def handler(clientsocket):
 	clientsocket.send(b'1')
 
 	data = clientsocket.recv(min(dataSize,1024))
+	print("%s" % data.decode())
+
 	while len(data) < dataSize :
-		data += clientsocket.recv(dataSize-len(data))
+		data += clientsocket.recv(1024)
 
 	clientsocket.close()
 	print("%s" % data.decode())
