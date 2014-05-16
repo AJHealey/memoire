@@ -8,6 +8,8 @@ from gatherer.models import CurrentTask
 from threading import Lock
 from datetime import datetime, timedelta
 
+SNMP_REQUEST_MIN_INTERVAL = timedelta(minutes=10)
+
 apLock = Lock()
 @shared_task
 def snmpAPDaemon():
@@ -15,13 +17,13 @@ def snmpAPDaemon():
 	apLock.acquire()
 	try:
 		task, created = CurrentTask.objects.get_or_create(name="snmpAPDaemon")
-		if created or task.lastTouched < (timezone.localtime(timezone.now()) - timedelta(minutes=10)):
+		if created or task.lastTouched < (timezone.now() - SNMP_REQUEST_MIN_INTERVAL):
 			getter.getAllAP()
 			task.touch()
 	except IntegrityError:
 		pass
 	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon', error='%s' % e).save()
+		OperationalError(source='snmpAPDaemon', error='%s' % e).save()
 	finally:
 		apLock.release()
 
@@ -38,13 +40,13 @@ def snmpMSDaemon():
 	msLock.acquire()
 	try:
 		task, created = CurrentTask.objects.get_or_create(name="snmpMSDaemon")
-		if created or task.lastTouched < (timezone.localtime(timezone.now()) - timedelta(minutes=10)):
+		if created or task.lastTouched < (timezone.now() - SNMP_REQUEST_MIN_INTERVAL):
 			getter.getAllMS()
 			task.touch()
 	except IntegrityError:
 		pass
 	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon', error='%s' % e).save()
+		OperationalError(source='snmpMSDaemon', error='%s' % e).save()
 	finally:
 		msLock.release()
 
@@ -59,13 +61,13 @@ def snmpRAPDaemon():
 	rapLock.acquire()
 	try:
 		task, created = CurrentTask.objects.get_or_create(name="snmpRAPDaemon")
-		if created or task.lastTouched < (timezone.localtime(timezone.now()) - timedelta(minutes=10)):
+		if created or task.lastTouched < (timezone.now() - SNMP_REQUEST_MIN_INTERVAL):
 			getter.getAllRAP()
 			task.touch()
 	except IntegrityError:
 		pass
 	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpRAPDaemon', error='%s' % e).save()
+		OperationalError(source='snmpRAPDaemon', error='%s' % e).save()
 	finally:
 		rapLock.release()
 
