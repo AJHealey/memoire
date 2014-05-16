@@ -11,11 +11,11 @@ class Device(models.Model):
 	# primary key => not inherited
 	macAddress = macField.MACAddressField(unique=True)
 	ip = models.GenericIPAddressField(null=True)
-	lastTouched = models.DateTimeField(null=True, default=lambda:(timezone.localtime(timezone.now())) )
+	lastTouched = models.DateTimeField(null=True, default=lambda:(timezone.now()) )
 	index = models.CharField(max_length=20, null=True) 
 
 	def touch(self):
-		self.lastTouched = timezone.localtime(timezone.now())
+		self.lastTouched = timezone.now()
 		self.save()
 
 	class Meta:
@@ -26,7 +26,7 @@ class Device(models.Model):
 ## Access Point Model
 class APManage(models.Manager):
 	def isUp(self):
-		return super(APManage, self).filter(lastTouched__gte=(timezone.localtime(timezone.now()) - settings.SNMPAPLAP))
+		return super(APManage, self).filter(lastTouched__gte=(timezone.now() - settings.SNMPAPLAP))
 
 class AccessPoint(Device):
 	ETHERNETLINKTYPE = ((10,'10 Mbps'),(100,'100 Mbps'),(1000,'1 Gbps'))
@@ -43,7 +43,7 @@ class AccessPoint(Device):
 		return str(self.name) + " : " + str(self.macAddress) + ' (' + str(self.ip) + ')'
 	
 	def isUp(self):
-		return lastTouched > (timezone.localtime(timezone.now()) - settings.SNMPAPLAP)
+		return lastTouched > (timezone.now() - settings.SNMPAPLAP)
 
 	def nbrOfClients(self):
 		result = 0
@@ -70,7 +70,7 @@ class APInterface(models.Model):
 ## Rogue Access Point Model
 class RAPManage(models.Manager):
 	def isUp(self):
-		return super(APManage, self).filter(lastTouched__gte=(timezone.localtime(timezone.now()) - settings.SNMPAPLAP))
+		return super(APManage, self).filter(lastTouched__gte=(timezone.now() - settings.SNMPAPLAP))
 
 class RogueAccessPoint(Device):
 
@@ -83,13 +83,13 @@ class RogueAccessPoint(Device):
 		return str(self.name) + " : " + str(self.macAddress) + ' (' + str(self.ip) + ')'
 	
 	def isUp(self):
-		return lastTouched > (timezone.localtime(timezone.now()) - settings.SNMPRAPLAP)
+		return lastTouched > (timezone.now()- settings.SNMPRAPLAP)
 
 
 ## Mobile stations Model
 class MSManage(models.Manager):
 	def isAssociated(self):
-			return super(MSManage, self).filter(lastTouched__gte=(timezone.localtime(timezone.now()) - settings.SNMPMSLAP))
+			return super(MSManage, self).filter(lastTouched__gte=(timezone.now() - settings.SNMPMSLAP))
 
 class MobileStation(Device):
 	DOT11_PROTOCOLS = (('1',"802.11a"),('2',"802.11b"),('3',"802.11g"),('6',"802.11n (2.4Ghz)"),('7',"802.11n (5Ghz)"),('4',"Unknown"),('5',"Mobile"))
@@ -105,7 +105,7 @@ class MobileStation(Device):
 ## SNMP Snapshot
 class APSnapshot(models.Model):
 	ap = models.ForeignKey(AccessPoint)
-	date = models.DateTimeField(default=lambda:(timezone.localtime(timezone.now())))
+	date = models.DateTimeField(default=lambda:(timezone.now()))
 
 	ethernetRxTotalBytes = models.DecimalField(max_digits=10, decimal_places=0, default=0)
 	ethernetTxTotalBytes = models.DecimalField(max_digits=10, decimal_places=0, default=0)
@@ -176,6 +176,9 @@ class WismEvent(models.Model):
 		unique_together = (('date', 'microsecond', 'wismIp'),)
 
 
+#class ProbeEvent(models.Model):
+
+
 
 
 ## Error Parsing
@@ -190,24 +193,20 @@ class BadLog(models.Model):
 ################## Auxiliary Models #######################
 ## Tasks model
 class CurrentTask(models.Model):
-	lastTouched = models.DateTimeField(default=lambda:(timezone.localtime(timezone.now())))
+	lastTouched = models.DateTimeField(default=lambda:(timezone.now()))
 	name = models.CharField(max_length=25, primary_key=True)
-	status = models.CharField(max_length=10)
  	
 	def touch(self):
-		self.lastTouched = timezone.localtime(timezone.now())
+		self.lastTouched = timezone.now()
 		self.save()
 
-	def stillActive(self):
-		return (timezone.localtime(timezone.now()) - self.lastTouched) < timedelta(minutes=10)
-
 	def __str__(self):
-		return self.name + ": " + ( "active" if self.stillActive() else "inactive") + ' - ' + self.status
+		return self.name
 
 ## Operational Errors Model
 class OperationalError(models.Model):
-	date = models.DateTimeField()
-	source = models.CharField(max_length=25)
+	date = models.DateTimeField(default=lambda:(timezone.now()))
+	source = models.CharField(max_length=100)
 	error = models.CharField(max_length=250)
 
 	def __str__(self):
