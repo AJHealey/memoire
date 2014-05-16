@@ -17,6 +17,7 @@ struct wpa_ctrl *ctrl;
 struct timeb wpa_start, wpa_end, dhcp_start, dhcp_end, wpa_time, dhcp_time;
 struct tm tm;
 time_t now;
+int start_loop = 0;
 int dhcp = 0;
 FILE *f;
 
@@ -36,8 +37,16 @@ struct ap_tried *curr = NULL;
 
 /* All possible events used to write the logs */
 enum log_events {
-	LOG_START,
-	LOG_STOP,
+	LOG_START_LOG,
+	LOG_STOP_LOG,
+	LOG_START_LOOP,
+	LOG_STOP_LOOP,
+	LOG_START_SCAN,
+	LOG_STOP_SCAN,
+	LOG_START_CONNECTION,
+	LOG_STOP_CONNECTION,
+	LOG_START_INFO,
+	LOG_STOP_INFO,
 	LOG_SSID,
 	LOG_TRIED,
 	LOG_CONNECTED,
@@ -65,6 +74,7 @@ enum wpa_action {
 	ACTION_CONNECT_PRIVE,
 	ACTION_DISCONNECT,
 	ACTION_CREATE_NETWORKS,
+	ACTION_SCAN,
 };
 
 /* Prototypes */
@@ -74,11 +84,11 @@ static void execute_action(enum wpa_action action, const char *ssid);
 static void commands(char *cmd);
 static void create_networks();
 static void config_network(int network, char *ssid, char *key_mgmt, char *eap, char *pairwise, char *identity, char *password, char *ca_cert, char *phase1, char *phase2);
-static void connect_student();
 static void connect_eduroam();
 static void connect_uclouvain();
 static void connect_visiteurs();
 static void connect_prive();
+static void connect_student();
 static int checkService(char *host, const char *port);
 void *wpa_loop(void *p_data);
 void *connection_loop(void *p_data);
