@@ -1,12 +1,38 @@
 
 import codecs
 import re
+import json
 from datetime import *
 
 from os.path import splitext
-
-from gatherer.models import RadiusEvent, DHCPEvent, WismEvent, BadLog
+from django.utils import timezone
+from gatherer.models import RadiusEvent, DHCPEvent, WismEvent, BadLog, ProbeLog
 from django.db import IntegrityError
+
+
+def probeParser(path, probe, date=timezone.now()):
+	try:
+		log = json.load(path)
+		mac = log["macAddress"]
+		try: 
+			probe, created = MobileStation.objects.get_or_create(macAddress=mac)
+		except IntegrityError:
+			# Handle possible race condition (get_or_create not thread safe)
+			probe = MobileStation.objects.get(macAddress=mac)
+
+		result = ProbeLog(date=date, probe=probe)
+		for test in log["test"]:
+			# Parse Scan result
+			for scan in test["scan"]:
+				connections = log["connections"]
+
+			# Parse Connection result
+
+
+
+	except Exception:
+		raise Exception("Can't parse %s" % path)
+
 
 
 def wismParser(infos):

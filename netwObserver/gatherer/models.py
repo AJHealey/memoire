@@ -175,10 +175,33 @@ class WismEvent(models.Model):
 	class Meta:
 		unique_together = (('date', 'microsecond', 'wismIp'),)
 
+## Models of the probe log
+class ProbeLog(models.Model):
+	date = models.DateTimeField(default=lambda:(timezone.now()))
+	probe = models.ForeignKey(MobileStation)
 
-#class ProbeEvent(models.Model):
 
+class ProbeScanResult(models.Model):
+	log = models.ForeignKey(ProbeLog)
+	ap = models.ForeignKey(AccessPoint)
+	signalStrength = models.DecimalField(max_digits=3,decimal_places=0)
 
+class ProbeConnectionResult(models.Model):
+	date = models.DateTimeField()
+	ssid = models.CharField(max_length=50)
+
+	apTried = models.ManyToManyField(AccessPoint)
+	connected = models.ForeignKey(AccessPoint)
+	authenticationTime = models.DecimalField(max_digits=5,decimal_places=0)
+	dhcpTime = models.DecimalField(max_digits=5,decimal_places=0)
+
+class ServiceCheck(models.Model):
+	result = models.ForeignKey(ProbeConnectionResult)
+	smtpGmail = models.BooleanField()
+	github = models.BooleanField()
+	sslGihub = models.BooleanField()
+	uclouvain = models.BooleanField()
+	icampus = models.BooleanField()
 
 
 ## Error Parsing

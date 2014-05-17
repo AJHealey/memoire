@@ -4,6 +4,8 @@ from gatherer.models import OperationalError
 from django.db import IntegrityError
 from gatherer.snmp import getter
 from celery import shared_task
+from celery.signals import celeryd_init
+
 from gatherer.models import CurrentTask
 from threading import Lock
 from datetime import datetime, timedelta
@@ -71,4 +73,8 @@ def snmpRAPDaemon():
 	finally:
 		rapLock.release()
 
+"""
+@celeryd_init.connect(sender='responder@maltesse.info.ucl.ac.be')
+def startResponder(conf=None, **kwargs):
+"""
 
