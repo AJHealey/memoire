@@ -10,56 +10,96 @@
 static void log_event(enum log_events log, const char *arg) {
 
 	switch(log) {
+		case LOG_START_FILE:
+			fprintf(f, "{\n");
+			break;
+
+		case LOG_STOP_FILE:
+			fprintf(f, "}");
+			break;
+
 		case LOG_START_LOG:
-			fprintf(f, "[\n");
+			fprintf(f, "\"log\":[\n");
 			break;
 
 		case LOG_STOP_LOG:
-			fprintf(f, "]");
+			fprintf(f, "]\n");
+			break;
 
 		case LOG_START_LOOP:
 			fprintf(f, "{\n");
 			break;
-		
+
 		case LOG_STOP_LOOP:
 			fprintf(f, "},\n");
 			break;
-			
+
+		case LOG_FINAL_STOP_LOOP:
+			fprintf(f, "}\n");
+			break;
+
 		case LOG_START_SCAN:
-			fprintf(f, "\"scan\": [\n");
+			fprintf(f, "\"scan\":[\n");
 			fprintf(f, "{\n");
 			break;
 
 		case LOG_STOP_SCAN:
-			fprintf(f, "},\n");
+			fprintf(f, "}\n");
 			fprintf(f, "],\n");
 			break;
 
 		case LOG_START_CONNECTION:
-			fprintf(f, "\"connections\": [\n");
+			fprintf(f, "\"connections\":[\n");
 			break;
 
 		case LOG_STOP_CONNECTION:
-			fprintf(f, "],\n");
+			fprintf(f, "]\n");
+			break;
+		
+		
+		case LOG_START_CONNECTION_LOOP:
+			fprintf(f, "{\n");
+			break;
+		
+		case LOG_STOP_CONNECTION_LOOP:
+			fprintf(f, "},\n");
 			break;
 
-		case LOG_START_INFO:
-			fprintf(f, "{\n");
+		case LOG_FINAL_STOP_CONNECTION_LOOP:
+			fprintf(f, "}\n");
+			break;
+
+
+		case LOG_MAC_ADDR:
+			fprintf(f, "\"mac\": \"%s\",\n", arg);
+			break;
+
+		case LOG_SCAN_BSSID:
+			fprintf(f, "\"bssid\": \"12:12:12:12:12:12\",\n");
+			break;
+
+		case LOG_SCAN_STRENGTH:
+			fprintf(f, "\"strength\": 1,\n");
+			break;
+
+		case LOG_SCAN_SSID:
+			//TODO comme tried
+			fprintf(f, "\"ssid\": \"blabla\"\n");
+			break;
+
+		case LOG_INFO_DATE:
 			now = time(NULL);
 			tm = *localtime(&now);
 			fprintf(f, "\"date\": \"%d/%d/%d %d:%d:%d\",\n", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 			break;
-
-		case LOG_STOP_INFO:
-			fprintf(f, "},\n\n");
-			break;
-
-
-		case LOG_SSID:
+			
+		
+		case LOG_INFO_SSID:
 			fprintf(f, "\"ssid\": \"%s\",\n", arg);
 			break;
 
-		case LOG_TRIED: {
+
+		case LOG_INFO_TRIED: {
 			struct ap_tried *ptr = first;
 			fprintf(f, "\"tried\": [ ");
 			/* Display all the BSSID tried */
@@ -78,66 +118,60 @@ static void log_event(enum log_events log, const char *arg) {
 			}
 			break;
 
-		case LOG_CONNECTED:
+		case LOG_INFO_CONNECTED:
 			fprintf(f, "\"connected\": \"%s\",\n", arg);
+			break;
+		
+		case LOG_INFO_TIME_START:
 			fprintf(f, "\"time\": {\n");
 			break;
 
-		case LOG_WPA_TIME:
+		case LOG_INFO_TIME_WPA:
 			fprintf(f, "\"wpa_supplicant\": \"%ldsec %.3ums\",\n", wpa_time.time, wpa_time.millitm);
 			break;
 
-		case LOG_DHCP_TIME:
+		case LOG_INFO_TIME_DHCP:
 			fprintf(f, "\"dhcp\": \"%ldsec %.3ums\"\n", dhcp_time.time, dhcp_time.millitm);
+			break;
+		
+		case LOG_INFO_TIME_STOP:
 			fprintf(f, "},\n");
 			break;
 
-		case LOG_PING_START:
+		case LOG_INFO_SERVICE_START:
 			fprintf(f, "\"services\": {\n");
 			break;
 
-		case LOG_PING_GOOGLE:
+		case LOG_INFO_SERVICE_GOOGLE:
 			fprintf(f, "\"google.be\": \"%s\",\n", arg);
 			break;
-
-		case LOG_PING_GMAIL:
+		
+		case LOG_INFO_SERVICE_GMAIL:
 			fprintf(f, "\"smtp.gmail.com\": \"%s\",\n", arg);
 			break;
-
-		case LOG_PING_GITHUB:
+	
+		case LOG_INFO_SERVICE_GITHUB:
 			fprintf(f, "\"github.com\": \"%s\",\n", arg);
 			break;
 
-		case LOG_PING_GITHUBSSL:
+		case LOG_INFO_SERVICE_GITHUB_SSL:
 			fprintf(f, "\"ssl.github.com\": \"%s\",\n", arg);
 			break;
 
-		case LOG_PING_ADE:
+		case LOG_INFO_SERVICE_ADE:
 			fprintf(f, "\"horaire.sgsi.ucl.ac.be\": \"%s\",\n", arg);
 			break;
-
-		case LOG_PING_UCLOUVAIN:
+		
+		case LOG_INFO_SERVICE_UCLOUVAIN:
 			fprintf(f, "\"uclouvain.be\": \"%s\",\n", arg);
 			break;
 
-		case LOG_PING_ICAMPUS:
-			fprintf(f, "\"icampus.uclouvain.be\": \"%s\",\n", arg);
+		case LOG_INFO_SERVICE_ICAMPUS:
+			fprintf(f, "\"icampus.uclouvain.be\": \"%s\"\n", arg);
 			break;
-
-		case LOG_PING_STOP:
+		
+		case LOG_INFO_SERVICE_STOP:
 			fprintf(f, "}\n");
-			break;
-
-		case LOG_FAILED:
-			/*now = time(NULL);
-			tm = *localtime(&now);
-			fprintf(f, "[ERROR] [%d/%d/%d %d:%d:%d] Interface connection failed\n", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);*/
-			break;
-
-		case LOG_ERROR:
-			now = time(NULL);
-			tm = *localtime(&now);
-			fprintf(f, "[ERROR] [%d/%d/%d %d:%d:%d] Error: %s\n", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, arg);
 			break;
 	}
 }
@@ -166,8 +200,9 @@ static void parse_event(const char *reply) {
 		char bssid[18];
 		memset(bssid, 0, 18);
 		memcpy(bssid, &event[37], 17);
-		log_event(LOG_CONNECTED, bssid);
-		log_event(LOG_WPA_TIME, NULL);
+		log_event(LOG_INFO_CONNECTED, bssid);
+		log_event(LOG_INFO_TIME_START, NULL);
+		log_event(LOG_INFO_TIME_WPA, NULL);
 
 		/*Start udhcpc for IP address*/
 		system("killall udhcpc");
@@ -175,7 +210,8 @@ static void parse_event(const char *reply) {
 		system("udhcpc -t 0 -i wlan0 -C");
 		ftime(&dhcp_end);
 		timeDiff(dhcp_start, dhcp_end, &dhcp_time);
-		log_event(LOG_DHCP_TIME,NULL);
+		log_event(LOG_INFO_TIME_DHCP,NULL);
+		log_event(LOG_INFO_TIME_STOP, NULL);
 		dhcp = 1;
 	}
 	
@@ -220,8 +256,8 @@ static void parse_event(const char *reply) {
 		memset(bssid, 0, 18);
 		memcpy(bssid, &event[16], 17);
 		
-		log_event(LOG_SSID, ssid_log);
-		log_event(LOG_TRIED, NULL);
+		log_event(LOG_INFO_SSID, ssid_log);
+		log_event(LOG_INFO_TRIED, NULL);
 		
 		/* Free AP Tried linked List */
 		struct ap_tried *current = first;
@@ -238,7 +274,7 @@ static void parse_event(const char *reply) {
 /*
  * Execute the function w.r.t the special action received
  */
-static void execute_action(enum wpa_action action, const char * ssid) {
+static void execute_action(enum wpa_action action) {
 	switch(action) {
 		case ACTION_CONNECT_STUDENT:
 			connect_student();
@@ -255,8 +291,10 @@ static void execute_action(enum wpa_action action, const char * ssid) {
 		case ACTION_CONNECT_PRIVE:
 			connect_prive();
 			break;
+		case ACTION_CONNECT_MAISON:
+			connect_maison();
+			break;
 		case ACTION_DISCONNECT:
-			log_event(LOG_STOP_INFO, NULL);
 			commands("DISCONNECT");
 			commands("DISABLE_NETWORK 0");
 			commands("DISABLE_NETWORK 1");
@@ -285,7 +323,6 @@ static void commands(char *cmd)
 	int ret;
 	
 	if(ctrl == NULL) {
-		log_event(LOG_ERROR, "Interface not connected to wpa_supplicant");
 		exit(-1);
 	}
 	ret = wpa_ctrl_request(ctrl, cmd, os_strlen(cmd), reply, &len, NULL);
@@ -302,34 +339,38 @@ static void commands(char *cmd)
 
 /*
  * Create the configuration for all the networks
- * ID=1: eduroam
- * ID=2: UCLouvain
- * ID=3: visiteurs.UCLouvain
- * ID=4: UCLouvain-prive
- * ID=5: student.UCLouvain
+ * ID=0: eduroam
+ * ID=1: UCLouvain
+ * ID=2: visiteurs.UCLouvain
+ * ID=3: UCLouvain-prive
+ * ID=4: student.UCLouvain
+ * ID=5: Maison
  */
 static void create_networks() {
 	int i;
-	for(i = 0; i <= 4; i++) {
+	for(i = 0; i <= 5; i++) {
 		commands("ADD_NETWORK");
 	}
-	config_network(0, "eduroam", "WPA-EAP", "PEAP", "CCMP", "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", "peaplabel=0", "auth=MSCHAPV2");
+	config_network(0, "eduroam", "WPA-EAP", "PEAP", "CCMP", "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", "peaplabel=0", "auth=MSCHAPV2", NULL);
 
-	config_network(1, "UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP");
+	config_network(1, "UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP", NULL);
 	
-	config_network(2, "visiteurs.UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP");
+	config_network(2, "visiteurs.UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP", NULL);
 
-	config_network(3, "UCLouvain-prive", "NONE", NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+	config_network(3, "UCLouvain-prive", "NONE", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
-	config_network(4, "student.UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP");
+	config_network(4, "student.UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP", NULL);
+
+	config_network(5, "bbox2-f4ba", "WPA-PSK", NULL, NULL, NULL, NULL, NULL, NULL, NULL, "32A273F5A2");
 }
 
 
 /*
-* Configure the newly created networks
-*/
- void config_network(int network, char *ssid, char *key_mgmt, char *eap, char *pairwise, char *identity, char *password, char *ca_cert, char *phase1, char *phase2) {
-	char cmd[1024];
+ * Configure the newly created networks
+ * TODO Remove psk
+ */
+ void config_network(int network, char *ssid, char *key_mgmt, char *eap, char *pairwise, char *identity, char *password, char *ca_cert, char *phase1, char *phase2, char *psk) {
+	char cmd[512];
 
 	os_snprintf(cmd, sizeof(cmd), "SET_NETWORK %d ssid \"%s\"", network,ssid);
 	commands(cmd);
@@ -373,6 +414,10 @@ static void create_networks() {
 		os_snprintf(cmd, sizeof(cmd), "SET_NETWORK %d phase2 \"%s\"",network, phase2);
 		commands(cmd);
 	}
+	if(psk != NULL) {
+		os_snprintf(cmd, sizeof(cmd), "SET_NETWORK %d psk \"%s\"", network, psk);
+		commands(cmd);
+	}
 }
 
 
@@ -380,7 +425,7 @@ static void create_networks() {
  * Connects wpa_supplicant to the eduroam network
  */
 static void connect_eduroam() {
-	log_event(LOG_START_INFO, NULL);
+	log_event(LOG_INFO_DATE, NULL);
 	ftime(&wpa_start);
 	commands("SELECT_NETWORK 0");
 	while(dhcp != 1) {
@@ -392,7 +437,7 @@ static void connect_eduroam() {
  * Connects wpa_supplicant to the UCLouvain network
  */
 static void connect_uclouvain() {
-	log_event(LOG_START_INFO, NULL);
+	log_event(LOG_INFO_DATE, NULL);
 	ftime(&wpa_start);
 	commands("SELECT_NETWORK 1");
 	while(dhcp != 1) {
@@ -404,7 +449,7 @@ static void connect_uclouvain() {
  * Connects wpa_supplicant to the visiteurs.UCLouvain network
  */
 static void connect_visiteurs() {
-	log_event(LOG_START_INFO, NULL);
+	log_event(LOG_INFO_DATE, NULL);
 	ftime(&wpa_start);
 	commands("SELECT_NETWORK 2");
 	while(dhcp != 1) {
@@ -416,7 +461,7 @@ static void connect_visiteurs() {
  * Connects wpa_supplicant to the UCLouvain-prive network
  */
 static void connect_prive() {
-	log_event(LOG_START_INFO, NULL);
+	log_event(LOG_INFO_DATE, NULL);
 	ftime(&wpa_start);
 	commands("SELECT_NETWORK 3");
 	while(dhcp != 1) {
@@ -428,9 +473,21 @@ static void connect_prive() {
  * Connects wpa_supplicant to the student.UCLouvain network
  */
 static void connect_student() {
-	log_event(LOG_START_INFO, NULL);
+	log_event(LOG_INFO_DATE, NULL);
 	ftime(&wpa_start);
 	commands("SELECT_NETWORK 4");
+	while(dhcp != 1) {
+		sleep(1);
+	}
+}
+
+/*
+ * Connects wpa_supplicant to the student.UCLouvain network
+ */
+static void connect_maison() {
+	log_event(LOG_INFO_DATE, NULL);
+	ftime(&wpa_start);
+	commands("SELECT_NETWORK 5");
 	while(dhcp != 1) {
 		sleep(1);
 	}
@@ -488,28 +545,29 @@ void *wpa_loop(void *p_data) {
 	fd_set ctrl_fds;
 	struct timeval timeout;
 
-	system("wpa_supplicant -B -D nl80211 -i wlan0 -c /etc/wpa_supplicant/conf.conf");
+	system("wpa_supplicant -B -D nl80211 -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf");
 
 	
 	ctrl = wpa_ctrl_open(DEFAULT_CTRL_IFACE);
 	if(ctrl == NULL) {
-		log_event(LOG_ERROR, "Unable to open wpa_supplicant control interface");
+		debug_print("Unable to open wpa_supplicant control interface\n");
 		exit(-1);
 	}
 	err = wpa_ctrl_attach(ctrl);
 	if(err == -1) {
 		wpa_ctrl_close(ctrl);
-		log_event(LOG_ERROR, "wpa_ctrl_attach error");
+		debug_print("wpa_ctrl_attach error\n");
 		exit(-1);
 	}
 	if(err == -2) {
 		wpa_ctrl_close(ctrl);
-		log_event(LOG_ERROR, "wpa_ctrl_attach timeout");
+		debug_print("wpa_ctrl_attach timeout\n");
 		exit(-1);
 	}
 	/* Creation of the list of networks */
-	execute_action(ACTION_CREATE_NETWORKS, NULL);
+	execute_action(ACTION_CREATE_NETWORKS);
 	start_loop = 1;
+
 	//Loop for incoming events from wpa_supplicant
 	while(1) {
 		FD_ZERO(&ctrl_fds);
@@ -521,14 +579,14 @@ void *wpa_loop(void *p_data) {
 		r = select(ctrl_fd+1, &ctrl_fds, NULL, &ctrl_fds, &timeout);
 		switch(r) {
 			case -1:
-				log_event(LOG_ERROR, "Error during select()\n");
+				debug_print("Error during select()\n");
 				break;
 			case 0:
 				if(wpa_ctrl_request(ctrl, "PING", strlen("PING"), reply, &reply_len, NULL))
 					reply_len = 0;
 				reply[reply_len] = '\0';
 				if(!match(reply, "PONG", strlen("PONG"))) {
-					log_event(LOG_ERROR, "wpa_supplicant not responding\n");
+					debug_print("wpa_supplicant not responding\n");
 				}
 				break;
 			default: //event from wpa_supplicant received
@@ -549,116 +607,170 @@ void *wpa_loop(void *p_data) {
  * Loop to check availability
  */
 void services_loop() {
-	log_event(LOG_PING_START, NULL);
+	log_event(LOG_INFO_SERVICE_START, NULL);
 	if(checkService("google.be", "443") == 1)
-		log_event(LOG_PING_GOOGLE, "1");
+		log_event(LOG_INFO_SERVICE_GOOGLE, "1");
 	else
-		log_event(LOG_PING_GOOGLE, "0");
+		log_event(LOG_INFO_SERVICE_GOOGLE, "0");
 
 	if(checkService("smtp.gmail.com", "587") == 1)
-		log_event(LOG_PING_GMAIL, "1");
+		log_event(LOG_INFO_SERVICE_GMAIL, "1");
 	else
-		log_event(LOG_PING_GMAIL, "0");
+		log_event(LOG_INFO_SERVICE_GMAIL, "0");
 
 	if(checkService("github.com", "22") == 1)
-		log_event(LOG_PING_GITHUB, "1");
+		log_event(LOG_INFO_SERVICE_GITHUB, "1");
 	else
-		log_event(LOG_PING_GITHUB, "0");
+		log_event(LOG_INFO_SERVICE_GITHUB, "0");
 
 	if(checkService("ssl.github.com", "443") == 1)
-		log_event(LOG_PING_GITHUBSSL, "1");
+		log_event(LOG_INFO_SERVICE_GITHUB_SSL, "1");
 	else
-		log_event(LOG_PING_GITHUBSSL, "0");
+		log_event(LOG_INFO_SERVICE_GITHUB_SSL, "0");
 	
 	/*if(checkService("horaire.sgsi.ucl.ac", "8080") == 1)
-		log_event(LOG_PING_ADE, "available");
+		log_event(LOG_INFO_SERVICE_ADE, "available");
 	else
-		log_event(LOG_PING_ADE, "unavailable");*/
+		log_event(LOG_INFO_SERVICE_ADE, "unavailable");*/
 
 	if(checkService("uclouvain.be", "443") == 1)
-		log_event(LOG_PING_UCLOUVAIN, "1");
+		log_event(LOG_INFO_SERVICE_UCLOUVAIN, "1");
 	else
-		log_event(LOG_PING_UCLOUVAIN, "0");
+		log_event(LOG_INFO_SERVICE_UCLOUVAIN, "0");
 
 	if(checkService("icampus.uclouvain.be", "443") == 1)
-		log_event(LOG_PING_ICAMPUS, "1");
+		log_event(LOG_INFO_SERVICE_ICAMPUS, "1");
 	else
-		log_event(LOG_PING_ICAMPUS, "0");
+		log_event(LOG_INFO_SERVICE_ICAMPUS, "0");
 
-	log_event(LOG_PING_STOP, NULL);	
+	log_event(LOG_INFO_SERVICE_STOP, NULL);	
 }
 
 void send_log() {
 	if(sendLogs("var/log/logs.txt") < 0)
-		debug_print("ERROR\n");
+		debug_print("Error sending log file\n");
 }
 
 void *connection_loop(void * p_data) {
 	int close = 0;
 
+	log_event(LOG_START_FILE, NULL);
+	log_event(LOG_INFO_DATE, NULL);
+	log_event(LOG_MAC_ADDR, router_mac);
 	log_event(LOG_START_LOG, NULL);
+	
+
 	while(1) {
+		
 		log_event(LOG_START_LOOP, NULL);
 		log_event(LOG_START_SCAN, NULL);
+		log_event(LOG_SCAN_BSSID, NULL);
+		log_event(LOG_SCAN_STRENGTH, NULL);
+		log_event(LOG_SCAN_SSID, NULL);
 		log_event(LOG_STOP_SCAN, NULL);
 		log_event(LOG_START_CONNECTION, NULL);
-
+		
 		//student.UCLouvain
-		execute_action(ACTION_CONNECT_STUDENT,"student.UCLouvain");
+		/*debug_print("Connect to student.UCLouvain\n");
+		log_event(LOG_START_CONNECTION_LOOP, NULL);
+		execute_action(ACTION_CONNECT_STUDENT);
 		services_loop();
 		sleep(DELAY);
 		debug_print("Disconnection from student\n");
-		execute_action(ACTION_DISCONNECT, "student.UCLouvain");
+		execute_action(ACTION_DISCONNECT);
+		log_event(LOG_STOP_CONNECTION_LOOP, NULL);
 		sleep(DELAY);
 
 		//eduroam
 		debug_print("Connect to eduroam\n");
-		execute_action(ACTION_CONNECT_EDUROAM, NULL);
+		log_event(LOG_START_CONNECTION_LOOP, NULL);
+		execute_action(ACTION_CONNECT_EDUROAM);
 		services_loop();
 		sleep(DELAY);
 		debug_print("Disconnection from eduroam\n");
-		execute_action(ACTION_DISCONNECT, "eduroam");
+		execute_action(ACTION_DISCONNECT);
+		log_event(LOG_STOP_CONNECTION_LOOP, NULL);
 		sleep(DELAY);
 
 		//UCLouvain
 		debug_print("Connect to UCLouvain\n");
-		execute_action(ACTION_CONNECT_UCLOUVAIN, NULL);
+		log_event(LOG_START_CONNECTION_LOOP, NULL);
+		execute_action(ACTION_CONNECT_UCLOUVAIN);
 		services_loop();
 		sleep(DELAY);
 		debug_print("Disconnection from UCLouvain\n");
-		execute_action(ACTION_DISCONNECT, "UCLouvain");
+		execute_action(ACTION_DISCONNECT);
+		log_event(LOG_STOP_CONNECTION_LOOP, NULL);
 		sleep(DELAY);
 
 		//visiteurs.UCLouvain
 		debug_print("Connect to visiteurs.UCLouvain\n");
+		log_event(LOG_START_CONNECTION_LOOP);
 		execute_action(ACTION_CONNECT_VISITEURS, NULL);
 		services_loop();
 		sleep(DELAY);
 		debug_print("Disconnection from visiteurs.UCLouvain\n");
-		execute_action(ACTION_DISCONNECT, "visiteurs.UCLouvain");
+		execute_action(ACTION_DISCONNECT);
+		log_event(LOG_STOP_CONNECTION_LOOP, NULL);
 		sleep(DELAY);
 
 		//UCLouvain-prive
 		debug_print("Connect to UCLouvain-prive\n");
-		execute_action(ACTION_CONNECT_PRIVE, NULL);
+		log_event(LOG_START_CONNECTION_LOOP, NULL);
+		execute_action(ACTION_CONNECT_PRIVE);
 		sleep(DELAY);
 		debug_print("Disconnection from UCLouvain-prive\n");
-		execute_action(ACTION_DISCONNECT, "UCLouvain-prive");
+		execute_action(ACTION_DISCONNECT);
+		log_event(LOG_FINAL_STOP_CONNECTION_LOOP, NULL);
+		sleep(DELAY);*/
+		
+		debug_print("Connect to maison\n");
+		log_event(LOG_START_CONNECTION_LOOP, NULL);
+		execute_action(ACTION_CONNECT_MAISON);
+		sleep(DELAY);
+		debug_print("Disconnect from maison\n");
+		execute_action(ACTION_DISCONNECT);
+		log_event(LOG_STOP_CONNECTION_LOOP, NULL);
 		sleep(DELAY);
 
-
-		log_event(LOG_STOP_CONNECTION, NULL);		
-		log_event(LOG_STOP_LOOP, NULL);
 		
+		debug_print("Connect to maison\n");
+		log_event(LOG_START_CONNECTION_LOOP, NULL);
+		execute_action(ACTION_CONNECT_MAISON);
+		sleep(DELAY);
+		debug_print("Disconnect from maison\n");
+		execute_action(ACTION_DISCONNECT);
+		log_event(LOG_STOP_CONNECTION_LOOP, NULL);
+		sleep(DELAY);
+
+		
+		debug_print("Connect to maison\n");
+		log_event(LOG_START_CONNECTION_LOOP, NULL);
+		execute_action(ACTION_CONNECT_MAISON);
+		sleep(DELAY);
+		debug_print("Disconnect from maison\n");
+		execute_action(ACTION_DISCONNECT);
+		log_event(LOG_FINAL_STOP_CONNECTION_LOOP, NULL);
+		log_event(LOG_STOP_CONNECTION, NULL);
+		sleep(DELAY);
+				
+
 		if(close == 1) {
 			debug_print("SAVE\n");
+			log_event(LOG_FINAL_STOP_LOOP, NULL);
 			log_event(LOG_STOP_LOG, NULL);
+			log_event(LOG_STOP_FILE, NULL);
 			fclose(f);
 			send_log();
 			f = fopen("/var/log/logs.txt","w");
+			log_event(LOG_START_FILE, NULL);
+			log_event(LOG_MAC_ADDR, NULL);
 			log_event(LOG_START_LOG, NULL);
 			close = 0;
 		}
+		else
+			log_event(LOG_STOP_LOOP, NULL);
+
 		close += 1;
 	}
 	return NULL;
@@ -667,6 +779,12 @@ void *connection_loop(void * p_data) {
 
 int main(int argc, char ** argv) {
 	system("killall hostapd"); //Kill hostapd in order to launch wpa_supplicant
+
+	/* Get router mac address */
+	FILE *tmp = popen("cat /sys/class/net/wlan0/address", "r");
+	fgets(router_mac, 18, tmp);
+	pclose(tmp);
+	
 	pthread_t wpa_thread, loop_thread;
 	int r = 0;
 
