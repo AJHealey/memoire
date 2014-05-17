@@ -20,10 +20,11 @@ struct tm tm;
 time_t now;
 int start_loop = 0;
 int dhcp = 0;
-FILE *f;
+FILE *f; //Log file
 
 /* For Logs */
 char *ssid_log;
+
 
 /* Stores all the AP BSSID tried for association */
 struct ap_tried {
@@ -31,12 +32,24 @@ struct ap_tried {
 	int num;
 	struct ap_tried *next;
 };
-
 struct ap_tried *first = NULL;
 struct ap_tried *curr = NULL;
 
+/* Stores all the results of a scan */
+struct scan_results {
+	char *bssid;
+	char *freq;
+	char *signal;
+	char *flags;
+	char *ssid;
+	int num;
+	struct scan_results *next;
+};
+struct scan_results *first_scan = NULL;
+struct scan_results *curr_scan = NULL;
 
-/* All possible events used to write the logs */
+
+/* All possible events used to write the logs in JSON syntax */
 enum log_events {
 	LOG_START_FILE,
 	LOG_STOP_FILE,
@@ -102,6 +115,9 @@ static void connect_prive();
 static void connect_student();
 static void connect_maison();
 static int checkService(char *host, const char *port);
+static void services_loop();
+static void scan();
+static void send_log();
 void *wpa_loop(void *p_data);
 void *connection_loop(void *p_data);
 

@@ -38,13 +38,35 @@ static void log_event(enum log_events log, const char *arg) {
 			fprintf(f, "}\n");
 			break;
 
-		case LOG_START_SCAN:
+		case LOG_START_SCAN: {
 			fprintf(f, "\"scan\":[\n");
-			fprintf(f, "{\n");
+			
+			struct scan_results *ptr = first_scan;
+			
+			while(ptr != NULL) {
+				
+				fprintf(f, "{\n"); 
+				fprintf(f, "\"bssid\": \"%s\",\n", ptr->bssid);
+				fprintf(f, "\"signal\": \"%s\",\n", ptr->signal);
+				fprintf(f, "\"ssid\": \"%s\",\n", ptr->ssid);
+				
+				/* JSON syntax */
+				if(first_scan -> num != 1) {
+					
+					fprintf(f,"},\n");
+					first_scan->num -= 1;
+				}
+				else {
+					
+					fprintf(f,"}\n");
+				}
+				
+				ptr = ptr->next;
+			}
+			}
 			break;
 
 		case LOG_STOP_SCAN:
-			fprintf(f, "}\n");
 			fprintf(f, "],\n");
 			break;
 
@@ -247,7 +269,6 @@ static void parse_event(const char *reply) {
 			curr->next = ptr;
 			curr = ptr;
 		}
-		
 	}
 	/* Association accepted with AP */
 	else if(match(event, "Associated")) {
@@ -535,12 +556,136 @@ static int checkService(char *host, const char *port) {
 	close(sockfd);
 }
 
+/*
+ * Loop to check availability
+ */
+static void services_loop() {
+	log_event(LOG_INFO_SERVICE_START, NULL);
+	if(checkService("google.be", "443") == 1)
+		log_event(LOG_INFO_SERVICE_GOOGLE, "1");
+	else
+		log_event(LOG_INFO_SERVICE_GOOGLE, "0");
+
+	if(checkService("smtp.gmail.com", "587") == 1)
+		log_event(LOG_INFO_SERVICE_GMAIL, "1");
+	else
+		log_event(LOG_INFO_SERVICE_GMAIL, "0");
+
+	if(checkService("github.com", "22") == 1)
+		log_event(LOG_INFO_SERVICE_GITHUB, "1");
+	else
+		log_event(LOG_INFO_SERVICE_GITHUB, "0");
+
+	if(checkService("ssl.github.com", "443") == 1)
+		log_event(LOG_INFO_SERVICE_GITHUB_SSL, "1");
+	else
+		log_event(LOG_INFO_SERVICE_GITHUB_SSL, "0");
+	
+	/*if(checkService("horaire.sgsi.ucl.ac", "8080") == 1)
+		log_event(LOG_INFO_SERVICE_ADE, "available");
+	else
+		log_event(LOG_INFO_SERVICE_ADE, "unavailable");*/
+
+	if(checkService("uclouvain.be", "443") == 1)
+		log_event(LOG_INFO_SERVICE_UCLOUVAIN, "1");
+	else
+		log_event(LOG_INFO_SERVICE_UCLOUVAIN, "0");
+
+	if(checkService("icampus.uclouvain.be", "443") == 1)
+		log_event(LOG_INFO_SERVICE_ICAMPUS, "1");
+	else
+		log_event(LOG_INFO_SERVICE_ICAMPUS, "0");
+
+	log_event(LOG_INFO_SERVICE_STOP, NULL);	
+}
+
+/*
+ * Scan for networks and get results
+ */
+static void scan() {
+	char *line, *saved_line, *object, *saved_object;
+	char reply[BUF*2];
+	size_t len = (BUF*2)-1;
+	int i,ret;
+	
+	commands("SCAN"); //Scan	
+	ret = wpa_ctrl_request(ctrl, "SCAN_RESULTS", os_strlen("SCAN_RESULTS"), reply, &len, NULL);
+	if(ret < 0) {
+		/* Wpa_supplicant timed out. Restart scan method */
+		scan();
+	}
+	reply[len] = '\0';
+	i = 0; 
+	/* Tokenize results and extract information */
+	for(line = strtok_r(reply, "\n", &saved_line); line; line = strtok_r(NULL, "\n", &saved_line)) {
+		printf("%s\n", line);		
+		if(i > 0) {
+			char *bssid, *freq, *signal, *flags,*ssid;
+			struct scan_results *ptr = (struct scan_results*) malloc (sizeof(struct scan_results));
+			bssid = strtok(line, "\t");
+			freq = strtok(NULL,"\t");
+			signal = strtok(NULL, "\t");
+			flags = strtok(NULL, "\t");
+			ssid = strtok(NULL, "\t");
+
+			ptr->bssid = malloc(strlen(bssid)+1);
+			ptr->freq = malloc(strlen(freq)+1);
+			ptr->signal = malloc(strlen(signal)+1);
+			ptr->flags = malloc(strlen(flags)+1);
+			ptr->ssid = malloc(strlen(ssid)+1);
+
+			/* First result */
+			if(first_scan == NULL) {
+				strcpy(ptr->bssid, bssid);
+				strcpy(ptr->freq, freq);
+				strcpy(ptr->signal, signal);
+				strcpy(ptr->flags, flags);
+				strcpy(ptr->ssid, ssid);
+				ptr->next = NULL;
+				first_scan = curr_scan = ptr;
+				first_scan->num = 1;
+			}
+			/* Other scan results */
+			else {
+				strcpy(ptr->bssid, bssid);
+				strcpy(ptr->freq, freq);
+				strcpy(ptr->signal, signal);
+				strcpy(ptr->flags, flags);
+				strcpy(ptr->ssid, ssid);
+				first_scan->num += 1;
+				ptr->next = NULL;
+				curr_scan -> next = ptr;
+				curr_scan = ptr;
+			}
+		}
+		i+=1;
+	}
+	log_event(LOG_START_SCAN, NULL);
+	log_event(LOG_STOP_SCAN, NULL);
+	
+	/* Free scan results */
+	struct scan_results *current = first_scan;
+	struct scan_results *tmp;
+	while(current != NULL) {
+		tmp = current->next;
+		free(current);
+		current = tmp;
+	}
+	first_scan = NULL;
+}
+
+/* 
+ * Send logs to server
+ */
+static void send_log() {
+	if(sendLogs("var/log/logs.txt") < 0)
+		debug_print("Error sending log file\n");
+}
 
 
 void *wpa_loop(void *p_data) {
 	char reply[BUF];
 	size_t reply_len;
-	//for select() method
 	int ctrl_fd, r, err;
 	fd_set ctrl_fds;
 	struct timeval timeout;
@@ -603,53 +748,7 @@ void *wpa_loop(void *p_data) {
 	return NULL;
 }
 
-/*
- * Loop to check availability
- */
-void services_loop() {
-	log_event(LOG_INFO_SERVICE_START, NULL);
-	if(checkService("google.be", "443") == 1)
-		log_event(LOG_INFO_SERVICE_GOOGLE, "1");
-	else
-		log_event(LOG_INFO_SERVICE_GOOGLE, "0");
 
-	if(checkService("smtp.gmail.com", "587") == 1)
-		log_event(LOG_INFO_SERVICE_GMAIL, "1");
-	else
-		log_event(LOG_INFO_SERVICE_GMAIL, "0");
-
-	if(checkService("github.com", "22") == 1)
-		log_event(LOG_INFO_SERVICE_GITHUB, "1");
-	else
-		log_event(LOG_INFO_SERVICE_GITHUB, "0");
-
-	if(checkService("ssl.github.com", "443") == 1)
-		log_event(LOG_INFO_SERVICE_GITHUB_SSL, "1");
-	else
-		log_event(LOG_INFO_SERVICE_GITHUB_SSL, "0");
-	
-	/*if(checkService("horaire.sgsi.ucl.ac", "8080") == 1)
-		log_event(LOG_INFO_SERVICE_ADE, "available");
-	else
-		log_event(LOG_INFO_SERVICE_ADE, "unavailable");*/
-
-	if(checkService("uclouvain.be", "443") == 1)
-		log_event(LOG_INFO_SERVICE_UCLOUVAIN, "1");
-	else
-		log_event(LOG_INFO_SERVICE_UCLOUVAIN, "0");
-
-	if(checkService("icampus.uclouvain.be", "443") == 1)
-		log_event(LOG_INFO_SERVICE_ICAMPUS, "1");
-	else
-		log_event(LOG_INFO_SERVICE_ICAMPUS, "0");
-
-	log_event(LOG_INFO_SERVICE_STOP, NULL);	
-}
-
-void send_log() {
-	if(sendLogs("var/log/logs.txt") < 0)
-		debug_print("Error sending log file\n");
-}
 
 void *connection_loop(void * p_data) {
 	int close = 0;
@@ -663,11 +762,8 @@ void *connection_loop(void * p_data) {
 	while(1) {
 		
 		log_event(LOG_START_LOOP, NULL);
-		log_event(LOG_START_SCAN, NULL);
-		log_event(LOG_SCAN_BSSID, NULL);
-		log_event(LOG_SCAN_STRENGTH, NULL);
-		log_event(LOG_SCAN_SSID, NULL);
-		log_event(LOG_STOP_SCAN, NULL);
+		scan();
+		printf("scan ok\n");
 		log_event(LOG_START_CONNECTION, NULL);
 		
 		//student.UCLouvain
