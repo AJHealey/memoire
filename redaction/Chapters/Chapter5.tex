@@ -80,8 +80,45 @@ The \emph{probe} module manages the connection with the probes. When a probe wan
 
 
 \section{Active Probe}
+As explained earlier, besides the gathering of data through \texttt{SNMP} protocol or controller's logs parsing, we also provide an active data gathering process. To do that, we have implemented a \texttt{C} program that runs on a \texttt{OpenWrt} router.
+
 \subsection{Linksys Router}
+The routers we use for the active monitoring procedure are 150Mbps Wireless N \texttt{TP-LINK TL-WR741ND} routers. Those routers, based on \texttt{N} technology, offers a high speed WiFi performance and are compatible with \texttt{IEEE 802.11b/g/n}. They offer several interesting wireless features\cite{tplink}:
+
+\begin{description}
+	\item [Frequency range]: from \texttt{2.4Ghz} to \texttt{2.4835Ghz}
+	\item [Signal rate]:
+		\begin{itemize}
+			\item \texttt{11n}: up to 150Mbps
+			\item \texttt{11g}: up to 54Mbps
+			\item \texttt{11b}: up to 11Mbps
+		\end{itemize}
+	\item [EIRP (\textit{Effective Isotropic Radiated Power})]: $<$ 20dBm 
+	%Power that the transmitter appears to have if the transmitter were an isotropic radiator (if the antenna radiated equally in all directions). EIRP = transmitter power + antenna gain - cable loss
+	\item [Reception sensibility]:
+		\begin{itemize}
+			\item 130M: -68dBm @ 10\% Packet Error Rate
+			\item 108M: -68dBm @ 10\% Packet Error Rate
+			\item 54M: -68dBm @ 10\% Packet Error Rate
+			\item 11M: -85dBm @ 8\% Packet Error Rate
+			\item 6M: -88dBm @ 10\% Packet Error Rate
+			\item 1M: -90dBm @ 8\% Packet Error Rate
+		\end{itemize}
+\end{description}
+
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.26\linewidth]{Pictures/Chapter5/router.jpg}
+		\caption{TP-LINK TL-WR741ND}
+	\end{center}
+\end{figure}
+
+
 \subsection{OpenWrt}
+
+
+
 
 \section{Communication between Server and Probes}
 The probes and the server have to exchange information. As we wanted to create a modular tool, we have chosen to encrypt all the data sent between the server and the probes. If the active monitoring device capture sensible contents, there must be no security vulnerabilities like \emph{eavesdropping} or \emph{man-in-the-middle attack}.
