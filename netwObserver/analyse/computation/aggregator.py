@@ -1,4 +1,5 @@
 from datetime import datetime,timedelta
+from django.utils import timezone
 
 from gatherer.models import WismEvent, DHCPEvent, RadiusEvent, MobileStation, AccessPoint, APSnapshot, APIfSnapshot
 from django.core.exceptions import ObjectDoesNotExist

@@ -174,10 +174,13 @@ The symmetric algorithm used is AES which stands for Advanced Encryption Standar
 \subsection{PyCrypto}
 
 \section{Deployment}
+For the deployement of our system, we had a dedicated machine to host our data. This system was quite limited to be able to efficiently serve the requests. The server have a hard drive of about 300GB which is quite enough to stock the information gathered by NetwObserver during the test phase. In the other hand, the memory available was only of 1GB which is not enough to ensure a efficient handling of the users requests.
 
 \subsection{Apache 2}
+As the interface of the system is composed of Web pages, the HTTP requests are handle by Apache2. As the most used server, we had a lot of documentation available. That was the main reason of our choice. Moreover, we thought that a first exeperience in server configuration would be an interesting experience for any computer science students.
 
 \subsection{Module WSGI}
+This Apache module is able to interpret some python code. As said before, we choose Django as framework and in consequence executing python code is an important requirement. Something to note about the installation is that the code is written in \emph{Python3.3} and not in the version 2. That's force to be carreful during the installation as the default python interpreter in most system is the 2.6. In definitive, we have to compile the module WSGI with the specificaiton of the right interpreter.
 
 \subsection{Celery}
 Celery\footnote{http://www.celeryproject.org/} is a distributed task queue. It allows to create asynchronous jobs handled by several workers. Concretely, a worker is a external thread that receives tasks to accomplished. the main drawback of \emph{Apache} is that it's quite complicated to generate and manage daemon running in background constantly or at given intervals. As a turn-around, we have connected our system to Celery. It helps us to manage more efficiently the concurrent elements of the application. Our server has a small memory and a poor computation power and in consequence we must manage and organise the utilization of those resources. This module has two main component: the workers and the scheduler.
