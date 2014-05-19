@@ -23,6 +23,8 @@ Warning--entry type for "syslogCisco" isn't style-file defined
 --line 130 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "tplink" isn't style-file defined
 --line 137 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "openwrt" isn't style-file defined
+--line 143 of file Bibliographie/Bibliography.bib.bib
 Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" has a comma at the end for entry article2
 while executing---line 1233 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
@@ -40,45 +42,45 @@ while executing---line 1315 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
 while executing---line 1315 of file unsrtnat.bst
 Warning--empty year in tplink
-You've used 17 entries,
+You've used 18 entries,
             2481 wiz_defined-function locations,
-            650 strings with 7139 characters,
-and the built_in function-call counts, 5156 in all, are:
-= -- 424
-> -- 229
-< -- 13
-+ -- 100
-- -- 66
-* -- 308
-:= -- 827
-add.period$ -- 61
-call.type$ -- 17
-change.case$ -- 32
-chr.to.int$ -- 17
-cite$ -- 22
-duplicate$ -- 270
-empty$ -- 523
-format.name$ -- 89
-if$ -- 1110
+            654 strings with 7218 characters,
+and the built_in function-call counts, 5413 in all, are:
+= -- 446
+> -- 236
+< -- 14
++ -- 104
+- -- 68
+* -- 319
+:= -- 866
+add.period$ -- 64
+call.type$ -- 18
+change.case$ -- 34
+chr.to.int$ -- 18
+cite$ -- 23
+duplicate$ -- 284
+empty$ -- 553
+format.name$ -- 92
+if$ -- 1167
 int.to.chr$ -- 1
-int.to.str$ -- 18
+int.to.str$ -- 19
 missing$ -- 9
-newline$ -- 102
-num.names$ -- 51
-pop$ -- 185
+newline$ -- 107
+num.names$ -- 54
+pop$ -- 197
 preamble$ -- 1
-purify$ -- 17
+purify$ -- 18
 quote$ -- 0
-skip$ -- 193
+skip$ -- 205
 stack$ -- 0
-substring$ -- 55
-swap$ -- 37
+substring$ -- 57
+swap$ -- 39
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 110
+type$ -- 117
 warning$ -- 5
-while$ -- 35
+while$ -- 37
 width$ -- 0
-write$ -- 229
+write$ -- 241
 (There were 6 error messages)
