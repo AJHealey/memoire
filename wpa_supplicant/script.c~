@@ -269,8 +269,6 @@ static void parse_event(const char *reply) {
 			curr->next = ptr;
 			curr = ptr;
 		}
-		free(ptr);
-		
 	}
 	/* Association accepted with AP */
 	else if(match(event, "Associated")) {
@@ -313,9 +311,6 @@ static void execute_action(enum wpa_action action) {
 			break;
 		case ACTION_CONNECT_PRIVE:
 			connect_prive();
-			break;
-		case ACTION_CONNECT_MAISON:
-			connect_maison();
 			break;
 		case ACTION_DISCONNECT:
 			commands("DISCONNECT");
@@ -367,32 +362,29 @@ static void commands(char *cmd)
  * ID=2: visiteurs.UCLouvain
  * ID=3: UCLouvain-prive
  * ID=4: student.UCLouvain
- * ID=5: Maison
  */
 static void create_networks() {
 	int i;
-	for(i = 0; i <= 5; i++) {
+	for(i = 0; i <= 4; i++) {
 		commands("ADD_NETWORK");
 	}
-	config_network(0, "eduroam", "WPA-EAP", "PEAP", "CCMP", "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", "peaplabel=0", "auth=MSCHAPV2", NULL);
+	config_network(0, "eduroam", "WPA-EAP", "PEAP", "CCMP", "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", "peaplabel=0", "auth=MSCHAPV2");
 
-	config_network(1, "UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP", NULL);
+	config_network(1, "UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP");
 	
-	config_network(2, "visiteurs.UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP", NULL);
+	config_network(2, "visiteurs.UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP");
 
-	config_network(3, "UCLouvain-prive", "NONE", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+	config_network(3, "UCLouvain-prive", "NONE", NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
-	config_network(4, "student.UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP", NULL);
+	config_network(4, "student.UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP");
 
-	config_network(5, "bbox2-f4ba", "WPA-PSK", NULL, NULL, NULL, NULL, NULL, NULL, NULL, "32A273F5A2");
 }
 
 
 /*
  * Configure the newly created networks
- * TODO Remove psk
  */
- void config_network(int network, char *ssid, char *key_mgmt, char *eap, char *pairwise, char *identity, char *password, char *ca_cert, char *phase1, char *phase2, char *psk) {
+ void config_network(int network, char *ssid, char *key_mgmt, char *eap, char *pairwise, char *identity, char *password, char *ca_cert, char *phase1, char *phase2) {
 	char cmd[512];
 
 	os_snprintf(cmd, sizeof(cmd), "SET_NETWORK %d ssid \"%s\"", network,ssid);
@@ -435,10 +427,6 @@ static void create_networks() {
 
 	if(phase2 != NULL) {
 		os_snprintf(cmd, sizeof(cmd), "SET_NETWORK %d phase2 \"%s\"",network, phase2);
-		commands(cmd);
-	}
-	if(psk != NULL) {
-		os_snprintf(cmd, sizeof(cmd), "SET_NETWORK %d psk \"%s\"", network, psk);
 		commands(cmd);
 	}
 }
@@ -499,18 +487,6 @@ static void connect_student() {
 	log_event(LOG_INFO_DATE, NULL);
 	ftime(&wpa_start);
 	commands("SELECT_NETWORK 4");
-	while(dhcp != 1) {
-		sleep(1);
-	}
-}
-
-/*
- * Connects wpa_supplicant to the student.UCLouvain network
- */
-static void connect_maison() {
-	log_event(LOG_INFO_DATE, NULL);
-	ftime(&wpa_start);
-	commands("SELECT_NETWORK 5");
 	while(dhcp != 1) {
 		sleep(1);
 	}
@@ -606,8 +582,8 @@ static void services_loop() {
  */
 static void scan() {
 	char *line, *saved_line, *object, *saved_object;
-	char reply[BUF*2];
-	size_t len = (BUF*2)-1;
+	char reply[BUF*3];
+	size_t len = (BUF*3)-1;
 	int i,ret;
 	
 	commands("SCAN"); //Scan	
@@ -674,6 +650,7 @@ static void scan() {
 		current = tmp;
 	}
 	first_scan = NULL;
+	memset(&reply[0], 0, sizeof(reply));
 }
 
 /* 
@@ -765,19 +742,7 @@ void *connection_loop(void * p_data) {
 		
 		log_event(LOG_START_LOOP, NULL);
 		scan();
-		printf("scan ok\n");
 		log_event(LOG_START_CONNECTION, NULL);
-		
-		//student.UCLouvain
-		/*debug_print("Connect to student.UCLouvain\n");
-		log_event(LOG_START_CONNECTION_LOOP, NULL);
-		execute_action(ACTION_CONNECT_STUDENT);
-		services_loop();
-		sleep(DELAY);
-		debug_print("Disconnection from student\n");
-		execute_action(ACTION_DISCONNECT);
-		log_event(LOG_STOP_CONNECTION_LOOP, NULL);
-		sleep(DELAY);
 
 		//eduroam
 		debug_print("Connect to eduroam\n");
@@ -803,8 +768,8 @@ void *connection_loop(void * p_data) {
 
 		//visiteurs.UCLouvain
 		debug_print("Connect to visiteurs.UCLouvain\n");
-		log_event(LOG_START_CONNECTION_LOOP);
-		execute_action(ACTION_CONNECT_VISITEURS, NULL);
+		log_event(LOG_START_CONNECTION_LOOP, NULL);
+		execute_action(ACTION_CONNECT_VISITEURS);
 		services_loop();
 		sleep(DELAY);
 		debug_print("Disconnection from visiteurs.UCLouvain\n");
@@ -819,42 +784,17 @@ void *connection_loop(void * p_data) {
 		sleep(DELAY);
 		debug_print("Disconnection from UCLouvain-prive\n");
 		execute_action(ACTION_DISCONNECT);
-		log_event(LOG_FINAL_STOP_CONNECTION_LOOP, NULL);
-		sleep(DELAY);*/
-		
-		debug_print("Connect to maison\n");
-		log_event(LOG_START_CONNECTION_LOOP, NULL);
-		execute_action(ACTION_CONNECT_MAISON);
-		services_loop();
-		sleep(DELAY);
-		debug_print("Disconnect from maison\n");
-		execute_action(ACTION_DISCONNECT);
 		log_event(LOG_STOP_CONNECTION_LOOP, NULL);
 		sleep(DELAY);
-
 		
-		debug_print("Connect to maison\n");
+		
+		//student.UCLouvain
+		debug_print("Connect to student.UCLouvain\n");
 		log_event(LOG_START_CONNECTION_LOOP, NULL);
-		execute_action(ACTION_CONNECT_MAISON);
+		execute_action(ACTION_CONNECT_STUDENT);
 		services_loop();
 		sleep(DELAY);
-		debug_print("Disconnect from maison\n");
-		execute_action(ACTION_DISCONNECT);
-		log_event(LOG_STOP_CONNECTION_LOOP, NULL);
-		sleep(DELAY);
-
-		
-		debug_print("Connect to maison\n");
-		log_event(LOG_START_CONNECTION_LOOP, NULL);
-		execute_action(ACTION_CONNECT_MAISON);
-		services_loop();
-		sleep(DELAY);
-		debug_print("Disconnect from maison\n");
-		execute_action(ACTION_DISCONNECT);
 		log_event(LOG_FINAL_STOP_CONNECTION_LOOP, NULL);
-		log_event(LOG_STOP_CONNECTION, NULL);
-		sleep(DELAY);
-				
 
 		if(close == 1) {
 			debug_print("SAVE\n");
@@ -863,15 +803,21 @@ void *connection_loop(void * p_data) {
 			log_event(LOG_STOP_FILE, NULL);
 			fclose(f);
 			send_log();
-			f = fopen("/var/log/logs.txt","w");
+			f = fopen("/var/log/logs2.txt","w");
 			log_event(LOG_START_FILE, NULL);
 			log_event(LOG_MAC_ADDR, NULL);
 			log_event(LOG_START_LOG, NULL);
 			close = 0;
 		}
-		else
+		else {
 			log_event(LOG_STOP_LOOP, NULL);
-
+			debug_print("Disconnection from student\n");
+			execute_action(ACTION_DISCONNECT);
+			sleep(DELAY);
+			
+		}
+		
+		
 		close += 1;
 	}
 	return NULL;
