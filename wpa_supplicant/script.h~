@@ -45,8 +45,8 @@ struct scan_results {
 	int num;
 	struct scan_results *next;
 };
-struct scan_result *first_scan = NULL;
-struct scan_result *curr_scan = NULL;
+struct scan_results *first_scan = NULL;
+struct scan_results *curr_scan = NULL;
 
 
 /* All possible events used to write the logs in JSON syntax */
