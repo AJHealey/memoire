@@ -32,7 +32,7 @@ def getRadiusSuccessRate():
 	}
 
 ## Users Aggregators 
-def getUsersByDot11Protocol(timedeltaData=timedelta(months=3)):
+def getUsersByDot11Protocol(timedeltaData=timedelta(weeks=12)):
 	stats = {}
 	ms = MobileStation.objects.filter(lastTouched__gte=timezone.now() - timedeltaData)
 	for proto,display in MobileStation.DOT11_PROTOCOLS:
