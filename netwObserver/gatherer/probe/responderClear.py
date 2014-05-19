@@ -26,12 +26,12 @@ def handler(clientsocket):
 
 	print("[+] Connection established")
 	# Phase 1 : Probe send its identity
-	identity = int.from_bytes(clientsocket.recv(4),byteorder='big') # identity of the probe
+	identity = int.from_bytes(clientsocket.recv(4),byteorder='little') # identity of the probe
 	print("[+] Identity received: %s" % identity)
 	clientsocket.send(b'1')
 
 	## Phase 2 = Data receive
-	dataSize = int.from_bytes(clientsocket.recv(4),byteorder='big')
+	dataSize = int.from_bytes(clientsocket.recv(4),byteorder='little')
 	print("[*] Size received (%s)" % dataSize)
 	clientsocket.send(b'1')
 
