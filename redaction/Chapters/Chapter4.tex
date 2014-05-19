@@ -9,10 +9,11 @@
 \subsection{System Goals}
 
 \section{Architecture}
-The system have two very distinct entities. The first part is the one responsible for gathering information. This component handles the responsibility to keep the operational database up to date and in a consistent state. The other side of the application is the one managing the analysis made with the information gathered.
+In our architecture system, we have two very distinct entities. 
+The first entity, called the \textit{Gatherer} is the one responsible for gathering information. This component handles the responsibility to keep the operational database up to date and in a consistent state. The other side of the application, the \textit{Analyser}, is the one managing the analysis made with all the information we gathered at the first level.
 
 \subsection{Gatherer}
-This part of the application is constituted of several modules that allow it to communicate with the various sources of information. Each module is responsible of a distinct kind of information and each of them have to transform the piece of information in a coherent entry in the database. As the information come from heterogeneous origins, each information have to be understood and transform into an entity that can be related to others. Without such transformation, the possible analysis would be really limited and not really interesting.
+This part of the application is constituted of several modules that allow it to communicate with the various sources of information. Each module is responsible of a distinct kind of information and each of them have to transform the piece of information in a coherent entry in the database. As the information come from heterogeneous origins, each information have to be understood and transformed into an entity that can be related to others. Without such transformation, the possible analysis would be really limited and not really interesting.
 
 \subsubsection{Logs}
 The first kind of information we managed to analyse was the logs files. There is one file per infrastructure component:
@@ -29,7 +30,8 @@ The main information extracted are the status of every access points (AP). We ca
 The same holds for the client associated to an access point. Each mobile station is indexed by the controller and statistics about it are hold.
 
 \subsubsection{Active Monitoring}
-[OpenWRT]
+Also, we have implemented an active monitoring tool in the form of a \texttt{C} program running on \texttt{OpenWrt} routers.
+%Expliquer le programme
 
 \subsubsection{Database}
 The database have to be capable of representing each kind of information and manage the links between them. It isn't hard to create entries for a log but the difficulties appear when we make link with other entities and have to keep them in a coherent state. Several questions raised when we try to designed our database. For example, if a client is no more associated with an access point, do we have to remove it from the database? Such questions can seem futile but have deep implication on the database.

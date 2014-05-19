@@ -1,4 +1,4 @@
-\begin{thebibliography}{15}
+\begin{thebibliography}{18}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -46,6 +46,11 @@ Terena.
 Belnet.
 \newblock Belnet eduroam service, 2011.
 \newblock URL \url{http://www.eduroam.be}.
+
+\bibitem[eduroam US()]{eduroamRadius}
+eduroam US.
+\newblock eduroam - a technical overview.
+\newblock URL \url{https://www.eduroam.us/technical_overview}.
 
 \bibitem[InterMapper()]{intermapper}
 InterMapper.
@@ -102,5 +107,16 @@ Cisco.
 \newblock Cisco wireless lan controller system message guide, 2008.
 \newblock URL
   \url{http://www.cisco.com/c/en/us/td/docs/wireless/controller/message/guide/controller_smg.html}.
+
+\bibitem[TP-LINK()]{tplink}
+TP-LINK.
+\newblock 150mbps wireless n router - tl-wr741nd.
+\newblock URL
+  \url{http://www.tp-link.com/en/products/details/?model=TL-WR741ND}.
+
+\bibitem[Freedom(2014)]{openwrt}
+OpenWrt~Wireless Freedom.
+\newblock About openwrt, 2014.
+\newblock URL \url{http://wiki.openwrt.org/about/start}.
 
 \end{thebibliography}

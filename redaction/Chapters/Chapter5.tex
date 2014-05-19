@@ -80,8 +80,77 @@ The \emph{probe} module manages the connection with the probes. When a probe wan
 
 
 \section{Active Probe}
-\subsection{Linksys Router}
+As explained earlier, besides the gathering of data through \texttt{SNMP} protocol or controller's logs parsing, we also have an active data gathering process. To do that, we have implemented a \texttt{C} program that runs on a \texttt{OpenWrt} router. The following subsections give more details about the router used during the implementation and the tests phases as well as information about the \texttt{OpenWrt} firmware we have installed on this router.
+
+\subsection{TP-LINK Wireless Router}
+The router we use for the active monitoring process is a 150Mbps Wireless N \texttt{TP-LINK TL-WR741ND} router. This router, based on \texttt{N} technology, offers a high speed WiFi performance and is compatible with \texttt{IEEE 802.11b/g/n} WiFi standards. \\
+About the hardware features, this router offers five interfaces. Four 10/100Mbps LAN ports and one 10/100Mbps WAN. It also has a 5dBi detachable omni directional antenna with a Reverse Polarity SubMiniature version A (\texttt{RP-SMA}) connector.\\
+Concerning the wireless itself, the \texttt{TL-WR741ND} offers several interesting features\cite{tplink}:
+
+\begin{description}
+	\item [Frequency range]: from \texttt{2.4Ghz} to \texttt{2.4835Ghz}
+	\item [Signal rate]:
+		\begin{itemize}
+			\item \texttt{11n}: up to 150Mbps
+			\item \texttt{11g}: up to 54Mbps
+			\item \texttt{11b}: up to 11Mbps
+		\end{itemize}
+	\item [EIRP (\textit{Effective Isotropic Radiated Power})]: $<$ 20dBm 
+	%Power that the transmitter appears to have if the transmitter were an isotropic radiator (if the antenna radiated equally in all directions). EIRP = transmitter power + antenna gain - cable loss
+	\item [Reception sensibility]:
+		\begin{itemize}
+			\item 130M: -68dBm @ 10\% Packet Error Rate
+			\item 108M: -68dBm @ 10\% Packet Error Rate
+			\item 54M: -68dBm @ 10\% Packet Error Rate
+			\item 11M: -85dBm @ 8\% Packet Error Rate
+			\item 6M: -88dBm @ 10\% Packet Error Rate
+			\item 1M: -90dBm @ 8\% Packet Error Rate
+		\end{itemize}
+	\item [Functions]: Enable/Disable Wireless radio, WDS bridge, WMM, Wireless Statistics
+	\item [Security]: 64/128/152-bit \texttt{WEP} / \texttt{WPA} / \texttt{WPA2}, \texttt{WPA-PSK} / \texttt{WPA2-PSK}
+\end{description}
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.26\linewidth]{Pictures/Chapter5/router.jpg}
+		\caption{TP-LINK TL-WR741ND}
+	\end{center}
+\end{figure}
+This router also embeds a default firmware providing software features such as:
+\begin{itemize}
+	\item Quality of Service
+	\item Dynamic DNS
+	\item Access Control (Parental Control, Local Management Control, Host List, Access Schedule, Rule Management)
+	\item Firewall Security
+	\item or DHCP
+\end{itemize}
+
+To summarize, with its 150Mbps wireless data rate and its advanced WiFi security management (\texttt{WPA/WPA2} encryptions), this router provides a rather good base for our active WiFi monitoring program. But in order to be able to execute it on the probes and get results we had to change to firmware of the router to something no proprietary we can work with and we can modulate as we wish. This is why we have chosen to replace the original TP-LINK firmware installed on the router with \texttt{OpenWrt}.
+
+
 \subsection{OpenWrt}
+\texttt{OpenWrt} is a highly extensible GNU/Linux distribution for embedded devices. The particularity of \texttt{OpenWrt} is that it is a full-featured, easily modifiable operation system for the routers. Indeed, it offers a fully writable filesystem and a built-in package manager. Thanks to this package manager, we can install any package we want from a software repository allowing us to customize the device to suit any application. All the restrictions and configurations provided by the vendor within its own firmware installed by default on the router are therefore dropped meaning the device using this distribution can features functions such as \texttt{SSH} server, \texttt{VPN}, \texttt{BitTorrent client}, custom QoS and so on.\\
+As explained on \cite{openwrt}, \texttt{OpenWrt} is:
+\begin{description}
+	\item [Free and open-source]: The project is entirely free and open-source, licensed under the GPL. The project is intend to always be hosted at an easily accessible site, with full source code readily available and easy to build.
+	\item [Easy and free access]: The project will always be open to new contributors and have a low barrier for participation. Anyone shall be able to contribute.
+	\item [Community driven]: Everyone comes together to work and collaborate towards a common goal.
+\end{description}
+
+The \texttt{OpenWrt} project started in January 2004 and since then several stable versions have been released.
+\begin{enumerate}
+	\item \textit{OpenWrt 0.9 White Russian}: The first \texttt{OpenWrt} stable version released in January 2007.
+	\item \textit{OpenWrt 8.09 Kamikaze}: The second one that was first released in June 2007. The last version of Kamikaze was released in January 2010.
+	\item \textit{OpenWrt 10.03 Backfire}: The first version was released in April 2010 and the last one in December 2011.
+	\item \textit{OpenWrt 12.09 Attitude Adjustment}: This is currently the latest stable released available. It was released in April 2013.
+	\item \textit{Barrier Breaker}: The next release still in development.
+\end{enumerate}
+
+In order to have an up-to-date version of the firmware, we have decided to install the latest release on our router. This is why we use \texttt{OpenWrt 12.09 - Attitude Adjustment}.
+
+%Expliquer le build root
+
+
+
 
 \section{Communication between Server and Probes}
 The probes and the server have to exchange information. As we wanted to create a modular tool, we have chosen to encrypt all the data sent between the server and the probes. If the active monitoring device capture sensible contents, there must be no security vulnerabilities like \emph{eavesdropping} or \emph{man-in-the-middle attack}.
