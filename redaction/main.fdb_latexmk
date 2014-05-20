@@ -1,20 +1,19 @@
 # Fdb version 3
-["bibtex main"] 1400463218 "main.aux" "main.bbl" "main" 1400463226
+["bibtex main"] 1400528452 "main.aux" "main.bbl" "main" 1400528461
   "/usr/local/texlive/2012/texmf-dist/bibtex/bst/natbib/unsrtnat.bst" 1233624470 24550 a41a6405f4de768c43e871d9fbce2bc8 ""
   "Bibliographie/Bibliography.bib.bib" 0 -1 0 ""
-  "main.aux" 1400463225 12328 a1e3b20275ff68136c228597179e5401 ""
+  "main.aux" 1400528459 12328 aa33fc713d6dad026ba388cd810ae0f9 ""
   "main.bcf" 0 -1 0 ""
   (generated)
   "main.bbl"
-  "main.blg"
-["pdflatex"] 1400463218 "main.tex" "main.pdf" "main" 1400463226
+["pdflatex"] 1400528452 "main.tex" "main.pdf" "main" 1400528461
   "./Appendices/Source.tex" 1399217142 442 7fc298817e7e74ec9ad1389deeb25182 ""
   "./Chapters/Chapter1.tex" 1400460028 13270 53a3c5fe9d10d10bbda746223b440055 ""
-  "./Chapters/Chapter2.tex" 1399825049 19538 b008d4538243419370fd2ddff3abf068 ""
+  "./Chapters/Chapter2.tex" 1400527317 19538 29ac8c940fa75c1a54a67c99475a9659 ""
   "./Chapters/Chapter3.tex" 1399741717 6932 f5b132ed07e9e49123d00cbbd6ec0573 ""
   "./Chapters/Chapter4.tex" 1400442947 4552 0bc3c44cba72c4a3c48720113142d465 ""
-  "./Chapters/Chapter5.tex" 1400463210 24294 648c805d4dec189b323664dab6e0f2b0 ""
-  "./Chapters/Chapter6.tex" 1400432217 13411 3a9299e3dee4c1bf7b40d39b7a2550b0 ""
+  "./Chapters/Chapter5.tex" 1400525392 25589 86b2c3fee7c89f7690f92057bfb104b4 ""
+  "./Chapters/Chapter6.tex" 1400525392 13412 ad6f2d4f0b7084c4e0bfe995dc17fe66 ""
   "./Chapters/Chapter7.tex" 1400407223 2926 534e7736af71134e807876c074ed63e6 ""
   "./Packages/Thesis.cls" 1399292583 16250 d18bbb6f34fb5021ae7cf61ab1db60b8 ""
   "./Packages/lstpatch.sty" 1390999908 13431 9c5d10d9a7ae04b75464fb7308a22083 ""
@@ -110,14 +109,14 @@
   "Pictures/UCL/epl.jpg" 1399035625 13716 260061c0245f1fa5695cada01aab0bb7 ""
   "Pictures/UCL/ucl.jpg" 1399035625 179162 210963191ac7651ed060882ae9db003b ""
   "Pictures/appendices/structure.jpg" 1399217142 142693 169b144f87aa63e87ce07527290085d3 ""
-  "main.aux" 1400463225 12328 a1e3b20275ff68136c228597179e5401 ""
+  "main.aux" 1400528459 12328 aa33fc713d6dad026ba388cd810ae0f9 ""
   "main.bbl" 1400461808 4479 7e648545b8566bdec23d34a6174daf50 "bibtex main"
-  "main.out" 1400463225 12439 342747ff475e1f37571d4cc84c9f744e ""
-  "main.tex" 1400462473 5279 03451ae5cad657d21554fe9ce5b7ca86 ""
-  "main.toc" 1400463225 6084 a44a43da698597b6b29b520180fb276a ""
+  "main.out" 1400528459 12439 342747ff475e1f37571d4cc84c9f744e ""
+  "main.tex" 1400527490 5279 03451ae5cad657d21554fe9ce5b7ca86 ""
+  "main.toc" 1400528459 6084 c07411f47320d42707fbfa0050002e93 ""
   (generated)
   "main.out"
   "main.log"
   "main.pdf"
-  "main.aux"
   "main.toc"
+  "main.aux"
