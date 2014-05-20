@@ -101,6 +101,56 @@ def getAPData(ap, timePerRange=timedelta(hours=1)):
 
 	return result
 
+
+def getIfData(ap, timePerRange=timedelta(hours=1)):
+	result = {}
+	try:
+		snapshots = APSnapshot.objects.filter(ap=ap).order_by('date')
+
+		datetimeStartRange = snapshots[0].date
+
+		nbrIf = snapshots[0].apifsnaphot_set.all().count()
+
+		for i in range(nbrIf):
+			result[i] = []
+
+		client = [0] * nbrIf
+		poorSNR = [0] * nbrIf
+		channelUtilization = [0] * nbrIf
+		count = 0
+
+		for snap in snapshots:
+			if snap.date < (datetimeStartRange + timePerRange):
+				for ifData in snap.apifsnaphot_set.all():
+					ifIndex = int(ifData.apinterface.index[1:])
+					client[ifIndex] += ifData.numOfClients
+					poorSNR[ifIndex] += ifData.numOfPoorSNRClients
+					channelUtilization[ifIndex] += ifData.channelUtilization
+					count += 1
+
+			else:
+				for i in range(nbrIf):
+					result[i].append({"date":datetimeStartRange+timePerRange,
+						"clients":client[i]/count ,
+						"poorSNR":poorSNR[i]/count,
+						"channel":channelUtilization[i]/count
+						})
+
+				# Reset
+				for ifData in snap.apifsnaphot_set.all():
+					ifIndex = int(ifData.apinterface.index[1:])
+					client[ifIndex] = ifData.numOfClients
+					poorSNR[ifIndex] = ifData.numOfPoorSNRClients
+					channelUtilization[ifIndex] = ifData.channelUtilization
+					count = 1
+
+	except ObjectDoesNotExist:
+		pass
+
+	return result
+
+
+
 def getSpeed(start, end, time):
 	# Warning wrap up counter
 	if start > (MAX_VALUE_SNMP_COUNTER32/2) and end < (MAX_VALUE_SNMP_COUNTER32/2):
