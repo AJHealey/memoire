@@ -65,7 +65,7 @@ def getHotAP(number=5):
 def getNbrOfAP():
 	return AccessPoint.objects.isUp().count()
 
-def getAPData(ap, timePerRange=timedelta(hours=1)):
+def getAPData(ap, timePerRange=timedelta(minutes=30)):
 	""" Speed in mbits """
 	result = []
 	try:
@@ -85,20 +85,9 @@ def getAPData(ap, timePerRange=timedelta(hours=1)):
 				ethernetTxTotalBytesEnd = snap.ethernetTxTotalBytes
 
 			else:
-				#Counter32 Wrapping
-				if ethernetRxTotalBytesStart > ethernetRxTotalBytesEnd:
-					total = ((MAX_VALUE_SNMP_COUNTER32 - ethernetRxTotalBytesStart) + ethernetRxTotalBytesEnd)
-					rxspeed = ((total/timePerRange.seconds)*8)
-				else:
-					rxSpeed = (((ethernetRxTotalBytesEnd - ethernetRxTotalBytesStart)/timePerRange.seconds)*8)
-				
-				if ethernetTxTotalBytesStart > ethernetTxTotalBytesEnd:
-					total = ((MAX_VALUE_SNMP_COUNTER32 - ethernetTxTotalBytesStart) + ethernetTxTotalBytesEnd)
-					txSpeed = ((total/timePerRange.seconds)*8)
-				else:
-					txSpeed = (((ethernetTxTotalBytesEnd - ethernetTxTotalBytesStart)/timePerRange.seconds)*8)
-				
-				result.append({'date':datetimeStartRange+timePerRange/2, 'rx':float(rxSpeed)/1000, 'tx':float(txSpeed)/1000})
+				result.append({'date':datetimeStartRange+timePerRange, 
+					'rx':getSpeed(ethernetRxTotalBytesStart,ethernetRxTotalBytesEnd,timePerRange), 
+					'tx':getSpeed(ethernetTxTotalBytesStart,ethernetTxTotalBytesEnd,timePerRange))
 
 				# Start new range
 				datetimeStartRange = snap.date
@@ -112,3 +101,11 @@ def getAPData(ap, timePerRange=timedelta(hours=1)):
 
 	return result
 
+def getSpeed(start, end, time):
+	if start > (MAX_VALUE_SNMP_COUNTER32/2) and end < (MAX_VALUE_SNMP_COUNTER32/2):
+		total = (MAX_VALUE_SNMP_COUNTER32 - start) + end
+		speed = (total/time.total_seconds())
+	else:
+		speed = ((end - start)/time.total_seconds())
+
+	return float(speed)/1000

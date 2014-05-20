@@ -7,18 +7,18 @@
 \lhead{Chapter 6. \emph{Analysis and Results}} % Change X to a consecutive number; this is for the header on each page - perhaps a shortened title
 
 \section{Analysis}
-The final purpose of our system is to provide analysis on the main issues present on the infrastructure. The way we process here is quite straightforward.
+The final purpose of our system is to provide analysis about the main issues present on the infrastructure. The way we process here is quite simple:
 
 \begin{enumerate}
 \item Putting together the related information
 \item Spotting the anomalies
-\item Proposing adequate and possible fixes
+\item Trying to understand the causes
 \end{enumerate}
-Like any system, we had to define domains on which the monitoring tool will have to work. One of the first steps of this thesis was to determine what were or could be the main issues on the UCL's network. It's here that we will use those. Each of these problems will be a domain in which we will define what are the relevant data, how they can help us and how to react after having analysed them. The purpose of this chapter is to present you these domains and the methodology used inside them. Each of them have their particular needs and their adequate treatments.
+Like in any system, we had to define domains on which the monitoring tool will be able to work. One of the first steps of this thesis was to determine what were or could be the main issues on the UCL's network. It's here that we will use those results. Each of these problems will be a domain in which we will define what are the relevant data, how they can help us and how to react after having analysed them. The purpose of this chapter is to present you these domains and the methodology used inside them. Each of them have their particular needs and their related techniques of analysis.
 
 \section{Wifi}
 \subsection{Users}
-This section of the application offers some aggregated statistics about the users of the \emph{wifi network}. The main purpose is to get some analysis of the actual utilization of the wireless infrastructure. It's more a set of indicators to help the administrators to get a global view of his network. 
+This section of the application offers some aggregated statistics about the users of the \emph{wifi network}. The main goal is to get some analysis of the actual utilization of the wireless infrastructure. It's more a set of indicators to help the administrators to get a global view of his network. 
 \subsubsection*{Wifi Protocol}
 This graph display the repartition of the users among the available \texttt{802.11} standards (i.e. 802.11a, b, g, n). The reason for this analysis comes from an earlier policy enforced on the UCL network that forbids the use of the \texttt{802.11b} protocol. Users connecting with such low bandwidth standard force the \emph{access point} to transmitting longer and can in consequence prevent the others to achieve higher receiving speed. Our analyse was created to help the administrators in future considerations in the same domain. By profiling the habits of the users, we can define the impact of such decision. As the quality of the service is one of the main concern, deactivating the utilization of a standard used by most of the devices could have heavy consequences.
 The statistics are based by default on the connections of the last three months. It's to ensure that devices no longer using the network doesn't affect the result and keep the analyse as up to date as possible.
