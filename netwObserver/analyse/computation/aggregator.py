@@ -110,4 +110,4 @@ def getSpeed(start, end, time):
 		speed = float(end - start)/time.total_seconds()
 
 	# In Mbites
-	return (speed/1000)*8
+	return (speed/1048576)*8
