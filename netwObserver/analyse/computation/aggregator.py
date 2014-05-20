@@ -137,7 +137,7 @@ def getIfData(ap, timePerRange=timedelta(hours=1)):
 						})
 
 				# Reset
-				for ifData in snap.apifsnaphot_set.all():
+				for ifData in snap.apifsnapshot_set.all():
 					ifIndex = int(ifData.apinterface.index[1:])
 					client[ifIndex] = ifData.numOfClients
 					poorSNR[ifIndex] = ifData.numOfPoorSNRClients
