@@ -18,6 +18,12 @@ def getWismLogsByCategory():
 
 	return stats
 
+def getWismLogsBySeverity(cat='', severity=5):
+	result = {}
+	logs = WismEvent.objects.filter(severity__lte=severity).filter(category=cat)
+	for severity in logs.values_list('severity', flat=True).distinct():
+		result[severity] = logs.filter(severity=severity)
+
 def getDhcpLogByType():
 	stats = {}
 	for t, display in DHCPEvent.DHCP_TYPES:

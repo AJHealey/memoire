@@ -140,8 +140,10 @@ Comparing the scan results for each AP and the APs tried and the one it has a co
 One explaination for that is that in its choosing process, %https://chromium-review.googlesource.com/#/c/183720/
 
 \section{Controller}
+The controller logs are divided in several categories. Each of them defined a list of log related to that category. The main idea here is to analyse the activity of each domain of logs and trying to spot irregularities. We make the hypothesis that when something went wrong, the related category will emit a larger number of logs. By monitoring that activity, we will be able to identified in which part of the infrastructure the issue happened.
 
 \subsection{Components Activity}
+
 
 \section{DHCP}
 These analyses aim to detect \emph{DHCP} related issues. The allocation  of IP addresses is a fundamentals component in our network. Being able to detect when problems appears and advertise them could help to make a quicker and more efficient response.
