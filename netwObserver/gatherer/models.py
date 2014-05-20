@@ -190,8 +190,8 @@ class ProbeConnectionResult(models.Model):
 	date = models.DateTimeField()
 	ssid = models.CharField(max_length=50)
 
-	apTried = models.ManyToManyField(AccessPoint)
-	connected = models.ForeignKey(AccessPoint)
+	apTried = models.ManyToManyField(AccessPoint, related_name='+')
+	connected = models.ForeignKey(AccessPoint,related_name='+')
 	authenticationTime = models.DecimalField(max_digits=5,decimal_places=0)
 	dhcpTime = models.DecimalField(max_digits=5,decimal_places=0)
 
