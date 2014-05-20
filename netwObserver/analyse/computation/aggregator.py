@@ -109,7 +109,7 @@ def getIfData(ap, timePerRange=timedelta(hours=1)):
 
 		datetimeStartRange = snapshots[0].date
 
-		nbrIf = snapshots[0].apifsnaphot_set.all().count()
+		nbrIf = snapshots[0].apifsnapshot_set.all().count()
 
 		for i in range(nbrIf):
 			result[i] = []
