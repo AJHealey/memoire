@@ -65,7 +65,7 @@ def getHotAP(number=5):
 def getNbrOfAP():
 	return AccessPoint.objects.isUp().count()
 
-def getAPData(ap, timePerRange=timedelta(minutes=30)):
+def getAPData(ap, timePerRange=timedelta(hours=1)):
 	""" Speed in mbits """
 	result = []
 	try:
