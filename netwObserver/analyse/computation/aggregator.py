@@ -114,9 +114,9 @@ def getIfData(ap, timePerRange=timedelta(hours=1)):
 		for i in range(nbrIf):
 			result[i] = []
 
-		client = [0] * nbrIf
-		poorSNR = [0] * nbrIf
-		channelUtilization = [0] * nbrIf
+		client = [0.0] * nbrIf
+		poorSNR = [0.0] * nbrIf
+		channelUtilization = [0.0] * nbrIf
 		count = 0
 
 		for snap in snapshots:
