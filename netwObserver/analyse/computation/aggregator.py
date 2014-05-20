@@ -102,10 +102,12 @@ def getAPData(ap, timePerRange=timedelta(minutes=30)):
 	return result
 
 def getSpeed(start, end, time):
+	# Warning wrap up counter
 	if start > (MAX_VALUE_SNMP_COUNTER32/2) and end < (MAX_VALUE_SNMP_COUNTER32/2):
 		total = (MAX_VALUE_SNMP_COUNTER32 - start) + end
-		speed = (total/time.total_seconds())
+		speed = float(total)/time.total_seconds()
 	else:
-		speed = ((end - start)/time.total_seconds())
+		speed = float(end - start)/time.total_seconds()
 
-	return float(speed)/1000
+	# In MBytes
+	return speed/1000
