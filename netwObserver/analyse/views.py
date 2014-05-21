@@ -31,6 +31,8 @@ def wifiOverview(request):
 	context['cat'] = 'wifi'
 	context['section'] = 'overview'
 
+	context["apDown"] = AccessPoint.objects.areDown()
+
 	return render(request, "analyse/wifiOverview.html", context)
 
 def wifiAP(request):

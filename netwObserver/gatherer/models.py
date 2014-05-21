@@ -29,7 +29,7 @@ class APManage(models.Manager):
 		return super(APManage, self).filter(lastTouched__gte=(timezone.now() - settings.SNMPAPLAP))
 
 	def areDown(self):
-		return super(APManage, self).filter(lastTouched__gte=(timezone.now() - settings.SNMPAPLAP))
+		return super(APManage, self).filter(lastTouched__lt=(timezone.now() - settings.SNMPAPLAP))
 
 class AccessPoint(Device):
 	ETHERNETLINKTYPE = ((10,'10 Mbps'),(100,'100 Mbps'),(1000,'1 Gbps'))
