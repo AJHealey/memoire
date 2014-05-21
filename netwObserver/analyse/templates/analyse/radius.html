@@ -16,14 +16,17 @@
 		data.addColumn('string', 'Category');
 		data.addColumn('number', 'Quantity');
 		data.addRows([
-			{%for cat, qty in successRate.items%}
-			['{{cat}}', {{qty}}],
-			{%endfor%}
+			{%if successRate%}
+			['Success', {{successRate.Success}}],
+			['Fail', {{successRate.Failed}}]
+			{%endif%}
 			]);
 		data.sort([{column: 0}]);
 		var options = {'title':'Authentication Success Rate',
 			'width':900,
-			'height':500};
+			'height':500,
+			slices: [0:{color: 'green'}],
+		};
 
 		var chart = new google.visualization.PieChart(document.getElementById('successrate_div'));
 
