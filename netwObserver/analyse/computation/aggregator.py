@@ -85,7 +85,7 @@ def getAPData(ap, timePerRange=timedelta(hours=1)):
 				ethernetTxTotalBytesEnd = snap.ethernetTxTotalBytes
 
 			else:
-				result.append({'date':datetimeStartRange+timePerRange, 
+				result.append({'date':timezone.localtime(datetimeStartRange+timePerRange), 
 					'rx':getSpeed(ethernetRxTotalBytesStart,ethernetRxTotalBytesEnd,timePerRange), 
 					'tx':getSpeed(ethernetTxTotalBytesStart,ethernetTxTotalBytesEnd,timePerRange)})
 
