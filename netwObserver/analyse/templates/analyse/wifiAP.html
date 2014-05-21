@@ -70,7 +70,7 @@
     		fractionDigits: 2,
    			suffix: '%'
 			});
-		formatter.format(chartData, 2);
+		formatter.format(data, 2);
 		var chart = new google.visualization.LineChart(document.getElementById('interface{{i}}chart_div'));
 		chart.draw(data, options);
 	}
