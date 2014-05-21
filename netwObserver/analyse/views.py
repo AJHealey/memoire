@@ -45,6 +45,10 @@ def wifiAP(request):
 		context["ap"] = AccessPoint.objects.get(id=int(request.POST['selectedAP']))
 		context["apBandwidth"] = aggregator.getAPData(context["ap"])
 		context["interfaceData"] = aggregator.getIfData(context["ap"])
+		tmp = {}
+		for interf in context["ap"].apinterface_set.all():
+			tmp[interf.ifType] = interf
+		context["apIf"] = tmp
 
 	return render(request, "analyse/wifiAP.html", context)
 

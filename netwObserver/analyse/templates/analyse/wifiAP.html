@@ -81,8 +81,12 @@
 <div id="bandwidthchart_div" style="width: 900px; height: 500px;"></div>
 
 {%for i in interfaceData%}
-<h4>Interfaces {{forloop.counter0}} </h4>
-<div id="interface{{forloop.counter0}}chart_div" style="width: 900px; height: 500px;"></div>
+<h4>Interfaces {{i}} </h4>
+<dl class="dl-horizontal">
+	<dt>Type</dt>
+	<dd>{{apIf.i.get_IFTYPE_display}}</dd>	
+</dl>
+<div id="interface{{i}}chart_div" style="width: 900px; height: 500px;"></div>
 {%endfor%}
 
 
