@@ -53,12 +53,12 @@
 		var data = google.visualization.arrayToDataTable([
 		  ['Time', 'Clients', 'Clients with Poor SNR', 'Channel Utilization'],
 		  {%for log in logs%}
-		  [new Date({{log.date.year}},{{log.date.month}}-1,{{log.date.day}},{{log.date.hour}},{{log.date.minute}},{{log.date.second}}), {{log.clients}}, {{log.poorSNR}} , {{log.channel}}/100],
+		  [new Date({{log.date.year}},{{log.date.month}}-1,{{log.date.day}},{{log.date.hour}},{{log.date.minute}},{{log.date.second}}), {{log.clients}}, {{log.poorSNR}} , {{log.channel}}],
 		  {%endfor%}
 		]);
 
 		var options = {
-			series: {2:{targetAxisIndex:1}},
+			series: {2:{targetAxisIndex:1, format:'#,##%'}},
 			vAxes:[
 				{}, 
 				{title:'Channel Utilization',format: '#%'}
@@ -66,6 +66,11 @@
 			title: 'Occupancy',
 		};
 
+		var formatter = new google.visualization.NumberFormat({
+    		fractionDigits: 2,
+   			suffix: '%'
+			});
+		formatter.format(chartData, 2);
 		var chart = new google.visualization.LineChart(document.getElementById('interface{{i}}chart_div'));
 		chart.draw(data, options);
 	}

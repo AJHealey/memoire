@@ -130,7 +130,7 @@ def getIfData(ap, timePerRange=timedelta(hours=1)):
 					result[str(i)].append({"date":datetimeStartRange+timePerRange,
 						"clients":int(client[i]) ,
 						"poorSNR":int(poorSNR[i]),
-						"channel":float(channelUtilization[i]/count)
+						"channel":float(channelUtilization[i]/count)/100
 						})
 
 				datetimeStartRange = snap.date
