@@ -136,7 +136,7 @@ def getIfData(ap, timePerRange=timedelta(hours=1)):
 
 
 			for ifData in snap.apifsnapshot_set.all():
-				ifIndex += int(ifData.apinterface.index[1:])
+				ifIndex = int(ifData.apinterface.index[1:])
 				client[ifIndex] += ifData.numOfClients
 				poorSNR[ifIndex] += ifData.numOfPoorSNRClients
 				channelUtilization[ifIndex] += ifData.channelUtilization
