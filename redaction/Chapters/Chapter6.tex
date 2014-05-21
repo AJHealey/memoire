@@ -137,7 +137,8 @@ We add these additional information to the log file our program creates and send
 The first thing our program does when it starts its connection loop is to perform a scan of the networks available where the probe is placed and to write the results inside the log file. Among the results and for each network we have decided to keep the network \texttt{BSSID}, the \texttt{Signal Strength} of the network and its \texttt{SSID}. Those data are interesting for our analysis. Indeed, when the router tries to get a connection, it first tries to associate with an Access Point. But there could be several APs in the area and he might be rejected from one or several of them. If its association request is rejected by one AP, \texttt{wpa\_supplicant} will try to associate with another one, and so on until the request is accepted. Our program gathers all the \texttt{BSSID} of the APs it had an association request with. 
 Comparing the scan results for each AP and the APs tried and the one it has a connection with is quite interesting. Indeed, after having performed several tests, we have observed that the device does not always connect to the best AP (i.e. the one with the best signal strength).
 
-One explaination for that is that in its choosing process, %https://chromium-review.googlesource.com/#/c/183720/
+TODO
+ %https://chromium-review.googlesource.com/#/c/183720/
 
 \section{Controller}
 The controller logs are divided in several categories. Each of them defined a list of log related to that category. The main idea here is to analyse the activity of each domain of logs and trying to spot irregularities. We make the hypothesis that when something went wrong, the related category will emit a larger number of logs. By monitoring that activity, we will be able to identified in which part of the infrastructure the issue happened.
