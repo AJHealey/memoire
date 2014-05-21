@@ -504,7 +504,7 @@ def parseMacAdresse(macString):
 		tmp = ""
 		for c in result[2:-1]:
 			tmp += "{:02x}".format(ord(c))
-		result = tmp[:-1]
+		result = tmp
 
 	else:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmp macAddress parsing', error=macString).save()
