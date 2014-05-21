@@ -44,11 +44,10 @@ def wifiAP(request):
 	if request.method == 'POST' and 'selectedAP' in request.POST:
 		context["ap"] = AccessPoint.objects.get(id=int(request.POST['selectedAP']))
 		context["apBandwidth"] = aggregator.getAPData(context["ap"])
-		context["interfaceData"] = aggregator.getIfData(context["ap"])
-		tmp = {}
-		for interf in context["ap"].apinterface_set.all():
-			tmp[str(interf.ifType)] = interf
-		context["apIf"] = tmp
+		tmp = aggregator.getIfData(context["ap"])
+		context["interfaceData"] = tmp["result"]
+		context["interfaceType"] = tmp["types"]
+
 
 	return render(request, "analyse/wifiAP.html", context)
 

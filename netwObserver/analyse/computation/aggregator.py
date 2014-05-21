@@ -104,10 +104,14 @@ def getAPData(ap, timePerRange=timedelta(hours=1)):
 
 def getIfData(ap, timePerRange=timedelta(hours=1)):
 	result = {}
+	types = {}
 	try:
 		snapshots = APSnapshot.objects.filter(ap=ap).order_by('date')
 
 		datetimeStartRange = snapshots[0].date
+
+		for snap in snapshots[0].apifsnapshot_set.all():
+			types[int(ifData.apinterface.index[1:])] = ifData.apinterface.get_ifType_display()
 
 		nbrIf = snapshots[0].apifsnapshot_set.all().count()
 
