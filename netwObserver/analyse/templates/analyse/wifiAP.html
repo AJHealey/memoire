@@ -33,7 +33,7 @@
 		var data = google.visualization.arrayToDataTable([
 		  ['Time', 'Rx Speed', 'Tx Speed'],
 		  {%for log in apBandwidth%}
-		  [new Date({{log.date.year}},{{log.date.month}},{{log.date.day}},{{log.date.hour}},{{log.date.minute}},{{log.date.second}}), {{log.rx}}, {{log.tx}}],
+		  [new Date({{log.date.year}},{{log.date.month}}-1 ,{{log.date.day}},{{log.date.hour}},{{log.date.minute}},{{log.date.second}}), {{log.rx}}, {{log.tx}}],
 		  {%endfor%}
 		]);
 
@@ -53,12 +53,12 @@
 		var data = google.visualization.arrayToDataTable([
 		  ['Time', 'Clients', 'Clients with Poor SNR'],
 		  {%for log in logs%}
-		  [new Date({{log.date.year}},{{log.date.month}},{{log.date.day}},{{log.date.hour}},{{log.date.minute}},{{log.date.second}}), {{log.clients}}, {{log.poorSNR}}],
+		  [new Date({{log.date.year}},{{log.date.month}}-1,{{log.date.day}},{{log.date.hour}},{{log.date.minute}},{{log.date.second}}), {{log.clients}}, {{log.poorSNR}}],
 		  {%endfor%}
 		]);
 
 		var options = {
-		  title: 'Occupancy Interface {forloop.counter0}}',
+		  title: 'Occupancy Interface {{forloop.counter0}}',
 		};
 
 		var chart = new google.visualization.LineChart(document.getElementById('interface{{forloop.counter0}}chart_div'));
@@ -77,7 +77,7 @@
 <div id="bandwidthchart_div" style="width: 900px; height: 500px;"></div>
 
 {%for i in interfaceData%}
-<h4>Interfaces {{forloop.counter0}}</h4>
+<h4>Interfaces {{forloop.counter0}} </h4>
 <div id="interface{{forloop.counter0}}chart_div" style="width: 900px; height: 500px;"></div>
 {%endfor%}
 
