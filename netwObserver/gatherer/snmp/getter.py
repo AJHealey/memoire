@@ -503,7 +503,7 @@ def parseMacAdresse(macString):
 	elif result.startswith("b'") or result.startswith('b"'):
 		tmp = ""
 		for c in result[2:-1]:
-			tmp += "{:02x}:".format(ord(c))
+			tmp += "{:02x}".format(ord(c))
 		result = tmp[:-1]
 
 	else:

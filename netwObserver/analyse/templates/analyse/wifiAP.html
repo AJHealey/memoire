@@ -58,7 +58,7 @@
 		]);
 
 		var options = {
-		  title: 'Occupancy Interface {{forloop.counter0}}',
+		  title: 'Occupancy',
 		};
 
 		var chart = new google.visualization.LineChart(document.getElementById('interface{{forloop.counter0}}chart_div'));
@@ -71,8 +71,12 @@
 
 <h3>{{ap.name}}</h3>
 <dl class="dl-horizontal">
-  <dt>Ethernet Link</dt>
-  <dd>{{ap.ethernetLinkSpeed}} Mb/s</dd>
+	<dt>IP Address</dt>
+	<dd>{{ap.ip}}</dd>	
+	<dt>Mac Address</dt>
+	<dd>{{ap.macAddress}}</dd>
+	<dt>Ethernet Link</dt>
+	<dd>{{ap.ethernetLinkSpeed}} Mb/s</dd>
 </dl>
 <div id="bandwidthchart_div" style="width: 900px; height: 500px;"></div>
 
