@@ -1,6 +1,8 @@
 {% extends "analyse/wifi.html" %}
 {% load staticfiles %}
+{% load tz %}
 
+{% localtime on %}
 {% block section %}
 <div class="container" style='margin-top: 25px;'>
 <form method="post"  action="{% url 'wifiAP' %}" class="form-horizontal" role="form">
@@ -58,7 +60,7 @@
 		]);
 
 		var options = {
-			series: {2:{targetAxisIndex:1, format:'#,##%'}},
+			series: {2:{targetAxisIndex:1, format:'#,##%', curveType:'function'}},
 			vAxes:[
 				{}, 
 				{title:'Channel Utilization',format: '#%'}
@@ -93,3 +95,4 @@
 
 {%endif%}
 {%endblock%}
+{% endlocaltime %}
