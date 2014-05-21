@@ -129,6 +129,7 @@ def getIfData(ap, timePerRange=timedelta(hours=1)):
 						"channel":float(channelUtilization[i]/count)
 						})
 
+				datetimeStartRange = snap.date
 				client = [0] * nbrIf
 				poorSNR = [0] * nbrIf
 				channelUtilization = [0] * nbrIf
