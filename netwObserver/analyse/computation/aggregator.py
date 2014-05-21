@@ -124,8 +124,8 @@ def getIfData(ap, timePerRange=timedelta(hours=1)):
 			if snap.date > (datetimeStartRange + timePerRange):
 				for i in range(nbrIf):
 					result[i].append({"date":datetimeStartRange+timePerRange,
-						"clients":float(client[i]/count) ,
-						"poorSNR":float(poorSNR[i]/count),
+						"clients":int(client[i]) ,
+						"poorSNR":int(poorSNR[i]),
 						"channel":float(channelUtilization[i]/count)
 						})
 
@@ -137,8 +137,8 @@ def getIfData(ap, timePerRange=timedelta(hours=1)):
 
 			for ifData in snap.apifsnapshot_set.all():
 				ifIndex = int(ifData.apinterface.index[1:])
-				client[ifIndex] += ifData.numOfClients
-				poorSNR[ifIndex] += ifData.numOfPoorSNRClients
+				client[ifIndex] = max(client[ifIndex],ifData.numOfClients)
+				poorSNR[ifIndex] = max(poorSNR[ifIndex],ifData.numOfPoorSNRClients)
 				channelUtilization[ifIndex] += ifData.channelUtilization
 				count += 1
 
@@ -160,9 +160,4 @@ def getSpeed(start, end, time):
 	# In Mbites
 	return (speed/1048576)*8
 
-
-from gatherer.models import AccessPoint
-from analyse.computation.aggregator import getIfData
-ap = AccessPoint.objects.get(id=67)
-getIfData(ap)
 
