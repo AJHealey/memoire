@@ -51,14 +51,14 @@
 	function drawInterface{{i}}Chart() {
 		
 		var data = google.visualization.arrayToDataTable([
-		  ['Time', 'Clients', 'Clients with Poor SNR', "Channel Utilization"],
+		  ['Time', 'Clients', 'Clients with Poor SNR', 'Channel Utilization'],
 		  {%for log in logs%}
 		  [new Date({{log.date.year}},{{log.date.month}}-1,{{log.date.day}},{{log.date.hour}},{{log.date.minute}},{{log.date.second}}), {{log.clients}}, {{log.poorSNR}} , {{log.channel}}],
 		  {%endfor%}
 		]);
 
 		var options = {
-			vAxes: [0: {format: '#,##'}, 1: {format: '#%'}],
+			vAxes: [0: {}, 1: {}, 2: {format: '#%'}],
 			title: 'Occupancy',
 		};
 
