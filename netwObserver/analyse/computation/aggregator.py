@@ -114,21 +114,14 @@ def getIfData(ap, timePerRange=timedelta(hours=1)):
 		for i in range(nbrIf):
 			result[i] = []
 
-		client = [0.0] * nbrIf
-		poorSNR = [0.0] * nbrIf
-		channelUtilization = [0.0] * nbrIf
+		client = [0] * nbrIf
+		poorSNR = [0] * nbrIf
+		channelUtilization = [0] * nbrIf
 		count = 0
 
 		for snap in snapshots:
-			if snap.date < (datetimeStartRange + timePerRange):
-				for ifData in snap.apifsnapshot_set.all():
-					ifIndex = int(ifData.apinterface.index[1:])
-					client[ifIndex] += ifData.numOfClients
-					poorSNR[ifIndex] += ifData.numOfPoorSNRClients
-					channelUtilization[ifIndex] += ifData.channelUtilization
-					count += 1
-
-			else:
+			
+			if snap.date > (datetimeStartRange + timePerRange):
 				for i in range(nbrIf):
 					result[i].append({"date":datetimeStartRange+timePerRange,
 						"clients":client[i]/count ,
@@ -136,13 +129,18 @@ def getIfData(ap, timePerRange=timedelta(hours=1)):
 						"channel":channelUtilization[i]/count
 						})
 
-				# Reset
-				for ifData in snap.apifsnapshot_set.all():
-					ifIndex = int(ifData.apinterface.index[1:])
-					client[ifIndex] = ifData.numOfClients
-					poorSNR[ifIndex] = ifData.numOfPoorSNRClients
-					channelUtilization[ifIndex] = ifData.channelUtilization
-					count = 1
+				client = [0] * nbrIf
+				poorSNR = [0] * nbrIf
+				channelUtilization = [0] * nbrIf
+				count = 0
+
+
+			for ifData in snap.apifsnapshot_set.all():
+				ifIndex += int(ifData.apinterface.index[1:])
+				client[ifIndex] += ifData.numOfClients
+				poorSNR[ifIndex] += ifData.numOfPoorSNRClients
+				channelUtilization[ifIndex] += ifData.channelUtilization
+				count += 1
 
 	except ObjectDoesNotExist:
 		pass
