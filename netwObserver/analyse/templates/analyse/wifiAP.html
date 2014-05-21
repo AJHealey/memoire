@@ -53,12 +53,12 @@
 		var data = google.visualization.arrayToDataTable([
 		  ['Time', 'Clients', 'Clients with Poor SNR', 'Channel Utilization'],
 		  {%for log in logs%}
-		  [new Date({{log.date.year}},{{log.date.month}}-1,{{log.date.day}},{{log.date.hour}},{{log.date.minute}},{{log.date.second}}), {{log.clients}}, {{log.poorSNR}} , {{log.channel}}],
+		  [new Date({{log.date.year}},{{log.date.month}}-1,{{log.date.day}},{{log.date.hour}},{{log.date.minute}},{{log.date.second}}), {{log.clients}}, {{log.poorSNR}} , {{log.channel}}/100],
 		  {%endfor%}
 		]);
 
 		var options = {
-			series: {3:{targetAxisIndex:1}},
+			series: {2:{targetAxisIndex:1}},
 			vAxes:[
 				{}, 
 				{title:'Channel Utilization',format: '#%'}
