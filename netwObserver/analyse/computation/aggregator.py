@@ -116,7 +116,7 @@ def getIfData(ap, timePerRange=timedelta(hours=1)):
 		nbrIf = snapshots[0].apifsnapshot_set.all().count()
 
 		for i in range(nbrIf):
-			result[i] = []
+			result[str(i)] = []
 
 		client = [0] * nbrIf
 		poorSNR = [0] * nbrIf
@@ -127,7 +127,7 @@ def getIfData(ap, timePerRange=timedelta(hours=1)):
 			
 			if snap.date > (datetimeStartRange + timePerRange):
 				for i in range(nbrIf):
-					result[i].append({"date":datetimeStartRange+timePerRange,
+					result[str(i)].append({"date":datetimeStartRange+timePerRange,
 						"clients":int(client[i]) ,
 						"poorSNR":int(poorSNR[i]),
 						"channel":float(channelUtilization[i]/count)
