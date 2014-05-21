@@ -31,6 +31,8 @@ def wifiOverview(request):
 	context['cat'] = 'wifi'
 	context['section'] = 'overview'
 
+	context["apDown"] = AccessPoint.objects.areDown()
+
 	return render(request, "analyse/wifiOverview.html", context)
 
 def wifiAP(request):
@@ -44,7 +46,10 @@ def wifiAP(request):
 	if request.method == 'POST' and 'selectedAP' in request.POST:
 		context["ap"] = AccessPoint.objects.get(id=int(request.POST['selectedAP']))
 		context["apBandwidth"] = aggregator.getAPData(context["ap"])
-		#context["interfaceData"] = aggregator.getIfData(context["ap"])
+		tmp = aggregator.getIfData(context["ap"])
+		context["interfaceData"] = tmp["result"]
+		context["interfaceType"] = tmp["types"]
+
 
 	return render(request, "analyse/wifiAP.html", context)
 

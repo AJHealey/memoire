@@ -2,5 +2,19 @@
 {% load staticfiles %}
 
 {% block section %}
-
+<div class="panel panel-warning">
+	<div class="panel-heading">Access Point down</div>
+	<div class="panel-body">
+    {%for ap in apDown%}
+	<h4>{{ap.name}}</h4>
+	<dl class="dl-horizontal">
+		<dt>Mac Address</dt>
+		<dd>{{ap.macAddress}}</dd>
+		<dt>Last Time Seen</dt>
+		<dd>{{ap.lastTouched}}</dd>
+	</dl>
+	{%endfor%}
+	</div>
+	</div>
+</div>
 {%endblock%}

@@ -104,15 +104,19 @@ def getAPData(ap, timePerRange=timedelta(hours=1)):
 
 def getIfData(ap, timePerRange=timedelta(hours=1)):
 	result = {}
+	types = {}
 	try:
 		snapshots = APSnapshot.objects.filter(ap=ap).order_by('date')
 
 		datetimeStartRange = snapshots[0].date
 
+		for snap in snapshots[0].apifsnapshot_set.all():
+			types[snap.apinterface.index[1:]] = snap.apinterface.get_ifType_display()
+
 		nbrIf = snapshots[0].apifsnapshot_set.all().count()
 
 		for i in range(nbrIf):
-			result[i] = []
+			result[str(i)] = []
 
 		client = [0] * nbrIf
 		poorSNR = [0] * nbrIf
@@ -123,12 +127,13 @@ def getIfData(ap, timePerRange=timedelta(hours=1)):
 			
 			if snap.date > (datetimeStartRange + timePerRange):
 				for i in range(nbrIf):
-					result[i].append({"date":datetimeStartRange+timePerRange,
+					result[str(i)].append({"date":datetimeStartRange+timePerRange,
 						"clients":int(client[i]) ,
 						"poorSNR":int(poorSNR[i]),
 						"channel":float(channelUtilization[i]/count)
 						})
 
+				datetimeStartRange = snap.date
 				client = [0] * nbrIf
 				poorSNR = [0] * nbrIf
 				channelUtilization = [0] * nbrIf
@@ -145,7 +150,7 @@ def getIfData(ap, timePerRange=timedelta(hours=1)):
 	except ObjectDoesNotExist:
 		pass
 
-	return result
+	return {"types":types , "result":result}
 
 
 
