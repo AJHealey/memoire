@@ -1,4 +1,4 @@
-\begin{thebibliography}{18}
+\begin{thebibliography}{23}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -10,7 +10,41 @@
 B.~Aboba, L.~Blunk, J.~Vollbrecht, J.~Carlson, and H.~Levkowetz.
 \newblock Extensible authentication protocol (eap).
 \newblock RFC 3748 (Proposed Standard), June 2009.
+\newblock URL \url{http://www.ietf.org/rfc/rfc3748.txt}.
 \newblock Updated by RFC 5247.
+
+\bibitem[Stanley et~al.(2005)Stanley, Walker, and Aboba]{rfc4017}
+D.~Stanley, J.~Walker, and B.~Aboba.
+\newblock {Extensible Authentication Protocol (EAP) Method Requirements for
+  Wireless LANs}.
+\newblock RFC 4017 (Informational), March 2005.
+\newblock URL \url{http://www.ietf.org/rfc/rfc4017.txt}.
+
+\bibitem[Simon et~al.(2008)Simon, Aboba, and Hurst]{rfc5216}
+D.~Simon, B.~Aboba, and R.~Hurst.
+\newblock {The EAP-TLS Authentication Protocol}.
+\newblock RFC 5216 (Proposed Standard), March 2008.
+\newblock URL \url{http://www.ietf.org/rfc/rfc5216.txt}.
+
+\bibitem[Dierks and Rescorla(2006)]{rfc4346}
+T.~Dierks and E.~Rescorla.
+\newblock {The Transport Layer Security (TLS) Protocol Version 1.1}.
+\newblock RFC 4346 (Proposed Standard), April 2006.
+\newblock URL \url{http://www.ietf.org/rfc/rfc4346.txt}.
+\newblock Obsoleted by RFC 5246, updated by RFCs 4366, 4680, 4681, 5746.
+
+\bibitem[Funk and Blake-Wilson(2006)]{ttls-draft}
+P.~Funk and S.~Blake-Wilson.
+\newblock {EAP Tunneled TLS Authentication Protocol Version 1 (EAP-TTLSv1)},
+  March 2006.
+\newblock URL \url{http://tools.ietf.org/html/draft-funk-eap-ttls-v1-01}.
+
+\bibitem[Palekar et~al.(2004)Palekar, Simon, Salowey, Zhou, Zorn, and
+  Josefsson]{peap-draft}
+A.~Palekar, D.~Simon, J.~Salowey, H.~Zhou, G.~Zorn, and S.~Josefsson.
+\newblock {Protected EAP Protocol (PEAP) Version 2}, October 2004.
+\newblock URL
+  \url{http://tools.ietf.org/html/draft-josefsson-pppext-eap-tls-eap-10}.
 
 \bibitem[Bordères and Makarévitch(2006)]{radius1}
 Serge Bordères and Nat Makarévitch.
@@ -19,8 +53,6 @@ Serge Bordères and Nat Makarévitch.
 \newblock Eyrolles, Paris, 2006.
 \newblock ISBN 2-212-12007-9.
 \newblock URL \url{http://opac.inria.fr/record=b1128764}.
-\newblock Les protocoles étudiés dans cet ouvrage peuvent être trouvés sur
-  le site http://www.rfc-editor.org.
 
 \bibitem[Smith et~al.(2010)Smith, Woodhams, and Marg]{wireless1}
 Jeff Smith, Jake Woodhams, and Robert Marg.

@@ -139,22 +139,31 @@ The following figure represents a simplified overview of how the buildings are c
 \section{EAP}
 \texttt{EAP} (\textit{The Extensible Authentication Protocol}) is an Internet Engineering Task Force (IETF) flexible authentication framework standard defined in the \texttt{RFC3748} \cite{rfc3748}. EAP was designed to work without the IP protocol and provides support only for the transport of authentication protocols. This protocol runs directly over data link layers such as \texttt{Point-to-Point Protocol} (PPP) or \texttt{IEEE 802}. It is used to select a specific authentication mechanism whenever the authenticator requests more information to the supplicant.
 
-The particularity with \texttt{EAP} is that the authentication mechanism is negotiated by the peers (i.e. the supplicants) during the connection authentication phase with the authentication server. The peers negotiate the use of which \texttt{EAP} method to use during the authentication. 
+The particularity with \texttt{EAP} is that the authentication mechanism is negotiated by the peers (i.e. the supplicants) during the connection authentication phase with the authentication server. The peers negotiate the use of which \texttt{EAP} method to use during the authentication. Once the method has been agreed upon, an \texttt{EAP} conversation consisting of requests and responses messages exchaged between the peer and the authentication server starts.
 
+The \texttt{EAP} architecture consists of three main elements:
+\begin{itemize}
+	\item \textbf{EAP peer}: The peer is the client that tries to access the protected network and that responds to the authenticator requests.
+	\item \textbf{EAP authenticator}: It is the end of the link initiating an \texttt{EAP} authentication. It is the access point or the network access server that requires \texttt{EAP} authentication in order to grant access to the network.
+	\item \textbf{Authentication server}: The server that communicates with the \texttt{EAP} peer. It negotiate the \texttt{EAP} method to use and validates the peer's credentials allowing it to access the protected network or not.
+\end{itemize}
 
+Since \texttt{EAP} only defines messages formats it has to be encapsulated inside a data link layer transport protocols. Between the peer and the authenticator, the \texttt{EAP} messages has to be encapsulated inside protocols such as \texttt{PPP}, \texttt{PEAP} or \texttt{IEEE 802.1X}. The encapsulation of \texttt{EAP} over \texttt{IEEE 802.1X} is called \texttt{EAPOL} (\textit{EAP over LANs}). Once the authenticator has received a \texttt{EAP} message from the peer, it has to forward it to the authentication server and it does that by encapsulating the message using the \texttt{RADIUS} protocol. Thanks to that, the \texttt{EAP} messages are exchanged between the peer and the authentication server smoothly. Since the information flows between those two entities, the authenticator does not need to support any of the \texttt{EAP} methods. It just has to forward the messages.
 
-The EAP authentication exchange proceeds as follow:
+The following figure\footnote{http://technet.microsoft.com/en-us/library/bb457039.aspx} shows the \texttt{EAP} infrastructure and the information flow between the three components.
 
+\begin{figure}[H]
+	\includegraphics[width=1\linewidth]{Pictures/Chapter2/eap.png}
+	\caption{\texttt{EAP} infrastructure and information flow}
+\end{figure}
 
+The \texttt{EAP} method requirements for Wireless LANs is defined in the \texttt{RFC4017}\cite{rfc4017}. The methods used in today's wireless LANs includes \texttt{EAP-TLS}, \texttt{EAP-TTLS}, \texttt{PEAP} and \texttt{EAP-SIM}. As mentioned in the RFC, these methods support authentication credentials that include digital certificates, user-names and passwords, secure tokens, and SIM secrets.
 
-\begin{enumerate}
-	\item First, the supplicant receives a Request to authenticate packet from the authenticator.
-	\item
-	\item
-	\item
-\end{enumerate}
-
-
+\begin{description}
+	\item [EAP-TLS]: Defined in \texttt{RFC5216}\cite{rfc5216}, the \texttt{EAP-TLS} authentication protocol includes support for certificate-based mutual authentication and key derivation, utilizing the protected ciphersuite negotiation, mutual authentication and key management capabilities of the \texttt{TLS} protocol (described in \texttt{RFC4346}\cite{rfc4346}). The security with this protocol is provided by the utilization of \texttt{X.509} certificates. Indeed, in the \texttt{TLS} negotiation, the server presents a certificate to the client, and if mutual authentication is requested, the peer presents its certificate to the server.
+	\item [EAP-TTLS]: This protocol, defined in the IETF draft\cite{ttls-draft}, extends \texttt{TLS}. It uses \texttt{TLS} to establish a secure connection between a client and server, through which additional information may be exchanged. The difference with \texttt{TTLS} is that one-way authentication in which only the server is authenticated to the client via its certificate is possible. Once the secure tunnel is established between them, the client can send its credentials (i.e. username and password).
+	\item [PEAP]: The Protected Extensible Authentication Protocol is defined in the IETF draft\cite{peap-draft}. This protocol provides an encrypted and authenticated tunnel based on \texttt{TLS} that encapsulates \texttt{EAP} authentication mechanisms. \texttt{PEAP} works by chaining multiple \texttt{EAP} mechanisms. Basically it is composed of two parts. First, a \texttt{TLS} session is negotiated with the server authenticating to the client and optionnaly the client to the server. The negotiated key is used to encrypt the rest of the conversation. Second, within that \texttt{TLS} session, zero or more \texttt{EAP} methods are carried out.
+\end{description}
 
 
 \section{IEEE 802.1X}
@@ -175,7 +184,7 @@ For WLAN authentication, the first thing the supplicant does is to associate wit
 The following figure represents this authentication mechanism for WLAN.
 
 \begin{figure}[H]
-	\includegraphics[width=.7\linewidth]{Pictures/Chapter3/802.png}
+	\includegraphics[width=.7\linewidth]{Pictures/Chapter2/802.png}
 	\caption{\texttt{802.1X} authentication mechanism for WLAN}
 \end{figure}
 
@@ -185,7 +194,7 @@ We can see that there is a major difference between WLAN and LAN authentication 
 
 
 \section{RADIUS}
-
+RFC3579, RFC2865
 
 \section{WiSM}
 
@@ -205,7 +214,7 @@ A SNMP network has three main components:
 
 \begin{figure}[H]
 \centering
-	\includegraphics[width=.7\linewidth]{Pictures/Chapter3/snmp.png}
+	\includegraphics[width=.7\linewidth]{Pictures/Chapter2/snmp.png}
 	\caption{A typical SNMP managed network}
 \end{figure}
 

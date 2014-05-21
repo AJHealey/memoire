@@ -4,27 +4,27 @@ The top-level auxiliary file: main.aux
 The style file: unsrtnat.bst
 Database file #1: Bibliographie/Bibliography.bib.bib
 Warning--entry type for "eduroam1" isn't style-file defined
---line 46 of file Bibliographie/Bibliography.bib.bib
+--line 120 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "eduroam2" isn't style-file defined
---line 55 of file Bibliographie/Bibliography.bib.bib
+--line 129 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "eduroamRadius" isn't style-file defined
---line 62 of file Bibliographie/Bibliography.bib.bib
+--line 136 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "intermapper" isn't style-file defined
---line 68 of file Bibliographie/Bibliography.bib.bib
+--line 142 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "snmp" isn't style-file defined
---line 74 of file Bibliographie/Bibliography.bib.bib
+--line 148 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "windows" isn't style-file defined
---line 80 of file Bibliographie/Bibliography.bib.bib
+--line 154 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "mvt" isn't style-file defined
---line 116 of file Bibliographie/Bibliography.bib.bib
+--line 190 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "octopussy" isn't style-file defined
---line 123 of file Bibliographie/Bibliography.bib.bib
+--line 197 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "syslogCisco" isn't style-file defined
---line 130 of file Bibliographie/Bibliography.bib.bib
+--line 204 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "tplink" isn't style-file defined
---line 137 of file Bibliographie/Bibliography.bib.bib
+--line 211 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "openwrt" isn't style-file defined
---line 143 of file Bibliographie/Bibliography.bib.bib
+--line 217 of file Bibliographie/Bibliography.bib.bib
 Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" has a comma at the end for entry article2
 while executing---line 1233 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
@@ -42,45 +42,45 @@ while executing---line 1315 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
 while executing---line 1315 of file unsrtnat.bst
 Warning--empty year in tplink
-You've used 18 entries,
+You've used 23 entries,
             2481 wiz_defined-function locations,
-            654 strings with 7218 characters,
-and the built_in function-call counts, 5413 in all, are:
-= -- 446
-> -- 236
-< -- 14
-+ -- 104
-- -- 68
-* -- 319
-:= -- 866
-add.period$ -- 64
-call.type$ -- 18
-change.case$ -- 34
-chr.to.int$ -- 18
-cite$ -- 23
-duplicate$ -- 284
-empty$ -- 553
-format.name$ -- 92
-if$ -- 1167
+            684 strings with 8086 characters,
+and the built_in function-call counts, 7098 in all, are:
+= -- 580
+> -- 347
+< -- 16
++ -- 146
+- -- 100
+* -- 446
+:= -- 1139
+add.period$ -- 83
+call.type$ -- 23
+change.case$ -- 44
+chr.to.int$ -- 23
+cite$ -- 28
+duplicate$ -- 354
+empty$ -- 703
+format.name$ -- 133
+if$ -- 1527
 int.to.chr$ -- 1
-int.to.str$ -- 19
+int.to.str$ -- 24
 missing$ -- 9
-newline$ -- 107
-num.names$ -- 54
-pop$ -- 197
+newline$ -- 136
+num.names$ -- 69
+pop$ -- 254
 preamble$ -- 1
-purify$ -- 18
+purify$ -- 23
 quote$ -- 0
-skip$ -- 205
+skip$ -- 255
 stack$ -- 0
-substring$ -- 57
-swap$ -- 39
+substring$ -- 67
+swap$ -- 54
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 117
+type$ -- 152
 warning$ -- 5
-while$ -- 37
+while$ -- 47
 width$ -- 0
-write$ -- 241
+write$ -- 309
 (There were 6 error messages)
