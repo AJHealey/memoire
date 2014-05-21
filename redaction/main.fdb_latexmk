@@ -1,12 +1,31 @@
 # Fdb version 3
+<<<<<<< HEAD
+["bibtex main"] 1400672658 "main.aux" "main.bbl" "main" 1400674241
+  "/usr/local/texlive/2012/texmf-dist/bibtex/bst/natbib/unsrtnat.bst" 1233624470 24550 a41a6405f4de768c43e871d9fbce2bc8 ""
+  "Bibliographie/Bibliography.bib.bib" 0 -1 0 ""
+  "main.aux" 1400674240 12693 9f10190f1b724f3ee34c926020ed62f3 ""
+=======
 ["bibtex main"] 1400661884 "main.aux" "main.bbl" "main" 1400661894
   "/usr/local/texlive/2012/texmf-dist/bibtex/bst/natbib/unsrtnat.bst" 1233624470 24550 a41a6405f4de768c43e871d9fbce2bc8 ""
   "Bibliographie/Bibliography.bib.bib" 0 -1 0 ""
   "main.aux" 1400661893 12061 b61d7e97696bf33934d5e12afbb43f99 ""
+>>>>>>> FETCH_HEAD
   "main.bcf" 0 -1 0 ""
   (generated)
   "main.bbl"
   "main.blg"
+<<<<<<< HEAD
+["pdflatex"] 1400674232 "main.tex" "main.pdf" "main" 1400674241
+  "./Appendices/Source.tex" 1399217142 442 7fc298817e7e74ec9ad1389deeb25182 ""
+  "./Chapters/Chapter1.tex" 1400460028 13270 53a3c5fe9d10d10bbda746223b440055 ""
+  "./Chapters/Chapter2.tex" 1400674197 29865 aa563f2844cabc9aab27cf7ff460f955 ""
+  "./Chapters/Chapter4.tex" 1400442947 4552 0bc3c44cba72c4a3c48720113142d465 ""
+  "./Chapters/Chapter5.tex" 1400525392 25589 86b2c3fee7c89f7690f92057bfb104b4 ""
+  "./Chapters/Chapter6.tex" 1400620491 13869 4683c4f86cef2f8491483eacf5d36652 ""
+  "./Chapters/Chapter7.tex" 1400407223 2926 534e7736af71134e807876c074ed63e6 ""
+  "./Packages/Thesis.cls" 1399292583 16250 d18bbb6f34fb5021ae7cf61ab1db60b8 ""
+  "./Packages/lstpatch.sty" 1390999908 13431 9c5d10d9a7ae04b75464fb7308a22083 ""
+=======
 ["pdflatex"] 1400661884 "main.tex" "main.pdf" "main" 1400661894
   "./Appendices/Source.tex" 1399118860 442 7fc298817e7e74ec9ad1389deeb25182 ""
   "./Chapters/Chapter1.tex" 1400504245 13270 53a3c5fe9d10d10bbda746223b440055 ""
@@ -17,6 +36,7 @@
   "./Chapters/Chapter7.tex" 1400352861 2926 534e7736af71134e807876c074ed63e6 ""
   "./Packages/Thesis.cls" 1399296468 16250 d18bbb6f34fb5021ae7cf61ab1db60b8 ""
   "./Packages/lstpatch.sty" 1385743065 13431 9c5d10d9a7ae04b75464fb7308a22083 ""
+>>>>>>> FETCH_HEAD
   "/usr/local/texlive/2012/texmf-dist/tex/context/base/supp-pdf.mkii" 1337017135 71627 94eb9990bed73c364d7f53f960cc8c5b ""
   "/usr/local/texlive/2012/texmf-dist/tex/generic/ifxetex/ifxetex.sty" 1284331290 1458 43ab4710dc82f3edeabecd0d099626b2 ""
   "/usr/local/texlive/2012/texmf-dist/tex/generic/oberdiek/etexcmds.sty" 1335995445 7612 c47308d923ec19888707b0f1792b326a ""
@@ -97,6 +117,26 @@
   "/usr/local/texlive/2012/texmf-dist/tex/latex/varwidth/varwidth.sty" 1238697683 10894 d359a13923460b2a73d4312d613554c8 ""
   "/usr/local/texlive/2012/texmf-dist/tex/latex/vmargin/vmargin.sty" 1137111065 6845 5eae49c3f07fead60d92def0a4f5c30f ""
   "/usr/local/texlive/2012/texmf-dist/tex/latex/xkeyval/xkeyval.sty" 1218672668 4934 8ea45c150f1216b4eb8e3b63954e4bbf ""
+<<<<<<< HEAD
+  "Pictures/Chapter2/802.png" 1399292583 220207 187ddd0c314ab4f50662acd79679d09b ""
+  "Pictures/Chapter2/building.png" 1399824901 491334 e1609482f2aedeeae43e292bbafd9fed ""
+  "Pictures/Chapter2/eap.png" 1400666470 15984 2bfb1abfa1df58a464ca1b04259763e3 ""
+  "Pictures/Chapter2/eduroam1.png" 1399132883 464098 c2fc961f2aafead1083e01471374af85 ""
+  "Pictures/Chapter2/snmp.png" 1399035625 39351 2aeae91c37365d63c4892cf0fac5c7b8 ""
+  "Pictures/Chapter2/student.png" 1399132762 267545 0cbeda2cee320b4521e27762aaa4130b ""
+  "Pictures/Chapter2/topology.png" 1399824901 516438 2bf0922019f14cd92a3bbf52e252de14 ""
+  "Pictures/Chapter2/ucl.png" 1399824901 668200 50afc08ed8955caea4af59d99c5ac4cd ""
+  "Pictures/Chapter2/wired.png" 1399217143 380004 b664298a41f1d37648843a39987490f5 ""
+  "Pictures/Chapter5/router.jpg" 1400444010 234169 7ef3870bf822c27bb63df1a2137ada6e ""
+  "Pictures/UCL/epl.jpg" 1399035625 13716 260061c0245f1fa5695cada01aab0bb7 ""
+  "Pictures/UCL/ucl.jpg" 1399035625 179162 210963191ac7651ed060882ae9db003b ""
+  "Pictures/appendices/structure.jpg" 1399217142 142693 169b144f87aa63e87ce07527290085d3 ""
+  "main.aux" 1400674240 12693 9f10190f1b724f3ee34c926020ed62f3 ""
+  "main.bbl" 1400672644 5867 9d05f78149b46a95c28ef611f44d50c5 "bibtex main"
+  "main.out" 1400674240 12212 3e756ad8caf59c27e0cad370cf8e9b4c ""
+  "main.tex" 1400672643 5280 d57478fee8de9b83e8757c0030de4695 ""
+  "main.toc" 1400674240 5995 e684bc2e6c83085d23253ec378d2d767 ""
+=======
   "Pictures/Chapter2/building.png" 1399839079 491334 e1609482f2aedeeae43e292bbafd9fed ""
   "Pictures/Chapter2/eduroam1.png" 1399190524 464098 c2fc961f2aafead1083e01471374af85 ""
   "Pictures/Chapter2/student.png" 1399190524 267545 0cbeda2cee320b4521e27762aaa4130b ""
@@ -114,6 +154,7 @@
   "main.out" 1400661893 12212 c445ffaa48cae49a14fd3e03efa3015e ""
   "main.tex" 1400661857 5280 d57478fee8de9b83e8757c0030de4695 ""
   "main.toc" 1400661893 5995 5bfccc7539d778015110bd81a35a2ad9 ""
+>>>>>>> FETCH_HEAD
   (generated)
   "main.out"
   "main.log"
