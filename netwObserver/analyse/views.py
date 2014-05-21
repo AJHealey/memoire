@@ -47,7 +47,7 @@ def wifiAP(request):
 		context["interfaceData"] = aggregator.getIfData(context["ap"])
 		tmp = {}
 		for interf in context["ap"].apinterface_set.all():
-			tmp[interf.ifType] = interf
+			tmp[str(interf.ifType)] = interf
 		context["apIf"] = tmp
 
 	return render(request, "analyse/wifiAP.html", context)
