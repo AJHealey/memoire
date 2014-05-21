@@ -111,7 +111,7 @@ def getIfData(ap, timePerRange=timedelta(hours=1)):
 		datetimeStartRange = snapshots[0].date
 
 		for snap in snapshots[0].apifsnapshot_set.all():
-			types[int(ifData.apinterface.index[1:])] = ifData.apinterface.get_ifType_display()
+			types[int(snap.apinterface.index[1:])] = snap.apinterface.get_ifType_display()
 
 		nbrIf = snapshots[0].apifsnapshot_set.all().count()
 
@@ -150,7 +150,7 @@ def getIfData(ap, timePerRange=timedelta(hours=1)):
 	except ObjectDoesNotExist:
 		pass
 
-	return result
+	return {"types":types , "result":result}
 
 
 
