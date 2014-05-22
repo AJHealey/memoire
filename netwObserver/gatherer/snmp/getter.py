@@ -502,8 +502,13 @@ def parseMacAdresse(macString):
 
 	elif result.startswith("b'") or result.startswith('b"'):
 		tmp = ""
+		escaped = False
 		for c in result[2:-1]:
-			tmp += "{:02x}".format(ord(c))
+			if c == '\\' and not escaped:
+				escaped = True
+			else:
+				escaped = False
+				tmp += "{:02x}".format(ord(c))
 		result = tmp
 
 	else:
