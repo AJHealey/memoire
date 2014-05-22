@@ -467,7 +467,7 @@ def getAllRAP():
 				except ObjectDoesNotExist:
 					pass
 	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpRAPDaemon - Rogue Ap SSID', error=str(e)).save()
+		OperationalError(source='snmpRAPDaemon - Rogue Ap SSID', error=str(e)).save()
 
 
 	# Update all the RAP
@@ -512,14 +512,14 @@ def parseMacAdresse(macString):
 		result = tmp
 
 	else:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmp macAddress parsing', error=macString).save()
+		OperationalError(source='snmp macAddress parsing', error="Unknown format: %s" % result).save()
 
 
 	if len(result) == 12:
 		return "%s:%s:%s:%s:%s:%s" % (result[0:2],result[2:4],result[4:6],result[6:8],result[8:10],result[10:])
 	
 	else:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmp macAddress parsing', error=macString).save()
+		OperationalError(source='snmp macAddress parsing', error="Length Error: %s"result).save()
 		raise Exception()
 
 
