@@ -14,19 +14,35 @@
 
 char router_mac[18]; /* Router mac address */
 
-struct wpa_ctrl *ctrl;
-struct timeb wpa_start, wpa_end, dhcp_start, dhcp_end, wpa_time, dhcp_time;
-struct tm tm;
-time_t now;
+struct wpa_ctrl *ctrl; /* Control interface of wpa_supplicant */
+struct timeb wpa_start, wpa_end, dhcp_start, dhcp_end; /* Time structures */
+struct log *log_struct; /* Log structure */
+struct tm tm; // For date computation
+time_t now; // For date computation
 int start_loop = 0;
+
+
 int dhcp = 0;
+int connection = 0;
+
+//int disconnected = 0; // If abrupt disconnection
 FILE *f; //Log file
 
 /* For Logs */
 char *ssid_log;
 
 
-/* Stores all the AP BSSID tried for association */
+/* Structure for log file */
+struct log {
+	char *date;
+	char *ssid;
+	struct ap_tried *tried;
+	struct ap_connect *connected;
+	struct ap_time *time;
+	struct check_serv *services;
+};
+
+/* Structure that stores all the AP BSSID tried for association */
 struct ap_tried {
 	char *bssid;
 	int num;
@@ -34,6 +50,38 @@ struct ap_tried {
 };
 struct ap_tried *first = NULL;
 struct ap_tried *curr = NULL;
+
+
+/* Structure that stores the BSSID of the AP it is connected with */
+struct ap_connect {
+	char *bssid;
+	int num;
+	struct ap_connect *next;
+};
+struct ap_connect *first_connect = NULL;
+struct ap_connect *curr_connect = NULL;
+
+
+/* Structure for time details about wpa_supplicant and udhcpc */
+struct ap_time {
+	struct timeb wpa_time;
+	struct timeb dhcp_time;
+};
+
+
+/* Structure that stores the information about the services */
+struct check_serv {
+	char *google;
+	char *gmail;
+	char *github;
+	char *ssl_github;
+	char *uclouvain;
+	char *icampus;
+};
+
+
+
+
 
 /* Stores all the results of a scan */
 struct scan_results {
@@ -62,39 +110,17 @@ enum log_events {
 	LOG_STOP_SCAN,
 	LOG_START_CONNECTION,
 	LOG_STOP_CONNECTION,
+	LOG_PRINT_STRUCT,
 	LOG_START_CONNECTION_LOOP,
 	LOG_STOP_CONNECTION_LOOP,
 	LOG_FINAL_STOP_CONNECTION_LOOP,
 	LOG_MAC_ADDR,
-	LOG_SCAN_BSSID,
-	LOG_SCAN_STRENGTH,
-	LOG_SCAN_SSID,
 	LOG_INFO_DATE,
-	LOG_INFO_SSID,
-	LOG_INFO_TRIED,
-	LOG_INFO_CONNECTED,
-	LOG_INFO_TIME_START,
-	LOG_INFO_TIME_WPA,
-	LOG_INFO_TIME_DHCP,
-	LOG_INFO_TIME_STOP,
-	LOG_INFO_SERVICE_START,
-	LOG_INFO_SERVICE_GOOGLE,
-	LOG_INFO_SERVICE_GMAIL,
-	LOG_INFO_SERVICE_GITHUB,
-	LOG_INFO_SERVICE_GITHUB_SSL,
-	LOG_INFO_SERVICE_UCLOUVAIN,
-	LOG_INFO_SERVICE_ADE,
-	LOG_INFO_SERVICE_ICAMPUS,
-	LOG_INFO_SERVICE_STOP,
 };
 
 /* Actions possible */
 enum wpa_action {
-	ACTION_CONNECT_STUDENT,
-	ACTION_CONNECT_EDUROAM,
-	ACTION_CONNECT_UCLOUVAIN,
-	ACTION_CONNECT_VISITEURS,
-	ACTION_CONNECT_PRIVE,
+	ACTION_CONNECT,
 	ACTION_CONNECT_MAISON,
 	ACTION_DISCONNECT,
 	ACTION_CREATE_NETWORKS,
@@ -104,16 +130,16 @@ enum wpa_action {
 /* Prototypes */
 static void log_event(enum log_events log, const char *arg);
 static void parse_event(const char *reply);
-static void execute_action(enum wpa_action action);
+static void execute_action(enum wpa_action action, int network);
 static void commands(char *cmd);
 static void create_networks();
-static void config_network(int network, char *ssid, char *key_mgmt, char *eap, char *pairwise, char *identity, char *password, char *ca_cert, char *phase1, char *phase2, char*psk);
+static void config_network(int network, char *ssid, char *key_mgmt, char *eap, char *pairwise, char *identity, char *password, char *ca_cert, char *phase1, char *phase2);
+static void connect_network(int network);
 static void connect_eduroam();
 static void connect_uclouvain();
 static void connect_visiteurs();
 static void connect_prive();
 static void connect_student();
-static void connect_maison();
 static int checkService(char *host, const char *port);
 static void services_loop();
 static void scan();
