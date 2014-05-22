@@ -519,7 +519,7 @@ def parseMacAdresse(macString):
 		return "%s:%s:%s:%s:%s:%s" % (result[0:2],result[2:4],result[4:6],result[6:8],result[8:10],result[10:])
 	
 	else:
-		OperationalError(source='snmp macAddress parsing', error="Length Error: %s"result).save()
+		OperationalError(source='snmp macAddress parsing', error="Length Error: %s" % result).save()
 		raise Exception()
 
 
