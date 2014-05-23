@@ -56,6 +56,7 @@ static void log_event(enum log_events log, const char *arg) {
 				
 				fprintf(f, "{\n"); 
 				fprintf(f, "\"bssid\": \"%s\",\n", ptr->bssid);
+				fprintf(f, "\"frequency\": \"%s\",\n", ptr->freq);
 				fprintf(f, "\"signal\": \"%s\",\n", ptr->signal);
 				fprintf(f, "\"ssid\": \"%s\",\n", ptr->ssid);
 				
@@ -93,55 +94,53 @@ static void log_event(enum log_events log, const char *arg) {
 				log_struct->tried = try;
 				log_struct->connected = connect;
 
-				printf("{\n");
+				fprintf(f, "\"date\": \"%s\",\n", log_struct->date);
 
-				printf("\"date\": \"%s\",\n", log_struct->date);
+				fprintf(f, "\"ssid\": \"%s\",\n", log_struct->ssid);
 
-				printf("\"ssid\": \"%s\",\n", log_struct->ssid);
-
-				printf("\"tried\": [ ");
+				fprintf(f, "\"tried\": [ ");
 				/* Display all the BSSID tried */
 				while(try != NULL) {
-					printf("\"%s\"", try->bssid);
+					fprintf(f, "\"%s\"", try->bssid);
 					/* JSON syntax */
 					if(first->num != 1) {
-						printf(", ");
+						fprintf(f, ", ");
 						first->num -= 1;
 					}
 					else
-						printf(" ");
+						fprintf(f, " ");
 					try = try->next;
 				}	
-				printf("],\n");
+				fprintf(f, "],\n");
 		
-				printf("\"connected\": [ ");
+				fprintf(f, "\"connected\": [ ");
 				/* Display the connection list */
 				while(connect != NULL) {
-					printf("\"%s\"", log_struct->connected->bssid);
+					fprintf(f, "\"%s\"", log_struct->connected->bssid);
 					/* JSON syntax */
 					if(first_connect->num != 1) {
-						printf(", ");
+						fprintf(f, ", ");
 						first_connect->num -= 1;
 					}
 					else
-						printf(" ");
+						fprintf(f, " ");
 					connect = connect->next;
 				}
-				printf("],\n");
+				fprintf(f, "],\n");
 		
-				printf("\"time\": {\n");
-				printf("\"wpa_supplicant\": \"%ldsec %.3ums\",\n", log_struct->time->wpa_time.time, log_struct->time->wpa_time.millitm);
-				printf("\"dhcp\": \"%ldsec %.3ums\",\n", log_struct->time->dhcp_time.time, log_struct->time->dhcp_time.millitm);
-				printf("},\n");
+				fprintf(f, "\"time\": {\n");
+				fprintf(f, "\"wpa_supplicant\": \"%ldsec %.3ums\",\n", log_struct->time->wpa_time.time, log_struct->time->wpa_time.millitm);
+				fprintf(f, "\"dhcp\": \"%ldsec %.3ums\",\n", log_struct->time->dhcp_time.time, log_struct->time->dhcp_time.millitm);
+				fprintf(f, "},\n");
 
-				printf("\"services\": {\n");
-				printf("\"google.be\": \"%s\",\n", log_struct->services->google);
-				printf("\"gmail.be\": \"%s\",\n", log_struct->services->gmail);
-				printf("\"github.be\": \"%s\",\n", log_struct->services->github);
-				printf("\"ssl.github.be\": \"%s\",\n", log_struct->services->ssl_github);
-				printf("\"uclouvain.be\": \"%s\",\n", log_struct->services->uclouvain);
-				printf("\"icampus.uclouvain.be\": \"%s\"\n", log_struct->services->icampus);
-				printf("}\n");
+				fprintf(f, "\"services\": {\n");
+				fprintf(f, "\"google.be\": \"%s\",\n", log_struct->services->google);
+				fprintf(f, "\"gmail.be\": \"%s\",\n", log_struct->services->gmail);
+				fprintf(f, "\"github.be\": \"%s\",\n", log_struct->services->github);
+				fprintf(f, "\"ssl.github.be\": \"%s\",\n", log_struct->services->ssl_github);
+				fprintf(f, "\"uclouvain.be\": \"%s\",\n", log_struct->services->uclouvain);
+				fprintf(f, "\"icampus.uclouvain.be\": \"%s\"\n", log_struct->services->icampus);
+				fprintf(f, "}\n");
 				
 			}
 			break;
@@ -217,13 +216,13 @@ static void parse_event(const char *reply) {
 		/* Reconnections */
 		else {
 			strcpy(ptr->bssid, bssid);
-			ptr->next = first_connect;
-			first_connect = ptr;
 			first_connect->num += 1;
+			ptr->next = NULL;
+			curr_connect->next = ptr;
+			curr_connect = ptr;
 		}
 		
 		/* Start udhcpc to get an IP address */
-		system("killall udhcpc");
 		ftime(&dhcp_start);
 		system("udhcpc -t 0 -i wlan0 -C");
 		ftime(&dhcp_end);
@@ -277,16 +276,6 @@ static void parse_event(const char *reply) {
 
 		log_struct->ssid = malloc(strlen(ssid_log)+1);
 		strcpy(log_struct->ssid, ssid_log);
-
-		/* Free AP Tried linked List */
-		/*struct ap_tried *current = first;
-		struct ap_tried *tmp;
-		while(current != NULL) {
-			tmp = current->next;
-			free(current);
-			current = tmp;
-		}
-		first = NULL;*/
 	}
 }
 
@@ -305,8 +294,8 @@ static void execute_action(enum wpa_action action, int network) {
 			commands("DISABLE_NETWORK 2");
 			commands("DISABLE_NETWORK 3");
 			commands("DISABLE_NETWORK 4");
+			system("killall udhcpc");
 			dhcp = 0;
-			connection = 0;
 			break;
 		case ACTION_CREATE_NETWORKS:
 			create_networks();
@@ -436,42 +425,6 @@ static void connect_network(int network) {
 }
 
 
-/*
- * Connects wpa_supplicant to the eduroam network
- */
-static void connect_eduroam() {
-	char date[19];
-	now = time(NULL);
-	tm = *localtime(&now);
-	sprintf(date, "%d/%d/%d %d:%d:%d", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-	log_struct->date = malloc(strlen(date)+1);
-	strcpy(log_struct->date, date);	
-
-	ftime(&wpa_start);
-	commands("SELECT_NETWORK 0");
-	while(dhcp != 1) {
-		sleep(1);
-	}
-}
-
-/*
- * Connects wpa_supplicant to the UCLouvain network
- */
-static void connect_uclouvain() {
-	char date[19];
-	now = time(NULL);
-	tm = *localtime(&now);
-	sprintf(date, "%d/%d/%d %d:%d:%d", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-	log_struct->date = malloc(strlen(date)+1);
-	strcpy(log_struct->date, date);
-
-	ftime(&wpa_start);
-	commands("SELECT_NETWORK 1");
-	while(dhcp != 1) {
-		sleep(1);
-	}
-}
-
 /* 
  * Check if services are available or not
  */
@@ -535,7 +488,7 @@ static void services_loop() {
 	if(checkService("smtp.gmail.com", "587") == 1)
 		strcpy(ptr->gmail, "1");
 	else
-		strcpy(ptr->google, "0");
+		strcpy(ptr->gmail, "0");
 
 	if(checkService("github.com", "22") == 1)
 		strcpy(ptr->github, "1");
@@ -568,8 +521,8 @@ static void services_loop() {
  */
 static void scan() {
 	char *line, *saved_line, *object, *saved_object;
-	char reply[BUF*3];
-	size_t len = (BUF*3)-1;
+	char reply[BUF*12];
+	size_t len = (BUF*12)-1;
 	int i,ret;
 	
 	commands("SCAN"); //Scan	
@@ -714,27 +667,26 @@ void *wpa_loop(void *p_data) {
 }
 
 void clear_struct() {
-	struct ap_tried *current_try = first;
 	struct ap_tried *tmp_try;
-	struct ap_connect *current_connect = first_connect;
 	struct ap_connect *tmp_connect;
-	log_struct->tried = current_try;
-	log_struct->connected = current_connect;
 
-	while(current_try != NULL) {
-		tmp_try = current_try->next;
-		free(current_try);
-		current_try = tmp_try;
+	while (first != NULL) {
+		tmp_try = first;
+		first = tmp_try->next;
+		free(tmp_try);
 	}
 
-	while (current_connect != NULL) {
-		tmp_connect = current_connect->next;
-		free(current_connect);
-		current_connect = tmp_connect;
+	while (first_connect != NULL) {
+		tmp_connect  = first_connect;
+		first_connect = tmp_connect->next;
+		free(tmp_connect);
 	}
 
+	free(log_struct->time);
+	free(log_struct->services);
 	free(log_struct);
-	log_struct = (struct log*) malloc (sizeof(struct log));
+
+	log_struct = (struct log *) malloc (sizeof(struct log));
 }
 
 
@@ -753,12 +705,14 @@ void *connection_loop(void * p_data) {
 		log_event(LOG_START_LOOP, NULL);
 		scan();
 		log_event(LOG_START_CONNECTION, NULL);
+
 		for(i = 0; i<=4; i++) {
 			log_event(LOG_START_CONNECTION_LOOP, NULL);
 			execute_action(ACTION_CONNECT, i);
 			services_loop();
 			log_event(LOG_PRINT_STRUCT, NULL);
 			sleep(DELAY);
+			clear_struct();
 			execute_action(ACTION_DISCONNECT, 0);
 			if(i != 4)
 				log_event(LOG_STOP_CONNECTION_LOOP, NULL);
@@ -767,66 +721,6 @@ void *connection_loop(void * p_data) {
 			sleep(DELAY);
 		}
 		log_event(LOG_STOP_CONNECTION, NULL);
-
-
-
-		//eduroam
-		/*debug_print("Connect to eduroam\n");
-		
-		execute_action(ACTION_CONNECT_EDUROAM);
-		services_loop();
-		log_event(LOG_PRINT_STRUCT, NULL);
-		sleep(DELAY);
-		debug_print("Disconnection from eduroam\n");
-		execute_action(ACTION_DISCONNECT);
-		log_event(LOG_STOP_CONNECTION_LOOP, NULL);
-		sleep(DELAY);
-
-		//UCLouvain
-		debug_print("Connect to UCLouvain\n");
-		log_event(LOG_START_CONNECTION_LOOP, NULL);
-		execute_action(ACTION_CONNECT_UCLOUVAIN);
-		services_loop();
-		log_event(LOG_PRINT_STRUCT, NULL);
-		sleep(DELAY);
-		debug_print("Disconnection from UCLouvain\n");
-		execute_action(ACTION_DISCONNECT);
-		log_event(LOG_STOP_CONNECTION_LOOP, NULL);
-		sleep(DELAY);
-
-		//visiteurs.UCLouvain
-		debug_print("Connect to visiteurs.UCLouvain\n");
-		log_event(LOG_START_CONNECTION_LOOP, NULL);
-		execute_action(ACTION_CONNECT_VISITEURS);
-		services_loop();
-		log_event(LOG_PRINT_STRUCT, NULL);
-		sleep(DELAY);
-		debug_print("Disconnection from visiteurs.UCLouvain\n");
-		execute_action(ACTION_DISCONNECT);
-		log_event(LOG_STOP_CONNECTION_LOOP, NULL);
-		sleep(DELAY);
-
-		//UCLouvain-prive
-		debug_print("Connect to UCLouvain-prive\n");
-		log_event(LOG_START_CONNECTION_LOOP, NULL);
-		execute_action(ACTION_CONNECT_PRIVE);
-		log_event(LOG_PRINT_STRUCT, NULL);
-		sleep(DELAY);
-		debug_print("Disconnection from UCLouvain-prive\n");
-		execute_action(ACTION_DISCONNECT);
-		log_event(LOG_STOP_CONNECTION_LOOP, NULL);
-		sleep(DELAY);
-		
-		
-		//student.UCLouvain
-		debug_print("Connect to student.UCLouvain\n");
-		log_event(LOG_START_CONNECTION_LOOP, NULL);
-		execute_action(ACTION_CONNECT_STUDENT);
-		services_loop();
-		log_event(LOG_PRINT_STRUCT, NULL);
-		sleep(DELAY);
-		log_event(LOG_FINAL_STOP_CONNECTION_LOOP, NULL);
-		log_event(LOG_STOP_CONNECTION, NULL);*/
 
 		if(close == 1) {
 			debug_print("SAVE\n");
