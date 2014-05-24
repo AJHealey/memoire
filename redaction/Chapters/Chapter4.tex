@@ -187,7 +187,9 @@ Thanks to does commands our program can to control the \texttt{wpa\_supplicant} 
 \subsubsection{\texttt{wifi\_minitoring.c}}
 In this section we describe the implementation details of our active monitoring program and how it gathers data about the current state of the networks.
 
-At boot, our 
+The first thing the program does at boot is to start \texttt{wpa\_supplicant}. We have created an empty configuration file for the supplicant in order to launch it without starting a connection to a special network defined in that file. The supplicant uses the driver \texttt{nl80211} which is the current standard (\texttt{wext} being deprecated) and uses the \texttt{wlan0} interface.
+Once the supplicant is started we open a connection with the control interface using \texttt{wpa\_ctrl\_attach(/tmp/run/wpa\_supplicant/wlan0)} (where the parameter is the path for UNIX domain sockets). That function returns a pointer to the abstract control interface data and is stored inside an internal \texttt{wpa\_ctrl} structure.
+
 
 
 
