@@ -41,7 +41,7 @@ def getRadiusSuccessRate():
 ## Users Aggregators 
 def getUsersByDot11Protocol(timedeltaData=timedelta(weeks=12)):
 	stats = {}
-	ms = MobileStation.objects.filter(lastTouched__gte=timezone.now() - timedeltaData)
+	ms = MobileStation.objects.isAssociated()
 	for proto,display in MobileStation.DOT11_PROTOCOLS:
 		tmp =  ms.filter(dot11protocol__exact=proto).count()
 		if tmp > 0:

@@ -170,8 +170,18 @@ The key is 2048 bits long and each entity has its own pair of keys (i.e. the ser
 The main drawback of such encryption is that the computations are quite heavy to perform. Which is against our previous requirements. That's why we only use it to encrypt and exchange a symmetric key that will be used for the exchange of data.
 \subsection{AES}
 The symmetric algorithm used is AES which stands for Advanced Encryption Standard. We chose a size of 256 bits for the keys which is quite correct for our utilization. The idea is to permute the bits of the message using the key. The operations performed are lighter than the ones used by RSA and so make it more adapted to be used on the probes.
+
 \subsection{Transaction Protocol}
+To be correct, the exchanges between the probes and the server requires a protocol well defined and respected by the two parts. 
+
+
+
+As already said, the server knows the public key of every probe in advance. 
+
+
+
 \subsection{OpenSSL}
+
 \subsection{PyCrypto}
 
 \section{Deployment}
@@ -191,4 +201,5 @@ In Celery, we can define the number of workers working on the task send to the q
 
 \subsubsection*{The Scheduler}
 The scheduler in Celery is called \emph{beat} and its only responsibility is to send the \emph{periodic tasks} to the workers. We have given it the path of the application i which we have define the task and the related interval. \emph{Celery beat} gatherer them and fire the task accordingly. The main warning about the scheduler is the fact that it lunch the task \textbf{exactly} at each interval. If we imagine a task that take between 4 and 5 minutes to be perform and that the interval is of 10 minutes, there can be moments where two instances of that tasks overlap. Effectively, if all the workers are occupied and the first instance only start after 8 minutes of waiting, the second task will start two minutes later while the first one is still running. Here again, such consideration have been taken care of and the data are store with a time stamp or linked to en entity having one. The data gatherer can be completely order and even if such condition occurred, the result would be only a lack of data during an interval and more during the next one. As the intervals vary from 20 minutes to 2 hours while the results are analyse throught several day of data, the impact is quite reduced. 
+
 

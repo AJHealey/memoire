@@ -73,18 +73,17 @@ These requirements comes from the meetings we had with the SGSI. We discuss what
 \end{description}
 
 \section{Architecture}
-In our architecture system, we have two very distinct entities. 
-The first entity, called the \textit{Gatherer} is the one responsible for gathering information. This component handles the responsibility to keep the operational database up to date and in a consistent state. The other side of the application, the \textit{Analyser}, is the one managing the analysis made with all the information we gathered at the first level. Upon these two processes, we'll add an alert system that which produce warnings when an anomalies is spotted..
+In our architecture system, we have two very distinct entities. The first entity, called the \textit{Gatherer}, is the one responsible for gathering information. This component handles the responsibility to keep the operational database up to date and in a consistent state. The other side of the application, the \textit{Analyser}, is managing the analysis made with all the information we have gathered. Upon these two processes, we'll add an alert system that which produce warnings when an anomalies is spotted. These three parts have to be as independent as possible but able to communicate between them efficiently. We have designed them by keeping two rules in mind: modularity and simplicity.
 
 \subsection{Gatherer}
-This part of the application is constituted of several modules that allow it to communicate with the various sources of information. Each module is responsible of a distinct kind of information and each of them have to transform the piece of information in a coherent entry in the database. As the information come from heterogeneous origins, each information have to be understood and transformed into an entity that can be related to others. Without such transformation, the possible analysis would be really limited and not really interesting. We focus here on the \texttt{Achieve[GatherData]} goal and its refinement.
+This part of the application is constituted of several modules that allow it to communicate with the various sources of information. Each module is responsible of a particular kind of information and each of them have to transform that piece of information in a coherent entry in the database. As the information come from heterogeneous origins, each information have to be understood and transformed into an entity that can be related to others. Without such transformation, the possible analysis would be really limited and not really interesting. We focus here on the \texttt{Achieve[GatherData]} goal and its refinement.
 
 \subsubsection{Logs}
-The first kind of information we managed to analyse was the logs files. There is one file per infrastructure component:
+The first kind of information we managed to analyse was the logs files. There is one different log type per infrastructure component:
 \begin{itemize}
 \item Radius
 \item DHCP
-\item Wism
+\item Wism (Controller)
 \end{itemize}
 These elements generate several logs each seconds and the first difficulty was to make a first sorting among all those data. A part of them are just informational and don't bring useful information about the state of the network. Such information will never be used during the analysis and then they don't have to be store in the database. Another part of the logs are repetition of others. In fact, as each element produces its logs independently, some logs can overlap and represent the same information. Redundant information are useless and the same information don't need to be in the database twice. This can seems to be a unimportant issue but in consideration of the quantity of information proceed by the application, an overloading of the database can cause severe performance issue during the analysis phase.
 The ideal way of gathering such information would be to load them directly from the sources at our convenience. In this way, we could manage and optimise the processing of the data.
