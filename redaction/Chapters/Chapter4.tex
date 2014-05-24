@@ -179,11 +179,16 @@ SET_NETWORK 1 pahse2 "auth=PAP"
 	\item[-] \texttt{SELECT\_NETWORK <network id>}: This command asks the \texttt{wpa\_supplicant} daemon to select a special network specifying its ID. When the network is selected, all the others are disabled.
 
 	\item[-] \texttt{DISCONNECT}: Special command to disconnect from the current network.
-	
 \end{itemize}
+
+Thanks to does commands our program can to control the \texttt{wpa\_supplicant} daemon and is thus able to simulate a typical user's behavior connection to the networks. More information about \texttt{wpa\_supplicant} can be found inside the developer's guide\cite{wpa-supplicant-devel}.
 
 
 \subsubsection{\texttt{wifi\_minitoring.c}}
+In this section we describe the implementation details of our active monitoring program and how it gathers data about the current state of the networks.
+
+At boot, our 
+
 
 
 
