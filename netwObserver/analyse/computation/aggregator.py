@@ -41,7 +41,7 @@ def getRadiusSuccessRate():
 ## Users Aggregators 
 def getUsersByDot11Protocol(timedeltaData=timedelta(weeks=12)):
 	stats = {}
-	ms = MobileStation.objects.isAssociated()
+	ms = MobileStation.objects.areAssociated()
 	for proto,display in MobileStation.DOT11_PROTOCOLS:
 		tmp =  ms.filter(dot11protocol__exact=proto).count()
 		if tmp > 0:
@@ -51,19 +51,19 @@ def getUsersByDot11Protocol(timedeltaData=timedelta(weeks=12)):
 def getUsersBySSID():
 	stats = {}
 	for ssid in MobileStation.objects.values_list('ssid', flat=True).distinct():
-		stats[ssid] = MobileStation.objects.isAssociated().filter(ssid=ssid).count()
+		stats[ssid] = MobileStation.objects.areAssociated().filter(ssid=ssid).count()
 	return stats
 
 def getNbrOfUsers():
-	return MobileStation.objects.isAssociated().count()
+	return MobileStation.objects.areAssociated().count()
 
 ## AP aggregators
 def getHotAP(number=5):
-	ap = sorted([(ap.nbrOfClients(), ap) for ap in AccessPoint.objects.isUp()], reverse=True)
+	ap = sorted([(ap.nbrOfClients(), ap) for ap in AccessPoint.objects.areUp()], reverse=True)
 	return ap[:number]
 
 def getNbrOfAP():
-	return AccessPoint.objects.isUp().count()
+	return AccessPoint.objects.areUp().count()
 
 def getAPData(ap, timePerRange=timedelta(hours=1)):
 	""" Speed in mbits """

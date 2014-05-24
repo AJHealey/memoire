@@ -215,7 +215,7 @@ def getAllAP():
 		tmp = getApNames(ip=wism[0])
 		for index, name in tmp.items():
 			if index in result:
-				if "b\'" in name:
+				if "b\'" in name or 'b\"' in name:
 					result[index].name = name[2:-1]
 				else:
 					result[index].name = name
@@ -268,12 +268,12 @@ def getAllAP():
 
 				for ifIndex, ifType in interfaces.items():
 					try:
-						resultInterfaces[apIndex][ifIndex], created = APInterface.objects.get_or_create(index=ifIndex, ap=result[apIndex])
+						resultInterfaces[apIndex][ifIndex], created = APInterface.objects.get_or_create(ifType=ifType, ap=result[apIndex])
 					except IntegrityError:
 						# get_or_create is not thread safe
-						resultInterfaces[apIndex][ifIndex] = APInterface.objects.get(index=ifIndex, ap=result[apIndex])
+						resultInterfaces[apIndex][ifIndex] = APInterface.objects.get(ifType=ifType, ap=result[apIndex])
 
-					resultInterfaces[apIndex][ifIndex].ifType = ifType
+					resultInterfaces[apIndex][ifIndex].index = ifIndex
 	except Exception as e:
 		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - AP Interface Types', error=str(e)).save()
 

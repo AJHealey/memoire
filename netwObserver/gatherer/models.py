@@ -181,6 +181,7 @@ class WismEvent(models.Model):
 	class Meta:
 		unique_together = (('date', 'microsecond', 'wismIp'),)
 
+
 ## Models of the probe log
 class ProbeLog(models.Model):
 	date = models.DateTimeField(default=lambda:(timezone.now()))
@@ -190,24 +191,27 @@ class ProbeLog(models.Model):
 class ProbeScanResult(models.Model):
 	log = models.ForeignKey(ProbeLog)
 	ap = models.ForeignKey(AccessPoint)
+	ssid = models.CharField(max_length=50)
 	signalStrength = models.DecimalField(max_digits=3,decimal_places=0)
 
 class ProbeConnectionResult(models.Model):
 	date = models.DateTimeField()
-	ssid = models.CharField(max_length=50)
+	
+	log = models.ForeignKey(ProbeLog)
+	apTried = models.ManyToManyField(ProbeScanResult, related_name='+')
+	connected = models.ManyToManyField(ProbeScanResult,related_name='+')
 
-	apTried = models.ManyToManyField(AccessPoint, related_name='+')
-	connected = models.ForeignKey(AccessPoint,related_name='+')
-	authenticationTime = models.DecimalField(max_digits=5,decimal_places=0)
-	dhcpTime = models.DecimalField(max_digits=5,decimal_places=0)
+
+class TimeCheck(models.Model):
+	result = models.ForeignKey(ProbeConnectionResult)
+	step = models.CharField(max_length=50)
+	time = models.DecimalField(max_digits=5,decimal_places=0)
 
 class ServiceCheck(models.Model):
 	result = models.ForeignKey(ProbeConnectionResult)
-	smtpGmail = models.BooleanField()
-	github = models.BooleanField()
-	sslGihub = models.BooleanField()
-	uclouvain = models.BooleanField()
-	icampus = models.BooleanField()
+	service = models.CharField(max_length=50)
+	state = models.BooleanField()
+
 
 
 ## Error Parsing
