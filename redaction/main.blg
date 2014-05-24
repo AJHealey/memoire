@@ -25,6 +25,10 @@ Warning--entry type for "tplink" isn't style-file defined
 --line 211 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "openwrt" isn't style-file defined
 --line 217 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "wpa-supplicant" isn't style-file defined
+--line 234 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "wpa-supplicant-devel" isn't style-file defined
+--line 241 of file Bibliographie/Bibliography.bib.bib
 Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" has a comma at the end for entry article2
 while executing---line 1233 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
@@ -42,45 +46,45 @@ while executing---line 1315 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
 while executing---line 1315 of file unsrtnat.bst
 Warning--empty year in tplink
-You've used 24 entries,
+You've used 26 entries,
             2481 wiz_defined-function locations,
-            690 strings with 8270 characters,
-and the built_in function-call counts, 7383 in all, are:
-= -- 606
-> -- 354
-< -- 17
-+ -- 150
-- -- 102
-* -- 460
-:= -- 1187
-add.period$ -- 88
-call.type$ -- 24
-change.case$ -- 45
-chr.to.int$ -- 24
-cite$ -- 29
-duplicate$ -- 373
-empty$ -- 733
-format.name$ -- 136
-if$ -- 1589
+            697 strings with 8524 characters,
+and the built_in function-call counts, 7897 in all, are:
+= -- 650
+> -- 368
+< -- 19
++ -- 158
+- -- 106
+* -- 482
+:= -- 1265
+add.period$ -- 94
+call.type$ -- 26
+change.case$ -- 49
+chr.to.int$ -- 26
+cite$ -- 31
+duplicate$ -- 401
+empty$ -- 793
+format.name$ -- 142
+if$ -- 1703
 int.to.chr$ -- 1
-int.to.str$ -- 25
+int.to.str$ -- 27
 missing$ -- 11
-newline$ -- 143
-num.names$ -- 72
-pop$ -- 264
+newline$ -- 153
+num.names$ -- 78
+pop$ -- 288
 preamble$ -- 1
-purify$ -- 24
+purify$ -- 26
 quote$ -- 0
-skip$ -- 265
+skip$ -- 289
 stack$ -- 0
-substring$ -- 69
-swap$ -- 56
+substring$ -- 73
+swap$ -- 60
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 156
+type$ -- 170
 warning$ -- 5
-while$ -- 49
+while$ -- 53
 width$ -- 0
-write$ -- 325
+write$ -- 349
 (There were 6 error messages)

@@ -63,7 +63,7 @@ static void log_event(enum log_events log, const char *arg) {
 				fprintf(f, "\"bssid\": \"%s\",\n", ptr->bssid);
 				fprintf(f, "\"frequency\": \"%s\",\n", ptr->freq);
 				fprintf(f, "\"signal\": \"%s\",\n", ptr->signal);
-				fprintf(f, "\"ssid\": \"%s\",\n", ptr->ssid);
+				fprintf(f, "\"ssid\": \"%s\"\n", ptr->ssid);
 				
 				/* JSON syntax */
 				if(first_scan -> num != 1) {
@@ -135,7 +135,7 @@ static void log_event(enum log_events log, const char *arg) {
 		
 				fprintf(f, "\"time\": {\n");
 				fprintf(f, "\"wpa_supplicant\": \"%ldsec %.3ums\",\n", log_struct->time->wpa_time.time, log_struct->time->wpa_time.millitm);
-				fprintf(f, "\"dhcp\": \"%ldsec %.3ums\",\n", log_struct->time->dhcp_time.time, log_struct->time->dhcp_time.millitm);
+				fprintf(f, "\"dhcp\": \"%ldsec %.3ums\"\n", log_struct->time->dhcp_time.time, log_struct->time->dhcp_time.millitm);
 				fprintf(f, "},\n");
 
 				fprintf(f, "\"services\": {\n");
@@ -170,7 +170,7 @@ static void log_event(enum log_events log, const char *arg) {
 		case LOG_INFO_DATE:
 			now = time(NULL);
 			tm = *localtime(&now);
-			fprintf(f, "\"date\": \"%d/%d/%d/ %d:%d:%d\",\n", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+			fprintf(f, "\"date\": \"%d/%d/%d %d:%d:%d\",\n", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 			break;
 
 	}
@@ -298,10 +298,10 @@ static void execute_action(enum wpa_action action, int network) {
 				int i;
 				commands("DISCONNECT");
 				/* Disable all the networks */
-				for(i = 0; i < NUM_OF_NETWORKS; i++) {
+				/*for(i = 0; i < NUM_OF_NETWORKS; i++) {
 					sprintf(cmd, "DISABLE_NETWORK %d", i);
 					commands(cmd);
-				}
+				}*/
 				system("killall udhcpc"); /* Stop DHCP */
 				dhcp = 0;
 			}
@@ -310,10 +310,6 @@ static void execute_action(enum wpa_action action, int network) {
 		case ACTION_CREATE_NETWORKS:
 			create_networks();
 			break;
-
-		case ACTION_SCAN:
-			commands("SCAN");
-			commands("SCAN_RESULTS");
 	}
 }
 

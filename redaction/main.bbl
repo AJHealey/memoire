@@ -1,4 +1,4 @@
-\begin{thebibliography}{24}
+\begin{thebibliography}{26}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -158,5 +158,15 @@ A.~van Lamsweerde.
 \newblock Wiley, 2009.
 \newblock ISBN 9780470012703.
 \newblock URL \url{http://books.google.be/books?id=AYk\_AQAAIAAJ}.
+
+\bibitem[Malinen(2012)]{wpa-supplicant}
+Jouni Malinen.
+\newblock Developer's documentation for wpa\_supplicant and hostapd, 2012.
+\newblock URL \url{http://hostap.epitest.fi/wpa_supplicant/devel/}.
+
+\bibitem[Malinen(2009)]{wpa-supplicant-devel}
+Jouni Malinen.
+\newblock wpa\_supplicant, hostapd - developer's documentation, 2009.
+\newblock URL \url{http://w1.fi/wpa_supplicant/wpa_supplicant-devel.pdf}.
 
 \end{thebibliography}

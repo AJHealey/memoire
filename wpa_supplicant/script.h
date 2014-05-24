@@ -108,7 +108,6 @@ enum wpa_action {
 	ACTION_CONNECT_MAISON,
 	ACTION_DISCONNECT,
 	ACTION_CREATE_NETWORKS,
-	ACTION_SCAN,
 };
 
 /* Function prototypes */
