@@ -3,34 +3,21 @@
 #define SCRIPT_H
 
 #define DEFAULT_CTRL_IFACE "/tmp/run/wpa_supplicant/wlan0"
-#define BUF 1024
-#define DELAY 10
-#define debug_print(args) if (DEBUG) printf(args)
+#define BUF 1024 /* Reply buffer size */
+#define DELAY 10 /* Delay in seconds for the connection loop */
+#define debug_print(args) if (DEBUG) printf(args) /* Debug print */
 
-/* PING */
-#define DEFDATALEN 56
-#define MAXIPLEN 60
-#define MAXICMPLEN 76
 
 char router_mac[18]; /* Router mac address */
-
+char *ssid_log; /* SSID of the current network */
 struct wpa_ctrl *ctrl; /* Control interface of wpa_supplicant */
 struct timeb wpa_start, wpa_end, dhcp_start, dhcp_end; /* Time structures */
 struct log *log_struct; /* Log structure */
-struct tm tm; // For date computation
-time_t now; // For date computation
-int start_loop = 0;
-
-
-int dhcp = 0;
-int connection = 0;
-
-//int disconnected = 0; // If abrupt disconnection
-FILE *f; //Log file
-
-/* For Logs */
-char *ssid_log;
-
+struct tm tm; /* For date computation */
+time_t now; /* For date computation */
+int start_loop = 0; /* Starts the connection thread as soon as wpa_supplicant is started and networks are created */
+int dhcp = 0; /* DHCP */
+FILE *f; /* Log file */
 
 /* Structure for log file */
 struct log {
@@ -80,9 +67,6 @@ struct check_serv {
 };
 
 
-
-
-
 /* Stores all the results of a scan */
 struct scan_results {
 	char *bssid;
@@ -118,7 +102,7 @@ enum log_events {
 	LOG_INFO_DATE,
 };
 
-/* Actions possible */
+/* List of possible actions */
 enum wpa_action {
 	ACTION_CONNECT,
 	ACTION_CONNECT_MAISON,
@@ -127,7 +111,7 @@ enum wpa_action {
 	ACTION_SCAN,
 };
 
-/* Prototypes */
+/* Function prototypes */
 static void log_event(enum log_events log, const char *arg);
 static void parse_event(const char *reply);
 static void execute_action(enum wpa_action action, int network);
@@ -139,6 +123,7 @@ static int checkService(char *host, const char *port);
 static void services_loop();
 static void scan();
 static void send_log();
+static void clear_struct();
 void *wpa_loop(void *p_data);
 void *connection_loop(void *p_data);
 

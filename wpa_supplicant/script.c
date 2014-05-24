@@ -2,16 +2,21 @@
 #include "script.h"
 #include <pthread.h>
 
-#define DEBUG 1
-
-/*
- * TODO 
- * - Tried 
- * - Clear structure
- * - Check final log
+/* TODO 
+ * - RAJOUTER DNS ET TCP DANS LES SCANS (nouvelles structures pour chaque service ?)
  */
 
 
+#define DEBUG 1
+
+/* Change the number of networks the router has to configure here
+ * 1: eduroam
+ * 2: UCLouvain
+ * 3: visiteurs.UCLouvain
+ * 4: UCLouvain-prive
+ * 5: student.UCLouvain
+ */
+#define NUM_OF_NETWORKS 5
 
 /* 
  * Insert the logs into the logfile
@@ -287,25 +292,30 @@ static void execute_action(enum wpa_action action, int network) {
 		case ACTION_CONNECT:
 			connect_network(network);
 			break;
-		case ACTION_DISCONNECT:
-			commands("DISCONNECT");
-			commands("DISABLE_NETWORK 0");
-			commands("DISABLE_NETWORK 1");
-			commands("DISABLE_NETWORK 2");
-			commands("DISABLE_NETWORK 3");
-			commands("DISABLE_NETWORK 4");
-			system("killall udhcpc");
-			dhcp = 0;
+
+		case ACTION_DISCONNECT: {
+				char cmd[17];
+				int i;
+				commands("DISCONNECT");
+				/* Disable all the networks */
+				for(i = 0; i < NUM_OF_NETWORKS; i++) {
+					sprintf(cmd, "DISABLE_NETWORK %d", i);
+					commands(cmd);
+				}
+				system("killall udhcpc"); /* Stop DHCP */
+				dhcp = 0;
+			}
 			break;
+
 		case ACTION_CREATE_NETWORKS:
 			create_networks();
 			break;
+
 		case ACTION_SCAN:
 			commands("SCAN");
 			commands("SCAN_RESULTS");
 	}
 }
-
 
 /*
  * Execute and send the command requests to wpa_supplicant
@@ -341,9 +351,11 @@ static void commands(char *cmd)
  */
 static void create_networks() {
 	int i;
-	for(i = 0; i <= 4; i++) {
-		commands("ADD_NETWORK");
+	for(i = 0; i < NUM_OF_NETWORKS; i++) {
+		commands("ADD_NETWORK"); /* Create a network with no config for wpa_supplicant */
 	}
+
+	/* Add configuration to the created networks */
 	config_network(0, "eduroam", "WPA-EAP", "PEAP", "CCMP", "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", "peaplabel=0", "auth=MSCHAPV2");
 
 	config_network(1, "UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP");
@@ -600,6 +612,31 @@ static void send_log() {
 		debug_print("Error sending log file\n");
 }
 
+/*
+ * Free the log structure after a connection and malloc a new one for another connection
+ */
+static void clear_struct() {
+	struct ap_tried *tmp_try;
+	struct ap_connect *tmp_connect;
+
+	while (first != NULL) {
+		tmp_try = first;
+		first = tmp_try->next;
+		free(tmp_try);
+	}
+
+	while (first_connect != NULL) {
+		tmp_connect  = first_connect;
+		first_connect = tmp_connect->next;
+		free(tmp_connect);
+	}
+
+	free(log_struct->time);
+	free(log_struct->services);
+	free(log_struct);
+
+	log_struct = (struct log *) malloc (sizeof(struct log));
+}
 
 void *wpa_loop(void *p_data) {
 	char reply[BUF];
@@ -666,29 +703,6 @@ void *wpa_loop(void *p_data) {
 	return NULL;
 }
 
-void clear_struct() {
-	struct ap_tried *tmp_try;
-	struct ap_connect *tmp_connect;
-
-	while (first != NULL) {
-		tmp_try = first;
-		first = tmp_try->next;
-		free(tmp_try);
-	}
-
-	while (first_connect != NULL) {
-		tmp_connect  = first_connect;
-		first_connect = tmp_connect->next;
-		free(tmp_connect);
-	}
-
-	free(log_struct->time);
-	free(log_struct->services);
-	free(log_struct);
-
-	log_struct = (struct log *) malloc (sizeof(struct log));
-}
-
 
 void *connection_loop(void * p_data) {
 	log_struct = (struct log*) malloc (sizeof(struct log));
@@ -706,7 +720,7 @@ void *connection_loop(void * p_data) {
 		scan();
 		log_event(LOG_START_CONNECTION, NULL);
 
-		for(i = 0; i<=4; i++) {
+		for(i = 0; i<NUM_OF_NETWORKS; i++) {
 			log_event(LOG_START_CONNECTION_LOOP, NULL);
 			execute_action(ACTION_CONNECT, i);
 			services_loop();
@@ -714,10 +728,11 @@ void *connection_loop(void * p_data) {
 			sleep(DELAY);
 			clear_struct();
 			execute_action(ACTION_DISCONNECT, 0);
-			if(i != 4)
+
+			if(i != NUM_OF_NETWORKS-1) /* Last network tested needs special final closure in log syntax */
 				log_event(LOG_STOP_CONNECTION_LOOP, NULL);
 			else
-				log_event(LOG_FINAL_STOP_CONNECTION_LOOP, NULL);
+				log_event(LOG_FINAL_STOP_CONNECTION_LOOP, NULL); /* Final closure */
 			sleep(DELAY);
 		}
 		log_event(LOG_STOP_CONNECTION, NULL);
