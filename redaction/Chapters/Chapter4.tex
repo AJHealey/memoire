@@ -1,119 +1,205 @@
 % Chapter Template
-
-\chapter{Monitoring Tool - Architecture} % Main chapter title
+\chapter{Monitoring Tool - Implementation and Deployment} % Main chapter title
 
 \label{Chapter4} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
 
-\lhead{Chapter 4. \emph{Monitoring Tool - Part 1}}
-\section{Requirements}
-The first step of conception was to define the goals of the system. This means enumerate what the people supposed to use it want. To structure our reflection, we use a pseudo version of the \emph{Goal Model} taught by the Professor van Lamsweerde\cite{van2009requirements}. We tried to stay as close as possible from the original syntax but we may have taken some freedom to keep things simple.
-\subsection{System Goals}
-The main goal as suggested by the title of our thesis is to monitor and analyse the wifi network. We want to be able to knwow what happens in the network and understanding the data generate by the components. To \emph{achieve} that we will be required to understand what the controller tells in its logs files and what are the data it makes available in its \emph{Management Information Base}. Monitoring is also an active task. We shall need to analyse the quality of service experienced by an user when he uses the wifi. Beside the gathering part, we have to analyse those results and moreover being able to detect issues as soon as possible.
-\begin{figure}[H]
-\centering
-	\includegraphics[width=1.1\linewidth]{Pictures/chapter4/goals.jpg}
-	\caption{Pseudo Goal Model}
-\end{figure}
-These requirements comes from the meetings we had with the SGSI. We discuss what such a tool could use as source of information and what new data could be generate from them. It's quite important to determine what we do and how we will achieve it as soon as possible. This quite simple model will allow us to focus on one task at a time without loosing the final purpose.
+\lhead{Chapter 4. \emph{Monitoring Tool - Part 2}} 
 
-\subsection{Goals Definition}
+\section{NetwObserver}
+The first step in the development was to select the technologies adapted to the problem. As we had a lot of log to parse, we have started the implementation using Python. Python has a strong integration of the strings and lists. It's quite easy to generate a parser of logs and keeping the code neat thanks to its very simple syntax.
+As more feature were added, we need to structure the system in a way that make it easily accessible. It's a monitoring tools and it has to be accessible from everywhere and easy to use. So, we decided to implemented it as a web application. This application would be usable from every computer without any installation and the network administrators could manage and maintain it directly on the server. An update would be accessible directly for every users.
+
+\subsection{Django: A High-Level Python Web Framework}
+As presented by its developers, Django is a "web framework for perfectionist with deadlines"\footnote{\url{https://www.djangoproject.com/}}. Django allow to achieve a modular structure quite easily and provide all the developers need to add new components in the application. A Django application is composed of several modules that exists independently and interact with each other through the database.
+Moreover, Django adhere to the DRY\footnote{\url{http://c2.com/cgi/wiki?DontRepeatYourself}} principle.
 \begin{description}
-  \item[Name] MonitorAndAnalyseALargeWifiNetwork
-  \item[Description] The root goal of our system is to allow the administrators to understand what is currently happening on his network. The ideal would be a real-time view of the infrastructure.
+  \item[Don't Repeat Yourself] \hfill \\
+  Every piece of knowledge must have a single, unambiguous, authoritative representation within a system.
 \end{description}
+When we use this framework, we focus on writing and defining each element one time on the right place. Maintainability is another important component of our system. Having duplication all over the code make it difficult to maintain and to keep coherent.
+Django used a variation of the Model-View-Controller model called \emph{Model-View-Template}\cite{mvt}. The main difference is that Django is not about states. Browser don't evolve from one state to another, every request are done from scratch. In MVC, Controller update the View and the Model accordingly to the events. That's not the case here because each time something is modified (e.g a new insertion in the database) we start from the beginning. It's not a defect, it's how HTTP work.
 
 \begin{description}
-  \item[Name] GatherData
-  \item[Description] To achieve a efficient monitoring we have to gatherer and centralize the available information. 
+\item[Model] \hfill \\
+The first element that composed the application are the entities manipulated by the application. A model is a representation of an element of the domain. Each model encapsulates all the data and information required to understand it.
+\item[View] \hfill \\
+The main task of the views is to handle the HTTP requests. It receives a HTTP request and returns a HTTP response.
+\item[Template] \hfill \\
+It represents the HTTP response. It provide a generic answer and the View fulfil the missing parts (most of the time by interrogating the database).
 \end{description}
 
-\begin{description}
-  \item[Name] SimulateLambdaUserUtilization
-  \item[Description] We need to evaluate how the users experienced the utilization of the network.
-\end{description}
+Like most of the modern web frameworks, Django is built using the \emph{Object-relational mapping} technique. The purpose is to make a bridge between the object manipulated by Python and the database entries. The architecture respects an \emph{Active-record pattern} that tied each object to a row in the database. It allow to focus on the logic of the application and to code easier. We can do more with less code. The main drawback of such pattern, it's that developers tend to forget the database behind it. Even if Django is optimised to translate object in database entity (and in the other way around), it important to design the model by thinking about the database hidden behind. Every access is translated by Django but poor request or weak design could lead to really poor performance.
 
-\begin{description}
-  \item[Name] GatherSNMPInformation
-  \item[Description] Record the states of the controller and the access points through time.
-\end{description}
-
-\begin{description}
-  \item[Name] ParseLogFiles
-  \item[Description] We have to be able to understand the information generated by the Controller, Radius and DHCP server.
-\end{description}
-
-\begin{description}
-  \item[Name] AnalyseGatheredData
-  \item[Description] Once the data are available, we need to analyse and make comparison between them.
-\end{description}
-
-\begin{description}
-  \item[Name] CorrelateInformation
-  \item[Description] We want to put related data together and generate new information.
-\end{description}
-
-\begin{description}
-  \item[Name] CreateRelevantRepresentations
-  \item[Description] Our results have to be understood be the users.
-\end{description}
-
-\begin{description}
-  \item[Name] ReportTheAnomalies
-  \item[Description] More than analyse, the system have to be able to alert the administrators of anomalies.
-\end{description}
-
-\begin{description}
-  \item[Name] DetectTheAnomalies
-  \item[Description] We have to define what are anomalies and use those rules to record deviant behaviour.
-\end{description}
-
-\begin{description}
-  \item[Name] AlertTheUser
-  \item[Description] Communicate to the users the anomalies.
-\end{description}
-
-\section{Architecture}
-In our architecture system, we have two very distinct entities. The first entity, called the \textit{Gatherer}, is the one responsible for gathering information. This component handles the responsibility to keep the operational database up to date and in a consistent state. The other side of the application, the \textit{Analyser}, is managing the analysis made with all the information we have gathered. Upon these two processes, we'll add an alert system that which produce warnings when an anomalies is spotted. These three parts have to be as independent as possible but able to communicate between them efficiently. We have designed them by keeping two rules in mind: modularity and simplicity.
+\subsection{MySql}
+Even if most of the time we don't make direct transaction with the database, it's important to chose the right DBMS\footnote{Database Management System}. At the beginning, the capacity of the application were quite limited and we used SqLite\footnote{\url{https://sqlite.org/}}. SqLite has the particularity to not use a client-server model. It is directly managed inside the application and it is the one used by default in Django. It fits really well to small applications because all actions are internally handled and it doesn't require to install an external DBMS to handle the transactions. But quickly, we reach the limits of SqLite and we chose to migrate to MySql. NetwObserver generates several threads and make a lot of concurrent accesses to the database. Such utilization is not adapted to SqLite and made the application unstable. The main issue was that, while the application is gathering its data, it needs to still be available to the users. SqLite have some difficulties to handle insertion of a lot of new entries while getting concurrent requests from the users.
 
 \subsection{Gatherer}
-This part of the application is constituted of several modules that allow it to communicate with the various sources of information. Each module is responsible of a particular kind of information and each of them have to transform that piece of information in a coherent entry in the database. As the information come from heterogeneous origins, each information have to be understood and transformed into an entity that can be related to others. Without such transformation, the possible analysis would be really limited and not really interesting. We focus here on the \texttt{Achieve[GatherData]} goal and its refinement.
+The main difficulty was to correctly gather the source of information available. For each of them, we had to implement a module to make the interface between the sources and the database. They were quite heterogeneous and the implementation required a deep understanding of them.
+\subsubsection{Logs Parser}
+The first source we have processed were the log files. There are three generators of log file on the network: the controller, the DHCP and the Radius. Actually, there already is a software that gathers the log files and centralized them. The tool is called Octopussy\footnote{http://www.octopussy.pm/} and is a log management solution. It allows the administrators to display the log and access them by specifying criteria like date, source or the gravity of the log. Our \emph{log} module does basically the same thing but with a deeper analysis and understanding of the content of the logs. 
+\paragraph{DHCP}
+The DHCP generates a log for each step of the allocation of an IP address and of course when an error occurred. Typical logs look like this:
+\begin{lstlisting}[frame=single,breaklines=true,caption={DHCP logs}]
+2013-10-21T17:26:00.113154+02:00 dhcp-1 dhcpd: DHCPREQUEST for 192.168.32.43 from cc:fe:3c:26:5c:3f via 192.168.35.253
+2013-10-21T17:26:00.113239+02:00 dhcp-1 dhcpd: DHCPACK on 192.168.32.43 to cc:fe:3c:26:5c:3f via 192.168.35.253
+2013-10-21T17:26:00.196242+02:00 dhcp-1 dhcpd: DHCPDISCOVER from 50:a4:c8:6b:48:c7 via 130.104.175.250: load balance to peer dhcp1-dhcp2
+\end{lstlisting}
+When the application can understand each part of the message, it allows to make more powerful links between them. If we correctly analyse each messages, we can tell, for example, which \emph{dhcpAck} correspond to a \emph{dhcpRequest}. That's a weakness of Octopussy. It can tell you what log are important and filter them but it doesn't make analysis based on the protocol. DHCP defined a succession of actions and being able to trace them make the application capable of detecting more subtle errors. Concretely, the module \emph{log} decompose the message in several part and stock it in a relational database. Even if it could seem simple, having a structured representation of the log is the first step to make better analysis on them.
 
-\subsubsection{Logs}
-The first kind of information we managed to analyse was the logs files. There is one different log type per infrastructure component:
-\begin{itemize}
-\item Radius
-\item DHCP
-\item Wism (Controller)
-\end{itemize}
-These elements generate several logs each seconds and the first difficulty was to make a first sorting among all those data. A part of them are just informational and don't bring useful information about the state of the network. Such information will never be used during the analysis and then they don't have to be store in the database. Another part of the logs are repetition of others. In fact, as each element produces its logs independently, some logs can overlap and represent the same information. Redundant information are useless and the same information don't need to be in the database twice. This can seems to be a unimportant issue but in consideration of the quantity of information proceed by the application, an overloading of the database can cause severe performance issue during the analysis phase.
-The ideal way of gathering such information would be to load them directly from the sources at our convenience. In this way, we could manage and optimise the processing of the data.
+\paragraph{Radius}
+Radius generates logs about the authentication of the users. The main information here is the \emph{login} entered and the device used for the authentication.
+\begin{lstlisting}[frame=single,breaklines=true,caption={Radius logs}]
+2013-10-21T17:26:00+02:00 radius1.sri.ucl.ac.be radiusd[1523]: [ID 702911 local3.notice] Login OK: [@eur.nl] (from client WiSMPythagore-B port 29 cli e4-d5-3d-89-af-51)
+2013-10-21T17:26:05+02:00 radius1.sri.ucl.ac.be radiusd[17913]: [ID 702911 local4.notice] Login incorrect: [none] (from client WiSMPythagore-A port 29 cli 00-11-e1-db-fb-5d)
+2013-10-21T17:26:07+02:00 radus1.sri.ucl.ac.be radiusd[1523]: [ID 702911 local3.notice] Login OK: [53764smo@eur.nl] (from client WiSMPythagore-B port 29 cli e4-d5-3d-89-af-51)
+\end{lstlisting}
+Which such information we can potentially tell when and where an user was. In the other hand, it could allows to detect a device that tries to connect with different logins. That could be considered as a strange behaviour and would allow to investigate. Like in other modules, it's very important to limit the feature implemented because it could cause a ethical problem. Even if we want to make the application as complete as possible, we need to precisely define what is required and how to de it. These considerations will be discuss further in the last chapter.
+
+\paragraph{Controller}
+The more rich source of logs is the \emph{controller}. With its central position in the infrastructure, it can produce the more detailed messages when an error occurred. As the controller is made by \emph{Cisco}, the meaning of the messages can easily be found on the manufacturer website\cite{syslogCisco}.
+\begin{lstlisting}[frame=single,breaklines=true,caption={Controller logs}]
+2013-10-21T17:26:00.123235+02:00 192.168.251.178 WiSMPythagore-B: *spamReceiveTask: Oct 21 17:26:00.080: %LWAPP-6-CAPWAP_SUPP_VER: spam_lrad.c:1835 Discarding Primary discovery request in LWAPP from AP 00:11:bc:1b:14:00 supporting CAPWAP
+2013-10-21T17:26:00.618291+02:00 192.168.251.178 WiSMPythagore-B: *mmListen: Oct 21 17:26:00.575: %MM-4-PMKCACHE_DEL_FAILED: mm_listen.c:6724 Failed to delete PMK cache entry for station 00:21:6a:86:4b:84 with request from controller 192.168.251.181
+2013-10-21T17:26:00.957695+02:00 192.168.251.178 WiSMPythagore-B: *Dot1x_NW_MsgTask_0: Oct 21 17:26:00.915: %APF-6-RADIUS_OVERRIDE_DISABLED: apf_ms_radius_override.c:204 Radius overrides disabled, ignoring source 2 
+\end{lstlisting}
+The messages generated are very well defined and explained in the related documentation. Their structure is well defined and facilitate the parsing. Each message belong to a category and has a severity level. That allows to filter the useless ones and immediately detect the most important.
 
 \subsubsection{SNMP}
-The SNMP protocol allows us to retrieve information on the controller in real-time. The module handling the SNMP request can update the information about the situation of each access point or any client. This bring a lot of interesting data regarding the users of the network but the main drawback is that the requests are heavy. We can't make them at any time because it requires resources from the controller and from our server. In consequence, we have to find the right balance between keeping the database update and not overloading the controller with SNMP request.
-The most important information extracted are the status of every access points (AP). We can see what access point are actually associated with the controller. A lot of statistics (e.g the load of the AP) are available.
-The same holds for the client associated to an access point. Each mobile station is indexed by the controller and statistics about it are hold by it.
+The other main source of information is the SNMP protocol install on the \emph{controller}. This mechanism delivers a lot of indicators about the current state of the network. An important characteristic is the fact that the information is not the same as the log. While the log file represent continuously the situation and its evolution, the SNMP requests delivers a snapshot of the controller. It's a fixed representation and a comparison with an older one, doesn't give any information about what happened between the two. For example, if we had 30 people connected to an \emph{access point} at a given time and 40 one hour later, we can't conclude that ten new people have connected. Maybe the thirty people left and forty new ones had connected. We highlight this because our first architecture tried to push together the information present in the logs and in the SNMP requests. It was a bad idea because the natures of the information were completely different. It resulted in an incoherent representation of the data and make the analysis wrong or completely impossible. To correct this situation, we met Bernard Lambeau and with his advices, we have completely modified our database architecture to make a strong and deliberate separation between the different kind of data.
+
+As said before, SNMP organized the information in a tree way. The classification of the information is quite intuitive but the main difficulty comes from the size of the tree. Once the interesting part of the tree have been identified. A lot of indicators can be gathered.
+
+\paragraph{PySNMP} PySNMP is the module that performs the \emph{SNMP} requests. It's a pure python implementation able to perform all the standard operation i.e.\  \emph{get, set and walk}.
+
+The \emph{snmp} module is mainly a way to create an abstraction with the snmp requests. It implements several methods to gatherer the information and make the links between them. Every request is independent and the module has to be able to know which value correspond to what element. That's the signification of the \emph{index} attribute in the \emph{Device} model.
 
 \subsubsection{Active Monitoring}
-Also, we have implemented an active monitoring tool in the form of a \texttt{C} program running on \texttt{OpenWrt} routers. The purpose of this element is to simulate a user. We can't be aware of the experience of the user by looking at SNMP request or log files. Here, we will use an unmodified version of \emph{wpa$\_$supplicant}. We simply generate connections and monitor what happens. We mostly record the time of each steps and observe which access point is chosen and what are the environment of the router. For example, we will scan the nearest access point, record their signal strength and trying to estimate the quality experienced by an user that would be in the same situation.
+The \emph{probe} module manages the connection with the probes. When a probe want to connect to the server, it answers and performs the authentication. When the authentication succeed, the module will receive the log file generated by the probe. Finally, it will analyse it and translate it in the database.
 
-\subsubsection{Database}
-The database have to be able of representing each kind of information and manage the links between them. It isn't hard to create entries for a log but the difficulties appear when we make link with other entities and have to keep them in a coherent state. Several questions raised when we try to designed our database. For example, if a client is no more associated with an access point, do we have to remove it from the database? Such questions can seem futile but may have deep implications on the database performance. Our choice was to clearly separate the difference domain of data. Trying to make a links between each element could create inconsistencies and making the analyse harder. That's why each category of information owns its tables and links are only made when they are present in the original data. This doesn't means that we don't cross the information, it means that we let the data independent and only compare them when we need to perform analyse. As there are plenty of way to organize them, we preferred to keep them neat and avoid to mix them in the gathering part.
+\subsection{Analyse}
 
-\subsection{Analyser}
-As the gatherer only put available information together, it doesn't bring anything new. In the other side, the analyse component will use the data and the links between them to extract useful information about the network. For example, the SNMP shows the people associated with an access point but only an analysis through time will allow us to detect and even forecast overload in the network. This component will manage the analyse on the database and storing the result over the time.
 
-\section{Link with the Infrastructure}
-As a monitoring, we need to be plug on the infrastructure. For each of data source, we have to define a point of communication in our system. The data are not centralized and we have to manage how we access them and trying to define a balance between performance and respect of the external components which host the information. For example, we can't submerge the SNMP agents with requests.
+\section{Active Probe}
+As explained earlier, besides the gathering of data through \texttt{SNMP} protocol or controller's logs parsing, we also have an active data gathering process. To do that, we have implemented a \texttt{C} program that runs on a \texttt{OpenWrt} router. The following subsections give more details about the router used during the implementation and the tests phases as well as information about the \texttt{OpenWrt} firmware we have installed on this router.\\
+%A completer
 
+\subsection{TP-LINK Wireless Router}
+The router we use for the active monitoring process is a 150Mbps Wireless N \texttt{TP-LINK TL-WR741ND} router. This router, based on \texttt{N} technology, offers a high speed WiFi performance and is compatible with \texttt{IEEE 802.11b/g/n} WiFi standards. \\
+About the hardware features, this router offers five interfaces. Four 10/100Mbps LAN ports and one 10/100Mbps WAN. It also has a 5dBi detachable omni directional antenna with a Reverse Polarity SubMiniature version A (\texttt{RP-SMA}) connector.\\
+Concerning the wireless itself, the \texttt{TL-WR741ND} offers several interesting features\cite{tplink}:
+
+\begin{description}
+	\item [Frequency range]: from \texttt{2.4Ghz} to \texttt{2.4835Ghz}
+	\item [Signal rate]:
+		\begin{itemize}
+			\item \texttt{11n}: up to 150Mbps
+			\item \texttt{11g}: up to 54Mbps
+			\item \texttt{11b}: up to 11Mbps
+		\end{itemize}
+	\item [EIRP (\textit{Effective Isotropic Radiated Power})]: $<$ 20dBm 
+	%Power that the transmitter appears to have if the transmitter were an isotropic radiator (if the antenna radiated equally in all directions). EIRP = transmitter power + antenna gain - cable loss
+	\item [Reception sensibility]:
+		\begin{itemize}
+			\item 130M: -68dBm @ 10\% Packet Error Rate
+			\item 108M: -68dBm @ 10\% Packet Error Rate
+			\item 54M: -68dBm @ 10\% Packet Error Rate
+			\item 11M: -85dBm @ 8\% Packet Error Rate
+			\item 6M: -88dBm @ 10\% Packet Error Rate
+			\item 1M: -90dBm @ 8\% Packet Error Rate
+		\end{itemize}
+	\item [Functions]: Enable/Disable Wireless radio, WDS bridge, WMM, Wireless Statistics
+	\item [Security]: 64/128/152-bit \texttt{WEP} / \texttt{WPA} / \texttt{WPA2}, \texttt{WPA-PSK} / \texttt{WPA2-PSK}
+\end{description}
 \begin{figure}[H]
-\centering
-	\includegraphics[width=1\linewidth]{Pictures/chapter4/interactions.jpg}
-	\caption{Interconnections woth the infrastructure}
+	\begin{center}
+		\includegraphics[width=0.26\linewidth]{Pictures/chapter4/router.jpg}
+		\caption{TP-LINK TL-WR741ND}
+	\end{center}
 \end{figure}
+This router also embeds a default firmware providing software features such as:
+\begin{itemize}
+	\item Quality of Service
+	\item Dynamic DNS
+	\item Access Control (Parental Control, Local Management Control, Host List, Access Schedule, Rule Management)
+	\item Firewall Security
+	\item or DHCP
+\end{itemize}
 
-\subsection{Controller}
-The controller hosts all the SNMP data about itself or the access points. The system will retrieve them directly on it periodically. As shown, it's the \texttt{gatherer.snmpa} that handles the transactions. As said before, there are two controllers hidden behind one virtual IP. That configuration allows to always perform the request to the same address and the active controller will answer.
-\subsection{Access Points}
-The probe will associate with an access point and the result will be sent to the server. There is no special configuration required as the device need to operate as a lambda user and in consequence it will simply use its driver to test the AP. 
-\subsection{Log Server} 
-The log files are stored on a dedicated server and the administrator retrieve them from there. In an ideal situation, we should automatise the gathering of those files and process them periodically too.
+To summarize, with its 150Mbps wireless data rate and its advanced WiFi security management (\texttt{WPA/WPA2} encryptions), this router provides a rather good base for our active WiFi monitoring program. But in order to be able to execute it on the probes and get results we had to change to firmware of the router to something no proprietary we can work with and we can modulate as we wish. This is why we have chosen to replace the original TP-LINK firmware installed on the router with \texttt{OpenWrt}.
+
+
+\subsection{OpenWrt}
+\texttt{OpenWrt} is a highly extensible GNU/Linux distribution for embedded devices. The particularity of \texttt{OpenWrt} is that it is a full-featured, easily modifiable operation system for the routers. Indeed, it offers a fully writeable file system and a built-in package manager. Thanks to this package manager, we can install any package we want from a software repository allowing us to customize the device to suit any application. All the restrictions and configurations provided by the vendor within its own firmware installed by default on the router are therefore dropped meaning the device using this distribution can features functions such as \texttt{SSH} server, \texttt{VPN}, \texttt{BitTorrent client}, custom QoS and so on.\\
+As explained on \cite{openwrt}, \texttt{OpenWrt} is:
+\begin{description}
+	\item [Free and open-source]: The project is entirely free and open-source, licensed under the GPL. The project is intend to always be hosted at an easily accessible site, with full source code readily available and easy to build.
+	\item [Easy and free access]: The project will always be open to new contributors and have a low barrier for participation. Anyone shall be able to contribute.
+	\item [Community driven]: Everyone comes together to work and collaborate towards a common goal.
+\end{description}
+
+The \texttt{OpenWrt} project started in January 2004 and since then several stable versions have been released.
+\begin{enumerate}
+	\item \textit{OpenWrt 0.9 White Russian}: The first \texttt{OpenWrt} stable version released in January 2007.
+	\item \textit{OpenWrt 8.09 Kamikaze}: The second one that was first released in June 2007. The last version of Kamikaze was released in January 2010.
+	\item \textit{OpenWrt 10.03 Backfire}: The first version was released in April 2010 and the last one in December 2011.
+	\item \textit{OpenWrt 12.09 Attitude Adjustment}: This is currently the latest stable released available. It was released in April 2013.
+	\item \textit{Barrier Breaker}: The next release still in development.
+\end{enumerate}
+
+In order to have an up-to-date version of the firmware, we have decided to install the latest release on our router. This is why we use \texttt{OpenWrt 12.09 - Attitude Adjustment}.
+
+%Expliquer le build root
+
+
+
+
+\section{Communication between Server and Probes}
+The probes and the server have to exchange information. As we wanted to create a modular tool, we have chosen to encrypt all the data sent between the server and the probes. If the active monitoring device capture sensible contents, there must be no security vulnerabilities like \emph{eavesdropping} or \emph{man-in-the-middle attack}.
+The first constraint that appeared was the weak computation power of the probes. In consequence, we had to keep the encryption as easy to perform as possible. So, we have looked into \emph{symmetric cryptographic} techniques. But in the other hand, as we have several probes, it could be difficult to manage and exchange the keys unlike in asymmetric cryptography. Our choice was to take the best of both worlds and implement a protocol using hybrid encryption.
+In definitive, we used RSA and AES encryption together.
+\subsection{RSA}
+RSA\footnote{\url{http://www.google.com/patents/US4405829}} is one of the most used \emph{public-key cryptosystem}. Its name comes from its three designers: Ron Rivest, Adi Shamir, and Leonard Adleman. The algorithm involves two key: a \emph{public key} known by everybody and a \emph{private key} kept secret. The safety ensured by the technique comes from the difficulty of the factoring problem (factoring the product of two large prime numbers).
+The main advantage against symmetric cryptography is that the public key used for the encryption can be known by everybody and so make the problem of key exchange a lot easier. To make the explication clearer we will present a simple example occurring between Alice and Bob.
+\begin{enumerate}
+\item Alice give her public key to Bob.
+\item Bob wants to transmit a encrypted message to Alice. He uses the Alice's \emph{public key} to encrypt the message.
+\item Bob sends his message to Alice. Even if people intercept the transmission and have the public key, they couldn't decrypt it.
+\item Alice receives the message and decrypt it with her private key which she have kept secret.
+\end{enumerate}
+The key is 2048 bits long and each entity has its own pair of keys (i.e. the server and each probe). The server will known the authorized probes by having their private keys and will use them to encrypt the AES key (see below).
+The main drawback of such encryption is that the computations are quite heavy to perform. Which is against our previous requirements. That's why we only use it to encrypt and exchange a symmetric key that will be used for the exchange of data.
+\subsection{AES}
+The symmetric algorithm used is AES which stands for Advanced Encryption Standard. We chose a size of 256 bits for the keys which is quite correct for our utilization. The idea is to permute the bits of the message using the key. The operations performed are lighter than the ones used by RSA and so make it more adapted to be used on the probes.
+
+\subsection{Transaction Protocol}
+To be correct, the exchanges between the probes and the server requires a protocol well defined and respected by the two parts. 
+
+
+
+As already said, the server knows the public key of every probe in advance. 
+
+
+
+\subsection{OpenSSL}
+
+\subsection{PyCrypto}
+
+\section{Deployment}
+For the deployement of our system, we had a dedicated machine to host our data. This system was quite limited to be able to efficiently serve the requests. The server have a hard drive of about 300GB which is quite enough to stock the information gathered by NetwObserver during the test phase. In the other hand, the memory available was only of 1GB which is not enough to ensure a efficient handling of the users requests.
+
+\subsection{Apache 2}
+As the interface of the system is composed of Web pages, the HTTP requests are handle by Apache2. As the most used server, we had a lot of documentation available. That was the main reason of our choice. Moreover, we thought that a first experience in server configuration would be an interesting experience for any computer science students.
+
+\subsection{Module WSGI}
+This Apache module is able to interpret some python code. As said before, we choose Django as framework and in consequence executing python code is an important requirement. Something to note about the installation is that the code is written in \emph{Python3.3} and not in the version 2. That's force to be carreful during the installation as the default python interpreter in most system is the 2.6. In definitive, we have to compile the module WSGI with the specification of the right interpreter.
+
+\subsection{Celery}
+Celery\footnote{http://www.celeryproject.org/} is a distributed task queue. It allows to create asynchronous jobs handled by several workers. Concretely, a worker is a external thread that receives tasks to accomplished. the main drawback of \emph{Apache} is that it's quite complicated to generate and manage daemon running in background constantly or at given intervals. As a turn-around, we have connected our system to Celery. It helps us to manage more efficiently the concurrent elements of the application. Our server has a small memory and a poor computation power and in consequence we must manage and organise the utilization of those resources. This module has two main component: the workers and the scheduler.
+
+\subsubsection*{The workers}
+In Celery, we can define the number of workers working on the task send to the queue. By adapting this number, we can tune the allocation of the processor. For example, when we lunch a set of \emph{SNMP} requests, it can require a large part of the available resources. Each of these set of requests are lunch at different intervals and can sometime overlap. When that situation occurred, the server can experience heavy computation requirements and have trouble to handle the requests generated by the users. That's why we define a fixed number of workers and each tasks wait in a queue till a slot are available. The main drawback of such architecture is that the the precise moment when the jobs is effectively done is undetermined. Even if it can be really annoying in certain context, it is not the case in our system. Either we have a daemon that run permanently as the one handling the communication with the probes or the task have to gather some data at some interval. This last category have not precise time requirement and even if they happen dozens of minutes later, it's not a really issue here.
+
+\subsubsection*{The Scheduler}
+The scheduler in Celery is called \emph{beat} and its only responsibility is to send the \emph{periodic tasks} to the workers. We have given it the path of the application i which we have define the task and the related interval. \emph{Celery beat} gatherer them and fire the task accordingly. The main warning about the scheduler is the fact that it lunch the task \textbf{exactly} at each interval. If we imagine a task that take between 4 and 5 minutes to be perform and that the interval is of 10 minutes, there can be moments where two instances of that tasks overlap. Effectively, if all the workers are occupied and the first instance only start after 8 minutes of waiting, the second task will start two minutes later while the first one is still running. Here again, such consideration have been taken care of and the data are store with a time stamp or linked to en entity having one. The data gatherer can be completely order and even if such condition occurred, the result would be only a lack of data during an interval and more during the next one. As the intervals vary from 20 minutes to 2 hours while the results are analyse throught several day of data, the impact is quite reduced. 
+
+
