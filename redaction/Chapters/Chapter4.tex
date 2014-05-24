@@ -162,7 +162,7 @@ bssid / frequency / signal level / flags / ssid
 68:86:a7:30:a0:a4 	2437	-57	[WPA-PSK-CCMP]	UCLouvain-prive
 \end{lstlisting}
 
-	\item[-] \texttt{ADD\_NETWORK}: This commands adds a new network with empty configuration. This added network is disabled at first and can be configured afterwards. The commands returns a message containing the id of the new network or \texttt{FAIL} on failure. In our case, the program adds 5 networks at boot for the 5 networks present within the university's campus.
+	\item[-] \texttt{ADD\_NETWORK}: This commands adds a new network with empty configuration. This added network is disabled at first and can be configured afterwards. The commands returns a message containing the id of the new network or \texttt{FAIL} on failure. In our case, the program adds five networks at boot for the five networks present within the university's campus.
 
 	\item[-] \texttt{SET\_NETWORK <network id> <variable> <value>}: Once the networks had been added with the previous command, we can configure them using this particular command. The \textit{variable} of the command uses the same variables and data formats as the standard \texttt{wpa\_supplicant} configuration file. For example, here are the different \texttt{SET\_NETWORK} commands used to configure the \texttt{student.UCLouvain} (with ID=1 for example) that we use in the program.\\
 
@@ -187,11 +187,30 @@ Thanks to does commands our program can to control the \texttt{wpa\_supplicant} 
 \subsubsection{\texttt{wifi\_minitoring.c}}
 In this section we describe the implementation details of our active monitoring program and how it gathers data about the current state of the networks.
 
-The first thing the program does at boot is to start \texttt{wpa\_supplicant}. We have created an empty configuration file for the supplicant in order to launch it without starting a connection to a special network defined in that file. The supplicant uses the driver \texttt{nl80211} which is the current standard (\texttt{wext} being deprecated) and uses the \texttt{wlan0} interface.
-Once the supplicant is started we open a connection with the control interface using \texttt{wpa\_ctrl\_attach(/tmp/run/wpa\_supplicant/wlan0)} (where the parameter is the path for UNIX domain sockets). That function returns a pointer to the abstract control interface data and is stored inside an internal \texttt{wpa\_ctrl} structure.
+The program has two threads that performs different actions. One thread is only dedicated to the \texttt{wpa\_supplicant} control interface and to listen to the incoming events the interface sends. The second thread is dedicated to the connection loop and to the bunch of tests we performed on the networks. This thread is also responsible to send the logs created to our server for parsing and analysis.
 
+Let's analyze the first thread. The first thing the program does at boot is to start the \texttt{wpa\_supplicant} daemon. We have created an empty configuration file for the supplicant in order to launch it without starting a connection to a special network defined in that file. The supplicant uses the driver \texttt{nl80211} which is the current standard (\texttt{wext} being deprecated) and uses the \texttt{wlan0} interface. The following line starts the daemon.\\
 
+\begin{lstlisting}[frame=single,breaklines=true,caption={Starting the \texttt{wpa\_supplicant}} deamon]
+system("wpa_supplicant -B -D nl80211 -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf")
+\end{lstlisting}
 
+Once the supplicant is started we open a connection with the control interface using \texttt{wpa\_ctrl\_attach(/tmp/run/wpa\_supplicant/wlan0)} (where the parameter is the path for UNIX domain sockets). That function returns a pointer to the abstract control interface data and is stored inside an internal \texttt{wpa\_ctrl} structure. The next step is to attach the program to the control interface to receive messages from the deamon. Once that attachement has been performed we start the creation of the networks.
+
+That creation is divided into two distinct parts:
+\begin{description}
+	\item [Adding the networks]: We use a \texttt{for} loop that adds exactly the \texttt{NUM\_OF\_NETWORKS}, defined in the \texttt{C} file, using the command "\texttt{ADD\_NETWORK}". In our case, we add five networks.
+	\item [Configuring the networks]: Each network has an ID and we have created a special function \texttt{config\_network()} that configure and set all the networks using the "\texttt{SET\_NETWORK <network id> <variable> <value>}" command. The IDs of the network are distributed like this:
+		\begin{itemize}
+			\item [-] \texttt{eduroam}: 0
+			\item [-] \texttt{UCLouvain}: 1
+			\item [-] \texttt{visiteurs.UCLouvain}: 2
+			\item [-] \texttt{UCLouvain-prive}: 3
+			\item [-] \texttt{student.UCLouvain}: 4
+		\end{itemize}
+\end{description}
+
+After that creation and configuration phase, the thread waits for an event from the control interface using the function \texttt{wpa\_ctrl\_recv()}. The event is stored into a buffer and is parsed by the function \texttt{parse\_event()} we have implemented.
 
 
 
