@@ -2,7 +2,7 @@
 #ifndef SCRIPT_H
 #define SCRIPT_H
 
-#define DEFAULT_CTRL_IFACE "/tmp/run/wpa_supplicant/wlan0"
+#define DEFAULT_CTRL_IFACE "/var/run/wpa_supplicant/wlan0"
 #define BUF 1024 /* Reply buffer size */
 #define DELAY 10 /* Delay in seconds for the connection loop */
 #define debug_print(args) if (DEBUG) printf(args) /* Debug print */
