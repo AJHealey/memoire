@@ -132,7 +132,7 @@ Our active WiFi monitoring solution is based on a \texttt{C} program running on 
 On this subsection we first give an overview of \texttt{wpa\_supplicant} and how we use it in our implementation. Then, we explained how our program is structured and what are the key parts that make it work and that make us able to get some insights about the networks in real time.
 
 \subsubsection{\texttt{wpa\_supplicant}} %RSN = Robust Security Network
- As defined in \cite{wpa-supplicant}, \texttt{wpa\_supplicant} is a WPA Supplicant for Linux, BSD and Windows with support for WPA and WPA2 (\texttt{IEEE 802.11i/RSN}). Supplicant is the \texttt{IEEE 802.1X/WPA} component that is used in the client stations. It implements key negotiation with a WPA Authenticator and it can optionally control roaming and \texttt{IEEE 802.11} authentication/association of the wlan driver.
+ As defined in \cite{wpa-supplicant}, \texttt{wpa\_supplicant} is a WPA Supplicant for Linux, BSD and Windows with support for WPA and WPA2 (\texttt{IEEE 802.11i/RSN}). Supplicant is the \texttt{IEEE 802.1X/WPA} component that is used in the client stations. It implements key negotiation with a WPA Authenticator and it can optionally control roaming and \texttt{IEEE 802.11} authentication/association of the WLAN driver.
 
  This supplicant uses portable \texttt{C} code and is divided into several separate files containing independent modules besides from the core part. The core part embedded functionality for controlling the network selection, association and configuration while independent modules include code dealing with WPA (such as key handshake, pre-authentication, etc.), \texttt{EAPOL} and \texttt{EAP} state machines and methods. Also, \texttt{wpa\_supplicant} implements a control interface that we use in our program and that can control the operations of the \texttt{wpa\_supplicant} daemon.
 
@@ -151,7 +151,7 @@ Several commands can be specified and sent to the \texttt{wpa\_supplicant} daemo
 \begin{itemize}
 	\item[-] \texttt{SCAN}: This command request the daemon to perform a new BSS scan.
 
-	\item[-] \texttt{SCAN\_RESULTS}: This is used to get the latest scan results. Those results embed details about the bssid, the frequency, the signal level, the flags and the ssid of each network scanned. The message returned has the same syntax as in the following example representing one entry for each one of the networks of the UCL.\\
+	\item[-] \texttt{SCAN\_RESULTS}: This is used to get the latest scan results. Those results embed details about the bssid, the frequency, the signal level, the flags and the \texttt{SSID} of each network scanned. The message returned has the same syntax as in the following example representing one entry for each one of the networks of the UCL.\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Scan results message example}]
 bssid / frequency / signal level / flags / ssid
@@ -265,8 +265,8 @@ struct ap_connect {
 	int num;
 	struct ap_connect *next;
 }
-struct ap_tried *first_connect = NULL;
-struct ap_tried *curr_connect = NULL;
+struct ap_connect *first_connect = NULL;
+struct ap_connect *curr_connect = NULL;
 \end{lstlisting}
 
 
@@ -305,7 +305,7 @@ wlan0: Associated with 00:1e:bd:65:34:71
 	In that case, we extract the \texttt{BSSID} of the AP that the daemon is associated with and we store it directly in our main log structure.
 
 	\item[CTRL-EVENT-CONNECTED]:
-	This event means that the daemon is now connected to the AP after the \texttt{EAP} authentication has been realized. These are the messages received to finish our example with a connection to the student network.
+	This event means that the daemon is now connected to the AP after the \texttt{EAP} authentication has been realized. These are the messages received to finish our example with a connection to the student network.\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Example of a connection to the \texttt{student.UCLouvain} network - 3}]
 wlan0: Associated with 00:1e:bd:65:34:71
@@ -326,13 +326,99 @@ Thanks to that function, data about the \texttt{SSID} of the network, the list o
 Let's analyze the second thread. This thread is the most important in our monitoring tool. Indeed, we can divide its work into four categories. It is going to handle the connection loop. It also performs a scan, checks the availability of the services and, most importantly, it is going to create the log file and send it to our server. 
 
 \begin{description}
-	\item[Connection loop]: This is the core part of our monitoring system. Indeed, the loop embeds the key process of our tool. Firstly
+	\item[Connection loop]: This is the core part of our monitoring system. Indeed, the loop embeds the key processes of our tool. The choice we have made for the loop is the following: first, the program performs a scan of the networks available around the router and the results are written inside the log file. Then the connection loop begins and for each network, the supplicant tries to established a connection (all the information during those steps are gathered by the first thread as described above). Then for each network, once the connection is established, the availability of the selection of services is tested in order to see if the are reachable when connected to that particular network. Finally the supplicant is disconnected from the current network and restart the process for the next one. After two loops, the log file is closed and sent to the server. A new file is then opened and the loop starts again. The following pseudo-code gives a better understanding of how the loop works.\\
 
-	\item[Scan]:
+\begin{lstlisting}[frame=single,breaklines=true,caption={Connection loop pseudo-code}]
+WHILE 1
+	CALL scan
+	FOR each network
+		CALL execute_action with ACTION_CONNECT, network
+		CALL services_loop
+		CALL log_event with LOG_PRINT_STRUCT
+		IF number of loops = 2 AND network = last THEN
+			CALL fclose with file
+			CALL send_log
+			CALL fopen with file path
+			Set number of loops to 0
+		ELSE
+			CALL execute_action with ACTION_DISCONNECT
+			INCREMENT number of loops
+		ENDIF
+	ENDFOR
+\end{lstlisting}
 
-	\item[Services checking process]:
+	\item[Scan]: Before every connection loop, the program performs a scan of all the available network and keeps the scan results in order to include them into the log file afterwards. Thanks to that, we have a more detailed overview of the surrounding area of the router and what are the APs specifications there. This process is handled by the function \texttt{scan()}. In order to perform this scan we first send the command \texttt{SCAN} to the interface and then we collect the results into a buffer by sending the command \texttt{SCAN\_RESULTS}. The results are stored into a custom structure organized as a linked list and containing seven variables. The structure is the following.\\
 
-	\item[Log file]:
+\begin{lstlisting}[frame=single,breaklines=true,caption={\texttt{scan\_results} structure}]
+struct scan_results {
+	char *bssid;
+	char *freq;
+	char *signal;
+	char *flags;
+	char *ssid;
+	int num;
+	struct scan_results *next
+}
+struct scan_results *first_scan = NULL;
+struct scan_results *curr_scan = NULL;
+\end{lstlisting}
+	
+	For each line of the buffer we extract the \texttt{BSSID}, the frequency, the signal, the flags and the \texttt{SSID} of the network the AP broadcasts. All this data is stored into one node and, as for the other linked list seen before, the node is either set as the first one or added to the linked list. Once all the results from the buffer has been parsed and inserted into the linked list, the program automatically adds the scan results into the log file. For the log file we have decide to only use the \textit{bssid}, \textit{freq}, \textit{signal} and \textit{signal} variables.
+
+	\item[Services checking process]: This is a special feature we have implemented in our monitoring tool. The idea is to emulate the behavior of a lambda user that connects on one of the networks. Thus, besides the connection establishment, we have decided to verify that a list of services (such as \textit{www.google.be}, \textit{www.gmail.com}, \textit{www.uclouvain.be}, \textit{www.icampus.ucl.ac.be}, etc.) are reachable. To be able to do that, for each service we create a \texttt{socket} and we try to connect to the remote server through this socket. If the connection is established then the service is reachable. The information about the reachability of the selected services is also stored into a structure called \texttt{check\_serv}. 
+
+	%TODO DNS 
+
+	\item[Log file]: Finally, all the data collected during the connection loop process is, as described before, stored into structures and between each new connection establishment these data is written into the log file. We have decided to use the \texttt{JSON} syntax for the log file because we already use a \texttt{JSON} parser on our server and by doing this, the portability is maintained and enhanced. We have defined several conventions for our log files and it is clearly divided into several parts. As an introduction we print the date on which the log file was started and the \texttt{MAC} address of the router. Then first we have all the information about the scan results. After that we find all the data regarding the connection loop. This part is divided in section where each section represents one network and contains all the details about it. Here is an small example of a log file, with only one scan result, one connection and all services reachable, our server receives from the probe.\\
+\begin{lstlisting}[frame=single,breaklines=true,caption={Small log file example}]
+{
+	"date": "2014/05/23 14:54:17",
+	"mac": "a0:f3:c1:36:87:58",
+	"log": [
+		"scan": 
+		[
+			{
+				"bssid": "00:1e:bd:65:34:71",
+				"frequency": "2462",
+				"signal": "-56",
+				"ssid": "student.UCLouvain"
+			}
+		],
+		"connections": 
+		[
+			{
+				"date": "2014/5/23 14:54:18",
+				"ssid": "student.UCLouvain",
+				"tried": 
+				[ 
+					"00:1e:bd:65:34:71"
+				],
+				"connected": 
+				[ 
+					"00:1e:bd:65:34:71"
+				],
+				"time": 
+				{
+					"wpa_supplicant": "2sec 35ms",
+					"dhcp": "1sec 12ms",
+				},
+				"services":
+				{
+					"google.be": "1",
+					"gmail.be": "1",
+					"github.be": "1",
+					"ssl.github.be": "1",
+					"uclouvain.be": "1",
+					"icampus.uclouain.be": "1"
+				}
+			}
+		]
+	]
+}
+\end{lstlisting}
+
+
+
 
 \end{description}
 
