@@ -110,7 +110,7 @@ class APSnapshot(models.Model):
 	ap = models.ForeignKey(AccessPoint)
 	date = models.DateTimeField(default=lambda:(timezone.now()))
 
-class APIfSnapshotData(models.Model):
+class APSnapshotData(models.Model):
 	apSnapshot = models.ForeignKey(APSnapshot)
 	name = models.CharField(max_length=56)
 	value = models.DecimalField(max_digits=10, decimal_places=0, default=0)
@@ -184,7 +184,7 @@ class WismEvent(models.Model):
 
 ## Models of the probe log
 class ProbeLog(models.Model):
-	date = models.DateTimeField(default=lambda:(timezone.now()))
+	date = models.DateTimeField(default=lambda:(timezone.now()), unique=True)
 	probe = models.ForeignKey(MobileStation)
 
 
@@ -192,14 +192,15 @@ class ProbeScanResult(models.Model):
 	log = models.ForeignKey(ProbeLog)
 	ap = models.ForeignKey(AccessPoint)
 	ssid = models.CharField(max_length=50)
+	frequency = models.DecimalField(max_digits=4,decimal_places=0)
 	signalStrength = models.DecimalField(max_digits=3,decimal_places=0)
 
 class ProbeConnectionResult(models.Model):
 	date = models.DateTimeField()
 	
 	log = models.ForeignKey(ProbeLog)
-	apTried = models.ManyToManyField(ProbeScanResult, related_name='+')
-	connected = models.ManyToManyField(ProbeScanResult,related_name='+')
+	apTried = models.ManyToManyField(AccessPoint, related_name='tried+')
+	connected = models.ManyToManyField(AccessPoint,related_name='connected+')
 
 
 class TimeCheck(models.Model):
