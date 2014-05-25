@@ -186,10 +186,14 @@ class WismEvent(models.Model):
 class ProbeLog(models.Model):
 	date = models.DateTimeField(default=lambda:(timezone.now()), unique=True)
 	probe = models.ForeignKey(MobileStation)
+	class Meta:
+		unique_together = (('date', 'probe'),)
 
+class ProbeTest(models.Model):
+	log = models.ForeignKey(ProbeLog)
 
 class ProbeScanResult(models.Model):
-	log = models.ForeignKey(ProbeLog)
+	test = models.ForeignKey(ProbeTest)
 	ap = models.ForeignKey(AccessPoint)
 	ssid = models.CharField(max_length=50)
 	frequency = models.DecimalField(max_digits=4,decimal_places=0)
@@ -198,7 +202,7 @@ class ProbeScanResult(models.Model):
 class ProbeConnectionResult(models.Model):
 	date = models.DateTimeField()
 	
-	log = models.ForeignKey(ProbeLog)
+	test = models.ForeignKey(ProbeTest)
 	apTried = models.ManyToManyField(AccessPoint, related_name='tried+')
 	connected = models.ManyToManyField(AccessPoint,related_name='connected+')
 

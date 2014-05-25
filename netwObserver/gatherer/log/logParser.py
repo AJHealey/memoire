@@ -6,15 +6,15 @@ from datetime import datetime
 
 from os.path import splitext
 from django.utils import timezone
-from gatherer.models import RadiusEvent, DHCPEvent, WismEvent, BadLog, ProbeLog, AccessPoint, MobileStation, ProbeScanResult, ProbeConnectionResult, TimeCheck, ServiceCheck
+from gatherer.models import RadiusEvent, DHCPEvent, WismEvent, BadLog, ProbeLog, ProbeTest, AccessPoint, MobileStation, ProbeScanResult, ProbeConnectionResult, TimeCheck, ServiceCheck
 from django.db import IntegrityError
 
 def dateParser(dateString):
 	tmp = dateString.replace("/"," ").replace(':', " ").split()
 	return datetime(year=int(tmp[0]), month=int(tmp[1]), day=int(tmp[2]), hour=int(tmp[3]), minute=int(tmp[4]), second=int(tmp[5])).replace(tzinfo=timezone.utc)
 
-def getScanResult(probeLog, scanItem):
-	scanResult = ProbeScanResult(log=probeLog)
+def getScanResult(probeTest, scanItem):
+	scanResult = ProbeScanResult(test=probeTest)
 	try: 
 		scanResult.ap, created = AccessPoint.objects.get_or_create(macAddress=scanItem["bssid"][:-1]+'0')
 	except IntegrityError:
@@ -29,8 +29,8 @@ def getScanResult(probeLog, scanItem):
 	scanResult.save()
 	return scanResult
 
-def getConnectionResult(probeLog,connection):
-	connectionResult = ProbeConnectionResult(date=dateParser(connection["date"]), log=probeLog)
+def getConnectionResult(probeTest,connection):
+	connectionResult = ProbeConnectionResult(date=dateParser(connection["date"]), test=probeTest)
 	connectionResult.save()
 	for t in connection["tried"]:
 		try: 
@@ -72,20 +72,20 @@ def probeParser(path):
 		probe = MobileStation.objects.get(macAddress=logContent["mac"])
 
 	try:
-		probeLog, created = ProbeLog.objects.get_or_create(date=dateParser(logContent["date"]),probe=probe)
+		probeLog = ProbeLog(date=dateParser(logContent["date"]),probe=probe)
+		probeLog.save()
 	except IntegrityError:
-		probeLog = ProbeLog.objects.get(date=dateParser(logContent["date"]),probe=probe)
-	
-
-	probeLog.save()
+		return
 
 	for log in logContent["log"]:
-		# Get scan Results
+		test = ProbeTest(log=probeLog)
+		test.save()
+		# Get Scan Results
 		for scan in log["scan"]:
-			getScanResult(probeLog,scan)
+			getScanResult(test,scan)
 		#Get Connection results
 		for connection in log["connections"]:
-			getConnectionResult(probeLog,connection)
+			getConnectionResult(test,connection)
 
 
 def wismParser(infos):
