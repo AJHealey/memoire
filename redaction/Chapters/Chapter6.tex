@@ -13,11 +13,10 @@
 %Trying to associate -> rejected some time -> status code = 12 ?
 %Connecté et puis disconection abrupte -> code = 3 ?
 
-<<<<<<< HEAD
 %Limitations ?
 %OpenSSL
 %Aruba AP70 was originally designed to be a commercial AP instead of a wireless AM, its processing capability is limited: 266-MH MIPS 4Kc CPU, 28-MB RAM, and 8-MB flash memory storage
-=======
+
 \section{Simulation of a user}
 We use our \texttt{OpenWrt} routers as probes that simulate the behavior of a lambda user that connects to the university network. In order to do that, we have implemented a \texttt{C} program using \texttt{wpa\_supplicant} and its control interface. This program, launched by the router at boot, tries to establish a connection with each one of the five \texttt{VLANs} of the UCL (i.e. \texttt{student.UCLouvain}, \texttt{UCLouvain}, \texttt{visiteurs.UCLouvain}, \texttt{UCLouvain-prive} and \texttt{eduroam}). During that connection process we compute the time taken by \texttt{wpa\_supplicant} to get a connection and the time taken by \texttt{udhcpc} to get an IP address. Thanks to those information we can approximate the overall quality perceived by the normal users when they want to get an access to the Internet inside the UCL. Beside that, our program also checks if a selection of the most used services by a user are reachable with each of the \texttt{VLANs}. We have decided to check the reachability of the following services:
 \begin{itemize}
@@ -36,4 +35,3 @@ Comparing the scan results for each AP and the APs tried and the one it has a co
 
 TODO
  %https://chromium-review.googlesource.com/#/c/183720/
->>>>>>> FETCH_HEAD
