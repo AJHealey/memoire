@@ -231,6 +231,7 @@ static void parse_event(const char *reply) {
 		ftime(&dhcp_start);
 		system("udhcpc -t 0 -i wlan0 -C");
 		ftime(&dhcp_end);
+		printf(">>DHCP\n");
 		
 		timeDiff(wpa_start, wpa_end, &time->wpa_time);
 		timeDiff(dhcp_start, dhcp_end, &time->dhcp_time);
@@ -456,11 +457,16 @@ static int checkService(char *host, const char *port) {
 
 	//Create communication endpoint
 	if((sockfd = socket(AF_INET, SOCK_STREAM, 0))<0) {
+		printf(">>Not Created %s\n", host);
 		return 0;
+	}
+	else {
+		printf(">>Create %s\n", host);
 	}
 	
 	//Connect to server
 	if(connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+		printf(">>Not connected %s\n", host);
 		return 0;
 	}
 	else {
@@ -517,6 +523,7 @@ static void services_loop() {
 		strcpy(ptr->icampus, "1");
 	else
 		strcpy(ptr->icampus, "0");
+	printf(">>Done\n");
 }
 
 /*
@@ -713,8 +720,11 @@ void *connection_loop(void * p_data) {
 		for(i = 0; i<NUM_OF_NETWORKS; i++) {
 			log_event(LOG_START_CONNECTION_LOOP, NULL);
 			execute_action(ACTION_CONNECT, i);
+			printf(">>SERVICE\n");
 			services_loop();
+			printf(">>Before\n");
 			log_event(LOG_PRINT_STRUCT, NULL);
+			printf(">>After\n");
 			sleep(DELAY);
 			clear_struct();
 
@@ -728,7 +738,7 @@ void *connection_loop(void * p_data) {
 		}
 		log_event(LOG_STOP_CONNECTION, NULL);
 
-		if(close == 1) {
+		if(close == 0) {
 			debug_print("SAVE\n");
 			log_event(LOG_FINAL_STOP_LOOP, NULL);
 			log_event(LOG_STOP_LOG, NULL);
