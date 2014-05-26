@@ -4,87 +4,100 @@ The top-level auxiliary file: main.aux
 The style file: unsrtnat.bst
 Database file #1: Bibliographie/Bibliography.bib.bib
 Warning--entry type for "eduroam1" isn't style-file defined
---line 120 of file Bibliographie/Bibliography.bib.bib
+--line 1 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "mrtg" isn't style-file defined
+--line 73 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "cacti" isn't style-file defined
+--line 80 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "rrdtool" isn't style-file defined
+--line 86 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "nagios" isn't style-file defined
+--line 93 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "eduroam2" isn't style-file defined
---line 129 of file Bibliographie/Bibliography.bib.bib
+--line 220 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "eduroamRadius" isn't style-file defined
---line 136 of file Bibliographie/Bibliography.bib.bib
+--line 227 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "intermapper" isn't style-file defined
---line 142 of file Bibliographie/Bibliography.bib.bib
+--line 233 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "snmp" isn't style-file defined
---line 148 of file Bibliographie/Bibliography.bib.bib
+--line 239 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "windows" isn't style-file defined
---line 154 of file Bibliographie/Bibliography.bib.bib
+--line 245 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "mvt" isn't style-file defined
---line 190 of file Bibliographie/Bibliography.bib.bib
+--line 253 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "octopussy" isn't style-file defined
---line 197 of file Bibliographie/Bibliography.bib.bib
+--line 260 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "syslogCisco" isn't style-file defined
---line 204 of file Bibliographie/Bibliography.bib.bib
+--line 267 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "tplink" isn't style-file defined
---line 211 of file Bibliographie/Bibliography.bib.bib
+--line 274 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "openwrt" isn't style-file defined
---line 217 of file Bibliographie/Bibliography.bib.bib
+--line 280 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "wpa-supplicant" isn't style-file defined
---line 234 of file Bibliographie/Bibliography.bib.bib
+--line 297 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "wpa-supplicant-devel" isn't style-file defined
---line 241 of file Bibliographie/Bibliography.bib.bib
+--line 304 of file Bibliographie/Bibliography.bib.bib
+Warning--I didn't find a database entry for "smokeping"
 Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" has a comma at the end for entry article2
 while executing---line 1233 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
 while executing---line 1233 of file unsrtnat.bst
+Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" has a comma at the end for entry article2
+while executing---line 1315 of file unsrtnat.bst
+Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
+while executing---line 1315 of file unsrtnat.bst
+Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" has a comma at the end for entry article2
+while executing---line 1315 of file unsrtnat.bst
+Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
+while executing---line 1315 of file unsrtnat.bst
+Warning--empty year in mrtg
+Warning--empty year in cacti
+Warning--empty year in rrdtool
+Warning--empty year in nagios
 Warning--empty year in eduroamRadius
 Warning--empty year in intermapper
 Warning--empty year in snmp
 Warning--empty year in windows
-Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" has a comma at the end for entry article2
-while executing---line 1315 of file unsrtnat.bst
-Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
-while executing---line 1315 of file unsrtnat.bst
-Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" has a comma at the end for entry article2
-while executing---line 1315 of file unsrtnat.bst
-Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
-while executing---line 1315 of file unsrtnat.bst
 Warning--empty year in tplink
-You've used 26 entries,
+You've used 32 entries,
             2481 wiz_defined-function locations,
-            697 strings with 8524 characters,
-and the built_in function-call counts, 7897 in all, are:
-= -- 650
-> -- 368
-< -- 19
-+ -- 158
-- -- 106
-* -- 482
-:= -- 1265
-add.period$ -- 94
-call.type$ -- 26
-change.case$ -- 49
-chr.to.int$ -- 26
-cite$ -- 31
-duplicate$ -- 401
-empty$ -- 793
-format.name$ -- 142
-if$ -- 1703
-int.to.chr$ -- 1
-int.to.str$ -- 27
-missing$ -- 11
-newline$ -- 153
-num.names$ -- 78
-pop$ -- 288
+            730 strings with 9542 characters,
+and the built_in function-call counts, 10024 in all, are:
+= -- 805
+> -- 504
+< -- 23
++ -- 213
+- -- 148
+* -- 649
+:= -- 1616
+add.period$ -- 114
+call.type$ -- 32
+change.case$ -- 61
+chr.to.int$ -- 31
+cite$ -- 41
+duplicate$ -- 495
+empty$ -- 986
+format.name$ -- 190
+if$ -- 2145
+int.to.chr$ -- 2
+int.to.str$ -- 33
+missing$ -- 13
+newline$ -- 185
+num.names$ -- 96
+pop$ -- 346
 preamble$ -- 1
-purify$ -- 26
+purify$ -- 32
 quote$ -- 0
-skip$ -- 289
+skip$ -- 358
 stack$ -- 0
-substring$ -- 73
-swap$ -- 60
+substring$ -- 118
+swap$ -- 74
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 170
-warning$ -- 5
-while$ -- 53
+type$ -- 212
+warning$ -- 9
+while$ -- 67
 width$ -- 0
-write$ -- 349
+write$ -- 425
 (There were 6 error messages)

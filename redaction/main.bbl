@@ -1,9 +1,77 @@
-\begin{thebibliography}{26}
+\begin{thebibliography}{32}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Terena(2012)]{eduroam1}
+Terena.
+\newblock What is eduroam?, June 2012.
+\newblock URL \url{http://www.eduroam.org}.
+
+\bibitem[Machaka et~al.(2011)Machaka, Bagula, and Wet]{article1}
+P.~Machaka, A.~Bagula, and N.~De Wet.
+\newblock A highly scalable monitoring tool for wi-fi networks.
+\newblock In \emph{SATNAC 2011}, East London International Convention Centre,
+  South Africa, 4-7 September 2011.
+
+\bibitem[Thottan et~al.(2003)Thottan, Swanson, Cantone, Ho, Ren, and
+  Paul]{sequin}
+Marina Thottan, George~K. Swanson, Michael Cantone, Tin~Kam Ho,
+  Yansong~(Jennifer) Ren, and Sanjoy Paul.
+\newblock Sequin: An snmp-based mpls network monitoring system.
+\newblock \emph{Bell Labs Technical Journal}, 8\penalty0 (1):\penalty0 95--111,
+  2003.
+\newblock URL
+  \url{http://dblp.uni-trier.de/db/journals/bell/bell8.html#ThottanSCHRP03}.
+
+\bibitem[Jiujun~Cheng and Yan(2014)]{article2}
+Junjun Liu Qingyang~Zhang Jiujun~Cheng, Liufei~Hu and Chendan Yan.
+\newblock A new mechanism for network monitoring and shielding in wireless lan.
+\newblock \emph{Mathematical Problems in Engineering, vol. 2014}, 2014.
+
+\bibitem[Tan et~al.(2014)Tan, McDonald, Vance, Arackaparambil, Bratus, and
+  Kotz]{article3}
+Keren Tan, Chris McDonald, Bennet Vance, Chrisil Arackaparambil, Sergey Bratus,
+  and David Kotz.
+\newblock From map to dist: The evolution of a large-scale wlan monitoring
+  system.
+\newblock \emph{IEEE Transactions on Mobile Computing}, 13\penalty0
+  (1):\penalty0 216--229, 2014.
+\newblock ISSN 1536-1233.
+\newblock \doi{http://doi.ieeecomputersociety.org/10.1109/TMC.2012.237}.
+
+\bibitem[Sheng et~al.(2008)Sheng, Chen, Yin, Tan, Deshpande, Vance, Kotz,
+  Campbell, McDonald, Henderson, and Wright]{MAP}
+Yong Sheng, Guanling Chen, Hongda Yin, Keren Tan, Udayan Deshpande, Bennet
+  Vance, David Kotz, Andrew Campbell, Chris McDonald, Tristan Henderson, and
+  J.~Wright.
+\newblock Map: a scalable monitoring system for dependable 802.11 wireless
+  networks.
+\newblock \emph{IEEE Wireless Commun.}, 15\penalty0 (5):\penalty0 10--18, 2008.
+\newblock URL
+  \url{http://dblp.uni-trier.de/db/journals/wc/wc15.html#ShengCYTDVKCMHW08}.
+
+\bibitem[Oetiker({\natexlab{a}})]{mrtg}
+Tobias Oetiker.
+\newblock Mrtg - the multi router traffic grapher, {\natexlab{a}}.
+\newblock URL \url{http://oss.oetiker.ch/mrtg/}.
+
+\bibitem[The Cacti~Group()]{cacti}
+Inc. The Cacti~Group.
+\newblock Cacti: The complete rrdtool-based graphing solution.
+\newblock URL \url{http://www.cacti.net/}.
+
+\bibitem[Oetiker({\natexlab{b}})]{rrdtool}
+Tobias Oetiker.
+\newblock Rrdtool logging \& graphing, {\natexlab{b}}.
+\newblock URL \url{http://oss.oetiker.ch/rrdtool/}.
+
+\bibitem[Entreprises()]{nagios}
+Nagios Entreprises.
+\newblock Nagios: The industry standard in it infrastructure monitoring.
+\newblock URL \url{http://www.nagios.org/}.
 
 \bibitem[Aboba et~al.(2009)Aboba, Blunk, Vollbrecht, Carlson, and
   Levkowetz]{rfc3748}
@@ -69,11 +137,6 @@ M.L. Gress and L.~Johnson.
 \newblock ISBN 9781587140501.
 \newblock URL \url{http://books.google.be/books?id=YLHvHGGx5AEC}.
 
-\bibitem[Terena(2012)]{eduroam1}
-Terena.
-\newblock What is eduroam?, June 2012.
-\newblock URL \url{http://www.eduroam.org}.
-
 \bibitem[Belnet(2011)]{eduroam2}
 Belnet.
 \newblock Belnet eduroam service, 2011.
@@ -100,28 +163,6 @@ Windows.
 \newblock Windows xp support has ended.
 \newblock URL
   \url{http://windows.microsoft.com/en-us/windows/end-support-help}.
-
-\bibitem[Machaka et~al.(2011)Machaka, Bagula, and Wet]{article1}
-P.~Machaka, A.~Bagula, and N.~De Wet.
-\newblock A highly scalable monitoring tool for wi-fi networks.
-\newblock In \emph{SATNAC 2011}, East London International Convention Centre,
-  South Africa, 4-7 September 2011.
-
-\bibitem[Jiujun~Cheng and Yan(2014)]{article2}
-Junjun Liu Qingyang~Zhang Jiujun~Cheng, Liufei~Hu and Chendan Yan.
-\newblock A new mechanism for network monitoring and shielding in wireless lan.
-\newblock \emph{Mathematical Problems in Engineering, vol. 2014}, 2014.
-
-\bibitem[Tan et~al.(2014)Tan, McDonald, Vance, Arackaparambil, Bratus, and
-  Kotz]{article3}
-Keren Tan, Chris McDonald, Bennet Vance, Chrisil Arackaparambil, Sergey Bratus,
-  and David Kotz.
-\newblock From map to dist: The evolution of a large-scale wlan monitoring
-  system.
-\newblock \emph{IEEE Transactions on Mobile Computing}, 13\penalty0
-  (1):\penalty0 216--229, 2014.
-\newblock ISSN 1536-1233.
-\newblock \doi{http://doi.ieeecomputersociety.org/10.1109/TMC.2012.237}.
 
 \bibitem[Plant(2013)]{mvt}
 Luke Plant.
