@@ -4,6 +4,8 @@ from django.utils import timezone
 from gatherer.models import WismEvent, DHCPEvent, RadiusEvent, MobileStation, AccessPoint, APSnapshot, APIfSnapshot
 from django.core.exceptions import ObjectDoesNotExist
 
+from django.conf import settings
+
 
 MAX_VALUE_SNMP_COUNTER32 = 4294967295
 
@@ -65,39 +67,54 @@ def getHotAP(number=5):
 def getNbrOfAP():
 	return AccessPoint.objects.areUp().count()
 
-def getAPData(ap, timePerRange=timedelta(hours=1)):
+def getAPData(ap, data, 
+	timePerRange=3*settings.SNMPAPLAP, 
+	startTime=datetime.min.replace(tzinfo=timezone.get_current_timezone()),
+	endTime=datetime.max.replace(tzinfo=timezone.get_current_timezone())
+	):
 	""" Speed in mbits """
+	COUNTERTOSPEED = ['ethernetRxTotalBytes','ethernetTxTotalBytes']
+	GETMAX = []
+	
 	result = []
 	try:
-		snapshots = APSnapshot.objects.filter(ap=ap).order_by('date')
+		snapshots = APSnapshot.objects.filter(ap=ap, date__gte=startTime, date__lte=endTime).order_by('date')
+		startAt = snapshots[0].date
 		
-		datetimeStartRange = snapshots[0].date
-		
-		ethernetRxTotalBytesStart = snapshots[0].ethernetRxTotalBytes
-		ethernetRxTotalBytesEnd = snapshots[0].ethernetRxTotalBytes
-		
-		ethernetTxTotalBytesStart = snapshots[0].ethernetTxTotalBytes
-		ethernetTxTotalBytesEnd = snapshots[0].ethernetTxTotalBytes
+		values = {}
+		for data in snapshots[0].apsnapshotdata_set.all():
+			values[data.name] = [data.value]
 
-		for snap in snapshots:
+		for snap in snapshots[1:]:
 			if snap.date < (datetimeStartRange + timePerRange):
-				ethernetRxTotalBytesEnd = snap.ethernetRxTotalBytes
-				ethernetTxTotalBytesEnd = snap.ethernetTxTotalBytes
+				for data in snap.apsnapshotdata_set.all():
+					if data.name in values:
+						values[data.name].append[data.value]
 
 			else:
-				result.append({'date':timezone.localtime(datetimeStartRange+timePerRange), 
-					'rx':getSpeed(ethernetRxTotalBytesStart,ethernetRxTotalBytesEnd,timePerRange), 
-					'tx':getSpeed(ethernetTxTotalBytesStart,ethernetTxTotalBytesEnd,timePerRange)})
+				data = {}
+				for attr, value in values.items():
+					if attr in COUNTERTOSPEED:
+						data[attr] = getSpeed(value[0], value[-1], timePerRange)
+					elif attr in GETMAX:
+						data[attr] = max(value)
+					else:
+						data[attr] = sum(value)/float(len(value))
+
+				result.append({'date':timezone.localtime(startAt + timePerRange), 'data': data})
 
 				# Start new range
-				datetimeStartRange = snap.date
-				ethernetRxTotalBytesStart = snap.ethernetRxTotalBytes
-				ethernetRxTotalBytesEnd = snap.ethernetRxTotalBytes
-				ethernetTxTotalBytesStart = snap.ethernetTxTotalBytes
-				ethernetTxTotalBytesEnd = snap.ethernetTxTotalBytes
+				startAt = snap.date
+				values = {}
+				for data in snap.apsnapshotdata_set.all():
+					values[data.name] = [data.value]
 
 	except ObjectDoesNotExist:
 		pass
+
+	except Exception as e:
+		OperationalError(source="getAPData", error=str(e)).save()
+		return []
 
 	return result
 
