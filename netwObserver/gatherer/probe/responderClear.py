@@ -9,6 +9,7 @@ PROBEPORT = 3874
 def responder():
 	#create the server socket
 	serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	#bind the socket
 	serversocket.bind(('0.0.0.0', PROBEPORT))
 	serversocket.listen(5)
