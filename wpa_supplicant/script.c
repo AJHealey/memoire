@@ -433,14 +433,17 @@ static void connect_network(int network) {
  * Check if services are available or not
  */
 static int checkService(char *host, const char *port) {
-	int sockfd;
+	int res, valopt, sockfd;
+	long arg;
+	fd_set set;
+	struct timeval tv;
 	struct sockaddr_in serv_addr;
 	char *host_name;
 	struct hostent *hostptr;
 	struct in_addr *ptr;
 	unsigned short port_number;
-	
-	
+	socklen_t len;
+
 	port_number = atoi(port);
 
 	if((hostptr = (struct hostent *) gethostbyname(host)) == NULL) {
@@ -457,23 +460,50 @@ static int checkService(char *host, const char *port) {
 
 	//Create communication endpoint
 	if((sockfd = socket(AF_INET, SOCK_STREAM, 0))<0) {
-		printf(">>Not Created %s\n", host);
 		return 0;
 	}
-	else {
-		printf(">>Create %s\n", host);
-	}
-	
-	//Connect to server
-	if(connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
-		printf(">>Not connected %s\n", host);
-		return 0;
-	}
-	else {
+
+	//Non blocking socket
+	arg = fcntl(sockfd, F_GETFL, NULL);
+	arg |= O_NONBLOCK;
+	fcntl(sockfd, F_SETFL, arg);
+
+	//Trying to connect with timeout
+	res = connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
+
+	if(res < 0) {
+		if(errno == EINPROGRESS) {
+			tv.tv_sec = 5; // 5sec timeout
+			tv.tv_usec = 0;
+			FD_ZERO(&set);
+			FD_SET(sockfd, &set);
+			if(select(sockfd+1, NULL, &set, NULL, &tv) > 0) {
+				len = sizeof(int);
+				getsockopt(sockfd, SOL_SOCKET, SO_ERROR, (void *)(&valopt), &len);
+				if(valopt) {
+					//Error connection
+					return 0;
+				}
+			}
+			else {
+				//Time out 
+				debug_print("NOK\n");
+				return 0;
+			}
+		}
+		//connected
 		debug_print("OK\n");
 		return 1;
 	}
-	close(sockfd);
+	else {
+		//Error connection
+		return 0;
+	}
+
+	//Set to blocking again
+	arg = fcntl(sockfd, F_GETFL, NULL);
+	arg &= (~O_NONBLOCK);
+	fcntl(sockfd, F_SETFL, arg);
 }
 
 /*
