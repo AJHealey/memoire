@@ -29,6 +29,7 @@ Warning--entry type for "wpa-supplicant" isn't style-file defined
 --line 234 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "wpa-supplicant-devel" isn't style-file defined
 --line 241 of file Bibliographie/Bibliography.bib.bib
+Warning--I didn't find a database entry for "ciscoVowlan"
 Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" has a comma at the end for entry article2
 while executing---line 1233 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
@@ -48,7 +49,7 @@ while executing---line 1315 of file unsrtnat.bst
 Warning--empty year in tplink
 You've used 26 entries,
             2481 wiz_defined-function locations,
-            697 strings with 8524 characters,
+            699 strings with 8546 characters,
 and the built_in function-call counts, 7897 in all, are:
 = -- 650
 > -- 368

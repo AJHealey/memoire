@@ -6,10 +6,10 @@
 	<thead>
 		<tr>
 			<th><a href="{% url 'aprefresh' %}"><span class="glyphicon glyphicon-refresh"></span></a></th>
-			<th>Name 
+			<th>
 				<form action="{% url 'apsnmp' %}" method="get">
   					<a name="order" type="submit" value={%if order == "name"%}"-name"{%else%}"name"{%endif%}>
-  						<span class="glyphicon glyphicon-sort"></span>
+  						Name<span class="glyphicon glyphicon-sort"></span>
   					</a>
 				</form>
 			</th>
