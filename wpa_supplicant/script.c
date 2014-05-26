@@ -297,11 +297,6 @@ static void execute_action(enum wpa_action action, int network) {
 				char cmd[17];
 				int i;
 				commands("DISCONNECT");
-				/* Disable all the networks */
-				/*for(i = 0; i < NUM_OF_NETWORKS; i++) {
-					sprintf(cmd, "DISABLE_NETWORK %d", i);
-					commands(cmd);
-				}*/
 				system("killall udhcpc"); /* Stop DHCP */
 				dhcp = 0;
 			}
@@ -604,7 +599,7 @@ static void scan() {
  * Send logs to server
  */
 static void send_log() {
-	if(sendLogs("var/log/logs.txt") < 0)
+	if(sendLogs("var/log/logs.txt", router_mac) < 0)
 		debug_print("Error sending log file\n");
 }
 
@@ -711,7 +706,6 @@ void *connection_loop(void * p_data) {
 	
 
 	while(1) {
-		
 		log_event(LOG_START_LOOP, NULL);
 		scan();
 		log_event(LOG_START_CONNECTION, NULL);
@@ -723,10 +717,11 @@ void *connection_loop(void * p_data) {
 			log_event(LOG_PRINT_STRUCT, NULL);
 			sleep(DELAY);
 			clear_struct();
-			execute_action(ACTION_DISCONNECT, 0);
 
-			if(i != NUM_OF_NETWORKS-1) /* Last network tested needs special final closure in log syntax */
+			if(i != NUM_OF_NETWORKS-1) { /* Last network tested needs special final closure in log syntax */
 				log_event(LOG_STOP_CONNECTION_LOOP, NULL);
+				execute_action(ACTION_DISCONNECT, 0);
+			}
 			else
 				log_event(LOG_FINAL_STOP_CONNECTION_LOOP, NULL); /* Final closure */
 			sleep(DELAY);

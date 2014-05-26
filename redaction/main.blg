@@ -36,13 +36,7 @@ Warning--entry type for "openwrt" isn't style-file defined
 Warning--entry type for "wpa-supplicant" isn't style-file defined
 --line 297 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "wpa-supplicant-devel" isn't style-file defined
-<<<<<<< HEAD
 --line 304 of file Bibliographie/Bibliography.bib.bib
-Warning--I didn't find a database entry for "smokeping"
-=======
---line 241 of file Bibliographie/Bibliography.bib.bib
-Warning--I didn't find a database entry for "ciscoVowlan"
->>>>>>> FETCH_HEAD
 Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" has a comma at the end for entry article2
 while executing---line 1233 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
@@ -64,72 +58,45 @@ Warning--empty year in intermapper
 Warning--empty year in snmp
 Warning--empty year in windows
 Warning--empty year in tplink
-You've used 32 entries,
+You've used 33 entries,
             2481 wiz_defined-function locations,
-<<<<<<< HEAD
-            730 strings with 9542 characters,
-and the built_in function-call counts, 10024 in all, are:
-= -- 805
-> -- 504
-< -- 23
-+ -- 213
-- -- 148
-* -- 649
-:= -- 1616
-add.period$ -- 114
-call.type$ -- 32
-change.case$ -- 61
-chr.to.int$ -- 31
-cite$ -- 41
-duplicate$ -- 495
-empty$ -- 986
-format.name$ -- 190
-if$ -- 2145
+            736 strings with 9648 characters,
+and the built_in function-call counts, 10295 in all, are:
+= -- 828
+> -- 511
+< -- 24
++ -- 217
+- -- 150
+* -- 661
+:= -- 1661
+add.period$ -- 118
+call.type$ -- 33
+change.case$ -- 62
+chr.to.int$ -- 32
+cite$ -- 42
+duplicate$ -- 514
+empty$ -- 1016
+format.name$ -- 193
+if$ -- 2204
 int.to.chr$ -- 2
-int.to.str$ -- 33
-missing$ -- 13
-newline$ -- 185
-num.names$ -- 96
-pop$ -- 346
-=======
-            699 strings with 8546 characters,
-and the built_in function-call counts, 7897 in all, are:
-= -- 650
-> -- 368
-< -- 19
-+ -- 158
-- -- 106
-* -- 482
-:= -- 1265
-add.period$ -- 94
-call.type$ -- 26
-change.case$ -- 49
-chr.to.int$ -- 26
-cite$ -- 31
-duplicate$ -- 401
-empty$ -- 793
-format.name$ -- 142
-if$ -- 1703
-int.to.chr$ -- 1
-int.to.str$ -- 27
-missing$ -- 11
-newline$ -- 153
-num.names$ -- 78
-pop$ -- 288
->>>>>>> FETCH_HEAD
+int.to.str$ -- 34
+missing$ -- 15
+newline$ -- 191
+num.names$ -- 99
+pop$ -- 357
 preamble$ -- 1
-purify$ -- 32
+purify$ -- 33
 quote$ -- 0
-skip$ -- 358
+skip$ -- 368
 stack$ -- 0
-substring$ -- 118
-swap$ -- 74
+substring$ -- 120
+swap$ -- 76
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 212
+type$ -- 216
 warning$ -- 9
-while$ -- 67
+while$ -- 69
 width$ -- 0
-write$ -- 425
+write$ -- 439
 (There were 6 error messages)

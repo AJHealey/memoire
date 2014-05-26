@@ -3,15 +3,15 @@
 
 int sendLogs();
 
-#define IDENTITY 1
 #define SERVERADDRESS "130.104.78.201"
 #define SERVERPORT 3874
 
 
 
 
-int sendLogs(char *filepath) {
-	int sockfd = 0, identity = IDENTITY;
+int sendLogs(char *filepath, char *mac) {
+	int sockfd = 0;
+	char *identity = mac;
 	char recvBuff[1024];
 	memset(recvBuff,'\0',1024);
 
@@ -34,7 +34,7 @@ int sendLogs(char *filepath) {
 
 
 	// # Phase 1 : Probe send our identity to the server
-	write(sockfd, &identity, 4); 
+	write(sockfd, identity, sizeof(identity)); 
 	// Wait ack from the server
 	read(sockfd, recvBuff, 1);
 
