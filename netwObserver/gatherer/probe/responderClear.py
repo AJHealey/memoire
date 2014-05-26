@@ -26,9 +26,9 @@ def handler(clientsocket):
 
 	print("[+] Connection established")
 	# Phase 1 : Probe send its identity
-	identity = int.from_bytes(clientsocket.recv(4),byteorder='little') # identity of the probe
-	#identity = clientsocket.recv(1024) # identity of the probe (MAC address)
-	print("[+] Identity received: %s" % identity)
+	#identity = int.from_bytes(clientsocket.recv(4),byteorder='little') # identity of the probe
+	identity = clientsocket.recv(18) # identity of the probe (MAC address)
+	print("[+] Identity received: %s", identity)
 	clientsocket.send(b'1')
 
 	## Phase 2 = Data receive

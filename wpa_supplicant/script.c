@@ -231,7 +231,6 @@ static void parse_event(const char *reply) {
 		ftime(&dhcp_start);
 		system("udhcpc -t 0 -i wlan0 -C");
 		ftime(&dhcp_end);
-		printf(">>DHCP\n");
 		
 		timeDiff(wpa_start, wpa_end, &time->wpa_time);
 		timeDiff(dhcp_start, dhcp_end, &time->dhcp_time);
@@ -538,11 +537,6 @@ static void services_loop() {
 		strcpy(ptr->ssl_github, "1");
 	else
 		strcpy(ptr->ssl_github, "0");
-	
-	/*if(checkService("horaire.sgsi.ucl.ac", "8080") == 1)
-		log_event(LOG_INFO_SERVICE_ADE, "available");
-	else
-		log_event(LOG_INFO_SERVICE_ADE, "unavailable");*/
 
 	if(checkService("uclouvain.be", "443") == 1)
 		strcpy(ptr->uclouvain, "1");
@@ -553,7 +547,6 @@ static void services_loop() {
 		strcpy(ptr->icampus, "1");
 	else
 		strcpy(ptr->icampus, "0");
-	printf(">>Done\n");
 }
 
 /*
@@ -750,11 +743,8 @@ void *connection_loop(void * p_data) {
 		for(i = 0; i<NUM_OF_NETWORKS; i++) {
 			log_event(LOG_START_CONNECTION_LOOP, NULL);
 			execute_action(ACTION_CONNECT, i);
-			printf(">>SERVICE\n");
 			services_loop();
-			printf(">>Before\n");
 			log_event(LOG_PRINT_STRUCT, NULL);
-			printf(">>After\n");
 			sleep(DELAY);
 			clear_struct();
 

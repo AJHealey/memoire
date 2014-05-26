@@ -11,9 +11,11 @@ int sendLogs();
 
 int sendLogs(char *filepath, char *mac) {
 	int sockfd = 0;
-	char *identity = mac;
+	char identity[18];
 	char recvBuff[1024];
 	memset(recvBuff,'\0',1024);
+
+	strcpy(identity, mac),
 
 	// Create the socket
 	if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
