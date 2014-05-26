@@ -8,28 +8,28 @@
 			<th><a href="{% url 'aprefresh' %}"><span class="glyphicon glyphicon-refresh"></span></a></th>
 			<th>Name 
 				<form action="{% url 'apsnmp' %}" method="get">
-  					<button name="order" type="submit" value={%if order=="name"%}"-name"{%else%}"name"{%endif%}>
+  					<button name="order" type="submit" value={%if order == "name"%}"-name"{%else%}"name"{%endif%}>
   						<span class="glyphicon glyphicon-sort"></span>
   					</button>
 				</form>
 			</th>
 			<th>Mac Address
 				<form action="{% url 'apsnmp' %}" method="get">
-  					<button name="order" type="submit" value={%if order=="mac"%}"-mac"{%else%}"mac"{%endif%}>
+  					<button name="order" type="submit" value={%if order == "mac"%}"-mac"{%else%}"mac"{%endif%}>
   						<span class="glyphicon glyphicon-sort"></span>
   					</button>
 				</form>
 			</th>
 			<th>IP
 				<form action="{% url 'apsnmp' %}" method="get">
-  					<button name="order" type="submit" value={%if order=="ip"%}"-ip"{%else%}"ip"{%endif%}>
+  					<button name="order" type="submit" value={%if order == "ip"%}"-ip"{%else%}"ip"{%endif%}>
   						<span class="glyphicon glyphicon-sort"></span>
   					</button>
 				</form>
 			</th>
 			<th>Link
 				<form action="{% url 'apsnmp' %}" method="get">
-					<button name="order" type="submit" value={%if order=="link"%}"-link"{%else%}"link"{%endif%}>
+					<button name="order" type="submit" value={%if order == "link"%}"-link"{%else%}"link"{%endif%}>
 						<span class="glyphicon glyphicon-sort"></span>
 					</button>
 				</form>
