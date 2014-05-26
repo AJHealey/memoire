@@ -14,8 +14,11 @@ int sendLogs(char *filepath, char *mac) {
 	char identity[18];
 	char recvBuff[1024];
 	memset(recvBuff,'\0',1024);
+	struct stat st;
 
-	strcpy(identity, mac),
+	int logsize;
+
+	strcpy(identity, mac);
 
 	// Create the socket
 	if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -34,6 +37,7 @@ int sendLogs(char *filepath, char *mac) {
         return 1;
 	}
 
+	printf("WOOOO\n");
 
 	// # Phase 1 : Probe send our identity to the server
 	write(sockfd, identity, sizeof(identity)); 
@@ -42,8 +46,15 @@ int sendLogs(char *filepath, char *mac) {
 
 	// Phase 2 : Data sending
 	int fd = open(filepath, O_RDONLY);
-	int logsize = lseek(fd,0,SEEK_END);
-	lseek(fd,0,SEEK_SET);
+	/*int logsize = lseek(fd,0,SEEK_END);
+	lseek(fd,0,SEEK_SET);*/
+	
+	if(stat(filepath, &st) == 0) {
+		printf("SIZE: %d\n", st.st_size);
+	}
+	else
+		printf("NOP\n");
+	
 
 	// Send data size
 	write(sockfd, &logsize, 4);

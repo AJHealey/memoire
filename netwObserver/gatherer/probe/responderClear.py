@@ -9,7 +9,6 @@ PROBEPORT = 3874
 def responder():
 	#create the server socket
 	serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	#bind the socket
 	serversocket.bind(('0.0.0.0', PROBEPORT))
 	serversocket.listen(5)
@@ -28,8 +27,8 @@ def handler(clientsocket):
 	print("[+] Connection established")
 	# Phase 1 : Probe send its identity
 	#identity = int.from_bytes(clientsocket.recv(4),byteorder='little') # identity of the probe
-	identity = clientsocket.recv(18) # identity of the probe (MAC address)
-	print("[+] Identity received: %s", identity)
+	identity = clientsocket.recv(18).decode() # identity of the probe (MAC address)
+	print("[+] Identity received: %s" % identity)
 	clientsocket.send(b'1')
 
 	## Phase 2 = Data receive
