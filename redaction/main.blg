@@ -36,8 +36,13 @@ Warning--entry type for "openwrt" isn't style-file defined
 Warning--entry type for "wpa-supplicant" isn't style-file defined
 --line 297 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "wpa-supplicant-devel" isn't style-file defined
+<<<<<<< HEAD
 --line 304 of file Bibliographie/Bibliography.bib.bib
 Warning--I didn't find a database entry for "smokeping"
+=======
+--line 241 of file Bibliographie/Bibliography.bib.bib
+Warning--I didn't find a database entry for "ciscoVowlan"
+>>>>>>> FETCH_HEAD
 Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" has a comma at the end for entry article2
 while executing---line 1233 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
@@ -61,6 +66,7 @@ Warning--empty year in windows
 Warning--empty year in tplink
 You've used 32 entries,
             2481 wiz_defined-function locations,
+<<<<<<< HEAD
             730 strings with 9542 characters,
 and the built_in function-call counts, 10024 in all, are:
 = -- 805
@@ -85,6 +91,32 @@ missing$ -- 13
 newline$ -- 185
 num.names$ -- 96
 pop$ -- 346
+=======
+            699 strings with 8546 characters,
+and the built_in function-call counts, 7897 in all, are:
+= -- 650
+> -- 368
+< -- 19
++ -- 158
+- -- 106
+* -- 482
+:= -- 1265
+add.period$ -- 94
+call.type$ -- 26
+change.case$ -- 49
+chr.to.int$ -- 26
+cite$ -- 31
+duplicate$ -- 401
+empty$ -- 793
+format.name$ -- 142
+if$ -- 1703
+int.to.chr$ -- 1
+int.to.str$ -- 27
+missing$ -- 11
+newline$ -- 153
+num.names$ -- 78
+pop$ -- 288
+>>>>>>> FETCH_HEAD
 preamble$ -- 1
 purify$ -- 32
 quote$ -- 0

@@ -51,7 +51,7 @@ def getUsersByDot11Protocol(timedeltaData=timedelta(weeks=12)):
 def getUsersBySSID():
 	stats = {}
 	for ssid in MobileStation.objects.values_list('ssid', flat=True).distinct():
-		stats[ssid] = MobileStation.objects.isAssociated().filter(ssid=ssid).count()
+		stats[ssid] = MobileStation.objects.areAssociated().filter(ssid=ssid).count()
 	return stats
 
 def getNbrOfUsers():

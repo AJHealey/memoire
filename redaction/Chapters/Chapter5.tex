@@ -48,17 +48,30 @@ Here, we count the number of users by \texttt{SSID}. As before, the goal is to p
 
 \subsection{Access Point}
 This section group several analysis related to the \emph{access points}. In a network with several hundreds of \emph{access point}, it can be difficult to diagnostic and monitor each one of them. By centralizing and aggregating the data, we allow the network managers to save time by automatizing lot of computation. In this part of the application, we have access to the monitoring of each access point currently associated with the controller.
-\subsubsection{Population}
 
 \subsubsection*{Load}
-A fundamental piece of information related to an \emph{access point} is the load. To achieve that we monitor each spot continuously and record its state several times per hour. By analyzing these data, we are able to plot graph representing the load throughout the days. To achieve that, we need two information: the \textit{quantity} of data transiting in the link and the \textit{maximum speed} of the link. Concretely, each \texttt{AP} own two bytes counters that are incremented each time a byte is received or sent. The other information required is the link speed connecting the spot. This information alone can be useful to diagnostic bandwidth issues. In a big network, it can be difficult to keep track of which links were updated and which ones were not. By collecting these data, we found that some \emph{access point} were still connected to \texttt{10 Mbits} links. In this case, the main cause was that the concerned devices were not managed by the same service and in consequence were not updated with the others. % ????
+A fundamental piece of information related to an \emph{access point} is the load. We monitor each spot continuously and record its state several times per hour. By analysing those data, we are able to plot graphs representing the load throughout the days. We need two information: the \textit{quantity} of data transiting on the link and the \textit{maximum speed} of that link. Concretely, each \texttt{AP} own two bytes counters that are incremented each time a byte is received or sent. The other information required is the link speed connecting the spot. This information alone can be useful to diagnostic bandwidth issues. 
+\paragraph*{Links} In a big network, it can be difficult to keep track of which links were updated and which ones were not. By collecting these data, we were able to find that two \emph{access points} were still connected with a \texttt{10 Mbits} link. In this case, the main cause was that those concerned devices were not managed by the SGSI and by consequence were not upgraded with the others. Those AP are in the \emph{Stevin} building.
 This is the proof that even such simple data can help to diagnostic some inconsistency in the network.
-\paragraph*{Source:} Here again, we use the data available on the controller. The first data collected are the bytes counter of each \emph{access points}.
+
+\begin{figure}
+   \includegraphics[width=\textwidth]{Pictures/chapter5/slowLinks.png}
+   \caption{Example of 10Mbits Links (26/06/2014)}
+\end{figure}
+
+\paragraph*{Pattern of Utilization} By taking a look at the results, we can see during which periods of time the access point are the most active. In this example, we have taken a access point in the \emph{Leclercq} building and displayed the result of several days of monitoring. As expected, quite no activity is detected during the night and it only begins around 9 am. 
+
+\begin{figure}
+   \includegraphics[width=\textwidth]{Pictures/chapter5/apLoad.png}
+   \caption{Access Point Load}
+\end{figure}
+
+\paragraph*{Sources} Here again, we use the data available on the controller. The first data collected are the bytes counters of each \emph{access points}.
 
 \begin{tabular}{|r l|}
 \hline
 \textbf{Object} & \texttt{cLApEthernetIfRxTotalBytes} \\
-\textbf{Description} & \parbox{11cm}{This object represents total number of bytes in the error-free packets received on the interface.} \\
+\textbf{Description} & \parbox{11cm}{This object represents the total number of bytes in the error-free packets received on the interface.} \\
 \textbf{OID} & 1.3.6.1.4.1.9.9.513.1.2.2.1.13 \\
 \textbf{MIB} & CISCO-LWAPP-AP-MIB \\
 \hline
@@ -67,7 +80,7 @@ This is the proof that even such simple data can help to diagnostic some inconsi
 \begin{tabular}{|r l|}
 \hline
 \textbf{Object} & \texttt{cLApEthernetIfTxTotalBytes} \\
-\textbf{Description} & \parbox{11cm}{This object represents total number of bytes in the error-free packets transmitted on the interface.} \\
+\textbf{Description} & \parbox{11cm}{This object represents the total number of bytes in the error-free packets transmitted on the interface.} \\
 \textbf{OID} & 1.3.6.1.4.1.9.9.513.1.2.2.1.14 \\
 \textbf{MIB} & CISCO-LWAPP-AP-MIB \\
 \hline
@@ -82,13 +95,23 @@ The next step is to obtain the speed of each link connected to an \emph{access p
 \textbf{OID} & 1.3.6.1.4.1.9.9.513.1.2.2.1.11 \\
 \textbf{MIB} & CISCO-LWAPP-AP-MIB \\
 \hline
-\end{tabular}
+\end{tabular} 
 
 \subsubsection*{Interfaces}
-Each \emph{access point} has two WiFi interfaces. The first one emits at \texttt{5Ghz} and the second on \texttt{2,4Ghz}. For each interface, the controller provides a lot of information completing the previous ones. The first that we gather is the \textit{number of users} currently associated to the interface. We compare these data with the quantity of users with a poor \texttt{Signal-Noise Ratio} (SNR). This analysis allows to diagnostic the efficiency of the access point. Even if it can be considered normal to have a couple of users in this category, if the proportion is constantly high, it can be an indicator that a supplementary \emph{access point} may be helpful or that the location of the AP is problematic. The problem have to be put in perspective with the statistics of the number of users and the RF environment (i.e \emph{Rogue Access Point} or physical walls) which is outside the scope of this system. 
-Finally, we complete this analyze with a monitoring of the \emph{channel utilization}. A high utilization of the channel results in poor connection quality for the user and could indicates a poor RF condition.
+Each \emph{access point} has two WiFi interfaces. The first one emits at \texttt{5Ghz} and the second at \texttt{2,4Ghz}. For each interface, the controller provides a lot of information that can be used in parallel of the previous ones. The first that we gather is the \textit{number of users} currently associated to the interface. We complete that piece of information with the quantity of users with a poor \texttt{Signal-Noise Ratio} (SNR). This analysis allows to diagnostic the efficiency of the access point. Even if it can be considered normal to have a couple of users in this category, if the proportion is constantly high, it can be an indicator that a supplementary \emph{access point} may be helpful or that the location of the AP is problematic. The problem have to be put in perspective with the RF environment (i.e \emph{Rogue Access Point} or physical walls) which is outside the scope of this system. 
+Finally, we complete this analyse with a monitoring of the \emph{channel utilization}. A high utilization of the channel results in poor connection quality for the user and could indicates weak RF conditions.
 
-\paragraph*{Source:} The controller keeps entries for each interface of each access point. We gather and cross all these data to generate some logs about each \emph{access point} and all the related \emph{interfaces}.
+\begin{figure}
+   \includegraphics[width=\textwidth]{Pictures/chapter5/interfaceLoad.png}
+   \caption{A 2,4GHz Interface}
+\end{figure}
+
+\paragraph*{Poor SNR} To illustrate our results, we have taken the 2,4GHz interface of the previous access point (i.e 3210 Leclercq A215) during the same period of time. As we can see, the load of the access point is correlated with the number of people connected to the interface. In this situation, we observe that there is an average of one-third or one-fourth of users with a poor SNR. This can be related to the configuration of the building. There is a large number of walls that separate the class room. The last thing to consider is the definition of a \emph{poor snr}. The value is defined by the controller and the number of clients with a weak signal is directly compute by it. In definitive, we do not have access and control on that parameter. Finally, to understand the importance of this result, we have to be aware that if a large portion of users have a low signal, it can influence the devices with a good one. In fact, the access point may have to spend more time to send data and by consequence is unavailable for the others connections.
+
+\paragraph*{Channel Utilization} The channel is a shared resource and need to be available to be used. The utilization of the channel is an important indicator to the network administrators. It allows them to estimate the quality of the users connections. If the medium is used more than fifty percent, latency-sensitive applications can experience some performance issues\cite{ciscoVowlan}. A continuous monitoring of that value can help to detect and diagnostic such related problems. In our example, we can see that there is some maximum peaks at twenty percent of utilization which is totally acceptable. 
+
+
+\paragraph*{Sources} The controller keeps entries for each \emph{interface} of each access point. We gather and cross all these data to generate some logs about each \emph{access point} and all the related \emph{interfaces}.
 
 \begin{tabular}{|r l|}
 \hline
@@ -121,27 +144,8 @@ Finally, we complete this analyze with a monitoring of the \emph{channel utiliza
 
 \subsection{Rogue Access Points}
 
-\subsection{Simulation of a user}
-We use our \texttt{OpenWrt} routers as probes that simulate the behavior of a lambda user that connects to the university network. In order to do that, we have implemented a \texttt{C} program using \texttt{wpa\_supplicant} and its control interface. This program, launched by the router at boot, tries to establish a connection with each one of the five \texttt{VLANs} of the UCL (i.e. \texttt{student.UCLouvain}, \texttt{UCLouvain}, \texttt{visiteurs.UCLouvain}, \texttt{UCLouvain-prive} and \texttt{eduroam}). During that connection process we compute the time taken by \texttt{wpa\_supplicant} to get a connection and the time taken by \texttt{udhcpc} to get an IP address. Thanks to those information we can approximate the overall quality perceived by the normal users when they want to get an access to the Internet inside the UCL. Beside that, our program also checks if a selection of the most used services by a user are reachable with each of the \texttt{VLANs}. We have decided to check the reachability of the following services:
-\begin{itemize}
-	\item[-] \texttt{www.google.be}
-	\item[-] \texttt{www.smtp.gmail.com}
-	\item[-] \texttt{www.github.com}
-	\item[-] \texttt{www.uclouvain.be}
-	\item[-] \texttt{www.icampus.uclouvain.be}
-\end{itemize}
-
-We add these additional information to the log file our program creates and sends to our server for parsing and analysis.
-
-\subsubsection*{Choice of the Access Point}
-The first thing our program does when it starts its connection loop is to perform a scan of the networks available where the probe is placed and to write the results inside the log file. Among the results and for each network we have decided to keep the network \texttt{BSSID}, the \texttt{Signal Strength} of the network and its \texttt{SSID}. Those data are interesting for our analysis. Indeed, when the router tries to get a connection, it first tries to associate with an Access Point. But there could be several APs in the area and he might be rejected from one or several of them. If its association request is rejected by one AP, \texttt{wpa\_supplicant} will try to associate with another one, and so on until the request is accepted. Our program gathers all the \texttt{BSSID} of the APs it had an association request with. 
-Comparing the scan results for each AP and the APs tried and the one it has a connection with is quite interesting. Indeed, after having performed several tests, we have observed that the device does not always connect to the best AP (i.e. the one with the best signal strength).
-
-TODO
- %https://chromium-review.googlesource.com/#/c/183720/
-
 \section{Controller}
-The controller logs are divided in several categories. Each of them defined a list of log related to that category. The main idea here is to analyze the activity of each domain of logs and trying to spot irregularities. We make the hypothesis that when something went wrong, the related category will emit a larger number of logs. By monitoring that activity, we will be able to identified in which part of the infrastructure the issue happened.
+The controller logs are divided in several categories. Each of them defined a list of log related to that category. The main idea here is to analyse the activity of each domain of logs and trying to spot irregularities. We make the hypothesis that when something went wrong, the related category will emit a larger number of logs. By monitoring that activity, we will be able to identified in which part of the infrastructure the issue happened.
 
 \subsection{Components Activity}
 
