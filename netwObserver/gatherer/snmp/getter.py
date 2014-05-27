@@ -7,7 +7,7 @@ from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 
 from pysnmp.entity.rfc3413.oneliner import cmdgen
-from gatherer.models import APSnapshot, APIfSnapshot, AccessPoint, APInterface, MobileStation, RogueAccessPoint, OperationalError, CurrentTask
+from gatherer.models import APSnapshot, APIfSnapshot, APIfSnapshotData, APSnapshotData, AccessPoint, APInterface, MobileStation, RogueAccessPoint, OperationalError, CurrentTask
 
 wism = ['192.168.251.170']
 SNMPPORT =161
