@@ -155,11 +155,11 @@ Several commands can be specified and sent to the \texttt{wpa\_supplicant} daemo
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Scan results message example}]
 bssid / frequency / signal level / flags / ssid
-68:86:a7:30:a0:a2	2437	-56	[WPA-PSK-CCMP]	eduroam
-00:1e:bd:65:34:73	2462	-55	[WPA-PSK-CCMP]	visiteurs.UCLouvain
-00:1e:bd:65:34:71 	2462	-56	[WPA-PSK-CCMP]	student.UCLouvain
-68:86:a7:30:a0:a0 	2437	-55	[WPA-PSK-CCMP]	UCLouvain
-68:86:a7:30:a0:a4 	2437	-57	[WPA-PSK-CCMP]	UCLouvain-prive
+68:86:a7:30:a0:a2	2437	-56	[WPA-EAP-TKIP][WPA2-EAP-CCMP][ESS]	eduroam
+00:1e:bd:65:34:73	2462	-55	[WPA-EAP-TKIP][WPA2-EAP-CCMP][ESS]	visiteurs.UCLouvain
+00:1e:bd:65:34:71 	2462	-56	[WPA-EAP-TKIP][WPA2-EAP-CCMP][ESS]	student.UCLouvain
+68:86:a7:30:a0:a0 	2437	-55	[WPA-EAP-TKIP][WPA2-EAP-CCMP][ESS]	UCLouvain
+68:86:a7:30:a0:a4 	2437	-57	[ESS]	UCLouvain-prive
 \end{lstlisting}
 
 	\item[-] \texttt{ADD\_NETWORK}: This commands adds a new network with empty configuration. This added network is disabled at first and can be configured afterwards. The commands returns a message containing the id of the new network or \texttt{FAIL} on failure. In our case, the program adds five networks at boot for the five networks present within the university's campus.

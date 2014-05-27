@@ -763,8 +763,8 @@ void *connection_loop(void * p_data) {
 			log_event(LOG_FINAL_STOP_LOOP, NULL);
 			log_event(LOG_STOP_LOG, NULL);
 			log_event(LOG_STOP_FILE, NULL);
-			fclose(f);
 			send_log();
+			fclose(f);
 			f = fopen("/var/log/logs2.txt","w");
 			log_event(LOG_START_FILE, NULL);
 			log_event(LOG_MAC_ADDR, NULL);
