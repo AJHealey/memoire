@@ -1,6 +1,5 @@
 #include "includes.h"
 
-
 int sendLogs();
 
 #define SERVERADDRESS "130.104.78.201"
@@ -16,9 +15,8 @@ int sendLogs(char *filepath, char *mac) {
 	memset(recvBuff,'\0',1024);
 	struct stat st;
 
-	int logsize;
-
 	strcpy(identity, mac);
+
 
 	// Create the socket
 	if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -37,19 +35,31 @@ int sendLogs(char *filepath, char *mac) {
         return 1;
 	}
 
-	printf("WOOOO\n");
-
 	// # Phase 1 : Probe send our identity to the server
 	write(sockfd, identity, sizeof(identity)); 
 	// Wait ack from the server
 	read(sockfd, recvBuff, 1);
 
 	// Phase 2 : Data sending
-	int fd = open(filepath, O_RDONLY);
-	/*int logsize = lseek(fd,0,SEEK_END);
-	lseek(fd,0,SEEK_SET);*/
+	int *fd = open(filepath, O_RDONLY, 0777);
+	int logsize = lseek(fd,0,SEEK_END);
+	lseek(fd,0,SEEK_SET);
 	
-	if(stat(filepath, &st) == 0) {
+
+	printf("FSEEK: %d\n", logsize);
+	printf("Error: %s\n", strerror(errno));
+
+	FILE *tmp;
+	int size_tmp;
+	tmp = fopen("/var/run/logs.txt", "rb");
+	fseek(tmp, 0, SEEK_END);
+	size_tmp = ftell(tmp);
+	fclose(tmp);
+
+	printf("TMP: %d\n", size_tmp);
+
+
+	if(stat("var/run/logs.txt", &st) == 0) {
 		printf("SIZE: %d\n", st.st_size);
 	}
 	else
