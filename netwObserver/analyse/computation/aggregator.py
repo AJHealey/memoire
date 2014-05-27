@@ -130,7 +130,7 @@ def getAPData(ap, timePerRange=3*settings.SNMPAPLAP,
 
 	except Exception as e:
 		OperationalError(source="getAPData", error=str(e)).save()
-		return []
+		raise e
 
 	return result
 
