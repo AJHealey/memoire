@@ -12,51 +12,52 @@
 
 %http://www.cisco.com/web/FR/documents/pdfs/livres_blancs/mobilite_sans_fil/Protocole_LWAPP.pdf
 
-\section{UCL's wireless infrastructure}
+\section{UCL's Wireless Infrastructure}
 
-On its Louvain-la-Neuve's campus area, the Catholic University of Louvain offers five different networks, each with a different SSID, that are reserved to certain parts of users according to their category. Those available networks are the following:
+On its Louvain-la-Neuve's campus area, the Catholic University of Louvain offers five different networks, each with a different \texttt{SSID}, that are reserved to certain parts of users according to their category. These available networks are the following:
 \begin{itemize}
-	\item[-] \texttt{student.UCLouvain}: Available for all the students enrolled at UCL.
-	\item[-] \texttt{UCLouvain}: Reserved for university's staff
-	\item[-] \texttt{UCLouvain-prive}: Limited access to check the UCL's wireless configuration page or to download required program for Windows XP and Vista.
+	\item[-] \texttt{student.UCLouvain}: Available for all the students enrolled at the Catholic University of Louvain.
+	\item[-] \texttt{UCLouvain}: Reserved for the university's staff
+	\item[-] \texttt{UCLouvain-prive}: Limited access to check the UCL's wireless configuration page or to download required programs for Windows XP and Windows Vista.
 	\item[-] \texttt{visiteurs.UCLouvain}: Accessible for guests invited by the university.
 	\item[-] \texttt{eduroam}: International education roaming access.
 \end{itemize}
 
-Network security is an important issue and an everyday struggle at the university and several measures are regularly taken by the SGSI team in order to keep the integrity and the consistency of the UCL's network preserved. As an example, Microsoft has decided on the 8th of April 2014 to end the Windows XP's support and updates leaving all the remaining laptops running this operating system unprotected to possible external threats\cite{windows}. The problem with that Microsoft's decision is that those outdated computers might become more vulnerable to security risks and malwares/viruses. It could become a real problem for the university's network because if a contaminated host is able to connect to the network it can cause serious damages to the overall infrastructure. In order to counter this possible problem in the future, the SGSI team plan to block the wireless access, using snorting programs, to any device that still uses Windows XP at that moment.
+Network security is an important issue and an everyday struggle at the university and several measures are regularly taken by the SGSI team in order to keep the integrity and the consistency of the UCL's network preserved. As an example, Microsoft has decided on the 8th of April 2014 to end the Windows XP's support and updates leaving all the remaining laptops running this operating system unprotected to possible external threats \cite{windows}. The problem with that Microsoft's decision is that those outdated computers might become more vulnerable to security risks and malwares/viruses. It could turn into a real problem for the university's network because if a contaminated host is able to connect to the network it can cause serious damages to the overall infrastructure. In order to counter this possible problem, the SGSI team plan to block the wireless access using, for example, snorting programs, to any device that still runs on Windows XP.
 
-The main way of protecting the network infrastructure from exterior threats that has been installed and configured by the SRI team is the use of the \texttt{IEEE 802.1X} standard providing an authentication mechanism for all the devices that want to connect to a UCL's wireless network. This architecture uses an authentication with user ID and password. Basically, every student, professor, researcher or staff members needs an username and a password in order to connect to one of the networks and get access to the Internet inside the UCL's campus. The username is composed of two parts, on one side the login the user has received from the university's administrative system when he enrolled himself, and on the other side the realm (\texttt{@wifi.uclouvain.be}). Along with that username, the user also needs a password. This password is the same as the password he uses to connect to his personal virtual office on the university's web site. Without those credentials it is impossible for him to connect to the UCL's wireless network.
+The main way of protecting the UCL's network infrastructure from exterior threats that has been installed and configured by the SGSI team is the use of the \texttt{IEEE 802.1X} standard providing an authentication mechanism for all the devices that want to connect to one of the UCL's wireless networks. This architecture uses an authentication with user ID and password. Basically, every student, professor, researcher or staff members needs a \textit{username} and a \textit{password} in order to be able to establish a connection with one of the networks and get access to the Internet inside the UCL's campus. The username is composed of two parts, on one side the login the user has received from the university's administrative system when he enrolled himself, and on the other side the realm (\texttt{@wifi.uclouvain.be}). Along with that username, the user also needs a password. This password is the same as the password he uses to connect to his personal virtual office on the university's web site. Without those credentials it is impossible for him get an Internet connection within the university's campus.
 
-This kind of authentication mechanism is only possible if the infrastructure has several key entities that are going to handle all this security authentication process. Those entities are an \textit{authentication server} and an \textit{authenticator}. Typically an authentication server is a host that supports the \texttt{RADIUS} and  \texttt{EAP} protocols. In the case of the UCL's infrastructure the authenticator is also composed of several database servers, placed behind a load balancer, that support the \texttt{LDAP} (\textit{Lightweight Directory Access Protocol}) protocol where all the information about the students, professors, researchers and staff members of the UCL are stored. Among those stored data, there are all the users' credentials. The authenticator is the access points that handles the connection request from the user and a Cisco controller that handles all the authentication process. This authenticator is the real security guard for the network since the client is not allowed to access to the protected side of the network until it's identity has been validated and authorized.
+This kind of authentication mechanism is only possible if the infrastructure has several key entities that are going to handle all this security authentication process. Those entities are an \textit{Authentication Server} and an \textit{Authenticator}.
 
-Let's keep in mind that these controller and access points do not play a role in the real world of the authentication itself. They are called the \textit{Authenticator} because that is where the client asks for authentication but it do not authenticate the client. The device that authenticate the client is the \textit{Authentication Server}.
+Typically an Authentication Server is a host that supports the \texttt{RADIUS} and  \texttt{EAP} protocols. In the case of the UCL's infrastructure the Authenticator Server is also composed of several database servers, placed behind a load balancer, that support the \texttt{LDAP}\footnote{Lightweight Directory Access Protocol} protocol and where all the information about the students, professors, researchers and staff members of the UCL as well as a lot of other data are stored. Among those stored data, we find all the users' credentials.
 
+The Authenticator is composed of the access point that handles the connection request from the user and the Cisco controller that handles all the authentication process. This authenticator is the real security guard for the network since the client is not allowed to access to the protected side of the network until it's identity has been checked and validated. Let's keep in mind that these controller and access point do not play a role in the real world of the authentication itself. They are called the \textit{Authenticator} because that is where the client asks for authentication but they do not authenticate the client. The device that authenticate the client is the \textit{Authentication Server}.
 
-The following figure represents the architecture at the UCL's with the different components that handles the 802.1x authentication process. 
+The following figure represents the architecture with the different components that handles the \texttt{802.1X} authentication process at the UCL. 
 
 \begin{figure}[H]
 	\includegraphics[width=1\linewidth]{Pictures/chapter2/802-archi.png}
-	\caption{802.1x architecture at the UCL}
+	\caption{\texttt{802.1X} architecture and components at the UCL}
 \end{figure}
 
 
 
-\section{Network components and protocols}
+\section{Network Components and Protocols}
 In this section, we give more information and details about all the protocols and components used throughout this thesis.
 
 \subsection{EAP}
-\texttt{EAP} (\textit{The Extensible Authentication Protocol}) is an Internet Engineering Task Force (IETF) flexible authentication framework standard defined in the \texttt{RFC3748} \cite{rfc3748}. EAP was designed to work without the IP protocol and provides support only for the transport of authentication protocols. This protocol runs directly over data link layers such as \texttt{Point-to-Point Protocol} (PPP) or \texttt{IEEE 802}. It is used to select a specific authentication mechanism whenever the authenticator requests more information to the supplicant.
+The Extensible Authentication Protocol is an Internet Engineering Task Force (IETF) flexible authentication framework standard defined in the \texttt{RFC3748} \cite{rfc3748}. \texttt{EAP} was designed to work without the IP protocol and provides support only for the transport of authentication protocols. This protocol runs directly over data link layers such as \texttt{Point-to-Point Protocol} (PPP) or \texttt{IEEE 802}. It is used to select a specific authentication mechanism whenever the authenticator requests more information to the supplicant.
 
 The particularity with \texttt{EAP} is that the authentication mechanism is negotiated by the peers (i.e. the supplicants) during the connection authentication phase with the authentication server. The peers negotiate the use of which \texttt{EAP} method to use during the authentication. Once the method has been agreed upon, an \texttt{EAP} conversation consisting of requests and responses messages exchanged between the peer and the authentication server starts.
 
 The \texttt{EAP} architecture consists of three main elements:
 \begin{itemize}
 	\item \textbf{EAP peer}: The peer is the client that tries to access the protected network and that responds to the authenticator requests.
-	\item \textbf{EAP authenticator}: It is the end of the link initiating an \texttt{EAP} authentication. It is the access point or the network access server that requires \texttt{EAP} authentication in order to grant access to the network.
+	\item \textbf{EAP authenticator}: It is the end of the link initiating an \texttt{EAP} authentication process. It is the access point or the network access server that requires \texttt{EAP} authentication in order to grant access to the network.
 	\item \textbf{Authentication server}: The server that communicates with the \texttt{EAP} peer. It negotiate the \texttt{EAP} method to use and validates the peer's credentials allowing it to access the protected network or not.
 \end{itemize}
 
-Since \texttt{EAP} only defines messages formats it has to be encapsulated inside a data link layer transport protocols. Between the peer and the authenticator, the \texttt{EAP} messages has to be encapsulated inside protocols such as \texttt{PPP}, \texttt{PEAP} or \texttt{IEEE 802.1X}. The encapsulation of \texttt{EAP} over \texttt{IEEE 802.1X} is called \texttt{EAPOL} (\textit{EAP over LANs}). Once the authenticator has received a \texttt{EAP} message from the peer, it has to forward it to the authentication server and it does that by encapsulating the message using the \texttt{RADIUS} protocol. Thanks to that, the \texttt{EAP} messages are exchanged between the peer and the authentication server smoothly. Since the information flows between those two entities, the authenticator does not need to support any of the \texttt{EAP} methods. It just has to forward the messages.
+Since \texttt{EAP} only defines message formats it has to be encapsulated inside a data link layer transport protocols. Between the peer and the authenticator, the \texttt{EAP} messages has to be encapsulated inside protocols such as \texttt{PPP}, \texttt{PEAP} or \texttt{IEEE 802.1X}. The encapsulation of \texttt{EAP} over \texttt{IEEE 802.1X} is called \texttt{EAPOL}\footnote{EAP over LANs}. Once the authenticator has received a \texttt{EAP} message from the peer, it has to forward it to the authentication server and it does that by encapsulating the message using that \texttt{RADIUS} protocol. Thanks to that, the \texttt{EAP} messages are exchanged between the peer and the authentication server smoothly. Since the information flows between those two entities, the authenticator does not need to support any of the \texttt{EAP} methods. It just has to forward the messages.
 
 The following figure\footnote{http://technet.microsoft.com/en-us/library/bb457039.aspx} shows the \texttt{EAP} infrastructure and the information flow between the three components.
 
@@ -65,31 +66,33 @@ The following figure\footnote{http://technet.microsoft.com/en-us/library/bb45703
 	\caption{\texttt{EAP} infrastructure and information flow}
 \end{figure}
 
-The \texttt{EAP} method requirements for Wireless LANs is defined in the \texttt{RFC4017}\cite{rfc4017}. The methods used in today's wireless LANs includes \texttt{EAP-TLS}, \texttt{EAP-TTLS}, \texttt{PEAP} and \texttt{EAP-SIM}. As mentioned in the RFC, these methods support authentication credentials that include digital certificates, user-names and passwords, secure tokens, and SIM secrets.
+The \texttt{EAP} method requirements for Wireless LANs is defined in the \texttt{RFC4017} \cite{rfc4017}. The methods used in today's wireless LANs includes \texttt{EAP-TLS}, \texttt{EAP-TTLS}, \texttt{PEAP} and \texttt{EAP-SIM}. As mentioned in the RFC, these methods support authentication credentials that include digital certificates, user-names and passwords, secure tokens, and SIM secrets.
 
 \begin{description}
-	\item [EAP-TLS]: Defined in \texttt{RFC5216}\cite{rfc5216}, the \texttt{EAP-TLS} authentication protocol includes support for certificate-based mutual authentication and key derivation, utilizing the protected cipher suite negotiation, mutual authentication and key management capabilities of the \texttt{TLS} protocol (described in \texttt{RFC4346}\cite{rfc4346}). The security with this protocol is provided by the utilization of \texttt{X.509} certificates. Indeed, in the \texttt{TLS} negotiation, the server presents a certificate to the client, and if mutual authentication is requested, the peer presents its certificate to the server.
-	\item [EAP-TTLS]: This protocol, defined in the IETF draft\cite{ttls-draft}, extends \texttt{TLS}. It uses \texttt{TLS} to establish a secure connection between a client and server, through which additional information may be exchanged. The difference with \texttt{TTLS} is that one-way authentication in which only the server is authenticated to the client via its certificate is possible. Once the secure tunnel is established between them, the client can send its credentials (i.e. username and password).
-	\item [PEAP]: The Protected Extensible Authentication Protocol is defined in the IETF draft\cite{peap-draft}. This protocol provides an encrypted and authenticated tunnel based on \texttt{TLS} that encapsulates \texttt{EAP} authentication mechanisms. \texttt{PEAP} works by chaining multiple \texttt{EAP} mechanisms. Basically it is composed of two parts. First, a \texttt{TLS} session is negotiated with the server authenticating to the client and optionally the client to the server. The negotiated key is used to encrypt the rest of the conversation. Second, within that \texttt{TLS} session, zero or more \texttt{EAP} methods are carried out.
+	\item [EAP-TLS]: Defined in \texttt{RFC5216} \cite{rfc5216}, the \texttt{EAP-TLS} authentication protocol includes support for certificate-based mutual authentication and key derivation, utilizing the protected cipher suite negotiation, mutual authentication and key management capabilities of the \texttt{TLS} protocol discussed in \texttt{RFC4346} \cite{rfc4346}. The security with this protocol is provided by the utilization of \texttt{X.509} certificates. Indeed, in the \texttt{TLS} negotiation, the server presents a certificate to the client, and if mutual authentication is requested, the peer also presents its certificate to the server.
+	\item [EAP-TTLS]: This protocol, defined in the \texttt{IETF} draft \cite{ttls-draft}, extends \texttt{TLS}. It uses \texttt{TLS} to establish a secure connection between the client and the server, through which additional information may be exchanged. The difference with \texttt{TTLS} is that one-way authentication in which only the server is authenticated to the client via its certificate is possible. Once the secure tunnel is established between them, the client can send its credentials (i.e. username and password).
+	\item [PEAP]: The Protected Extensible Authentication Protocol is defined in the \texttt{IETF} draft \cite{peap-draft}. This protocol provides an encrypted and authenticated tunnel based on \texttt{TLS} that encapsulates \texttt{EAP} authentication mechanisms. \texttt{PEAP} works by chaining multiple \texttt{EAP} mechanisms. Basically it is composed of two parts. First, a \texttt{TLS} session is negotiated with the server authenticating to the client and optionally the client to the server. The negotiated key is used to encrypt the rest of the conversation. Second, within that \texttt{TLS} session, zero or more \texttt{EAP} methods are carried out.
 \end{description}
 
 
 \subsection{IEEE 802.1X}
 %http://www.blackhat.com/presentations/win-usa-03/bh-win-03-riley-wireless/bh-win-03-riley.pdf
-\texttt{802.1X} is a Port-based Network Access Control that is part of the \texttt{IEEE 802.1} group of networking protocols. Basically, it is a way of securing a network access and doing authentication over ports to devices wishing to attach to a LAN or a WLAN. It offers an effective framework for authenticating and controlling user traffic to a protected network.
+\texttt{802.1X} is a Port-based Network Access Control that is part of the \texttt{IEEE 802.1} group of networking protocols. Basically, it is a way of securing a network access and doing authentication over ports to devices wishing to attach to a \texttt{LAN} or a \texttt{WLAN}. It offers an effective framework for authenticating and controlling user traffic to a protected network.
 
 The \texttt{802.1X} authentication process architecture involves three main components:
 \begin{itemize}
-	\item[-]\texttt{A supplicant}: The client device that wants to connect to the network (LAN or WLAN).
-	\item[-]\texttt{An authenticator}: A network device like an Ethernet switch or an access point that is between the supplicant and the authentication server. It purpose is to interact with the authentication server. It receives \texttt{EAP} messages, encapsulates them into \texttt{RADIUS} messages and forwards them to the authentication server.
-	\item[-]\texttt{An authentication server}: It is the key part of that authentication process. This server support receives the authentication request from the authenticator and interacts with him in order to receive more information or credentials for the supplicant. It is the only one that can grant access or not to the protected network to the user.
+	\item[-]\texttt{Supplicant}: The client device that wants to connect to the network.
+	\item[-]\texttt{Authenticator}: A network device like an Ethernet switch or an access point that is between the supplicant and the authentication server. It purpose is to interact with the authentication server. It receives \texttt{EAP} messages, encapsulates them into \texttt{RADIUS} messages and forwards them to the authentication server.
+	\item[-]\texttt{Authentication Server}: It is the key part of that authentication process. This server receives the authentication requests from the authenticator and interacts with it in order to receive more information or credentials from the supplicant. It is the only one that can grant access or not to the protected network.
 \end{itemize} 
 
-This protocol is called \textit{Port-based Network Access Control} because the ports of the switches are configured in a certain way. Indeed, before being totally open, they only accept \texttt{EAP} messages. The idea is that each port is divided into two different parts. One part is the \textit{controlled} part of the port and the other is the \textit{uncontrolled} part of the port. The main idea is that all the \texttt{EAP} messages go through this uncontrolled port.
+This protocol is called \textit{Port-based Network Access Control} because the ports of the authenticator (i.e. the access point) are configured in a certain way. Indeed, before being totally open, the ports only accept \texttt{EAP} messages. The design is that each port is divided into two different parts. One part is the \textit{controlled} part of the port and the other is the \textit{uncontrolled} part of the port. The main idea is that all the \texttt{EAP} messages go through this uncontrolled port and only when the supplicant is granted access to the network, it can go through the controlled one.
 
-\texttt{802.1X} works either for WLAN or LAN authentication but the authentication flow is not exactly the same.
-For WLAN authentication, the first thing the supplicant does is to associate with the access point using standard \texttt{802.11} communication. It then sends its information inside \texttt{EAP} messages to the authenticator through the uncontrolled port. The authenticator encapsulates those messages into \texttt{RADIUS} packets and sends them to the authentication server. Then, after having set up a secure and encrypted tunnel with the supplicant, the authentication server starts communicating with it (to receive its username and password for example). The server then queries its database and finally, if the user is know, it asks the authenticator to open completely the port so that the user can access the requested VLAN.
-The following figure represents this authentication mechanism for WLAN.
+\texttt{802.1X} works either for \texttt{WLAN} or \texttt{LAN} authentication but the authentication flow is not exactly the same. In our thesis we focus on the \texttt{WLAN} authentication.
+
+For \texttt{WLAN} authentication, the first thing the supplicant does is to associate with the access point using standard \texttt{802.11} communication. Once the association is made, the supplicant encapsulates its information and authentication requests inside \texttt{EAP} messages and sends them to the authenticator through the uncontrolled port. The authenticator encapsulates those messages into \texttt{RADIUS} packets and forwards them to the authentication server. Then, after having set up a secure and encrypted tunnel with the supplicant, the authentication server starts communicating with it (to receive its username and password for example). The server then queries its database and finally, if the user is known by the database, the server asks the authenticator to open completely the port so that the user can access freely the requested \texttt{VLAN}.
+
+The following figure represents this authentication mechanism. First, the supplicant communicates with the authenticator (1). Then after the authenticator has forwarded the messages to the authentication server and after the secured tunnel between the supplicant and the server has been set up, those two components can start exchanging messages (2). Finally, if the authentication is a success, the supplicant has access to the protected network (3).
 
 \begin{figure}[H]
 	\begin{center}
@@ -98,14 +101,55 @@ The following figure represents this authentication mechanism for WLAN.
 	\end{center}
 \end{figure}
 
-For LAN authentication it is a bit different. Indeed, the user directly connects to the switch through Ethernet. The switch then passes all the supplicant information to the authentication server. The authentication server and the switch exchange authentication and then the server queries its database and asks the switch to open the port or not.
-We can see that there is a major difference between WLAN and LAN authentication mechanisms. Indeed, in LAN, there are absolutely no communications between the authentication server and the supplicant. All the communications are done only between the switch and the server, while in WLAN, the authentication server directly communicates with the supplicant through a secured and an encrypted tunnel. 
-
-
 
 \subsection{RADIUS}
-RFC3579, RFC2865\\
-TODO
+The Remote Authentication Dial In User Service is defined in \texttt{RFC2865} \cite{rfc2865} and \texttt{RFC2866} \cite{rfc2866}. This is a networking protocol that provides Authentication, Authorization and Accounting (\texttt{AAA}) management for users that connect and use a network service. \texttt{RADIUS} is a client/server protocol that uses \texttt{UDP} for the communications between the \texttt{NAS}\footnote{Network Access Server} and the \texttt{RADIUS} server. It uses port \texttt{1812} for authentication and authorization requests and port \texttt{1813} for accounting requests. The process of granting a supplicant the access to a protected network is divided in three steps.
+
+\begin{description}
+	\item[Authentication]: The supplicant sends a connection request to a \texttt{RADIUS} client, called the \texttt{NAS}, in order to get access to a particular network resource. The supplicant credentials (i.e. username and password) are also transmitted by the supplicant to the \texttt{RADIUS} client. Once the client has received the request and credentials, it sends a \texttt{RADIUS} \textit{Access-Request} message to the \texttt{RADIUS} server containing all the authentication information. The server checks if that information is correct by checking that it against a local database or by referring to external sources, such as \texttt{LDAP} servers, to verify the user's credentials. The servers then returns one of the three \texttt{RADIUS} responses to the client:
+		\begin{itemize}
+			\item \textit{Access-Challenge}: If the \texttt{RADIUS} server needs additional information from the supplicant, it sends this packet to the client requesting that information. The client responds with a new \textit{Access-Request} message. \textit{Access-Challenge} is also used in complex authentication process when a secure tunnel is established between the supplicant and the \texttt{RADIUS} server.
+
+			\item \textit{Access-Accept}: The server grants access to the supplicant.
+
+			\item \textit{Access-Reject}: The server denies access to the supplicant due to identification failure, unknown or inactive user.
+		\end{itemize}
+
+	The following figure represents the message exchanges between a \texttt{NAS} and the \texttt{RADIUS} server. The server needs and asks for additional information in the authentication process and finally grant the access to the network.
+
+	\begin{figure}[H]
+		\begin{center}
+			\includegraphics[width=.5\linewidth]{Pictures/chapter2/radius-authentication.png}
+			\caption{\texttt{RADIUS} authentication process and message exchanges}
+		\end{center}
+	\end{figure}
+		
+	\item[Authorization]: Once \texttt{RADIUS} server has successfully authenticated the user, it can return configuration information to the client (i.e. authorization attributes), stipulating the terms of access to be granted, inside the \textit{Access-Accept} response. Different attributes may be included such as:
+		\begin{itemize}
+			\item [-] Specific IP address
+
+			\item [-] Maximal length the user may remain connected
+
+			\item [-] \texttt{VLAN} parameters
+
+			\item [-] \texttt{QoS} parameters
+		\end{itemize}
+	The complete list of possible attributes can be found in \cite{rfc2865}.
+
+	\item[Accounting]: The accounting uses three types of packets, \textit{Accounting Start}, \textit{Interim Update} and \textit{Accounting Stop}. The first packet is transmitted by the \texttt{NAS} to the \texttt{RADIUS} server as soon as the user authentication has succeeded and that he has started to access the network. This packet contains several information about the user such as his username, his affected IP address, the date of connection, and so on. The last packet is sent when the user disconnects from the network. Upon reception of that \textit{Accounting Stop} packet, the sever can end the user's session and log all the information about that particular session. The \textit{Interim Update} packet is sent by the \texttt{NAS} to update the information of the current session. All these packets are encapsulated inside an \textit{Accounting-Request} \texttt{RADIUS} message. The server responds with a \textit{Accounting-Response} message. The purpose of the accounting is to keep a trace of everything that happens on the network and to keep data about all the users that have accessed it. Plus it is also used for statistical analysis and network monitoring.
+
+	The following figure depicts the accounting messages flow between the \texttt{NAS} and the \texttt{RADIUS} server. On packet of each type is represented to get a better overview.
+
+	\begin{figure}[H]
+		\begin{center}
+			\includegraphics[width=.5\linewidth]{Pictures/chapter2/radius-accounting.png}
+			\caption{\texttt{RADIUS} accounting messages flow}
+		\end{center}
+	\end{figure}
+
+
+\end{description}
+
 
 \subsection{WiSM}
 Cisco Wireless Services Module 2 (WiSM2)\\

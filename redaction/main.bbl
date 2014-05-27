@@ -1,4 +1,4 @@
-\begin{thebibliography}{33}
+\begin{thebibliography}{35}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -73,6 +73,12 @@ Nagios Entreprises.
 \newblock Nagios: The industry standard in it infrastructure monitoring.
 \newblock URL \url{http://www.nagios.org/}.
 
+\bibitem[Windows()]{windows}
+Windows.
+\newblock Windows xp support has ended.
+\newblock URL
+  \url{http://windows.microsoft.com/en-us/windows/end-support-help}.
+
 \bibitem[Aboba et~al.(2009)Aboba, Blunk, Vollbrecht, Carlson, and
   Levkowetz]{rfc3748}
 B.~Aboba, L.~Blunk, J.~Vollbrecht, J.~Carlson, and H.~Levkowetz.
@@ -114,6 +120,20 @@ A.~Palekar, D.~Simon, J.~Salowey, H.~Zhou, G.~Zorn, and S.~Josefsson.
 \newblock URL
   \url{http://tools.ietf.org/html/draft-josefsson-pppext-eap-tls-eap-10}.
 
+\bibitem[Rigney et~al.(2000)Rigney, Willens, Rubens, and Simpson]{rfc2865}
+C.~Rigney, S.~Willens, A.~Rubens, and W.~Simpson.
+\newblock {Remote Authentication Dial In User Service (RADIUS)}.
+\newblock RFC 2865 (Draft Standard), June 2000.
+\newblock URL \url{http://www.ietf.org/rfc/rfc2865.txt}.
+\newblock Updated by RFCs 2868, 3575, 5080.
+
+\bibitem[Rigney(2000)]{rfc2866}
+C.~Rigney.
+\newblock {RADIUS Accounting}.
+\newblock RFC 2866 (Informational), June 2000.
+\newblock URL \url{http://www.ietf.org/rfc/rfc2866.txt}.
+\newblock Updated by RFCs 2867, 5080.
+
 \bibitem[Bordères and Makarévitch(2006)]{radius1}
 Serge Bordères and Nat Makarévitch.
 \newblock \emph{Authentification réseau avec Radius : 802.1x, {EAP},
@@ -121,6 +141,12 @@ Serge Bordères and Nat Makarévitch.
 \newblock Eyrolles, Paris, 2006.
 \newblock ISBN 2-212-12007-9.
 \newblock URL \url{http://opac.inria.fr/record=b1128764}.
+
+\bibitem[Cisco()]{snmp}
+Cisco.
+\newblock Simple network management protocol.
+\newblock URL
+  \url{http://docwiki.cisco.com/wiki/Simple_Network_Management_Protocol}.
 
 \bibitem[Smith et~al.(2010)Smith, Woodhams, and Marg]{wireless1}
 Jeff Smith, Jake Woodhams, and Robert Marg.
@@ -151,18 +177,6 @@ eduroam US.
 InterMapper.
 \newblock Intermapper web server.
 \newblock URL \url{http://micronoc.sri.ucl.ac.be/~admin/map_screen.html}.
-
-\bibitem[Cisco()]{snmp}
-Cisco.
-\newblock Simple network management protocol.
-\newblock URL
-  \url{http://docwiki.cisco.com/wiki/Simple_Network_Management_Protocol}.
-
-\bibitem[Windows()]{windows}
-Windows.
-\newblock Windows xp support has ended.
-\newblock URL
-  \url{http://windows.microsoft.com/en-us/windows/end-support-help}.
 
 \bibitem[Plant(2013)]{mvt}
 Luke Plant.

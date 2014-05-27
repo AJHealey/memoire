@@ -13,30 +13,30 @@ Warning--entry type for "rrdtool" isn't style-file defined
 --line 86 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "nagios" isn't style-file defined
 --line 93 of file Bibliographie/Bibliography.bib.bib
-Warning--entry type for "eduroam2" isn't style-file defined
---line 220 of file Bibliographie/Bibliography.bib.bib
-Warning--entry type for "eduroamRadius" isn't style-file defined
---line 227 of file Bibliographie/Bibliography.bib.bib
-Warning--entry type for "intermapper" isn't style-file defined
---line 233 of file Bibliographie/Bibliography.bib.bib
-Warning--entry type for "snmp" isn't style-file defined
---line 239 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "windows" isn't style-file defined
---line 245 of file Bibliographie/Bibliography.bib.bib
-Warning--entry type for "mvt" isn't style-file defined
---line 253 of file Bibliographie/Bibliography.bib.bib
-Warning--entry type for "octopussy" isn't style-file defined
---line 260 of file Bibliographie/Bibliography.bib.bib
-Warning--entry type for "syslogCisco" isn't style-file defined
+--line 99 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "snmp" isn't style-file defined
+--line 240 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "eduroam2" isn't style-file defined
 --line 267 of file Bibliographie/Bibliography.bib.bib
-Warning--entry type for "tplink" isn't style-file defined
+Warning--entry type for "eduroamRadius" isn't style-file defined
 --line 274 of file Bibliographie/Bibliography.bib.bib
-Warning--entry type for "openwrt" isn't style-file defined
+Warning--entry type for "intermapper" isn't style-file defined
 --line 280 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "mvt" isn't style-file defined
+--line 287 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "octopussy" isn't style-file defined
+--line 294 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "syslogCisco" isn't style-file defined
+--line 301 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "tplink" isn't style-file defined
+--line 308 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "openwrt" isn't style-file defined
+--line 314 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "wpa-supplicant" isn't style-file defined
---line 297 of file Bibliographie/Bibliography.bib.bib
+--line 331 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "wpa-supplicant-devel" isn't style-file defined
---line 304 of file Bibliographie/Bibliography.bib.bib
+--line 338 of file Bibliographie/Bibliography.bib.bib
 Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" has a comma at the end for entry article2
 while executing---line 1233 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
@@ -53,50 +53,50 @@ Warning--empty year in mrtg
 Warning--empty year in cacti
 Warning--empty year in rrdtool
 Warning--empty year in nagios
+Warning--empty year in windows
+Warning--empty year in snmp
 Warning--empty year in eduroamRadius
 Warning--empty year in intermapper
-Warning--empty year in snmp
-Warning--empty year in windows
 Warning--empty year in tplink
-You've used 33 entries,
+You've used 35 entries,
             2481 wiz_defined-function locations,
-            736 strings with 9648 characters,
-and the built_in function-call counts, 10295 in all, are:
-= -- 828
-> -- 511
-< -- 24
-+ -- 217
-- -- 150
-* -- 661
-:= -- 1661
-add.period$ -- 118
-call.type$ -- 33
-change.case$ -- 62
-chr.to.int$ -- 32
-cite$ -- 42
-duplicate$ -- 514
-empty$ -- 1016
-format.name$ -- 193
-if$ -- 2204
+            751 strings with 9990 characters,
+and the built_in function-call counts, 10940 in all, are:
+= -- 884
+> -- 545
+< -- 25
++ -- 231
+- -- 160
+* -- 703
+:= -- 1767
+add.period$ -- 128
+call.type$ -- 35
+change.case$ -- 66
+chr.to.int$ -- 34
+cite$ -- 44
+duplicate$ -- 542
+empty$ -- 1076
+format.name$ -- 205
+if$ -- 2343
 int.to.chr$ -- 2
-int.to.str$ -- 34
+int.to.str$ -- 36
 missing$ -- 15
-newline$ -- 191
-num.names$ -- 99
-pop$ -- 357
+newline$ -- 205
+num.names$ -- 105
+pop$ -- 379
 preamble$ -- 1
-purify$ -- 33
+purify$ -- 35
 quote$ -- 0
-skip$ -- 368
+skip$ -- 385
 stack$ -- 0
-substring$ -- 120
-swap$ -- 76
+substring$ -- 124
+swap$ -- 82
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 216
+type$ -- 230
 warning$ -- 9
-while$ -- 69
+while$ -- 73
 width$ -- 0
-write$ -- 439
+write$ -- 471
 (There were 6 error messages)
