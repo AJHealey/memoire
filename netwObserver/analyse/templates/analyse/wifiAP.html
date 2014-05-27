@@ -34,8 +34,8 @@
 		
 		var data = google.visualization.arrayToDataTable([
 		  ['Time', 'Rx Speed', 'Tx Speed'],
-		  {%for log in apBandwidth%}
-		  [new Date({{log.date.year}},{{log.date.month}}-1,{{log.date.day}},{{log.date.hour}},{{log.date.minute}},{{log.date.second}}), {{log.rx}}, {{log.tx}}],
+		  {%for log in apData%}
+		  [new Date({{log.date.year}},{{log.date.month}}-1,{{log.date.day}},{{log.date.hour}},{{log.date.minute}},{{log.date.second}}), {{log.ethernetRxTotalBytes}}, {{log.ethernetTxTotalBytes}}],
 		  {%endfor%}
 		]);
 
@@ -55,7 +55,7 @@
 		var data = google.visualization.arrayToDataTable([
 		  ['Time', 'Clients', 'Clients with Poor SNR', 'Channel Utilization'],
 		  {%for log in i.data%}
-		  [new Date({{log.date.year}},{{log.date.month}}-1,{{log.date.day}},{{log.date.hour}},{{log.date.minute}},{{log.date.second}}), {{log.numOfClients}}, {{log.numOfPoorSNRClients}} , {{log.channelUtilization}}],
+		  [new Date({{log.date.year}},{{log.date.month}}-1,{{log.date.day}},{{log.date.hour}},{{log.date.minute}},{{log.date.second}}), {{log.data.numOfClients}}, {{log.data.numOfPoorSNRClients}} , {{log.data.channelUtilization}}],
 		  {%endfor%}
 		]);
 
@@ -87,8 +87,11 @@
 </dl>
 <div id="bandwidthchart_div" style="width: 900px; height: 500px;"></div>
 
+{{apData}}
+{{interfaceData}}
+
 {%for i in interfaceData%}
-<h4>Interfaces i.interface.get_IFTYPE_display</h4>
+<h4>Interfaces {{i.interface.get_IFTYPE_display}}</h4>
 <div id="interface{{forloop.counter0}}chart_div" style="width: 900px; height: 500px;"></div>
 {%endfor%}
 
