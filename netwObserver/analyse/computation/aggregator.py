@@ -1,6 +1,6 @@
 from datetime import datetime,timedelta
 from django.utils import timezone
-
+from django.db.models import Max, Min
 from gatherer.models import WismEvent, DHCPEvent, RadiusEvent, MobileStation, AccessPoint, APSnapshot, APIfSnapshot, OperationalError
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -69,8 +69,8 @@ def getNbrOfAP():
 	return AccessPoint.objects.areUp().count()
 
 def getAPData(ap, timePerRange=3*settings.SNMPAPLAP, 
-	startTime=datetime.min.replace(tzinfo=timezone.get_current_timezone()),
-	endTime=datetime.max.replace(tzinfo=timezone.get_current_timezone())
+	startTime=None,
+	endTime=None)
 	):
 	""" Aggregate all the data gathered about the access point 
 
@@ -86,6 +86,13 @@ def getAPData(ap, timePerRange=3*settings.SNMPAPLAP,
 	
 	result = []
 	try:
+
+		if startTime == None:
+			startTime = APSnapshot.objects.aggregate(Min("date"))["date_min"]
+		if endTime == None:
+			endTime = APSnapshot.objects.aggregate(Max("date"))["date_min"]
+
+
 		snapshots = APSnapshot.objects.filter(ap=ap, date__gte=startTime, date__lte=endTime).order_by('date')
 		startAt = snapshots[0].date
 		
