@@ -178,6 +178,7 @@ def getIfData(interface, timePerRange=3*settings.SNMPAPLAP, startTime=None, endT
 	return {'interface':interface, 'data':result}
 
 def getAllIfData(ap, timePerRange=3*settings.SNMPAPLAP, startTime=None, endTime=None):
+	result = []
 	interfaces = ap.apinterface_set.all()
 	for i in interfaces:
 		result.append(getIfData(i,timePerRange,startTime,endTime))
