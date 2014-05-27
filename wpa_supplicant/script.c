@@ -629,7 +629,7 @@ static void scan() {
  * Send logs to server
  */
 static void send_log() {
-	if(sendLogs("var/log/logs.txt", router_mac) < 0)
+	if(sendLogs("/var/log/logs.txt", router_mac) < 0)
 		debug_print("Error sending log file\n");
 }
 
