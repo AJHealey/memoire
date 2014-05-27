@@ -16,11 +16,11 @@ Warning--entry type for "nagios" isn't style-file defined
 Warning--entry type for "windows" isn't style-file defined
 --line 99 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "snmp" isn't style-file defined
---line 287 of file Bibliographie/Bibliography.bib.bib
-Warning--entry type for "eduroam2" isn't style-file defined
---line 314 of file Bibliographie/Bibliography.bib.bib
+--line 289 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "eduroamRadius" isn't style-file defined
---line 321 of file Bibliographie/Bibliography.bib.bib
+--line 295 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "eduroam2" isn't style-file defined
+--line 320 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "intermapper" isn't style-file defined
 --line 327 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "mvt" isn't style-file defined
@@ -55,49 +55,50 @@ Warning--empty year in rrdtool
 Warning--empty year in nagios
 Warning--empty year in windows
 Warning--empty year in rfc2759
+Warning--empty year in wism2
 Warning--empty year in snmp
 Warning--empty year in eduroamRadius
 Warning--empty year in intermapper
 Warning--empty year in tplink
-You've used 38 entries,
+You've used 39 entries,
             2481 wiz_defined-function locations,
-            769 strings with 10319 characters,
-and the built_in function-call counts, 11775 in all, are:
-= -- 958
-> -- 574
-< -- 28
-+ -- 245
-- -- 168
-* -- 745
-:= -- 1895
-add.period$ -- 139
-call.type$ -- 38
-change.case$ -- 72
+            774 strings with 10604 characters,
+and the built_in function-call counts, 12054 in all, are:
+= -- 984
+> -- 581
+< -- 29
++ -- 250
+- -- 170
+* -- 762
+:= -- 1938
+add.period$ -- 143
+call.type$ -- 39
+change.case$ -- 74
 chr.to.int$ -- 37
-cite$ -- 48
-duplicate$ -- 584
-empty$ -- 1166
-format.name$ -- 218
-if$ -- 2528
-int.to.chr$ -- 2
-int.to.str$ -- 39
+cite$ -- 50
+duplicate$ -- 598
+empty$ -- 1196
+format.name$ -- 221
+if$ -- 2589
+int.to.chr$ -- 3
+int.to.str$ -- 40
 missing$ -- 15
-newline$ -- 222
-num.names$ -- 114
-pop$ -- 415
+newline$ -- 228
+num.names$ -- 117
+pop$ -- 424
 preamble$ -- 1
-purify$ -- 38
+purify$ -- 39
 quote$ -- 0
-skip$ -- 414
+skip$ -- 423
 stack$ -- 0
-substring$ -- 130
-swap$ -- 91
+substring$ -- 132
+swap$ -- 95
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 251
-warning$ -- 10
-while$ -- 79
+type$ -- 258
+warning$ -- 11
+while$ -- 81
 width$ -- 0
-write$ -- 511
+write$ -- 526
 (There were 6 error messages)

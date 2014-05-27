@@ -1,4 +1,4 @@
-\begin{thebibliography}{38}
+\begin{thebibliography}{39}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -107,11 +107,12 @@ T.~Dierks and E.~Rescorla.
 \newblock URL \url{http://www.ietf.org/rfc/rfc4346.txt}.
 \newblock Obsoleted by RFC 5246, updated by RFCs 4366, 4680, 4681, 5746.
 
-\bibitem[Funk and Blake-Wilson(2006)]{ttls-draft}
+\bibitem[Funk and Blake-Wilson(2008)]{rfc5281}
 P.~Funk and S.~Blake-Wilson.
-\newblock {EAP Tunneled TLS Authentication Protocol Version 1 (EAP-TTLSv1)},
-  March 2006.
-\newblock URL \url{http://tools.ietf.org/html/draft-funk-eap-ttls-v1-01}.
+\newblock {Extensible Authentication Protocol Tunneled Transport Layer Security
+  Authenticated Protocol Version 0 (EAP-TTLSv0)}.
+\newblock RFC 5281 (Informational), August 2008.
+\newblock URL \url{http://www.ietf.org/rfc/rfc5281.txt}.
 
 \bibitem[Palekar et~al.(2004)Palekar, Simon, Salowey, Zhou, Zorn, and
   Josefsson]{peap-draft}
@@ -151,19 +152,23 @@ G.~Zorn.
 \newblock {Microsoft PPP CHAP Extensions, Version 2}.
 \newblock RFC 2759 (Informational), January .
 
-\bibitem[Bordères and Makarévitch(2006)]{radius1}
-Serge Bordères and Nat Makarévitch.
-\newblock \emph{Authentification réseau avec Radius : 802.1x, {EAP},
-  FreeRadius}.
-\newblock Eyrolles, Paris, 2006.
-\newblock ISBN 2-212-12007-9.
-\newblock URL \url{http://opac.inria.fr/record=b1128764}.
-
-\bibitem[Cisco()]{snmp}
+\bibitem[Cisco({\natexlab{a}})]{wism2}
 Cisco.
-\newblock Simple network management protocol.
+\newblock Cisco wireless services module 2 controller for cisco catalyst 6500
+  series switches data sheet, {\natexlab{a}}.
+\newblock URL
+  \url{http://www.cisco.com/c/en/us/products/collateral/interfaces-modules/wireless-services-module-2-wism2/data_sheet_c78-645124.html}.
+
+\bibitem[Cisco({\natexlab{b}})]{snmp}
+Cisco.
+\newblock Simple network management protocol, {\natexlab{b}}.
 \newblock URL
   \url{http://docwiki.cisco.com/wiki/Simple_Network_Management_Protocol}.
+
+\bibitem[eduroam US()]{eduroamRadius}
+eduroam US.
+\newblock eduroam - a technical overview.
+\newblock URL \url{https://www.eduroam.us/technical_overview}.
 
 \bibitem[Smith et~al.(2010)Smith, Woodhams, and Marg]{wireless1}
 Jeff Smith, Jake Woodhams, and Robert Marg.
@@ -184,11 +189,6 @@ M.L. Gress and L.~Johnson.
 Belnet.
 \newblock Belnet eduroam service, 2011.
 \newblock URL \url{http://www.eduroam.be}.
-
-\bibitem[eduroam US()]{eduroamRadius}
-eduroam US.
-\newblock eduroam - a technical overview.
-\newblock URL \url{https://www.eduroam.us/technical_overview}.
 
 \bibitem[InterMapper()]{intermapper}
 InterMapper.
@@ -246,5 +246,13 @@ Jim Geier.
 \newblock \emph{Deploying Voice over Wireless LANs (Networking Technology)}.
 \newblock Cisco Press, 2007.
 \newblock ISBN 1587052318.
+
+\bibitem[Bordères and Makarévitch(2006)]{radius1}
+Serge Bordères and Nat Makarévitch.
+\newblock \emph{Authentification réseau avec Radius : 802.1x, {EAP},
+  FreeRadius}.
+\newblock Eyrolles, Paris, 2006.
+\newblock ISBN 2-212-12007-9.
+\newblock URL \url{http://opac.inria.fr/record=b1128764}.
 
 \end{thebibliography}
