@@ -108,7 +108,7 @@ def apsnmp(request, page=1, perpage=100):
 	context['app'] = 'gatherer'
 	context['cat'] = 'ap'
 
-	tmpQuery = AccessPoint.objects.isUp()
+	tmpQuery = AccessPoint.objects.areUp()
 	if "order" in request.GET and request.GET["order"] in AUTHORIZED_ORDER:
 		context["order"] = request.GET["order"]
 		tmpQuery = tmpQuery.order_by(request.GET["order"])
