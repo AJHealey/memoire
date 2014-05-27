@@ -54,14 +54,14 @@ A fundamental piece of information related to an \emph{access point} is the load
 \paragraph*{Links} In a big network, it can be difficult to keep track of which links were updated and which ones were not. By collecting these data, we were able to find that two \emph{access points} were still connected with a \texttt{10 Mbits} link. In this case, the main cause was that those concerned devices were not managed by the SGSI and by consequence were not upgraded with the others. Those AP are in the \emph{Stevin} building.
 This is the proof that even such simple data can help to diagnostic some inconsistency in the network.
 
-\begin{figure}
+\begin{figure}[H]
    \includegraphics[width=\textwidth]{Pictures/chapter5/slowLinks.png}
    \caption{Example of 10Mbits Links (26/06/2014)}
 \end{figure}
 
 \paragraph*{Pattern of Utilization} By taking a look at the results, we can see during which periods of time the access point are the most active. In this example, we have taken a access point in the \emph{Leclercq} building and displayed the result of several days of monitoring. As expected, quite no activity is detected during the night and it only begins around 9 am. 
 
-\begin{figure}
+\begin{figure}[H]
    \includegraphics[width=\textwidth]{Pictures/chapter5/apLoad.png}
    \caption{Access Point Load}
 \end{figure}
@@ -101,7 +101,7 @@ The next step is to obtain the speed of each link connected to an \emph{access p
 Each \emph{access point} has two WiFi interfaces. The first one emits at \texttt{5Ghz} and the second at \texttt{2,4Ghz}. For each interface, the controller provides a lot of information that can be used in parallel of the previous ones. The first that we gather is the \textit{number of users} currently associated to the interface. We complete that piece of information with the quantity of users with a poor \texttt{Signal-Noise Ratio} (SNR). This analysis allows to diagnostic the efficiency of the access point. Even if it can be considered normal to have a couple of users in this category, if the proportion is constantly high, it can be an indicator that a supplementary \emph{access point} may be helpful or that the location of the AP is problematic. The problem have to be put in perspective with the RF environment (i.e \emph{Rogue Access Point} or physical walls) which is outside the scope of this system. 
 Finally, we complete this analyse with a monitoring of the \emph{channel utilization}. A high utilization of the channel results in poor connection quality for the user and could indicates weak RF conditions.
 
-\begin{figure}
+\begin{figure}[H]
    \includegraphics[width=\textwidth]{Pictures/chapter5/interfaceLoad.png}
    \caption{A 2,4GHz Interface}
 \end{figure}
@@ -167,7 +167,7 @@ The first thing to observe about a radius is the proportion of users being able 
 
 \paragraph*{Overall Success Rate} This first graph purpose is to get an idea of the average authentication success rate. Concretely, it counts the logs showing login success or fail. Here again, we keep no data about specific user. All the data are aggregated to determine the desired ratio. Each of these logs contains sensible information about the user and the time at which he connected. By crossing this information with the access point, we could followed his position throughout the day. We chose to limit this possibility by not linking those information in the database. Even if this limitation could be easily broken, it's more an ethical consideration than a security issue.
 
-\begin{figure}
+\begin{figure}[H]
 	\centering
    \includegraphics[width=0.5\textwidth]{Pictures/chapter5/radiusRate.png}
    \caption{Example of Radius Success Rate}
