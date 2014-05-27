@@ -95,7 +95,7 @@ These elements generate several logs each seconds and the main difficulty is to 
 2013-10-21T17:26:00.985806+02:00 192.168.251.178 WiSMPythagore-B: *Dot1x_NW_MsgTask_0: Oct 21 17:26:00.943: %LOG-6-Q_IND: apf_ms_radius_override.c:204 Radius overrides disabled, ignoring source 4 [...It occurred 2 times.!]
 \end{lstlisting}
 
-The ideal way of gathering such information would be to load them directly from the sources at our convenience. This way, we could manage and optimize the processing of the data.
+The ideal way of gathering such information would be to load them directly from the sources at our convenience. In this way, we could manage and optimise the processing of the data. They would be fetched periodically without overloading the server. But as we will see in the following chapter, we haven't be able to achieve that. Instead, the log file have to be fetch manually by the users.
 
 \subsubsection{SNMP}
 The SNMP protocol allows us to retrieve information on the controller in real-time. The module handling the \texttt{SNMP} requests can update the information about the situation of each access point or any client. This brings a lot of interesting data regarding the users of the network but the main drawback is that the requests are quite heavy. We can't make requests every time because it requires a lot of resources from the controller and from our server. In consequences, we have to find the right balance between keeping the database updated and not overloading the controller with \texttt{SNMP} requests. 

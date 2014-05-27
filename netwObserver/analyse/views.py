@@ -35,7 +35,7 @@ def wifiOverview(request):
 
 	return render(request, "analyse/wifiOverview.html", context)
 
-def wifiAP(request):
+def wifiAP(request, order='name'):
 	context= {}
 	context['app'] = 'analysis'
 	context['cat'] = 'wifi'

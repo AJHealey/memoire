@@ -2,37 +2,90 @@
 import codecs
 import re
 import json
-from datetime import *
+from datetime import datetime
 
 from os.path import splitext
 from django.utils import timezone
-from gatherer.models import RadiusEvent, DHCPEvent, WismEvent, BadLog, ProbeLog
+from gatherer.models import RadiusEvent, DHCPEvent, WismEvent, BadLog, ProbeLog, ProbeTest, AccessPoint, MobileStation, ProbeScanResult, ProbeConnectionResult, TimeCheck, ServiceCheck
 from django.db import IntegrityError
 
+def dateParser(dateString):
+	tmp = dateString.replace("/"," ").replace(':', " ").split()
+	return datetime(year=int(tmp[0]), month=int(tmp[1]), day=int(tmp[2]), hour=int(tmp[3]), minute=int(tmp[4]), second=int(tmp[5])).replace(tzinfo=timezone.utc)
 
-def probeParser(path, probe, date=timezone.now()):
-	try:
-		log = json.load(path)
-		mac = log["macAddress"]
+def getScanResult(probeTest, scanItem):
+	scanResult = ProbeScanResult(test=probeTest)
+	try: 
+		scanResult.ap, created = AccessPoint.objects.get_or_create(macAddress=scanItem["bssid"][:-1]+'0')
+	except IntegrityError:
+		# Handle possible race condition (get_or_create not thread safe)
+		scanResult.ap = AccessPoint.objects.get(macAddress=scanItem["bssid"][:-1]+'0')
+	except:
+		OperationalError(source='ProbeLog - Cannot find %s' % scanItem["bssid"], error=str(e)).save()
+		raise Exception()
+	scanResult.frequency = int(scanItem["frequency"])
+	scanResult.signalStrength = int(scanItem["signal"])
+	scanResult.ssid = scanItem["ssid"]
+	scanResult.save()
+	return scanResult
+
+def getConnectionResult(probeTest,connection):
+	connectionResult = ProbeConnectionResult(date=dateParser(connection["date"]), test=probeTest)
+	connectionResult.save()
+	for t in connection["tried"]:
 		try: 
-			probe, created = MobileStation.objects.get_or_create(macAddress=mac)
+			tmp, created = AccessPoint.objects.get_or_create(macAddress=t[:-1]+'0')	
 		except IntegrityError:
 			# Handle possible race condition (get_or_create not thread safe)
-			probe = MobileStation.objects.get(macAddress=mac)
+			tmp = AccessPoint.objects.get(macAddress=t[:-1]+'0')
+		connectionResult.apTried.add(tmp)
 
-		result = ProbeLog(date=date, probe=probe)
-		for test in log["test"]:
-			# Parse Scan result
-			for scan in test["scan"]:
-				connections = log["connections"]
+	for c in connection["connected"]:
+		try: 
+			tmp, created = AccessPoint.objects.get_or_create(macAddress=t[:-1]+'0')	
+		except IntegrityError:
+			# Handle possible race condition (get_or_create not thread safe)
+			tmp = AccessPoint.objects.get(macAddress=t[:-1]+'0')
+		connectionResult.connected.add(tmp)
 
-			# Parse Connection result
+
+	for step, t in connection["time"].items():
+		t = int(t.split("sec")[0])
+		TimeCheck(result=connectionResult, step=step, time=t).save()
+
+	for service,state in connection["services"].items():
+		ServiceCheck(result=connectionResult, service=service, state=(True if state=="1" else False)).save()
+
+	connectionResult.save()
 
 
+def probeParser(path):
+	""" Parse a probe log
+	"""
 
-	except Exception:
-		raise Exception("Can't parse %s" % path)
+	logContent = json.load(open(path))
 
+	try: 
+		probe, created = MobileStation.objects.get_or_create(macAddress=logContent["mac"])
+	except IntegrityError:
+		# Handle possible race condition (get_or_create not thread safe)
+		probe = MobileStation.objects.get(macAddress=logContent["mac"])
+
+	try:
+		probeLog = ProbeLog(date=dateParser(logContent["date"]),probe=probe)
+		probeLog.save()
+	except IntegrityError:
+		return
+
+	for log in logContent["log"]:
+		test = ProbeTest(log=probeLog)
+		test.save()
+		# Get Scan Results
+		for scan in log["scan"]:
+			getScanResult(test,scan)
+		#Get Connection results
+		for connection in log["connections"]:
+			getConnectionResult(test,connection)
 
 
 def wismParser(infos):

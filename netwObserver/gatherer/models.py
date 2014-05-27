@@ -25,7 +25,7 @@ class Device(models.Model):
 
 ## Access Point Model
 class APManage(models.Manager):
-	def isUp(self):
+	def areUp(self):
 		return super(APManage, self).filter(lastTouched__gte=(timezone.now() - 2*settings.SNMPAPLAP))
 
 	def areDown(self):
@@ -38,8 +38,7 @@ class AccessPoint(Device):
 	location = models.CharField(max_length=50, null=True)
 
 	ethernetLinkSpeed = models.DecimalField(max_digits=5, decimal_places=0, choices=ETHERNETLINKTYPE, null=True)
-	ethernetRxTotalBytes = models.DecimalField(max_digits=10, decimal_places=0, default=0)
-	ethernetTxTotalBytes = models.DecimalField(max_digits=10, decimal_places=0, default=0)
+
 
 	objects = APManage()
 	def __str__(self):
@@ -60,11 +59,7 @@ class APInterface(models.Model):
 
 	index = models.CharField(max_length=3)
 	ap = models.ForeignKey(AccessPoint)
-	ifType = models.DecimalField(max_digits=1, decimal_places=0, choices=TYPES,null=True)
-	
-	channelUtilization = models.DecimalField(max_digits=3, decimal_places=0, default=0)
-	numOfClients = models.DecimalField(max_digits=4, decimal_places=0, default=0)
-	numOfPoorSNRClients = models.DecimalField(max_digits=4, decimal_places=0, default=0)
+	ifType = models.DecimalField(max_digits=1, decimal_places=0, choices=TYPES, null=True)
 
 	class Meta:
 		unique_together = (('ap', 'index'),)
@@ -72,7 +67,7 @@ class APInterface(models.Model):
 
 ## Rogue Access Point Model
 class RAPManage(models.Manager):
-	def isUp(self):
+	def areUp(self):
 		return super(APManage, self).filter(lastTouched__gte=(timezone.now() - settings.SNMPAPLAP))
 
 class RogueAccessPoint(Device):
@@ -91,36 +86,44 @@ class RogueAccessPoint(Device):
 
 ## Mobile stations Model
 class MSManage(models.Manager):
-	def isAssociated(self):
+	def areAssociated(self):
 			return super(MSManage, self).filter(lastTouched__gte=(timezone.now() - settings.SNMPMSLAP))
 
 class MobileStation(Device):
 	DOT11_PROTOCOLS = (('1',"802.11a"),('2',"802.11b"),('3',"802.11g"),('6',"802.11n (2.4Ghz)"),('7',"802.11n (5Ghz)"),('4',"Unknown"),('5',"Mobile"))
 
 	ap = models.ForeignKey(AccessPoint, related_name='associated', null=True)
-	ssid = models.CharField(max_length=25, null=True, db_index=True)
+ 
+ 	ssid = models.CharField(max_length=25, null=True, db_index=True)
 	dot11protocol = models.CharField(max_length=1, choices=DOT11_PROTOCOLS, null=True, db_index=True)
 	
 	objects = MSManage()
 	def __str__(self):
 		return str(self.macAddress) + ' on ' + str(self.ssid)
 
-## SNMP Snapshot
+	def isAssociated(self):
+		return lastTouched > (timezone.now()- settings.SNMPMSLAP)
+
+
+## SNMP AP Snapshot
 class APSnapshot(models.Model):
 	ap = models.ForeignKey(AccessPoint)
 	date = models.DateTimeField(default=lambda:(timezone.now()))
 
-	ethernetRxTotalBytes = models.DecimalField(max_digits=10, decimal_places=0, default=0)
-	ethernetTxTotalBytes = models.DecimalField(max_digits=10, decimal_places=0, default=0)
+class APSnapshotData(models.Model):
+	apSnapshot = models.ForeignKey(APSnapshot)
+	name = models.CharField(max_length=56)
+	value = models.DecimalField(max_digits=10, decimal_places=0, default=0)
 
+# SNMP AP Interface Snapshot
 class APIfSnapshot(models.Model):
-	apsnapshot = models.ForeignKey(APSnapshot)
 	apinterface = models.ForeignKey(APInterface)
-	channelUtilization = models.DecimalField(max_digits=3, decimal_places=0, default=0)
-	numOfClients = models.DecimalField(max_digits=4, decimal_places=0, default=0)
-	numOfPoorSNRClients = models.DecimalField(max_digits=4, decimal_places=0, default=0)
+	date = models.DateTimeField(default=lambda:(timezone.now()))
 
-
+class APIfSnapshotData(models.Model):
+	apIfSnapshot = models.ForeignKey(APIfSnapshot)
+	name = models.CharField(max_length=56)
+	value = models.DecimalField(max_digits=10, decimal_places=0, default=0)
 
 ######################################################################################
 ######################################################################################
@@ -178,33 +181,42 @@ class WismEvent(models.Model):
 	class Meta:
 		unique_together = (('date', 'microsecond', 'wismIp'),)
 
+
 ## Models of the probe log
 class ProbeLog(models.Model):
-	date = models.DateTimeField(default=lambda:(timezone.now()))
+	date = models.DateTimeField(default=lambda:(timezone.now()), unique=True)
 	probe = models.ForeignKey(MobileStation)
+	class Meta:
+		unique_together = (('date', 'probe'),)
 
+class ProbeTest(models.Model):
+	log = models.ForeignKey(ProbeLog)
 
 class ProbeScanResult(models.Model):
-	log = models.ForeignKey(ProbeLog)
+	test = models.ForeignKey(ProbeTest)
 	ap = models.ForeignKey(AccessPoint)
+	ssid = models.CharField(max_length=50)
+	frequency = models.DecimalField(max_digits=4,decimal_places=0)
 	signalStrength = models.DecimalField(max_digits=3,decimal_places=0)
 
 class ProbeConnectionResult(models.Model):
 	date = models.DateTimeField()
-	ssid = models.CharField(max_length=50)
+	
+	test = models.ForeignKey(ProbeTest)
+	apTried = models.ManyToManyField(AccessPoint, related_name='tried+')
+	connected = models.ManyToManyField(AccessPoint,related_name='connected+')
 
-	apTried = models.ManyToManyField(AccessPoint, related_name='+')
-	connected = models.ForeignKey(AccessPoint,related_name='+')
-	authenticationTime = models.DecimalField(max_digits=5,decimal_places=0)
-	dhcpTime = models.DecimalField(max_digits=5,decimal_places=0)
+
+class TimeCheck(models.Model):
+	result = models.ForeignKey(ProbeConnectionResult)
+	step = models.CharField(max_length=50)
+	time = models.DecimalField(max_digits=5,decimal_places=0)
 
 class ServiceCheck(models.Model):
 	result = models.ForeignKey(ProbeConnectionResult)
-	smtpGmail = models.BooleanField()
-	github = models.BooleanField()
-	sslGihub = models.BooleanField()
-	uclouvain = models.BooleanField()
-	icampus = models.BooleanField()
+	service = models.CharField(max_length=50)
+	state = models.BooleanField()
+
 
 
 ## Error Parsing

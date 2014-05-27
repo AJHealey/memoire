@@ -4,6 +4,8 @@ from django.utils import timezone
 from gatherer.models import WismEvent, DHCPEvent, RadiusEvent, MobileStation, AccessPoint, APSnapshot, APIfSnapshot
 from django.core.exceptions import ObjectDoesNotExist
 
+from django.conf import settings
+
 
 MAX_VALUE_SNMP_COUNTER32 = 4294967295
 
@@ -41,7 +43,7 @@ def getRadiusSuccessRate():
 ## Users Aggregators 
 def getUsersByDot11Protocol(timedeltaData=timedelta(weeks=12)):
 	stats = {}
-	ms = MobileStation.objects.isAssociated()
+	ms = MobileStation.objects.areAssociated()
 	for proto,display in MobileStation.DOT11_PROTOCOLS:
 		tmp =  ms.filter(dot11protocol__exact=proto).count()
 		if tmp > 0:
@@ -55,103 +57,124 @@ def getUsersBySSID():
 	return stats
 
 def getNbrOfUsers():
-	return MobileStation.objects.isAssociated().count()
+	return MobileStation.objects.areAssociated().count()
 
 ## AP aggregators
 def getHotAP(number=5):
-	ap = sorted([(ap.nbrOfClients(), ap) for ap in AccessPoint.objects.isUp()], reverse=True)
+	ap = sorted([(ap.nbrOfClients(), ap) for ap in AccessPoint.objects.areUp()], reverse=True)
 	return ap[:number]
 
 def getNbrOfAP():
-	return AccessPoint.objects.isUp().count()
+	return AccessPoint.objects.areUp().count()
 
-def getAPData(ap, timePerRange=timedelta(hours=1)):
-	""" Speed in mbits """
+def getAPData(ap, timePerRange=3*settings.SNMPAPLAP, 
+	startTime=datetime.min.replace(tzinfo=timezone.get_current_timezone()),
+	endTime=datetime.max.replace(tzinfo=timezone.get_current_timezone())
+	):
+	""" Aggregate all the data gathered about the access point 
+
+		arguments:
+		ap - access point to analyse
+		timePerRange - period of aggregation
+		startTime - minimum date of the data
+		endTime - maximum date of the data
+	"""
+
+	COUNTERTOSPEED = ['ethernetRxTotalBytes','ethernetTxTotalBytes']
+	GETMAX = []
+	
 	result = []
 	try:
-		snapshots = APSnapshot.objects.filter(ap=ap).order_by('date')
+		snapshots = APSnapshot.objects.filter(ap=ap, date__gte=startTime, date__lte=endTime).order_by('date')
+		startAt = snapshots[0].date
 		
-		datetimeStartRange = snapshots[0].date
-		
-		ethernetRxTotalBytesStart = snapshots[0].ethernetRxTotalBytes
-		ethernetRxTotalBytesEnd = snapshots[0].ethernetRxTotalBytes
-		
-		ethernetTxTotalBytesStart = snapshots[0].ethernetTxTotalBytes
-		ethernetTxTotalBytesEnd = snapshots[0].ethernetTxTotalBytes
+		values = {}
+		for data in snapshots[0].apsnapshotdata_set.all():
+			values[data.name] = [data.value]
 
-		for snap in snapshots:
+		for snap in snapshots[1:]:
+			# Get the data of the period
 			if snap.date < (datetimeStartRange + timePerRange):
-				ethernetRxTotalBytesEnd = snap.ethernetRxTotalBytes
-				ethernetTxTotalBytesEnd = snap.ethernetTxTotalBytes
+				for data in snap.apsnapshotdata_set.all():
+					if data.name in values:
+						values[data.name].append[data.value]
 
+			# Aggregate and reset the period
 			else:
-				result.append({'date':timezone.localtime(datetimeStartRange+timePerRange), 
-					'rx':getSpeed(ethernetRxTotalBytesStart,ethernetRxTotalBytesEnd,timePerRange), 
-					'tx':getSpeed(ethernetTxTotalBytesStart,ethernetTxTotalBytesEnd,timePerRange)})
+				data = {}
+				for attr, value in values.items():
+					if attr in COUNTERTOSPEED:
+						data[attr] = getSpeed(value[0], value[-1], timePerRange)
+					elif attr in GETMAX:
+						data[attr] = max(value)
+					else:
+						data[attr] = sum(value)/float(len(value))
 
-				# Start new range
-				datetimeStartRange = snap.date
-				ethernetRxTotalBytesStart = snap.ethernetRxTotalBytes
-				ethernetRxTotalBytesEnd = snap.ethernetRxTotalBytes
-				ethernetTxTotalBytesStart = snap.ethernetTxTotalBytes
-				ethernetTxTotalBytesEnd = snap.ethernetTxTotalBytes
+				result.append({'date':timezone.localtime(startAt + timePerRange), 'data': data})
+
+				# Start new period
+				startAt = snap.date
+				values = {}
+				for data in snap.apsnapshotdata_set.all():
+					values[data.name] = [data.value]
 
 	except ObjectDoesNotExist:
 		pass
+
+	except Exception as e:
+		OperationalError(source="getAPData", error=str(e)).save()
+		return []
 
 	return result
 
 
-def getIfData(ap, timePerRange=timedelta(hours=1)):
+def getIfData(interface, timePerRange=3*settings.SNMPAPLAP, startTime=datetime.min.replace(tzinfo=timezone.get_current_timezone()),endTime=datetime.max.replace(tzinfo=timezone.get_current_timezone())):
+	
 	result = {}
-	types = {}
 	try:
-		snapshots = APSnapshot.objects.filter(ap=ap).order_by('date')
+		snapshots = APIfSnapshot.objects.filter(apinterface=interface, date__gte=startTime, date__lte=endTime)
+		startAt = snapshots[0].date
+		
+		values = {}
+		for data in snapshots[0].apifsnapshotdata_set.all():
+			values[data.name] = [data.value]
 
-		datetimeStartRange = snapshots[0].date
+		for snap in snapshots[1:]:
+			# Get the data of the period
+			if snap.date < (datetimeStartRange + timePerRange):
+				for data in snap.apifsnapshotdata_set.all():
+					if data.name in values:
+						values[data.name].append[data.value]
+			# Aggregate and reset the period
+			else:
+				data = {}
+				for attr, value in values.items():
+					data[attr] = max(value)
 
-		for snap in snapshots[0].apifsnapshot_set.all():
-			types[snap.apinterface.index[1:]] = snap.apinterface.get_ifType_display()
+				result.append({'date':timezone.localtime(startAt + timePerRange), 'data': data})
 
-		nbrIf = snapshots[0].apifsnapshot_set.all().count()
-
-		for i in range(nbrIf):
-			result[str(i)] = []
-
-		client = [0] * nbrIf
-		poorSNR = [0] * nbrIf
-		channelUtilization = [0] * nbrIf
-		count = 0
-
-		for snap in snapshots:
-			
-			if snap.date > (datetimeStartRange + timePerRange):
-				for i in range(nbrIf):
-					result[str(i)].append({"date":timezone.localtime(datetimeStartRange+timePerRange),
-						"clients":int(client[i]) ,
-						"poorSNR":int(poorSNR[i]),
-						"channel":float(channelUtilization[i]/count)/100
-						})
-
-				datetimeStartRange = snap.date
-				client = [0] * nbrIf
-				poorSNR = [0] * nbrIf
-				channelUtilization = [0] * nbrIf
-				count = 0
-
-
-			for ifData in snap.apifsnapshot_set.all():
-				ifIndex = int(ifData.apinterface.index[1:])
-				client[ifIndex] = max(client[ifIndex],ifData.numOfClients)
-				poorSNR[ifIndex] = max(poorSNR[ifIndex],ifData.numOfPoorSNRClients)
-				channelUtilization[ifIndex] += ifData.channelUtilization
-				count += 1
+				# Start new period
+				startAt = snap.date
+				values = {}
+				for data in snap.apifsnapshotdata_set.all():
+					values[data.name] = [data.value]
 
 	except ObjectDoesNotExist:
 		pass
 
-	return {"types":types , "result":result}
+	except Exception as e:
+		OperationalError(source="getIfData", error=str(e)).save()
+		return []
 
+	return result
+
+def getAllIfData(ap, timePerRange=3*settings.SNMPAPLAP, startTime=datetime.min.replace(tzinfo=timezone.get_current_timezone()),endTime=datetime.max.replace(tzinfo=timezone.get_current_timezone())):
+	result = {}
+	interfaces = ap.apinterface_set.all()
+	for i in interfaces:
+		result[i.id] = getIfData(i,timePerRange,startTime,endTime)
+	return result
+	
 
 
 def getSpeed(start, end, time):

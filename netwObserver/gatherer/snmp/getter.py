@@ -10,13 +10,15 @@ from pysnmp.entity.rfc3413.oneliner import cmdgen
 from gatherer.models import APSnapshot, APIfSnapshot, AccessPoint, APInterface, MobileStation, RogueAccessPoint, OperationalError, CurrentTask
 
 wism = ['192.168.251.170']
+SNMPPORT =161
+SNMPCOMMUNITY='snmpstudentINGI'
 
 """
 	This module offers an abstraction to perform the SNMP requests
 """
 
 ## Helper Functions
-def walker(ip, oib, port=161, community='snmpstudentINGI'):
+def walker(ip, oib, port=SNMPPORT, community=SNMPCOMMUNITY):
 	"""Perform a SNMP Walk Command"""
 	cmdGen = cmdgen.CommandGenerator()
 
@@ -41,7 +43,7 @@ def walker(ip, oib, port=161, community='snmpstudentINGI'):
 					result[name.prettyPrint()[len(oib)+1:]] = val.prettyPrint()
 			return result
 
-def walkByInterface(ip, oib, port=161, community='snmpstudentINGI'):
+def walkByInterface(ip, oib, port=SNMPPORT, community=SNMPCOMMUNITY):
 	"""
 	return - a dictionary where each index is the index of the APs
 			each entries is also a dictionary where each 
@@ -55,7 +57,7 @@ def walkByInterface(ip, oib, port=161, community='snmpstudentINGI'):
 		result[index[:tmp]][index[tmp:]] = int(value)
 	return result
 
-def walkByInterfaceWithAggregation(ip, oib, port=161, community='snmpstudentINGI'):
+def walkByInterfaceWithAggregation(ip, oib, port=SNMPPORT, community=SNMPCOMMUNITY):
 	"""
 	return - a dictionary where each index is the index of the APs
 			each entries is the aggregated value of all the interfaces
@@ -69,60 +71,60 @@ def walkByInterfaceWithAggregation(ip, oib, port=161, community='snmpstudentINGI
 	return result
 
 ## Access Points Requests
-def getApNames(ip, port=161, community='snmpstudentINGI'):
+def getApNames(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
 	""" Name of each Access Point """
 	return walker(ip,'1.3.6.1.4.1.14179.2.2.1.1.3', port=port, community=community)
 
-def getApMacAddresses(ip, port=161, community='snmpstudentINGI'):
+def getApMacAddresses(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
 	""" MAC address of Access Point """
 	return walker(ip,'1.3.6.1.4.1.14179.2.2.1.1.1', port=port, community=community)
 
-def getApIPs(ip, port=161, community='snmpstudentINGI'):
+def getApIPs(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
 	""" IP address of Access Point """
 	return walker(ip,'1.3.6.1.4.1.14179.2.2.1.1.19', port=port, community=community)
 
-def getApLocation(ip, port=161, community='snmpstudentINGI'):
+def getApLocation(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
 	""" Location of the access point (if configured) """
 	return walker(ip,'1.3.6.1.4.1.14179.2.2.1.1.4', port=port, community=community)
 
 ## AP Interfaces
-def getAPIfTypeface(ip, port=161, community='snmpstudentINGI'):
+def getAPIfTypeface(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
 	""" Interface Type """
 	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.2.1.2', port=port, community=community)
 
-def getAPIfLoadChannelUtilization(ip, port=161, community='snmpstudentINGI'):
+def getAPIfLoadChannelUtilization(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
 	""" Channel Utilization """
 	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.3', port=port, community=community)
 
-def getAPIfLoadNumOfClients(ip, port=161, community='snmpstudentINGI', ap=''):
+def getAPIfLoadNumOfClients(ip, port=SNMPPORT, community=SNMPCOMMUNITY, ap=''):
 	""" This is the number of clients attached to this Airespace
 		AP at the last measurement interval(This comes from 
 		APF)
 	"""
 	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.4', port=port, community=community)
 
-def getAPIfPoorSNRClients(ip, port=161, community='snmpstudentINGI', ap=''):
+def getAPIfPoorSNRClients(ip, port=SNMPPORT, community=SNMPCOMMUNITY, ap=''):
 	""" This is the number of clients attached to this Airespace
 		AP at the last measurement interval(This comes from 
 		APF)
 	"""
 	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.24', port=port, community=community)
 
-def getAPIfLoadRxUtilization(ip, port=161, community='snmpstudentINGI', ap=''):
+def getAPIfLoadRxUtilization(ip, port=SNMPPORT, community=SNMPCOMMUNITY, ap=''):
 	""" This is the percentage of time the Airespace AP
 		receiver is busy operating on packets. It is a number 
 		from 0-100 representing a load from 0 to 1.) 
 	"""
 	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.1', port=port, community=community)
 
-def getAPIfLoadTxUtilization(ip, port=161, community='snmpstudentINGI', ap=''):
+def getAPIfLoadTxUtilization(ip, port=SNMPPORT, community=SNMPCOMMUNITY, ap=''):
 	""" This is the percentage of time the Airespace AP
 		transmitter is busy operating on packets. It is a number 
 		from 0-100 representing a load from 0 to 1.) 
 	"""
 	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.2' + ap, port=port, community=community)
 
-def getAPEthernetRxTotalBytes(ip, port=161, community='snmpstudentINGI', ap=''):
+def getAPEthernetRxTotalBytes(ip, port=SNMPPORT, community=SNMPCOMMUNITY, ap=''):
 	""" This is the total number of bytes in the
 		error-free packets received on the ethernet
 		interface of the AP
@@ -130,7 +132,7 @@ def getAPEthernetRxTotalBytes(ip, port=161, community='snmpstudentINGI', ap=''):
 	return walkByInterfaceWithAggregation(ip=ip, oib='1.3.6.1.4.1.9.9.513.1.2.2.1.13', port=port, community=community)
 
 
-def getAPEthernetTxTotalBytes(ip, port=161, community='snmpstudentINGI', ap=''):
+def getAPEthernetTxTotalBytes(ip, port=SNMPPORT, community=SNMPCOMMUNITY, ap=''):
 	""" This is the total number of bytes in the
 		error-free packets received on the ethernet
 		interface of the AP
@@ -138,50 +140,50 @@ def getAPEthernetTxTotalBytes(ip, port=161, community='snmpstudentINGI', ap=''):
 	return walkByInterfaceWithAggregation(ip=ip, oib='1.3.6.1.4.1.9.9.513.1.2.2.1.14', port=port, community=community)
 
 
-def getAPEthernetLinkSpeed(ip, port=161, community='snmpstudentINGI', ap=''):
+def getAPEthernetLinkSpeed(ip, port=SNMPPORT, community=SNMPCOMMUNITY, ap=''):
 	""" Speed of the interface """
 	return walkByInterfaceWithAggregation(ip=ip, oib='1.3.6.1.4.1.9.9.513.1.2.2.1.11', port=port, community=community)
 
 ## Mobile Stations Requests
-def getMobileStationMacAddresses(ip, port=161, community='snmpstudentINGI'):
+def getMobileStationMacAddresses(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
 	""" Mac Address of each station connected to an AP """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.1', port=port, community=community)
 
-def getMobileStationIPs(ip, port=161, community='snmpstudentINGI'):
+def getMobileStationIPs(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
 	""" IP address of each station connected to an AP """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.2', port=port, community=community)
 
-def getMobileStationProtocol(ip, port=161, community='snmpstudentINGI'):
+def getMobileStationProtocol(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
 	""" Protocol used by the station (e.g 802.11a, b, g, n) """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.25', port=port, community=community)
 
-def getMobileStationSSID(ip, port=161, community='snmpstudentINGI'):
+def getMobileStationSSID(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
 	""" SSID advertised by the mobile station """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.7', port=port, community=community)
 
-def getMobileStationAPMacAddress(ip, port=161, community='snmpstudentINGI'):
+def getMobileStationAPMacAddress(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
 	""" SSID advertised by the mobile station """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.4', port=port, community=community)
 
 
 ## Rogue Access Point
-def getRAPMacAddresses(ip, port=161, community='snmpstudentINGI'):
+def getRAPMacAddresses(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
 	""" Mac Address of each station connected to an AP """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.7.1.1', port=port, community=community)
 
-def getRAPDetectingAP(ip, port=161, community='snmpstudentINGI'):
+def getRAPDetectingAP(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
 	""" Get the number of AP detecting the Rogue Access Point """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.7.1.2', port=port, community=community)
 
-def getRAPNbrOfClients(ip, port=161, community='snmpstudentINGI'):
+def getRAPNbrOfClients(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
 	""" Get the number of client associated with the Rogue Access Point """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.7.1.8', port=port, community=community)
 
-def getRAPSSID(ip, port=161, community='snmpstudentINGI'):
+def getRAPSSID(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
 	""" Get the SSID of the Rogue Access Point """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.7.1.11', port=port, community=community)
 
-def getRAPClosestAP(ip, port=161, community='snmpstudentINGI'):
+def getRAPClosestAP(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
 	""" Get the AP with the strongest RSSI with the Rogue Access Point """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.7.1.13', port=port, community=community)
 
@@ -190,11 +192,75 @@ def getRAPClosestAP(ip, port=161, community='snmpstudentINGI'):
 ### Aggregator #############################################################################################################
 ############################################################################################################################
 
-def getAllAP():
-	''' Cross reference all the information on the Access Points and update the database '''
+def getData(elements, attr, getter, ip, port=SNMPPORT, community=SNMPCOMMUNITY, valueInBinaryString=False, source='snmpAPDaemon'):
+	""" Update the information about the Access Points
+
+		arguments:
+		elements - Dictionnary of AccessPoints indexed by their controller index
+		attr - gathered information
+		getter - SNMP request handler
+		ip, port, community - SNMP request parameters
+		valueInBinaryString - is the return value a binary string
+	"""
+	try:
+		for index, value in getter(ip=ip, port=port, community=community).items():
+
+			if index in elements and attr in elements[index].__dict__:
+				
+				if valueInBinaryString and (value.startswith("b'") or value.startswith('b"')):
+					elements[index].__dict__[attr] = value[2:-1]
+				else:
+					elements[index].__dict__[attr] = value
+				elements[index].save(update_fields=[attr])
+	
+	except Exception as e:
+		OperationalError(source='%s - %s' % (source,attr), error=str(e)).save()
+
+
+def getApSnapshotData(elements, attr, getter, ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+	""" Get the information about the Access Points Snapshots
+
+		arguments:
+		elements - Dictionnary of APSnapshot indexed by their controller index
+		attr - gathered information
+		getter - SNMP request handler
+		ip, port, community - SNMP request parameters
+	"""
+	try:
+		for apIndex, value in getter(ip=ip, port=port, community=community).items():
+			if apIndex in elements:
+				APSnapshotData(apSnapshot=elements[apIndex], name=attr, value=value).save()
+	
+	except Exception as e:
+		OperationalError(source='snmpAPDaemon - %s' % attr, error=str(e)).save()
+
+
+def getIfSnapshotData(elements, attr, getter, ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+	""" Get the information about the Access Points Interface Snapshots
+
+		arguments:
+		elements - Dictionnary of APSnapshot indexed by their controller index
+		attr - gathered information
+		getter - SNMP request handler
+		ip, port, community - SNMP request parameters
+	"""
+	try:
+		for apIndex, interfaces in getter(ip=ip, port=port, community=community).items():
+			for ifIndex, value in interfaces.items():
+				if apIndex in elements and ifIndex in elements[apIndex]:
+					APIfSnapshotData(apIfSnapshot=elements[apIndex][ifIndex], name=attr, value=value).save()
+	except Exception as e:
+		OperationalError(source='snmpAPDaemon - %s' % attr, error=str(e)).save()
+
+
+def getAllAP(ip=wism[0], port=SNMPPORT, community=SNMPCOMMUNITY):
+	''' Gather and cross reference all the information about the Access Points and their interfaces '''
 
 	result = {}
+	resultApSnapshot = {}
 	resultInterfaces = {}
+	resultIfSnapshot = {}
+
 	# Get All Access Points (Mac Address)
 	try:       
 		tmp = getApMacAddresses(ip=wism[0])
@@ -205,60 +271,40 @@ def getAllAP():
 			except IntegrityError:
 				# get_or_create is not thread safe
 				result[index] = AccessPoint.objects.get(macAddress=mac)
-			finally:
-				result[index].index = "." + index
+			
+			result[index].index = "." + index
+			result[index].save(update_fields=['index')
+
 	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap Mac Address', error=str(e)).save()
+		OperationalError(source='snmpAPDaemon - macAddress', error=str(e)).save()
 	
-	# Add names    
-	try:
-		tmp = getApNames(ip=wism[0])
-		for index, name in tmp.items():
-			if index in result:
-				if "b\'" in name:
-					result[index].name = name[2:-1]
-				else:
-					result[index].name = name
-	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap Names', error=str(e)).save()
+	# Add/Update names
+	getData(elements=result, attr='name', getter=getApNames, 
+		ip=ip, port=port, community=community, 
+		valueInBinaryString=True) 
 
-	# Add IP
-	try:
-		tmp = getApIPs(ip=wism[0])
-		for index, ip in tmp.items():
-			if index in result:
-				result[index].ip = ip
-	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap IP', error=str(e)).save()
+	# Add/Update IP
+	getData(elements=result, attr='ip', getter=getApIPs, 
+		ip=ip, port=port, community=community) 
+
+	# Add/Update Link Speed
+	getData(elements=result, attr='ethernetLinkSpeed', getter=getAPEthernetLinkSpeed, 
+		ip=ip, port=port, community=community) 
+
+	# Create AP Snapshots
+	for apIndex, ap in result.items:
+		resultApSnapshot[apIndex] = APSnapshot(ap=ap)
+		resultApSnapshot[apIndex].save()
+
+	# Get the receptioned bytes counter
+	getApSnapshotData(elements=resultApSnapshot, attr='ethernetRxTotalBytes', getter=getAPEthernetRxTotalBytes,
+		ip=ip, port=port, community=community)
+
+	# Get the transmitted bytes counter
+	getApSnapshotData(elements=resultApSnapshot, attr='ethernetTxTotalBytes', getter=getAPEthernetTxTotalBytes,
+		ip=ip, port=port, community=community)
 	
-	# Add Link Speed
-	try:
-		tmp = getAPEthernetLinkSpeed(ip=wism[0])
-		for index, speed in tmp.items():
-			if index in result:
-				result[index].ethernetLinkSpeed = speed
-	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap Ethernet Link Speed', error=str(e)).save()
-
-	# Add AP Tx bytes counter
-	try:
-		tmp = getAPEthernetTxTotalBytes(ip=wism[0])
-		for index, b in tmp.items():
-			if index in result:
-				result[index].ethernetTxTotalBytes = b
-	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap Tx Total Bytes', error=str(e)).save()
-
-	# Add AP Rx bytes counter
-	try:
-		tmp = getAPEthernetRxTotalBytes(ip=wism[0])
-		for index, b in tmp.items():
-			if index in result:
-				result[index].ethernetRxTotalBytes = b
-	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap Rx Total Bytes', error=str(e)).save()
-
-	# Add Interface Types and create the interface if required
+	# Add/Update Interfaces
 	try:
 		tmp = getAPIfTypeface(ip=wism[0])
 		for apIndex, interfaces in tmp.items():
@@ -268,85 +314,47 @@ def getAllAP():
 
 				for ifIndex, ifType in interfaces.items():
 					try:
-						resultInterfaces[apIndex][ifIndex], created = APInterface.objects.get_or_create(index=ifIndex, ap=result[apIndex])
+						resultInterfaces[apIndex][ifIndex], created = APInterface.objects.get_or_create(ifType=ifType, ap=result[apIndex])
 					except IntegrityError:
 						# get_or_create is not thread safe
-						resultInterfaces[apIndex][ifIndex] = APInterface.objects.get(index=ifIndex, ap=result[apIndex])
+						resultInterfaces[apIndex][ifIndex] = APInterface.objects.get(ifType=ifType, ap=result[apIndex])
 
-					resultInterfaces[apIndex][ifIndex].ifType = ifType
+					resultInterfaces[apIndex][ifIndex].index = ifIndex
+					resultInterfaces[apIndex][ifIndex].save(update_fields=['index'])
+
 	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - AP Interface Types', error=str(e)).save()
+		OperationalError(source='snmpAPDaemon - AP Interface Types', error=str(e)).save()
 
-
+	# Create a Snapshot for each interface
+	for apIndex, ap in resultInterfaces.items():
+		resultIfSnapshot[apIndex] = {}
+		for ifIndex, interface in ap.items():
+			resultIfSnapshot[apIndex][ifIndex] = APIfSnapshot(apinterface=interface)
+			resultIfSnapshot[apIndex][ifIndex].save()
+	
 	# Add Channel Utilization
-	try:
-		tmp = getAPIfLoadChannelUtilization(ip=wism[0])
-		for apIndex, interfaces in tmp.items():
-			if apIndex in resultInterfaces:
-				for ifIndex, load in interfaces.items():
-					if ifIndex in resultInterfaces[apIndex]:
-						resultInterfaces[apIndex][ifIndex].channelUtilization = load
-	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - AP Channel Utilization', error=str(e)).save()
-
+	getIfSnapshotData(resultIfSnapshot, 'channelUtilization', getAPIfLoadChannelUtilization, 
+		ip=ip, port=port, community=community)
 
 	# Add numOfClients
-	try:
-		tmp = getAPIfLoadNumOfClients(ip=wism[0])
-		for apIndex, interfaces in tmp.items():
-			if apIndex in resultInterfaces:
-				for ifIndex, num in interfaces.items():
-					if ifIndex in resultInterfaces[apIndex]:
-						resultInterfaces[apIndex][ifIndex].numOfClients = num
-	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - Ap Nbr Of Clients', error=str(e)).save()
-	
+	getIfSnapshotData(resultIfSnapshot, 'numOfClients', getAPIfLoadNumOfClients, 
+		ip=ip, port=port, community=community)
+
 	# Add number Of poor SNR Clients
-	try:
-		tmp = getAPIfPoorSNRClients(ip=wism[0])
-		for apIndex, interfaces in tmp.items():
-			if apIndex in resultInterfaces:
-				for ifIndex, num in interfaces.items():
-					if ifIndex in resultInterfaces[apIndex]:
-						resultInterfaces[apIndex][ifIndex].numOfPoorSNRClients = num
-	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - AP Poor SNR Clients', error=str(e)).save()
+	getIfSnapshotData(resultIfSnapshot, 'numOfPoorSNRClients', getAPIfPoorSNRClients, 
+		ip=ip, port=port, community=community)
 
 	# Add Transmission Utilization
-	try:
-		tmp = getAPIfLoadTxUtilization(ip=wism[0])
-		for apIndex, interfaces in tmp.items():
-			if apIndex in resultInterfaces:
-				for ifIndex, load in interfaces.items():
-					if ifIndex in resultInterfaces[apIndex]:
-						resultInterfaces[apIndex][ifIndex].txUtilization = load
-	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - AP Transmission Utilization', error=str(e)).save()
+	getIfSnapshotData(resultIfSnapshot, 'txUtilization', getAPIfLoadTxUtilization, 
+		ip=ip, port=port, community=community)
 
 	# Add Reception Utilization
-	try:
-		tmp = getAPIfLoadRxUtilization(ip=wism[0])
-		for apIndex, interfaces in tmp.items():
-			if apIndex in resultInterfaces:
-				for ifIndex, load in interfaces.items():
-					if ifIndex in resultInterfaces[apIndex]:
-						resultInterfaces[apIndex][ifIndex].rxUtilization = load
-	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpAPDaemon - AP Reception Utilization', error=str(e)).save()
+	getIfSnapshotData(resultIfSnapshot, 'rxUtilization', getAPIfLoadRxUtilization, 
+		ip=ip, port=port, community=community)
 
 
-	# Update all the AP and interface
-	for ap in result.values():
-		ap.touch()
-		ap.save()
-		apSnapshot(ap)
 
-	for ap in resultInterfaces.values():
-		for i in ap.values():
-			i.save()
-
-
-def getAllMS():
+def getAllMS(ip=wism[0], port=SNMPPORT, community=SNMPCOMMUNITY):
 	''' Cross reference all the information on the Mobile Station and update the database '''
 	
 	result = {}
@@ -355,61 +363,49 @@ def getAllMS():
 		tmp = getMobileStationMacAddresses(ip=wism[0])
 		for index, mac in tmp.items():
 			mac = parseMacAdresse(mac)
-			if not mac == '':
 				# Handle possible race condition (get_or_create not thread safe)
-				try: 
-					result[index], created = MobileStation.objects.get_or_create(macAddress=mac)
-				except IntegrityError:
-					result[index] = MobileStation.objects.get(macAddress=mac)
-				finally:
-					result[index].index = "." + index
+			try: 
+				result[index], created = MobileStation.objects.get_or_create(macAddress=mac)
+			except IntegrityError:
+				result[index] = MobileStation.objects.get(macAddress=mac)
+			
+			result[index].index = "." + index
+			result[index].save(update_fields=['index'])
 	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon - MS Mac Address', error=str(e)).save()
+		OperationalError(source='snmpMSDaemon - MS Mac Address', error=str(e)).save()
 
-	# Add names   
-	try: 
-		tmp = getMobileStationSSID(ip=wism[0])
-		for index, ssid in tmp.items():
-			if index in result:
-				if 'b\'' in ssid:
-					result[index].ssid = ssid[2:-1]
-				else:
-					result[index].ssid = ssid
-	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon - MS Names', error=str(e)).save()
-
-	# Add IP
-	try:
-		tmp = getMobileStationIPs(ip=wism[0])
-		for index, ip in tmp.items():
-			if index in result:
-				result[index].ip = ip
-	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon - MS IP', error=str(e)).save()
-
-	# Add Protocol
-	try:
-		tmp = getMobileStationProtocol(ip=wism[0])
-		for index, proto in tmp.items():
-			if index in result:
-				result[index].dot11protocol = proto
-	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon - MS Proto', error=str(e)).save()
-	
 	# Link to AP
 	try:
 		tmp = getMobileStationAPMacAddress(ip=wism[0])
 		for index, apMac in tmp.items():
 			if index in result:
 				apMac = parseMacAdresse(apMac)
-				result[index].ap, created = AccessPoint.objects.get_or_create(macAddress=apMac)
-	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpMSDaemon - MS Associated AP', error=str(e)).save()
+				try:
+					result[index].ap, created = AccessPoint.objects.get_or_create(macAddress=apMac)
+				except IntegrityError:
+					result[index].ap = AccessPoint.objects.get_or_create(macAddress=apMac)
+				result[index].save(update_fields=['ap'])
 
-	# Update all the MS
-	for ms in result.values():
-		ms.touch()
-		ms.save()
+	except Exception as e:
+		OperationalError(source='snmpMSDaemon - MS Associated AP', error=str(e)).save()
+
+
+	# Add/Update SSID
+	getData(elements=result, attr='ssid', getter=getMobileStationSSID, 
+		ip=ip, port=port, community=community, 
+		valueInBinaryString=True, source='snmpMSDaemon')   
+	
+	# Add/Update IP
+	getData(elements=result, attr='ip', getter=getMobileStationIPs, 
+		ip=ip, port=port, community=community, 
+		source='snmpMSDaemon') 
+
+	# Add Protocol
+	getData(elements=result, attr='dot11protocol', getter=getMobileStationProtocol, 
+		ip=ip, port=port, community=community, 
+		source='snmpMSDaemon') 
+
+
 
 
 
@@ -429,7 +425,7 @@ def getAllRAP():
 			finally:
 				result[index].index = "." + index
 	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpRAPDaemon - Rogue Ap Mac Address', error=str(e)).save()
+		OperationalError(source='snmpRAPDaemon - Rogue Ap Mac Address', error=str(e)).save()
 	
 	# Add RAP SSID   
 	try: 
@@ -441,7 +437,7 @@ def getAllRAP():
 				else:
 					result[index].ssid = ssid
 	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpRAPDaemon - Rogue Ap SSID', error=str(e)).save()
+		OperationalError(source='snmpRAPDaemon - Rogue Ap SSID', error=str(e)).save()
 
 	# Add RAP Number of Clients   
 	try: 
@@ -450,7 +446,7 @@ def getAllRAP():
 			if index in result:
 				result[index].nbrOfClients = num
 	except Exception as e:
-		OperationalError(date=timezone.localtime(timezone.now()), source='snmpRAPDaemon - Rogue Ap SSID', error=str(e)).save()
+		OperationalError(source='snmpRAPDaemon - Rogue Ap SSID', error=str(e)).save()
 	
 	# Add RAP Closest AP   
 	try: 
@@ -474,23 +470,6 @@ def getAllRAP():
 	for rap in result.values():
 		rap.touch()
 		rap.save()
-
-###########################################################################################################################
-### Snapshots ###
-############################################################################################################################
-def apSnapshot(ap):
-	
-	snap = APSnapshot(ap=ap)
-	snap.ethernetRxTotalBytes = ap.ethernetRxTotalBytes
-	snap.ethernetTxTotalBytes = ap.ethernetTxTotalBytes
-	snap.save()
-	for interface in ap.apinterface_set.all():
-		ifsnap = APIfSnapshot(apsnapshot=snap, apinterface=interface)
-		ifsnap.channelUtilization = interface.channelUtilization
-		ifsnap.numOfClients = interface.numOfClients
-		ifsnap.numOfPoorSNRClients = interface.numOfPoorSNRClients
-		ifsnap.save()
-
 
 ###### Auxiliary Methods #######
 def parseMacAdresse(macString):
