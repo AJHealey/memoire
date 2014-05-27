@@ -1,7 +1,7 @@
 from datetime import datetime,timedelta
 from django.utils import timezone
 
-from gatherer.models import WismEvent, DHCPEvent, RadiusEvent, MobileStation, AccessPoint, APSnapshot, APIfSnapshot
+from gatherer.models import WismEvent, DHCPEvent, RadiusEvent, MobileStation, AccessPoint, APSnapshot, APIfSnapshot, OperationalError
 from django.core.exceptions import ObjectDoesNotExist
 
 from django.conf import settings
@@ -52,6 +52,7 @@ def getUsersByDot11Protocol(timedeltaData=timedelta(weeks=12)):
 
 def getUsersBySSID():
 	stats = {}
+	ms =  MobileStation.objects.all()
 	for ssid in MobileStation.objects.values_list('ssid', flat=True).distinct():
 		stats[ssid] = MobileStation.objects.areAssociated().filter(ssid=ssid).count()
 	return stats
