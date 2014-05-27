@@ -87,9 +87,9 @@ def getAPData(ap, timePerRange=3*settings.SNMPAPLAP,
 	try:
 
 		if startTime == None:
-			startTime = APSnapshot.objects.aggregate(Min("date"))["date_min"]
+			startTime = APSnapshot.objects.aggregate(Min("date"))["date__min"]
 		if endTime == None:
-			endTime = APSnapshot.objects.aggregate(Max("date"))["date_min"]
+			endTime = APSnapshot.objects.aggregate(Max("date"))["date__max"]
 
 
 		snapshots = APSnapshot.objects.filter(ap=ap, date__gte=startTime, date__lte=endTime).order_by('date')
