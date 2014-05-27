@@ -132,10 +132,15 @@ def getAPData(ap, timePerRange=3*settings.SNMPAPLAP,
 	return result
 
 
-def getIfData(interface, timePerRange=3*settings.SNMPAPLAP, startTime=datetime.min.replace(tzinfo=timezone.get_current_timezone()),endTime=datetime.max.replace(tzinfo=timezone.get_current_timezone())):
+def getIfData(interface, timePerRange=3*settings.SNMPAPLAP, startTime=None, endTime=None):
 	
 	result = {}
 	try:
+		if startTime == None:
+			startTime = APSnapshot.objects.aggregate(Min("date"))["date__min"]
+		if endTime == None:
+			endTime = APSnapshot.objects.aggregate(Max("date"))["date__max"]
+		
 		snapshots = APIfSnapshot.objects.filter(apinterface=interface, date__gte=startTime, date__lte=endTime)
 		startAt = snapshots[0].date
 		
