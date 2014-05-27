@@ -104,7 +104,7 @@ def getAPData(ap, timePerRange=3*settings.SNMPAPLAP,
 			if snap.date < (startAt + timePerRange):
 				for data in snap.apsnapshotdata_set.all():
 					if data.name in values:
-						values[data.name].append[data.value]
+						values[data.name].append(data.value)
 
 			# Aggregate and reset the period
 			else:

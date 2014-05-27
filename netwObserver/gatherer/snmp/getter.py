@@ -503,7 +503,6 @@ def parseMacAdresse(macString):
 		raise Exception()
 
 
-
 #####
 if __name__ == '__main__':
 	import sys
