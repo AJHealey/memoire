@@ -292,7 +292,7 @@ def getAllAP(ip=wism[0], port=SNMPPORT, community=SNMPCOMMUNITY):
 		ip=ip, port=port, community=community) 
 
 	# Create AP Snapshots
-	for apIndex, ap in result.items:
+	for apIndex, ap in result.items():
 		resultApSnapshot[apIndex] = APSnapshot(ap=ap)
 		resultApSnapshot[apIndex].save()
 
