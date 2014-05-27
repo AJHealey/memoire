@@ -273,7 +273,7 @@ def getAllAP(ip=wism[0], port=SNMPPORT, community=SNMPCOMMUNITY):
 				result[index] = AccessPoint.objects.get(macAddress=mac)
 			
 			result[index].index = "." + index
-			result[index].save(update_fields=['index')
+			result[index].save(update_fields=['index'])
 
 	except Exception as e:
 		OperationalError(source='snmpAPDaemon - macAddress', error=str(e)).save()
