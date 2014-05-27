@@ -11,7 +11,7 @@
 int sendLogs(char *);
 
 #define IDENTITY "00:00:00:00:00:00"
-#define SERVERADDRESS "127.0.0.1"
+#define SERVERADDRESS "130.104.78.201"
 #define SERVERPORT 3874
 
 int main(int argc, char *argv[]) {
