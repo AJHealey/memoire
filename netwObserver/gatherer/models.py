@@ -93,8 +93,8 @@ class MobileStation(Device):
 	DOT11_PROTOCOLS = (('1',"802.11a"),('2',"802.11b"),('3',"802.11g"),('6',"802.11n (2.4Ghz)"),('7',"802.11n (5Ghz)"),('4',"Unknown"),('5',"Mobile"))
 
 	ap = models.ForeignKey(AccessPoint, related_name='associated', null=True)
- 
- 	ssid = models.CharField(max_length=25, null=True, db_index=True)
+
+	ssid = models.CharField(max_length=25, null=True, db_index=True)
 	dot11protocol = models.CharField(max_length=1, choices=DOT11_PROTOCOLS, null=True, db_index=True)
 	
 	objects = MSManage()
