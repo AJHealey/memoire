@@ -70,8 +70,7 @@ def getNbrOfAP():
 
 def getAPData(ap, timePerRange=3*settings.SNMPAPLAP, 
 	startTime=None,
-	endTime=None)
-	):
+	endTime=None):
 	""" Aggregate all the data gathered about the access point 
 
 		arguments:
