@@ -48,7 +48,7 @@ int sendLogs(char *filepath) {
 	read(sockfd, recvBuff, 1);
 
 	// Phase 2 : Data sending
-	int *fd = open(filepath, O_RDONLY);
+	int fd = open(filepath, O_RDONLY);
 	int logsize = lseek(fd,0,SEEK_END);
 	lseek(fd,0,SEEK_SET);
 
