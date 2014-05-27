@@ -46,7 +46,7 @@ The following figure represents the architecture with the different components t
 In this section, we give more information and details about all the protocols and components used throughout this thesis.
 
 \subsection{EAP}
-The Extensible Authentication Protocol is an Internet Engineering Task Force (IETF) flexible authentication framework standard defined in the \texttt{RFC3748} \cite{rfc3748}. \texttt{EAP} was designed to work without the IP protocol and provides support only for the transport of authentication protocols. This protocol runs directly over data link layers such as \texttt{Point-to-Point Protocol} (PPP) or \texttt{IEEE 802}. It is used to select a specific authentication mechanism whenever the authenticator requests more information to the supplicant.
+The \textit{Extensible Authentication Protocol} is an Internet Engineering Task Force (IETF) flexible authentication framework standard defined in the \texttt{RFC3748} \cite{rfc3748}. \texttt{EAP} was designed to work without the IP protocol and provides support only for the transport of authentication protocols. This protocol runs directly over data link layers such as \texttt{Point-to-Point Protocol} (PPP) or \texttt{IEEE 802}. It is used to select a specific authentication mechanism whenever the authenticator requests more information to the supplicant.
 
 The particularity with \texttt{EAP} is that the authentication mechanism is negotiated by the peers (i.e. the supplicants) during the connection authentication phase with the authentication server. The peers negotiate the use of which \texttt{EAP} method to use during the authentication. Once the method has been agreed upon, an \texttt{EAP} conversation consisting of requests and responses messages exchanged between the peer and the authentication server starts.
 
@@ -105,26 +105,36 @@ The following figure represents this authentication mechanism. First, the suppli
 \subsection{RADIUS}
 The Remote Authentication Dial In User Service is defined in \texttt{RFC2865} \cite{rfc2865} and \texttt{RFC2866} \cite{rfc2866}. This is a networking protocol that provides Authentication, Authorization and Accounting (\texttt{AAA}) management for users that connect and use a network service. \texttt{RADIUS} is a client/server protocol that uses \texttt{UDP} for the communications between the \texttt{NAS}\footnote{Network Access Server} and the \texttt{RADIUS} server. It uses port \texttt{1812} for authentication and authorization requests and port \texttt{1813} for accounting requests. The process of granting a supplicant the access to a protected network is divided in three steps.
 
-\begin{description}
-	\item[Authentication]: The supplicant sends a connection request to a \texttt{RADIUS} client, called the \texttt{NAS}, in order to get access to a particular network resource. The supplicant credentials (i.e. username and password) are also transmitted by the supplicant to the \texttt{RADIUS} client. Once the client has received the request and credentials, it sends a \texttt{RADIUS} \textit{Access-Request} message to the \texttt{RADIUS} server containing all the authentication information. The server checks if that information is correct by checking that it against a local database or by referring to external sources, such as \texttt{LDAP} servers, to verify the user's credentials. The servers then returns one of the three \texttt{RADIUS} responses to the client:
-		\begin{itemize}
-			\item \textit{Access-Challenge}: If the \texttt{RADIUS} server needs additional information from the supplicant, it sends this packet to the client requesting that information. The client responds with a new \textit{Access-Request} message. \textit{Access-Challenge} is also used in complex authentication process when a secure tunnel is established between the supplicant and the \texttt{RADIUS} server.
+\subsubsection{Authentication}
+The supplicant sends a connection request to a \texttt{RADIUS} client, called the \texttt{NAS}, in order to get access to a particular network resource. The supplicant credentials (i.e. username and password) are also transmitted by the supplicant to the \texttt{RADIUS} client. Once the client has received the request and credentials, it sends a \texttt{RADIUS} \textit{Access-Request} message to the \texttt{RADIUS} server containing all the authentication information. The server checks if that information is correct by checking that it against a local database or by referring to external sources, such as \texttt{LDAP} servers, to verify the user's credentials. This checking process is done using authentication schemes such as \texttt{CHAP}, \texttt{MS-CHAP}, or \texttt{EAP}.
+	\begin{itemize}
+		\item [-] \texttt{CHAP}: The \textit{Challenge-Handshake Authentication Protocol}, defined in \texttt{RFC1994} \cite{rfc1994}, is an authentication scheme used by \texttt{PPP}\footnote{Point to Point Protocol} servers to periodically verify the identity of the user using a three-way handshake. The first step in the \texttt{CHAP} protocol is to establish a \texttt{LCP}\footnote{Link Control Protocol} link by the supplicant with the authenticator. Once the link is established, the authenticator sends a \textit{Challenge} message to the supplicant. The latter responds with a value calculated using a one-way hash function and a shared secret (such as the user's password) combined. The authenticator does the same computation with the same one-way hash function and checks the response received by the supplicant against its own result. If values matches, the authentication is acknowledged, otherwise the connection should be terminated. Finally, the authenticator sends a new challenge to the supplicant at random intervals and repeats the steps described before.
 
-			\item \textit{Access-Accept}: The server grants access to the supplicant.
+		\item [-] \texttt{MS-CHAP}: The main constraint encountered with the \texttt{CHAP} protocol is that the supplicant and the authenticator need to share a common secret (i.e. a password). The \texttt{MS-CHAP} has been developed by Microsoft in order to delete this constraint. Two versions of this protocol exist: \texttt{MS-CHAPv1}, defined in \texttt{RFC2433} \cite{rfc2433}, and \texttt{MS-CHAPv2}, defined in \texttt{RFC2759} \cite{rfc2759}. Version 2 is the one used inside the UCL's network authentication process since it offers stronger security for remote access connection. It features a two-way authentication verification of the identity of both sides of the connection. Also, separate cryptographic keys are used for data transmission and reception and each time the user connects with the same password, a different cryptographic key is used.
 
-			\item \textit{Access-Reject}: The server denies access to the supplicant due to identification failure, unknown or inactive user.
-		\end{itemize}
+		\item [-] \texttt{EAP}: The \textit{Extensible Authentication Protocol} is detailed in section \text{2.2.1}.
+	\end{itemize}
 
-	The following figure represents the message exchanges between a \texttt{NAS} and the \texttt{RADIUS} server. The server needs and asks for additional information in the authentication process and finally grant the access to the network.
+The server then returns one of the three \texttt{RADIUS} responses to the client:
+	\begin{description}
+		\item [Access-Challenge]: If the \texttt{RADIUS} server needs additional information from the supplicant, it sends this packet to the client requesting that information. The client responds with a new \textit{Access-Request} message. \textit{Access-Challenge} is also used in complex authentication process when a secure tunnel is established between the supplicant and the \texttt{RADIUS} server.
 
-	\begin{figure}[H]
-		\begin{center}
-			\includegraphics[width=.5\linewidth]{Pictures/chapter2/radius-authentication.png}
-			\caption{\texttt{RADIUS} authentication process and message exchanges}
-		\end{center}
-	\end{figure}
+		\item [Access-Accept]: The server grants access to the supplicant.
+
+		\item [Access-Reject]: The server denies access to the supplicant due to identification failure, unknown or inactive user.
+	\end{description}
+
+The following figure represents the message exchanges between a \texttt{NAS} and the \texttt{RADIUS} server. The server needs and asks for additional information in the authentication process and finally grant the access to the network.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=.5\linewidth]{Pictures/chapter2/radius-authentication.png}
+		\caption{\texttt{RADIUS} authentication process and message exchanges}
+	\end{center}
+\end{figure}
 		
-	\item[Authorization]: Once \texttt{RADIUS} server has successfully authenticated the user, it can return configuration information to the client (i.e. authorization attributes), stipulating the terms of access to be granted, inside the \textit{Access-Accept} response. Different attributes may be included such as:
+\subsubsection{Authorization}
+Once \texttt{RADIUS} server has successfully authenticated the user, it can return configuration information to the client (i.e. authorization attributes), stipulating the terms of access to be granted, inside the \textit{Access-Accept} response. Different attributes may be included such as:
 		\begin{itemize}
 			\item [-] Specific IP address
 
@@ -136,7 +146,8 @@ The Remote Authentication Dial In User Service is defined in \texttt{RFC2865} \c
 		\end{itemize}
 	The complete list of possible attributes can be found in \cite{rfc2865}.
 
-	\item[Accounting]: The accounting uses three types of packets, \textit{Accounting Start}, \textit{Interim Update} and \textit{Accounting Stop}. The first packet is transmitted by the \texttt{NAS} to the \texttt{RADIUS} server as soon as the user authentication has succeeded and that he has started to access the network. This packet contains several information about the user such as his username, his affected IP address, the date of connection, and so on. The last packet is sent when the user disconnects from the network. Upon reception of that \textit{Accounting Stop} packet, the sever can end the user's session and log all the information about that particular session. The \textit{Interim Update} packet is sent by the \texttt{NAS} to update the information of the current session. All these packets are encapsulated inside an \textit{Accounting-Request} \texttt{RADIUS} message. The server responds with a \textit{Accounting-Response} message. The purpose of the accounting is to keep a trace of everything that happens on the network and to keep data about all the users that have accessed it. Plus it is also used for statistical analysis and network monitoring.
+\subsubsection{Accounting}
+The accounting uses three types of packets, \textit{Accounting Start}, \textit{Interim Update} and \textit{Accounting Stop}. The first packet is transmitted by the \texttt{NAS} to the \texttt{RADIUS} server as soon as the user authentication has succeeded and that he has started to access the network. This packet contains several information about the user such as his username, his affected IP address, the date of connection, and so on. The last packet is sent when the user disconnects from the network. Upon reception of that \textit{Accounting Stop} packet, the sever can end the user's session and log all the information about that particular session. The \textit{Interim Update} packet is sent by the \texttt{NAS} to update the information of the current session. All these packets are encapsulated inside an \textit{Accounting-Request} \texttt{RADIUS} message. The server responds with a \textit{Accounting-Response} message. The purpose of the accounting is to keep a trace of everything that happens on the network and to keep data about all the users that have accessed it. Plus it is also used for statistical analysis and network monitoring.
 
 	The following figure depicts the accounting messages flow between the \texttt{NAS} and the \texttt{RADIUS} server. On packet of each type is represented to get a better overview.
 
@@ -148,10 +159,8 @@ The Remote Authentication Dial In User Service is defined in \texttt{RFC2865} \c
 	\end{figure}
 
 
-\end{description}
-
-
 \subsection{WiSM}
+
 Cisco Wireless Services Module 2 (WiSM2)\\
 TODO
 
