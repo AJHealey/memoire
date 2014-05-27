@@ -434,19 +434,47 @@ static void connect_network(int network) {
  */
 static int checkDNS(char *ip_addr) {
 	int res, sockfd;
-	struct sockaddr_in dns;
+	unsigned char buf[65536], *qname;
+	struct sockaddr_in dest;
+	struct dns_header *dns = NULL;
 
 	if((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))<0) {
 		return 0;
 	}	
 
-	
-	memset((char *) &dns, 0, sizeof(dns));
-	dns.sin_family = AF_INET;
-	dns.sin_port = htons(53);
-	dns.sin_addr.s_addr = inet_addr(ip_addr);
+	memset((char *) &dest, 0, sizeof(dest));
+	dest.sin_family = AF_INET;
+	dest.sin_port = htons(53);
+	dest.sin_addr.s_addr = inet_addr(ip_addr);
 
-	res = connect(sockfd, (struct sockaddr *) &dns, sizeof(dns));
+	dns = (struct dns_header *)&buf;
+	dns->id = (unsigned short) htons(getpid());
+    dns->qr = 0; //This is a query
+    dns->opcode = 0; //This is a standard query
+    dns->aa = 0; //Not Authoritative
+    dns->tc = 0; //This message is not truncated
+    dns->rd = 1; //Recursion Desired
+    dns->ra = 0; //Recursion not available
+    dns->z = 0;
+    dns->ad = 0;
+    dns->cd = 0;
+    dns->rcode = 0;
+    dns->q_count = htons(1); //we have only 1 question
+    dns->ans_count = 0;
+    dns->auth_count = 0;
+    dns->add_count = 0;
+
+    //point to the query portion
+    qname =(unsigned char*)&buf[sizeof(struct dns_header)];
+
+    if(sendto(sockfd,(char*)buf,sizeof(struct dns_header) + (strlen((const char*)qname)+1),0,(struct sockaddr*)&dest,sizeof(dest)) < 0) {
+    	printf("Sendto FAILED\n");
+    }
+    printf("Sent\n");
+    
+
+
+	/*res = connect(sockfd, (struct sockaddr *) &dest, sizeof(dest));
 	if(res < 0) {
 		debug_print("DNS: NOK\n");
 		return 0;
@@ -454,14 +482,14 @@ static int checkDNS(char *ip_addr) {
 	else {
 		debug_print("DNS: OK\n");
 		return 1;
-	}
+	}*/
 }
 
 
 /* 
  * Check if services are available or not
  */
-static int checkService(char *host, char *ip_addr, const char *port) {
+static int checkService(char *host, const char *port) {
 	int res, valopt, sockfd;
 	long arg;
 	fd_set set;
@@ -475,23 +503,22 @@ static int checkService(char *host, char *ip_addr, const char *port) {
 
 	port_number = atoi(port);
 
-	if(host != NULL) {  
-		if((hostptr = (struct hostent *) gethostbyname(host)) == NULL) { 
-			return 0;
-		}
-		host_name = host;
-		ptr = (struct in_addr *)*(hostptr->h_addr_list);
+	if((hostptr = (struct hostent *) gethostbyname(host)) == NULL) { 
+		return 0;
 	}
+	host_name = host;
+	ptr = (struct in_addr *)*(hostptr->h_addr_list);
 
+	//Create communication endpoint
+	if((sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP))<0) { //TCP for websites
+		close(sockfd);
+		return 0;
+	}
 
 	memset((char *) &serv_addr, 0, sizeof(serv_addr));
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_port = htons(port_number);
-	if(host != NULL) 
-		serv_addr.sin_addr.s_addr = ptr->s_addr;
-	else {
-		serv_addr.sin_addr.s_addr = inet_addr(ip_addr);
-	}
+	serv_addr.sin_addr.s_addr = ptr->s_addr;
 
 
 	//Non blocking socket
@@ -502,24 +529,11 @@ static int checkService(char *host, char *ip_addr, const char *port) {
 	//Trying to connect with timeout
 	res = connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
 
-	//Create communication endpoint
-	if(host != NULL) { //Websites
-		if((sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP))<0) { //TCP for websites
-			close(sockfd);
-			return 0;
-		}
-	}
-	else { //DNS
-		if((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))<0) { //UDP for DNS
-			close(sockfd);
-			return 0;
-		}
-	}
 	
 
 	if(res < 0) {
 		if(errno == EINPROGRESS) {
-			tv.tv_sec = 10; // 5sec timeout
+			tv.tv_sec = 5; // 5sec timeout
 			tv.tv_usec = 0;
 			FD_ZERO(&set);
 			FD_SET(sockfd, &set);
@@ -546,8 +560,9 @@ static int checkService(char *host, char *ip_addr, const char *port) {
 	}
 	else {
 		//Error connection
+		printf("OK %s\n", port);
 		close(sockfd);
-		return 0;
+		return 1;
 	}
 
 	//Set to blocking again
@@ -572,42 +587,42 @@ static void services_loop() {
 	ptr->uclouvain = malloc(1);
 	ptr->icampus = malloc(1);
 
-	if(checkService(NULL, "130.104.1.1", "53") == 1)
+	if(checkDNS("130.104.1.1") == 1)
 		strcpy(ptr->DNS_1, "1");
 	else 
 		strcpy(ptr->DNS_1, "0");
 
-	if(checkService(NULL, "130.104.1.2", "53") == 1)
+	if(checkDNS("130.104.1.2") == 1)
 		strcpy(ptr->DNS_2, "1");
 	else
 		strcpy(ptr->DNS_2, "0");
 
-	if(checkService("google.be", NULL, "443") == 1)
+	if(checkService("google.be", "443") == 1)
 		strcpy(ptr->google, "1");
 	else
 		strcpy(ptr->google, "0");
 
-	if(checkService("smtp.gmail.com", NULL, "587") == 1)
+	if(checkService("smtp.gmail.com", "587") == 1)
 		strcpy(ptr->gmail, "1");
 	else
 		strcpy(ptr->gmail, "0");
 
-	if(checkService("github.com", NULL, "22") == 1)
+	if(checkService("github.com", "22") == 1)
 		strcpy(ptr->github, "1");
 	else
 		strcpy(ptr->github, "0");
 
-	if(checkService("ssl.github.com", NULL, "443") == 1)
+	if(checkService("ssl.github.com", "443") == 1)
 		strcpy(ptr->ssl_github, "1");
 	else
 		strcpy(ptr->ssl_github, "0");
 
-	if(checkService("uclouvain.be", NULL, "443") == 1)
+	if(checkService("uclouvain.be", "443") == 1)
 		strcpy(ptr->uclouvain, "1");
 	else
 		strcpy(ptr->uclouvain, "0");
 
-	if(checkService("icampus.uclouvain.be", NULL, "443") == 1)
+	if(checkService("icampus.uclouvain.be", "443") == 1)
 		strcpy(ptr->icampus, "1");
 	else
 		strcpy(ptr->icampus, "0");
@@ -822,14 +837,14 @@ void *connection_loop(void * p_data) {
 		}
 		log_event(LOG_STOP_CONNECTION, NULL);
 
-		if(close == 0) {
+		if(close == 1) {
 			debug_print("SAVE\n");
 			log_event(LOG_FINAL_STOP_LOOP, NULL);
 			log_event(LOG_STOP_LOG, NULL);
 			log_event(LOG_STOP_FILE, NULL);
 			fclose(f);
 			send_log();
-			f = fopen("/var/log/logs2.txt","w");
+			f = fopen("/var/log/logs.txt","w");
 			log_event(LOG_START_FILE, NULL);
 			log_event(LOG_MAC_ADDR, NULL);
 			log_event(LOG_START_LOG, NULL);
