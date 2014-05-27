@@ -124,10 +124,10 @@ def getAPData(ap, timePerRange=3*settings.SNMPAPLAP,
 				values = {}
 				for data in snap.apsnapshotdata_set.all():
 					values[data.name] = [data.value]
-
+	"""
 	except ObjectDoesNotExist:
 		pass
-
+	"""
 	except Exception as e:
 		OperationalError(source="getAPData", error=str(e)).save()
 		raise e
