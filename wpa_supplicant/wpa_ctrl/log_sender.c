@@ -14,6 +14,7 @@ int sendLogs(char *filepath, char *mac) {
 	char identity[18];
 	char recvBuff[1024];
 	memset(recvBuff,'\0',1024);
+	struct stat st;
 
 	strcpy(identity, mac);
 
@@ -28,7 +29,7 @@ int sendLogs(char *filepath, char *mac) {
 	to.sin_family = AF_INET;
 	to.sin_addr.s_addr = inet_addr(SERVERADDRESS);
 	to.sin_port = htons(SERVERPORT);
-	
+
 	if (connect(sockfd, (struct sockaddr *)&to , sizeof(to)) < 0){
 		perror("[-]Could not connect to the server.\n");
         return 1;
@@ -43,7 +44,8 @@ int sendLogs(char *filepath, char *mac) {
 	int fd = open(filepath, O_RDONLY);
 	int logsize = htonl(lseek(fd,0,SEEK_END));
 	lseek(fd,0,SEEK_SET);
-	
+
+	printf("SIZE: %d\n", logsize);
 
 	// Send data size
 	write(sockfd, &logsize, 4);

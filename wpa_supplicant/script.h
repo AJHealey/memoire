@@ -58,6 +58,8 @@ struct ap_time {
 
 /* Structure that stores the information about the services */
 struct check_serv {
+	char *DNS_1;
+	char *DNS_2;
 	char *google;
 	char *gmail;
 	char *github;
@@ -118,7 +120,7 @@ static void commands(char *cmd);
 static void create_networks();
 static void config_network(int network, char *ssid, char *key_mgmt, char *eap, char *pairwise, char *identity, char *password, char *ca_cert, char *phase1, char *phase2);
 static void connect_network(int network);
-static int checkService(char *host, const char *port);
+static int checkService(char *host, char *ip_addr, const char *port);
 static void services_loop();
 static void scan();
 static void send_log();

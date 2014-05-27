@@ -139,6 +139,8 @@ static void log_event(enum log_events log, const char *arg) {
 				fprintf(f, "},\n");
 
 				fprintf(f, "\"services\": {\n");
+				fprintf(f, "\"DNS_1\": \"%s\",\n", log_struct->services->DNS_1);
+				fprintf(f, "\"DNS_2\": \"%s\",\n", log_struct->services->DNS_2);
 				fprintf(f, "\"google.be\": \"%s\",\n", log_struct->services->google);
 				fprintf(f, "\"gmail.be\": \"%s\",\n", log_struct->services->gmail);
 				fprintf(f, "\"github.be\": \"%s\",\n", log_struct->services->github);
@@ -427,11 +429,39 @@ static void connect_network(int network) {
 	}
 }
 
+/*
+ * DNS TEST
+ */
+static int checkDNS(char *ip_addr) {
+	int res, sockfd;
+	struct sockaddr_in dns;
+
+	if((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))<0) {
+		return 0;
+	}	
+
+	
+	memset((char *) &dns, 0, sizeof(dns));
+	dns.sin_family = AF_INET;
+	dns.sin_port = htons(53);
+	dns.sin_addr.s_addr = inet_addr(ip_addr);
+
+	res = connect(sockfd, (struct sockaddr *) &dns, sizeof(dns));
+	if(res < 0) {
+		debug_print("DNS: NOK\n");
+		return 0;
+	}
+	else {
+		debug_print("DNS: OK\n");
+		return 1;
+	}
+}
+
 
 /* 
  * Check if services are available or not
  */
-static int checkService(char *host, const char *port) {
+static int checkService(char *host, char *ip_addr, const char *port) {
 	int res, valopt, sockfd;
 	long arg;
 	fd_set set;
@@ -445,22 +475,24 @@ static int checkService(char *host, const char *port) {
 
 	port_number = atoi(port);
 
-	if((hostptr = (struct hostent *) gethostbyname(host)) == NULL) {
-		return 0;
+	if(host != NULL) {  
+		if((hostptr = (struct hostent *) gethostbyname(host)) == NULL) { 
+			return 0;
+		}
+		host_name = host;
+		ptr = (struct in_addr *)*(hostptr->h_addr_list);
 	}
-	host_name = host;
 
-	ptr = (struct in_addr *)*(hostptr->h_addr_list);
 
 	memset((char *) &serv_addr, 0, sizeof(serv_addr));
 	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_addr.s_addr = ptr->s_addr;
 	serv_addr.sin_port = htons(port_number);
-
-	//Create communication endpoint
-	if((sockfd = socket(AF_INET, SOCK_STREAM, 0))<0) {
-		return 0;
+	if(host != NULL) 
+		serv_addr.sin_addr.s_addr = ptr->s_addr;
+	else {
+		serv_addr.sin_addr.s_addr = inet_addr(ip_addr);
 	}
+
 
 	//Non blocking socket
 	arg = fcntl(sockfd, F_GETFL, NULL);
@@ -470,9 +502,24 @@ static int checkService(char *host, const char *port) {
 	//Trying to connect with timeout
 	res = connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
 
+	//Create communication endpoint
+	if(host != NULL) { //Websites
+		if((sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP))<0) { //TCP for websites
+			close(sockfd);
+			return 0;
+		}
+	}
+	else { //DNS
+		if((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))<0) { //UDP for DNS
+			close(sockfd);
+			return 0;
+		}
+	}
+	
+
 	if(res < 0) {
 		if(errno == EINPROGRESS) {
-			tv.tv_sec = 5; // 5sec timeout
+			tv.tv_sec = 10; // 5sec timeout
 			tv.tv_usec = 0;
 			FD_ZERO(&set);
 			FD_SET(sockfd, &set);
@@ -481,21 +528,25 @@ static int checkService(char *host, const char *port) {
 				getsockopt(sockfd, SOL_SOCKET, SO_ERROR, (void *)(&valopt), &len);
 				if(valopt) {
 					//Error connection
+					close(sockfd);
 					return 0;
 				}
 			}
 			else {
 				//Time out 
 				debug_print("NOK\n");
+				close(sockfd);
 				return 0;
 			}
 		}
 		//connected
-		debug_print("OK\n");
+		printf("OK %s\n", port);
+		close(sockfd);
 		return 1;
 	}
 	else {
 		//Error connection
+		close(sockfd);
 		return 0;
 	}
 
@@ -503,6 +554,7 @@ static int checkService(char *host, const char *port) {
 	arg = fcntl(sockfd, F_GETFL, NULL);
 	arg &= (~O_NONBLOCK);
 	fcntl(sockfd, F_SETFL, arg);
+	close(sockfd);
 }
 
 /*
@@ -511,6 +563,8 @@ static int checkService(char *host, const char *port) {
 static void services_loop() {
 	struct check_serv *ptr = (struct check_serv*) malloc (sizeof(struct check_serv));
 	log_struct->services = ptr;
+	ptr->DNS_1 = malloc(1);
+	ptr->DNS_2 = malloc(1);
 	ptr->google = malloc(1);
 	ptr->gmail = malloc(1);
 	ptr->github = malloc(1);
@@ -518,32 +572,42 @@ static void services_loop() {
 	ptr->uclouvain = malloc(1);
 	ptr->icampus = malloc(1);
 
-	if(checkService("google.be", "443") == 1)
+	if(checkService(NULL, "130.104.1.1", "53") == 1)
+		strcpy(ptr->DNS_1, "1");
+	else 
+		strcpy(ptr->DNS_1, "0");
+
+	if(checkService(NULL, "130.104.1.2", "53") == 1)
+		strcpy(ptr->DNS_2, "1");
+	else
+		strcpy(ptr->DNS_2, "0");
+
+	if(checkService("google.be", NULL, "443") == 1)
 		strcpy(ptr->google, "1");
 	else
 		strcpy(ptr->google, "0");
 
-	if(checkService("smtp.gmail.com", "587") == 1)
+	if(checkService("smtp.gmail.com", NULL, "587") == 1)
 		strcpy(ptr->gmail, "1");
 	else
 		strcpy(ptr->gmail, "0");
 
-	if(checkService("github.com", "22") == 1)
+	if(checkService("github.com", NULL, "22") == 1)
 		strcpy(ptr->github, "1");
 	else
 		strcpy(ptr->github, "0");
 
-	if(checkService("ssl.github.com", "443") == 1)
+	if(checkService("ssl.github.com", NULL, "443") == 1)
 		strcpy(ptr->ssl_github, "1");
 	else
 		strcpy(ptr->ssl_github, "0");
 
-	if(checkService("uclouvain.be", "443") == 1)
+	if(checkService("uclouvain.be", NULL, "443") == 1)
 		strcpy(ptr->uclouvain, "1");
 	else
 		strcpy(ptr->uclouvain, "0");
 
-	if(checkService("icampus.uclouvain.be", "443") == 1)
+	if(checkService("icampus.uclouvain.be", NULL, "443") == 1)
 		strcpy(ptr->icampus, "1");
 	else
 		strcpy(ptr->icampus, "0");
@@ -763,8 +827,8 @@ void *connection_loop(void * p_data) {
 			log_event(LOG_FINAL_STOP_LOOP, NULL);
 			log_event(LOG_STOP_LOG, NULL);
 			log_event(LOG_STOP_FILE, NULL);
-			send_log();
 			fclose(f);
+			send_log();
 			f = fopen("/var/log/logs2.txt","w");
 			log_event(LOG_START_FILE, NULL);
 			log_event(LOG_MAC_ADDR, NULL);
