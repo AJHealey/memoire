@@ -101,7 +101,7 @@ def getAPData(ap, timePerRange=3*settings.SNMPAPLAP,
 
 		for snap in snapshots[1:]:
 			# Get the data of the period
-			if snap.date < (datetimeStartRange + timePerRange):
+			if snap.date < (startAt + timePerRange):
 				for data in snap.apsnapshotdata_set.all():
 					if data.name in values:
 						values[data.name].append[data.value]
@@ -148,7 +148,7 @@ def getIfData(interface, timePerRange=3*settings.SNMPAPLAP, startTime=datetime.m
 
 		for snap in snapshots[1:]:
 			# Get the data of the period
-			if snap.date < (datetimeStartRange + timePerRange):
+			if snap.date < (startAt + timePerRange):
 				for data in snap.apifsnapshotdata_set.all():
 					if data.name in values:
 						values[data.name].append[data.value]
