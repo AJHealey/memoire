@@ -135,7 +135,7 @@ def mssnmp(request, page=1, perpage=100):
 	context['app'] = 'gatherer'
 	context['cat'] = 'ms'
 
-	tmpQuery = MobileStation.objects.isAssociated().order_by('macAddress')
+	tmpQuery = MobileStation.objects.areAssociated().order_by('macAddress')
 	p = Paginator(tmpQuery,perpage)
 	try:
 		context['ms'] = p.page(page)
