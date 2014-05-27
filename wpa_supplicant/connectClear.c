@@ -1,16 +1,17 @@
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 #include <netinet/in.h>
 #include <string.h>
 #include <stdio.h>
 #include <fcntl.h>
-
+#include <unistd.h>
 
 
 int sendLogs(char *);
 
-#define IDENTITY 1
-#define SERVERADDRESS "130.104.78.201"
+#define IDENTITY "00:00:00:00:00:00"
+#define SERVERADDRESS "127.0.0.1"
 #define SERVERPORT 3874
 
 int main(int argc, char *argv[]) {
@@ -20,7 +21,8 @@ int main(int argc, char *argv[]) {
 }
 
 int sendLogs(char *filepath) {
-	int sockfd = 0, identity = IDENTITY;
+	int sockfd = 0; 
+	char *identity = IDENTITY;
 	char recvBuff[1024];
 	memset(recvBuff,'\0',1024);
 
@@ -41,15 +43,14 @@ int sendLogs(char *filepath) {
         return 1;
 	}
 
-
 	// # Phase 1 : Probe send our identity to the server
-	write(sockfd, &identity, 4); 
+	write(sockfd, identity, 18); 
 	// Wait ack from the server
 	read(sockfd, recvBuff, 1);
 
 	// Phase 2 : Data sending
 	int fd = open(filepath, O_RDONLY);
-	int logsize = lseek(fd,0,SEEK_END);
+	int logsize = htonl(lseek(fd,0,SEEK_END));
 	lseek(fd,0,SEEK_SET);
 
 	// Send data size
@@ -63,4 +64,5 @@ int sendLogs(char *filepath) {
 	}
   	
 	close(sockfd);
+	return 0;
 }

@@ -32,7 +32,7 @@ def handler(clientsocket):
 	clientsocket.send(b'1')
 
 	## Phase 2 = Data receive
-	dataSize = int.from_bytes(clientsocket.recv(4),byteorder='little')
+	dataSize = int.from_bytes(clientsocket.recv(4),byteorder='big')
 	print("[*] Size received (%s)" % dataSize)
 	clientsocket.send(b'1')
 
