@@ -177,8 +177,7 @@ def getIfData(interface, timePerRange=3*settings.SNMPAPLAP, startTime=None, endT
 
 	return {'interface':interface, 'data':result}
 
-def getAllIfData(ap, timePerRange=3*settings.SNMPAPLAP, startTime=datetime.min.replace(tzinfo=timezone.get_current_timezone()),endTime=datetime.max.replace(tzinfo=timezone.get_current_timezone())):
-	result = []
+def getAllIfData(ap, timePerRange=3*settings.SNMPAPLAP, startTime=None, endTime=None):
 	interfaces = ap.apinterface_set.all()
 	for i in interfaces:
 		result.append(getIfData(i,timePerRange,startTime,endTime))
