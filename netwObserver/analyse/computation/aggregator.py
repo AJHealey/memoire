@@ -163,7 +163,7 @@ def getIfData(interface, timePerRange=3*settings.SNMPAPLAP, startTime=datetime.m
 		pass
 
 	except Exception as e:
-		OperationalError(source="getIFData", error=str(e)).save()
+		OperationalError(source="getIfData", error=str(e)).save()
 		return []
 
 	return result
