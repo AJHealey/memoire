@@ -175,7 +175,7 @@ def getIfData(interface, timePerRange=3*settings.SNMPAPLAP, startTime=None, endT
 		OperationalError(source="getIfData", error=str(e)).save()
 		return []
 
-	return {'interface':inteface, 'data':result}
+	return {'interface':interface, 'data':result}
 
 def getAllIfData(ap, timePerRange=3*settings.SNMPAPLAP, startTime=datetime.min.replace(tzinfo=timezone.get_current_timezone()),endTime=datetime.max.replace(tzinfo=timezone.get_current_timezone())):
 	result = []
