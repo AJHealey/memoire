@@ -23,7 +23,9 @@
 		data.sort([{column: 0}]);
 		var options = {'title':'802.11 Protocol',
 			'width':400,
-			'height':300};
+			'height':300,
+			'chartArea': {  width: "100%"}
+		};
 
 		var chart = new google.visualization.PieChart(document.getElementById('protochart_div'));
 
