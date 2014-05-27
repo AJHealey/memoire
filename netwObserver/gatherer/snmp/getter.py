@@ -274,6 +274,7 @@ def getAllAP(ip=wism[0], port=SNMPPORT, community=SNMPCOMMUNITY):
 			
 			result[index].index = "." + index
 			result[index].save(update_fields=['index'])
+			result[index].touch()
 
 	except Exception as e:
 		OperationalError(source='snmpAPDaemon - macAddress', error=str(e)).save()
@@ -371,6 +372,7 @@ def getAllMS(ip=wism[0], port=SNMPPORT, community=SNMPCOMMUNITY):
 			
 			result[index].index = "." + index
 			result[index].save(update_fields=['index'])
+			result[index].touch()
 	except Exception as e:
 		OperationalError(source='snmpMSDaemon - MS Mac Address', error=str(e)).save()
 
