@@ -21,7 +21,7 @@ Like in any system, we had to define domains on which the monitoring tool will b
 This section of the application offers some aggregated statistics about the users of the \emph{WiFi network}. The main goal is to get some analysis of the actual utilization of the wireless infrastructure. It's more a set of indicators to help the administrators to get a global view of his network. 
 \subsubsection*{WiFi Protocol}
 This graph display the repartition of the users among the available \texttt{802.11} standards (i.e. 802.11a, b, g, n). The reason for this analysis comes from an earlier policy enforced on the UCL network that forbids the use of the \texttt{802.11b} protocol. Users connecting with such low bandwidth standard force the \emph{access point} to transmitting longer and can in consequence prevent the others to achieve higher receiving speed. Our analysis was created to help the administrators in future considerations in the same domain. By profiling the habits of the users, we can define the impact of such decision. As the quality of the service is one of the main concern, deactivating the utilization of a standard used by most of the devices could have heavy consequences.
-The statistics are based by default on the connections of the last three months. It's to ensure that devices no longer using the network doesn't affect the result and keep the analysis as up to date as possible.
+The statistics are based by default on the connections of the last three months. It's to ensure that devices no longer using the network does not affect the result and keep the analysis as up to date as possible.
 \paragraph*{Source:} The data used come from \texttt{SNMP}. At each cycle gathering the information of the \emph{devices} associated with the \emph{access points}, we get the information thanks to the value available on the controller. All the descriptions of the OIB come from the Cisco OID Browser \footnote{http://tools.cisco.com/Support/SNMP/do/BrowseOID.do}.
 
 \begin{tabular}{|r l|}
@@ -151,19 +151,38 @@ The controller logs are divided in several categories. Each of them defined a li
 
 
 \section{DHCP}
-These analyses aim to detect \emph{DHCP} related issues. The allocation  of IP addresses is a fundamentals component in our network. Being able to detect when problems appears and advertise them could help to make a quicker and more efficient response.
+These analyses aim to detect \emph{DHCP} related issues. The allocation  of IP addresses is a fundamental component in our network. Being able to detect when problems appears and advertise them could help to make a quicker and more efficient response.
 
 \subsection{Leases}
-The main problem with a DHCP is the allocation of ranges of addresses. It's always difficult to determine the quantity of required IP by VLAN. Moreover, when such problems arise, it can be hard to be aware of them. Most of the time, users don't report the problem and when they do, their descriptions state only that they can't connect which is not very useful. Being able to automatically detect a lack of IP addresses can be very time saving for any administrators. Even is such information are available in the \emph{DHCP} logs and that the servers could send warnings, centralizing these information aside data related to all the other components of the infrastructure can lead to more powerful analysis. 
+The main problem with a DHCP is the allocation of ranges of addresses. It's always difficult to determine the quantity of required IP by VLAN. Moreover, when such problems arise, it can be hard to be aware of them. Most of the time, users do not report the problem and when they do, their descriptions state only that they cannot connect which is not very useful. Being able to automatically detect a lack of IP addresses can be very time saving for any administrators. Even is such information are available in the \emph{DHCP} logs and that the servers could send warnings, centralizing these information aside data related to all the other components of the infrastructure can lead to more powerful analysis. 
 
 \subsection{Crash}
 
 
 \section{Radius}
-
+The analyse about the radius are quite limited by the verbosity of the logs and fact that we do not have access to the server. What we have chosen to monitor here is some general indicators.
 
 \subsection{Authentication Success Rate}
+The first thing to observe about a radius is the proportion of users being able to authenticate. If this rate drastically drops, that could indicate issues about the Radius. This indicators alone does not bring much information but could be compared with the average success rate to detect some important divergences.
 
+\paragraph*{Overall Success Rate} This first graph purpose is to get an idea of the average authentication success rate. Concretely, it counts the logs showing login success or fail. Here again, we keep no data about specific user. All the data are aggregated to determine the desired ratio. Each of these logs contains sensible information about the user and the time at which he connected. By crossing this information with the access point, we could followed his position throughout the day. We chose to limit this possibility by not linking those information in the database. Even if this limitation could be easily broken, it's more an ethical consideration than a security issue.
 
+\begin{figure}
+	\centering
+   \includegraphics[width=0.5\textwidth]{Pictures/chapter5/radiusRate.png}
+   \caption{Example of Radius Success Rate}
+\end{figure} 
 
+\paragraph*{Sources} The source of those data are the radius log files. These files contains an entry for each authentication attempt.
+
+\begin{lstlisting}[frame=single,breaklines=true,caption={Radius logs}]
+2013-10-21T17:27:48+02:00 radius1.sri.ucl.ac.be radiusd[17913]: [ID 702911 local4.notice] Login incorrect: [XXXX] (from client WiSMPythagore-A port 29 cli XX-XX-XX-XX-XX-XX)
+2013-10-21T17:27:50+02:00 radius1.sri.ucl.ac.be radiusd[17913]: [ID 702911 local4.notice] Login incorrect: [none] (from client WiSMPythagore-A port 29 cli XX-XX-XX-XX-XX-XX)
+2013-10-21T17:27:55+02:00 radius1.sri.ucl.ac.be radiusd[1523]: [ID 702911 local3.notice] Login OK: [XXXX] (from client WiSMStevin-B port 29 cli XX-XX-XX-XX-XX-XX)
+2013-10-21T17:27:55+02:00 radius1.sri.ucl.ac.be radiusd[1523]: [ID 702911 local3.notice] Login OK: [XXXX] (from client localhost port 0)
+2013-10-21T17:27:59+02:00 radius1.sri.ucl.ac.be radiusd[1523]: [ID 702911 local3.notice] Login OK: [XXXX] (from client WiSMStevin-B port 29 cli XX-XX-XX-XX-XX-XX)
+\end{lstlisting}
+
+\section{Summary}
+This chapter has presented you the main information built by the application from the information gathered on the SNMP and log files. The main interest come from the fact that they are put together. All those data are already available to the administrators but by trying to correlate some of them, we want to give another view on the network and may be shed some lights on misunderstood issues. 
 

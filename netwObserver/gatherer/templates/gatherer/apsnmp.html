@@ -24,11 +24,7 @@
 		{% for point in ap %}
 		<tr>
 			<td>
-				<form action="{% url 'wifiAP' %}" method="get">
-					<button name="selectedAP" type="submit" value="{{ap.id}}">
-						<span class="glyphicon glyphicon-signal"></span>
-					</button>
-				</form>
+				<span class="glyphicon glyphicon-signal"></span>
 			</td>
 			<td>{{point.name}}</td>
 			<td>{{point.macAddress}}</td>
