@@ -1,7 +1,7 @@
 CC = mips-openwrt-linux-uclibc-gcc
 LD = mips-openwrt-linux-uclibc-ld
 OBJS = script.o
-LINKOBJS = wpa_ctrl/wpa_ctrl.o wpa_ctrl/os_unix.o wpa_ctrl/log_sender.o wpa_ctrl/utils.o $(OBJS)
+LINKOBJS = wpa_ctrl/wpa_ctrl.o wpa_ctrl/os_unix.o wpa_ctrl/log_sender.o wpa_ctrl/utils.o wpa_ctrl/dns.o $(OBJS)
 TARGET = wifi_monitoring
 
 #CFLAGS = -I/home/cwayembergh/Documents/openwrt/openwrt/staging_dir/target-mips_r2_uClibc-0.9.33.2/usr/include 

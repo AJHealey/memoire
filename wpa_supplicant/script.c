@@ -142,11 +142,21 @@ static void log_event(enum log_events log, const char *arg) {
 				fprintf(f, "\"DNS_1\": \"%s\",\n", log_struct->services->DNS_1);
 				fprintf(f, "\"DNS_2\": \"%s\",\n", log_struct->services->DNS_2);
 				fprintf(f, "\"google.be\": \"%s\",\n", log_struct->services->google);
+				fprintf(f, "\"facebook.com\": \"%s\",\n", log_struct->services->facebook);
+				fprintf(f, "\"youtube.com\": \"%s\",\n", log_struct->services->youtube);
+				fprintf(f, "\"be.yahoo.com\": \"%s\",\n", log_struct->services->yahoo);
+				fprintf(f, "\"en.wikipedia.com\": \"%s\",\n", log_struct->services->wikipedia);
+				fprintf(f, "\"twitter.com\": \"%s\",\n", log_struct->services->twitter);
+				fprintf(f, "\"amazon.fr\": \"%s\",\n", log_struct->services->amazon);
+				fprintf(f, "\"linkedin.com\": \"%s\",\n", log_struct->services->linkedin);
 				fprintf(f, "\"gmail.be\": \"%s\",\n", log_struct->services->gmail);
 				fprintf(f, "\"github.be\": \"%s\",\n", log_struct->services->github);
-				fprintf(f, "\"ssl.github.be\": \"%s\",\n", log_struct->services->ssl_github);
 				fprintf(f, "\"uclouvain.be\": \"%s\",\n", log_struct->services->uclouvain);
-				fprintf(f, "\"icampus.uclouvain.be\": \"%s\"\n", log_struct->services->icampus);
+				fprintf(f, "\"icampus.uclouvain.be\": \"%s\", \n", log_struct->services->icampus);
+				fprintf(f, "\"moodleucl.uclouvain.be\": \"%s\",\n", log_struct->services->moodle);
+				fprintf(f, "\"bib.ucl.ac.be\": \"%s\",\n", log_struct->services->libellule);
+				fprintf(f, "\"horaire.sgsi.ucl.ac.be\": \"%s\",\n", log_struct->services->ade);
+				fprintf(f, "\"studssh.info.uc.ac.be\": \"%s\"\n", log_struct->services->studssh);
 				fprintf(f, "}\n");
 				
 			}
@@ -325,7 +335,6 @@ static void commands(char *cmd)
 	ret = wpa_ctrl_request(ctrl, cmd, os_strlen(cmd), reply, &len, NULL);
 	if(ret < 0) {
 		/* Wpa_supplicant timed out. Restart command */
-		ftime(&wpa_start);
 		commands(cmd);
 		
 	}
@@ -429,60 +438,14 @@ static void connect_network(int network) {
 	}
 }
 
-/*
- * DNS TEST
- */
-static int checkDNS(char *ip_addr) {
-	int res, sockfd;
-	unsigned char buf[65536], *qname;
-	struct sockaddr_in dest;
-	struct dns_header *dns = NULL;
-
-	if((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))<0) {
-		return 0;
-	}	
-
-	memset((char *) &dest, 0, sizeof(dest));
-	dest.sin_family = AF_INET;
-	dest.sin_port = htons(53);
-	dest.sin_addr.s_addr = inet_addr(ip_addr);
-
-	dns = (struct dns_header *)&buf;
-	dns->id = (unsigned short) htons(getpid());
-    dns->qr = 0; //This is a query
-    dns->opcode = 0; //This is a standard query
-    dns->aa = 0; //Not Authoritative
-    dns->tc = 0; //This message is not truncated
-    dns->rd = 1; //Recursion Desired
-    dns->ra = 0; //Recursion not available
-    dns->z = 0;
-    dns->ad = 0;
-    dns->cd = 0;
-    dns->rcode = 0;
-    dns->q_count = htons(1); //we have only 1 question
-    dns->ans_count = 0;
-    dns->auth_count = 0;
-    dns->add_count = 0;
-
-    //point to the query portion
-    qname =(unsigned char*)&buf[sizeof(struct dns_header)];
-
-    if(sendto(sockfd,(char*)buf,sizeof(struct dns_header) + (strlen((const char*)qname)+1),0,(struct sockaddr*)&dest,sizeof(dest)) < 0) {
-    	printf("Sendto FAILED\n");
-    }
-    printf("Sent\n");
-    
-
-
-	/*res = connect(sockfd, (struct sockaddr *) &dest, sizeof(dest));
-	if(res < 0) {
-		debug_print("DNS: NOK\n");
-		return 0;
-	}
-	else {
-		debug_print("DNS: OK\n");
-		return 1;
-	}*/
+static int checkDNS(char *host) {
+	int ret;
+	ret = check_dns_response(host);
+	if(ret == 1)
+		printf("OK %s\n", host);
+	else
+		printf("NOK %s\n", host);
+	return ret;
 }
 
 
@@ -529,8 +492,6 @@ static int checkService(char *host, const char *port) {
 	//Trying to connect with timeout
 	res = connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
 
-	
-
 	if(res < 0) {
 		if(errno == EINPROGRESS) {
 			tv.tv_sec = 5; // 5sec timeout
@@ -548,19 +509,19 @@ static int checkService(char *host, const char *port) {
 			}
 			else {
 				//Time out 
-				debug_print("NOK\n");
+				printf("NOK %s\n", host);
 				close(sockfd);
 				return 0;
 			}
 		}
 		//connected
-		printf("OK %s\n", port);
+		printf("OK %s\n", host);
 		close(sockfd);
 		return 1;
 	}
 	else {
-		//Error connection
-		printf("OK %s\n", port);
+		//Connection Ok
+		debug_print("OK\n");
 		close(sockfd);
 		return 1;
 	}
@@ -581,11 +542,21 @@ static void services_loop() {
 	ptr->DNS_1 = malloc(1);
 	ptr->DNS_2 = malloc(1);
 	ptr->google = malloc(1);
+	ptr->facebook = malloc(1);
+	ptr->youtube = malloc(1);
+	ptr->yahoo = malloc(1);
+	ptr->wikipedia = malloc(1);
+	ptr->twitter = malloc(1);
+	ptr->amazon = malloc(1);
+	ptr->linkedin = malloc(1);
 	ptr->gmail = malloc(1);
 	ptr->github = malloc(1);
-	ptr->ssl_github = malloc(1);
 	ptr->uclouvain = malloc(1);
 	ptr->icampus = malloc(1);
+	ptr->moodle = malloc(1);
+	ptr->libellule = malloc(1);
+	ptr->ade = malloc(1);
+	ptr->studssh = malloc(1);
 
 	if(checkDNS("130.104.1.1") == 1)
 		strcpy(ptr->DNS_1, "1");
@@ -602,6 +573,41 @@ static void services_loop() {
 	else
 		strcpy(ptr->google, "0");
 
+	if(checkService("facebook.com", "80") == 1)
+		strcpy(ptr->facebook, "1");
+	else
+		strcpy(ptr->facebook, "0");
+
+	if(checkService("youtube.com", "443") == 1)
+		strcpy(ptr->youtube, "1");
+	else
+		strcpy(ptr->youtube, "0");
+
+	if(checkService("be.yahoo.com", "80") == 1)
+		strcpy(ptr->yahoo, "1");
+	else
+		strcpy(ptr->yahoo, "0");
+
+	if(checkService("en.wikipedia.org", "443") == 1)
+		strcpy(ptr->wikipedia, "1");
+	else
+		strcpy(ptr->wikipedia, "0");
+
+	if(checkService("twitter.com", "443") == 1)
+		strcpy(ptr->twitter, "1");
+	else
+		strcpy(ptr->twitter, "0");
+
+	if(checkService("amazon.fr", "443") == 1)
+		strcpy(ptr->amazon, "1");
+	else
+		strcpy(ptr->amazon, "0");
+
+	if(checkService("linkedin.com", "443") == 1)
+		strcpy(ptr->linkedin, "1");
+	else
+		strcpy(ptr->linkedin, "0");
+
 	if(checkService("smtp.gmail.com", "587") == 1)
 		strcpy(ptr->gmail, "1");
 	else
@@ -612,11 +618,6 @@ static void services_loop() {
 	else
 		strcpy(ptr->github, "0");
 
-	if(checkService("ssl.github.com", "443") == 1)
-		strcpy(ptr->ssl_github, "1");
-	else
-		strcpy(ptr->ssl_github, "0");
-
 	if(checkService("uclouvain.be", "443") == 1)
 		strcpy(ptr->uclouvain, "1");
 	else
@@ -626,6 +627,26 @@ static void services_loop() {
 		strcpy(ptr->icampus, "1");
 	else
 		strcpy(ptr->icampus, "0");
+
+	if(checkService("moodleucl.uclouvain.be", "443") == 1)
+		strcpy(ptr->moodle, "1");
+	else
+		strcpy(ptr->moodle, "0");
+
+	if(checkService("bib.sipr.ucl.ac.be", "80") == 1)
+		strcpy(ptr->libellule, "1");
+	else
+		strcpy(ptr->libellule, "0");
+
+	if(checkService("horaire.sgsi.ucl.ac.be", "8080") == 1)
+		strcpy(ptr->ade, "1");
+	else
+		strcpy(ptr->ade, "0");
+
+	if(checkService("studssh.info.ucl.ac.be", "22") == 1)
+		strcpy(ptr->studssh, "1");
+	else
+		strcpy(ptr->studssh, "0");
 }
 
 /*
@@ -837,14 +858,14 @@ void *connection_loop(void * p_data) {
 		}
 		log_event(LOG_STOP_CONNECTION, NULL);
 
-		if(close == 1) {
+		if(close == 0) {
 			debug_print("SAVE\n");
 			log_event(LOG_FINAL_STOP_LOOP, NULL);
 			log_event(LOG_STOP_LOG, NULL);
 			log_event(LOG_STOP_FILE, NULL);
 			fclose(f);
 			send_log();
-			f = fopen("/var/log/logs.txt","w");
+			f = fopen("/var/log/logs2.txt","w");
 			log_event(LOG_START_FILE, NULL);
 			log_event(LOG_MAC_ADDR, NULL);
 			log_event(LOG_START_LOG, NULL);
