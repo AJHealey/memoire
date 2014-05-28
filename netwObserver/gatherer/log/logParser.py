@@ -6,7 +6,7 @@ from datetime import datetime
 
 from os.path import splitext
 from django.utils import timezone
-from gatherer.models import Alert, RadiusEvent, DHCPEvent, WismEvent, BadLog, ProbeLog, ProbeTest, AccessPoint, MobileStation, ProbeScanResult, ProbeConnectionResult, TimeCheck, ServiceCheck
+from gatherer.models import RadiusEvent, DHCPEvent, WismEvent, BadLog, ProbeLog, ProbeTest, AccessPoint, MobileStation, ProbeScanResult, ProbeConnectionResult, TimeCheck, ServiceCheck
 from django.db import IntegrityError
 
 def dateParser(dateString):
