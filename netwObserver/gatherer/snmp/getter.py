@@ -462,7 +462,7 @@ def getAllRAP():
 				except ObjectDoesNotExist:
 					pass
 	except Exception as e:
-		OperationalError(source='snmpRAPDaemon - Rogue Ap SSID', error=str(e)).save()
+		OperationalError(source='snmpRAPDaemon - closest AP', error=str(e)).save()
 
 
 	# Update all the RAP
