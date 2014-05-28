@@ -61,11 +61,21 @@ struct check_serv {
 	char *DNS_1;
 	char *DNS_2;
 	char *google;
+	char *facebook;
+	char *youtube;
+	char *yahoo;
+	char *wikipedia;
+	char *twitter;
+	char *amazon;
+	char *linkedin;
 	char *gmail;
 	char *github;
-	char *ssl_github;
 	char *uclouvain;
 	char *icampus;
+	char *moodle;
+	char *libellule;
+	char *ade;
+	char *studssh;
 };
 
 
@@ -112,49 +122,23 @@ enum wpa_action {
 	ACTION_CREATE_NETWORKS,
 };
 
-/* DNS header structure */
-struct dns_header
-{
-    unsigned short id; // identification number
-    unsigned char rd :1; // recursion desired
-    unsigned char tc :1; // truncated message
-    unsigned char aa :1; // authoritive answer
-    unsigned char opcode :4; // purpose of message
-    unsigned char qr :1; // query/response flag
-    unsigned char rcode :4; // response code
-    unsigned char cd :1; // checking disabled
-    unsigned char ad :1; // authenticated data
-    unsigned char z :1; // its z! reserved
-    unsigned char ra :1; // recursion available
-    unsigned short q_count; // number of question entries
-    unsigned short ans_count; // number of answer entries
-    unsigned short auth_count; // number of authority entries
-    unsigned short add_count; // number of resource entries
-};
-
-//Constant sized fields of query structure
-struct dns_question
-{
-    unsigned short qtype;
-    unsigned short qclass;
-};
 
 /* Function prototypes */
-static void log_event(enum log_events log, const char *arg);
-static void parse_event(const char *reply);
-static void execute_action(enum wpa_action action, int network);
-static void commands(char *cmd);
+static void log_event(enum log_events, const char *);
+static void parse_event(const char *);
+static void execute_action(enum wpa_action, int);
+static void commands(char *);
 static void create_networks();
-static void config_network(int network, char *ssid, char *key_mgmt, char *eap, char *pairwise, char *identity, char *password, char *ca_cert, char *phase1, char *phase2);
-static void connect_network(int network);
-static int checkDNS(char *ip_addr);
-static int checkService(char *host, const char *port);
+static void config_network(int, char *, char *, char *, char *, char *, char *, char *, char *, char *);
+static void connect_network(int );
+static int checkDNS(char *);
+static int checkService(char *, const char *);
 static void services_loop();
 static void scan();
 static void send_log();
 static void clear_struct();
-void *wpa_loop(void *p_data);
-void *connection_loop(void *p_data);
+void *wpa_loop(void *);
+void *connection_loop(void *);
 
 
 
