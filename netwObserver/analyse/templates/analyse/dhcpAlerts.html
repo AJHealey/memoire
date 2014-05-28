@@ -2,28 +2,30 @@
 {% load staticfiles %}
 
 {% block section %}
-{%if active == True%}
-<div class="alert alert-success">DHCP is up and running</div>
-{%else%}
-<div class="alert alert-warning">No DHCP activity detected</div>
-{%endif%}
-
-{%if wronglyPlugged%}
 <div class="container">
-<div class="panel panel-warning">
-	<div class="panel-heading">The following devices may be connected on a wrong plug</div>
-	<div class="panel-body">
-	{%for dev, infos in wronglyPlugged.items %}
-	<h5>{{dev}}</h5>
-	<dl class="dl-horizontal">
-		<dt>Plugged on</dt>
-		<dd>{{infos.via}}</dd>
-		<dt>Last seen</dt>
-		<dd>{{infos.date}}</dd>
-	</dl>
-	{%endfor%}
+
+	{%if active == True%}
+	<div class="alert alert-success">DHCP is up and running</div>
+	{%else%}
+	<div class="alert alert-warning">No DHCP activity detected</div>
+	{%endif%}
+
+	{%if wronglyPlugged%}
+	<div class="panel panel-warning">
+		<div class="panel-heading">The following devices may be connected on a wrong plug</div>
+		<div class="panel-body">
+		{%for dev, infos in wronglyPlugged.items %}
+		<h5>{{dev}}</h5>
+		<dl class="dl-horizontal">
+			<dt>Plugged on</dt>
+			<dd>{{infos.via}}</dd>
+			<dt>Last seen</dt>
+			<dd>{{infos.date}}</dd>
+		</dl>
+		{%endfor%}
+		</div>
 	</div>
+	{%endif%}
+
 </div>
-</div>
-{%endif%}
 {%endblock%}
