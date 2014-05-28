@@ -29,7 +29,7 @@ def getDhcpWrongPlugAlerts(fromDate=(timezone.now() - settings.DATAVALIDITY)):
 			lastVia = via
 
 		else:
-			if (time - lastTime) < timedelta(seconds=2) and device == lastDevice and via=lastVia and server != lastServer:
+			if (time - lastTime) < timedelta(seconds=2) and device == lastDevice and via == lastVia and server != lastServer:
 				result.append({"date": time , "device": device, "via": via})
 
 	return result
