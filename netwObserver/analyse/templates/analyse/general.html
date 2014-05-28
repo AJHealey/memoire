@@ -3,7 +3,15 @@
 
 {%block category%}
 
-There are {{nbrUsers}} users associated among {{nbrAP}} access points.
+
+<ul class="list-unstyled">
+	<li>There are {{nbrUsers}} users associated among {{nbrAP}} access points.</li>
+{%if wronglyPlugged > 0 %}
+	<li>There may be {{wronglyPlugged}} devices wrongly plugged on the network. <small>(see DHCP section)</small></li>
+{%endif%}
+
+</ul>
+
 
 {%endblock%}
 

@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from analyse.computation import aggregator
+from analyse.observation import monitoring
 from gatherer.models import AccessPoint
 
 from datetime import datetime
@@ -10,6 +11,7 @@ def general(request):
 	context['app'] = 'analysis'
 	context['cat'] = 'gen'
 	
+	context['wronglyPlugged'] = len(monitoring.getDhcpWrongPlugAlerts())
 	context['nbrUsers'] = aggregator.getNbrOfUsers()
 	context['nbrAP'] = aggregator.getNbrOfAP()
 
@@ -70,14 +72,25 @@ def wifiUsers(request):
 	return render(request, "analyse/wifiUsers.html", context)
 
 
-def dhcp(request):
+def dhcpAlerts(request):
 	context= {}
 	context['app'] = 'analysis'
 	context['cat'] = 'dhcp'
+	context['section'] = 'alerts'
 
+	context['wronglyPlugged'] = monitoring.getDhcpWrongPlugAlerts()
+
+	return render(request, "analyse/dhcpAlerts.html", context)
+
+def dhcpGraph(request):
+	context= {}
+	context['app'] = 'analysis'
+	context['cat'] = 'dhcp'
+	context['section'] = 'graph'
+	
 	context['byType'] = aggregator.getDhcpLogByType()
 
-	return render(request, "analyse/dhcp.html", context)
+	return render(request, "analyse/dhcpGraph.html", context)
 
 
 def radius(request):

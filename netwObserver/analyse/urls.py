@@ -12,6 +12,11 @@ urlpatterns = patterns('',
 	url(r'wifi/', views.wifiOverview, name='wifi'),
 
 	url(r'controller/', views.controller, name='controller'),
-	url(r'dhcp/', views.dhcp, name='dhcp'),
+	
+	url(r'dhcp/alerts', views.dhcpAlerts, name='dhcpalerts'),
+	url(r'dhcp/graph', views.dhcpGraph, name='dhcpgraph'),
+	url(r'dhcp/', views.dhcpAlerts, name='dhcp'),
+	
+
 	url(r'radius/', views.radius, name='radius'),
 )

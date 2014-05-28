@@ -3,32 +3,13 @@
 
 {%block category%}
 
-{% if byType %}
-<script type="text/javascript">
-	
-	google.load("visualization", "1", {packages:["corechart"]});
-	
-	google.setOnLoadCallback(dhcpChart);
-	
-	function dhcpChart() {
-		
-		var data = google.visualization.arrayToDataTable([
-			['Types', 'Quantity'],
-			{%for t,qty in byType%}
-			["{{t}}", {{qty}}],
-			{%endfor%}
-		]);
+<div class="container">
+<ul class="nav nav-tabs">
+  <li {% if section == 'alerts' %}class="active"{%endif%}><a href="{% url 'dhcpalerts' %}">Overview</a></li>
+  <li {% if section == 'graph' %}class="active"{%endif%}><a href="{% url 'dhcpgraph' %}">Graph</a></li>
+</ul>
+</div>
+{% block section %}
 
-		var options = {
-			title: 'DHCP Packet by Types',
-		};
-
-		var chart = new google.visualization.BarChart(document.getElementById('dhcpchart_div'));
-		
-		chart.draw(data, options);
-	}
-</script>
-
-<div id="dhcpchart_div" style="width: 900px; height: 500px;"></div>
-{%endif%}
+{%endblock%}
 {%endblock%}

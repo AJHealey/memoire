@@ -222,7 +222,7 @@ class ServiceCheck(models.Model):
 
 ## Error Parsing
 class BadLog(models.Model):
-	log = models.CharField(max_length=256)
+	log = models.CharField(max_length=1024)
 	cause = models.CharField(max_length=256)
 	def __str__(self):
 		return "" + self.log + " --> " +  self.cause + '\n'
