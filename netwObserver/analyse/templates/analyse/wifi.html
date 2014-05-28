@@ -4,9 +4,10 @@
 {%block category%}
 <div class="container">
 <ul class="nav nav-tabs">
-  <li {% if section == 'overview' %}class="active"{%endif%}><a href="{% url 'wifi' %}">Overview</a></li>
-  <li {% if section == 'ap' %}class="active"{%endif%}><a href="{% url 'wifiAP' %}">Access Point</a></li>
-  <li {% if section == 'users' %}class="active"{%endif%}><a href="{% url 'wifiUsers' %}">Users</a></li>
+	<li {% if section == 'overview' %}class="active"{%endif%}><a href="{% url 'wifi' %}">Overview</a></li>
+	<li {% if section == 'ap' %}class="active"{%endif%}><a href="{% url 'wifiAP' %}">Access Point</a></li>
+	<li {% if section == 'users' %}class="active"{%endif%}><a href="{% url 'wifiUsers' %}">Users</a></li>
+ 	<li {% if section == 'probes' %}class="active"{%endif%}><a href="{% url 'wifiProbes' %}">Probes</a></li>
   <li {% if section == 'rap' %}class="active"{%endif%}><a href="{% url 'wifiRAP' %}">Rogue AP</a></li>
 </ul>
 </div>

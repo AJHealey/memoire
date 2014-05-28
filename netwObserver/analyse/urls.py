@@ -9,6 +9,7 @@ urlpatterns = patterns('',
 	url(r'wifi/ap', views.wifiAP, name='wifiAP'),
 	url(r'wifi/rap', views.wifiRAP, name='wifiRAP'),
 	url(r'wifi/users', views.wifiUsers, name='wifiUsers'),
+	url(r'wifi/probes', views.wifiProbes, name='wifiProbes'),
 	url(r'wifi/', views.wifiOverview, name='wifi'),
 
 	url(r'controller/', views.controller, name='controller'),

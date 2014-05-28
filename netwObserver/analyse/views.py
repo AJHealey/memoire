@@ -71,6 +71,14 @@ def wifiUsers(request):
 
 	return render(request, "analyse/wifiUsers.html", context)
 
+def wifiProbes(request):
+	context= {}
+	context['app'] = 'analysis'
+	context['cat'] = 'wifi'
+	context['section'] = 'probes'
+
+
+	return render(request, "analyse/wifiProbe.html", context)
 
 def dhcpAlerts(request):
 	context= {}
@@ -97,7 +105,8 @@ def dhcpGraph(request):
 def radius(request):
 	context= {}
 	context['app'] = 'analysis'
-	context['cat'] = 'radius'
+	context['cat'] = 'wifi'
+	context['section'] = 'probe'
 
 	context['successRate'] = aggregator.getRadiusSuccessRate()
 

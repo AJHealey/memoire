@@ -8,6 +8,7 @@ from os.path import splitext
 from django.utils import timezone
 from gatherer.models import RadiusEvent, DHCPEvent, WismEvent, BadLog, ProbeLog, ProbeTest, AccessPoint, MobileStation, ProbeScanResult, ProbeConnectionResult, TimeCheck, ServiceCheck
 from django.db import IntegrityError
+from django.core.exceptions import ObjectDoesNotExist
 
 def dateParser(dateString):
 	tmp = dateString.replace("/"," ").replace(':', " ").split()
@@ -16,12 +17,11 @@ def dateParser(dateString):
 def getScanResult(probeTest, scanItem):
 	scanResult = ProbeScanResult(test=probeTest)
 	try: 
-		scanResult.ap, created = AccessPoint.objects.get_or_create(macAddress=scanItem["bssid"][:-1]+'0')
-	except IntegrityError:
-		# Handle possible race condition (get_or_create not thread safe)
 		scanResult.ap = AccessPoint.objects.get(macAddress=scanItem["bssid"][:-1]+'0')
+	except ObjectDoesNotExist:
+		raise Exception()
 	except:
-		OperationalError(source='ProbeLog - Cannot find %s' % scanItem["bssid"], error=str(e)).save()
+		OperationalError(source='ProbeLog - Scan result issue', error=str(e)).save()
 		raise Exception()
 	scanResult.frequency = int(scanItem["frequency"])
 	scanResult.signalStrength = int(scanItem["signal"])
@@ -34,19 +34,17 @@ def getConnectionResult(probeTest,connection):
 	connectionResult.save()
 	for t in connection["tried"]:
 		try: 
-			tmp, created = AccessPoint.objects.get_or_create(macAddress=t[:-1]+'0')	
-		except IntegrityError:
-			# Handle possible race condition (get_or_create not thread safe)
 			tmp = AccessPoint.objects.get(macAddress=t[:-1]+'0')
-		connectionResult.apTried.add(tmp)
+			connectionResult.apTried.add(tmp)	
+		except ObjectDoesNotExist:
+			continue
 
 	for c in connection["connected"]:
 		try: 
-			tmp, created = AccessPoint.objects.get_or_create(macAddress=t[:-1]+'0')	
-		except IntegrityError:
-			# Handle possible race condition (get_or_create not thread safe)
 			tmp = AccessPoint.objects.get(macAddress=t[:-1]+'0')
-		connectionResult.connected.add(tmp)
+			connectionResult.connected.add(tmp)	
+		except ObjectDoesNotExist:
+			continue
 
 
 	for step, t in connection["time"].items():
@@ -82,7 +80,10 @@ def probeParser(path):
 		test.save()
 		# Get Scan Results
 		for scan in log["scan"]:
-			getScanResult(test,scan)
+			try:
+				getScanResult(test,scan)
+			except:
+				continue
 		#Get Connection results
 		for connection in log["connections"]:
 			getConnectionResult(test,connection)
