@@ -16,27 +16,27 @@ Warning--entry type for "nagios" isn't style-file defined
 Warning--entry type for "windows" isn't style-file defined
 --line 99 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "snmp" isn't style-file defined
---line 289 of file Bibliographie/Bibliography.bib.bib
+--line 307 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "eduroamRadius" isn't style-file defined
---line 295 of file Bibliographie/Bibliography.bib.bib
+--line 313 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "eduroam2" isn't style-file defined
---line 330 of file Bibliographie/Bibliography.bib.bib
+--line 348 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "intermapper" isn't style-file defined
---line 337 of file Bibliographie/Bibliography.bib.bib
+--line 355 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "mvt" isn't style-file defined
---line 344 of file Bibliographie/Bibliography.bib.bib
+--line 362 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "octopussy" isn't style-file defined
---line 351 of file Bibliographie/Bibliography.bib.bib
+--line 369 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "syslogCisco" isn't style-file defined
---line 358 of file Bibliographie/Bibliography.bib.bib
+--line 376 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "tplink" isn't style-file defined
---line 365 of file Bibliographie/Bibliography.bib.bib
+--line 383 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "openwrt" isn't style-file defined
---line 371 of file Bibliographie/Bibliography.bib.bib
+--line 389 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "wpa-supplicant" isn't style-file defined
---line 378 of file Bibliographie/Bibliography.bib.bib
+--line 396 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "wpa-supplicant-devel" isn't style-file defined
---line 385 of file Bibliographie/Bibliography.bib.bib
+--line 403 of file Bibliographie/Bibliography.bib.bib
 Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" has a comma at the end for entry article2
 while executing---line 1233 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
@@ -60,45 +60,45 @@ Warning--empty year in snmp
 Warning--empty year in eduroamRadius
 Warning--empty year in intermapper
 Warning--empty year in tplink
-You've used 39 entries,
+You've used 40 entries,
             2481 wiz_defined-function locations,
-            774 strings with 10604 characters,
-and the built_in function-call counts, 12054 in all, are:
-= -- 984
-> -- 581
+            780 strings with 10808 characters,
+and the built_in function-call counts, 12385 in all, are:
+= -- 1011
+> -- 602
 < -- 29
-+ -- 250
-- -- 170
-* -- 762
-:= -- 1938
-add.period$ -- 143
-call.type$ -- 39
-change.case$ -- 74
-chr.to.int$ -- 37
-cite$ -- 50
-duplicate$ -- 598
-empty$ -- 1196
-format.name$ -- 221
-if$ -- 2589
++ -- 258
+- -- 176
+* -- 787
+:= -- 1992
+add.period$ -- 147
+call.type$ -- 40
+change.case$ -- 76
+chr.to.int$ -- 38
+cite$ -- 51
+duplicate$ -- 612
+empty$ -- 1226
+format.name$ -- 228
+if$ -- 2660
 int.to.chr$ -- 3
-int.to.str$ -- 40
+int.to.str$ -- 41
 missing$ -- 15
-newline$ -- 228
-num.names$ -- 117
-pop$ -- 424
+newline$ -- 234
+num.names$ -- 120
+pop$ -- 435
 preamble$ -- 1
-purify$ -- 39
+purify$ -- 40
 quote$ -- 0
-skip$ -- 423
+skip$ -- 432
 stack$ -- 0
-substring$ -- 132
-swap$ -- 95
+substring$ -- 134
+swap$ -- 98
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 258
+type$ -- 265
 warning$ -- 11
-while$ -- 81
+while$ -- 83
 width$ -- 0
-write$ -- 526
+write$ -- 540
 (There were 6 error messages)

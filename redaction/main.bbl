@@ -1,4 +1,4 @@
-\begin{thebibliography}{39}
+\begin{thebibliography}{40}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -158,6 +158,13 @@ Cisco.
   series switches data sheet, {\natexlab{a}}.
 \newblock URL
   \url{http://www.cisco.com/c/en/us/products/collateral/interfaces-modules/wireless-services-module-2-wism2/data_sheet_c78-645124.html}.
+
+\bibitem[Calhoun et~al.(2009)Calhoun, Montemurro, and Stanley]{rfc5415}
+P.~Calhoun, M.~Montemurro, and D.~Stanley.
+\newblock {Control And Provisioning of Wireless Access Points (CAPWAP) Protocol
+  Specification}.
+\newblock RFC 5415 (Proposed Standard), March 2009.
+\newblock URL \url{http://www.ietf.org/rfc/rfc5415.txt}.
 
 \bibitem[Cisco({\natexlab{b}})]{snmp}
 Cisco.

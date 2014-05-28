@@ -165,8 +165,14 @@ The accounting uses three types of packets, \textit{Accounting Start}, \textit{I
 
 
 \subsection{WiSM2}
-The Cisco Wireless Service Module 2 Controller (\texttt{WiSM2}) is, as described in \cite{wism2}, a highly scalable and flexible platform that enables system-wide services for mission-critical wireless networking in medium-sized to large enterprises and campus environments. This controller, designed to occupy one slot into a \texttt{Cisco Catalyst 6500 Series Switch}, supports up to 1,000 access points and 15,000 clients and is optimized for \texttt{802.11n} networks. It also contains two WLCs\footnote{Wireless Lan Controller}.
+The Cisco Wireless Service Module 2 Controller (\texttt{WiSM2}) is, as described in \cite{wism2}, a highly scalable and flexible platform that enables system-wide services for mission-critical wireless networking in medium-sized to large enterprises and campus environments. This controller, designed to occupy one slot into a \texttt{Cisco Catalyst 6500 Series Switch}, supports up to 1,000 access points and 15,000 clients and is optimized for \texttt{802.11n} networks. In order to manage lightweight access points (i.e. APs that relies on a \texttt{WLAN} controller), this controller uses the \texttt{CAPWAP} protocol that is based on \texttt{LWAPP}.
 
+\begin{description}
+	\item [LWAPP]: The Lightweight Access Protocol is a protocol that can control multiple access points at once. Used in large scale wireless networks, this protocol reduces the time spent on configuring, monitoring and troubleshooting those networks. \texttt{LWAPP} normalizes the communication protocol between the APs and the \texttt{WLAN} controller. Several advantages come with \texttt{LWAPP}. First of, it simplifies the APs management. Configuration is generated for all devices at once. Second, it improves the scalability of the network. Indeed, since the wireless network can be looked at from an operative point of view with the controller in place of APs, it reduces the number of individual units that must be administered. Next, with the traffic entering the network over a single point (the controller) instead of multiple access points, the overall network security is enhanced. Finally, the last advantage is mobility since the client devices can seamlessly roam within the wireless network.
+
+
+	\item [CAPWAP]: The Control And Provisioning of Wireless Access Point protocol is a standard, defined in \texttt{RFC5415} \cite{rfc5415}, to manage a collection of access points. This protocol is based on the \texttt{LWAPP}\footnote{Lightweight Access Point Protocol} protocol and adds a full \texttt{DTLS}\footnote{Datagram Transport Layer Security} tunnel establishment which is the main difference with the \texttt{LWAPP} protocol. Depending on the hardware, the \texttt{CAPWAP} protocol also provides data plane encryption.
+\end{description}
 
 \subsection{SNMP}
 
