@@ -2,6 +2,7 @@
 {% load staticfiles %}
 
 {% block section %}
+<div class="container">
 {%if apDown%}
 <div class="panel panel-warning">
 	<div class="panel-heading">Access Point down</div>
@@ -18,5 +19,8 @@
 	</div>
 	</div>
 </div>
+{%else%}
+<div class="alert alert-success">Every Access Point is currently associated with the Controller</div>
 {%endif%}
+</div>
 {%endblock%}
