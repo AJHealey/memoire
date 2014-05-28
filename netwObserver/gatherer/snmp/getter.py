@@ -454,13 +454,10 @@ def getAllRAP():
 	try: 
 		tmp = getRAPClosestAP(ip=wism[0])
 		for index, apMac in tmp.items():
-			apMac = parseMacAdresse(apMac)
 			if index in result:
 				try:
-					result[index].closestAp, created = AccessPoint.objects.get_or_create(macAddress=apMac)
-				
-				except IntegrityError:
-					result[index].closestAp = AccessPoint.objects.get(macAddress=apMac)
+					apMac = parseMacAdresse(apMac)
+					result[index].closestAp = AccessPoint.objects.get_or_create(macAddress=apMac)
 				
 				except ObjectDoesNotExist:
 					pass
@@ -495,10 +492,6 @@ def parseMacAdresse(macString):
 	else:
 		OperationalError(source='snmp macAddress parsing', error="Unknown format: %s" % result).save()
 		raise Exception()
-
-	if result == "000000000000":
-		OperationalError(source='snmp macAddress parsing', error="Spotted Zero mac: %s" % macString).save()
-		raise Exception("Nul Mac Address")
 
 	elif len(result) == 12:
 		return "%s:%s:%s:%s:%s:%s" % (result[0:2],result[2:4],result[4:6],result[6:8],result[8:10],result[10:])
