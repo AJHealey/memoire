@@ -41,9 +41,5 @@ def getDhcpWrongPlugAlerts(fromDate=(timezone.now() - timedelta(hours=1))):
 	return result
 
 def isDhcpActive(lastAck=timedelta(minutes=15)):
-	last = DHCPEvent.objects.filter(dhcpType= "ack").order_by("-date")
-	if len(last) > 0 and (timezone.now() - last[0].date) < lastAck:
-		return True
+	return DHCPEvent.objects.filter(dhcpType= "ack", date__gte=(timezone.now() - lastAck)).exists()
 
-	else:
-		return False

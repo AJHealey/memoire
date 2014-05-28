@@ -78,6 +78,7 @@ def dhcpAlerts(request):
 	context['cat'] = 'dhcp'
 	context['section'] = 'alerts'
 
+	context['active'] = monitoring.isDhcpActive()
 	context['wronglyPlugged'] = monitoring.getDhcpWrongPlugAlerts()
 
 	return render(request, "analyse/dhcpAlerts.html", context)
