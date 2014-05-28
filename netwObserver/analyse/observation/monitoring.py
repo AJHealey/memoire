@@ -1,6 +1,7 @@
 from django.conf import settings
 from datetime import timedelta
 
+from django.utils import timezone
 from gatherer.models import DHCPEvent
 
 
