@@ -229,17 +229,17 @@ def dhcpParser(infos):
 				if 'load balance' in message:
 					message = ''					
 
-				return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='dis', message=message)
+				return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='dis', message=message, via=via)
 			else:
 				via = infos[7]
-			return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='dis')
+			return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='dis', via=via)
 
 		# Server respond
 		elif infos[3] == "DHCPOFFER":
 			ipOffered = infos[5]
 			device = infos[7]
 			via = infos[9]
-			return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='off',  ip=ipOffered)
+			return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='off',  ip=ipOffered, via=via)
 
 		# Client choose ip
 		elif infos[3] == "DHCPREQUEST":
@@ -270,7 +270,7 @@ def dhcpParser(infos):
 				else:
 					via = infos[i]
 
-			return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='req', ip=ipRequested, message=message)
+			return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='req', ip=ipRequested, message=message, via=via)
 
 
 		# Server acknoledge
@@ -297,20 +297,20 @@ def dhcpParser(infos):
 			if infos[i] == 'via':
 				i += 1
 				via = infos[i]
-			return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='ack',  ip=ipAcked)
+			return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='ack',  ip=ipAcked, via=via)
 
 		# Ip needs to be renewed
 		elif infos[3] == "DHCPNAK":
 			ipNacked = infos[5]
 			device = infos[7]
 			via = infos[9]
-			return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='nak',  ip=ipNacked)
+			return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='nak',  ip=ipNacked, via=via)
 
 		# Client just want to know the local options
 		elif infos[3] == "DHCPINFORM":
 			ipInformed = infos[5]
 			via = infos[7]
-			return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, dhcpType='inf',  ip=ipInformed)
+			return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, dhcpType='inf',  ip=ipInformed, via=via)
 
 		else :
 			tmp = ' '.join(infos[2:])

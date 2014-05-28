@@ -160,7 +160,7 @@ class DHCPEvent(models.Model):
 	dhcpType = models.CharField(max_length=3, choices=DHCP_TYPES)
 	ip = models.GenericIPAddressField(null=True)
 	message = models.CharField(max_length=256, null=True)
-
+	via = models.GenericIPAddressField(null=True)
 	class Meta:
 		unique_together = (('date', 'microsecond', 'server'),)
 
