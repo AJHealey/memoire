@@ -5,6 +5,7 @@ from django.utils import timezone
 
 from django.conf import settings
 
+
 # SNMP Models
 ## Device
 class Device(models.Model):

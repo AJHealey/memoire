@@ -6,7 +6,7 @@ from datetime import datetime
 
 from os.path import splitext
 from django.utils import timezone
-from gatherer.models import RadiusEvent, DHCPEvent, WismEvent, BadLog, ProbeLog, ProbeTest, AccessPoint, MobileStation, ProbeScanResult, ProbeConnectionResult, TimeCheck, ServiceCheck
+from gatherer.models import Alert, RadiusEvent, DHCPEvent, WismEvent, BadLog, ProbeLog, ProbeTest, AccessPoint, MobileStation, ProbeScanResult, ProbeConnectionResult, TimeCheck, ServiceCheck
 from django.db import IntegrityError
 
 def dateParser(dateString):
@@ -227,7 +227,8 @@ def dhcpParser(infos):
 				via = infos[7][:-1]
 				message = ' '.join(infos[8:])
 				if 'load balance' in message:
-					message = ''
+					message = ''					
+
 				return DHCPEvent(date=date, microsecond=date.microsecond, server=dhcpServer, device=device, dhcpType='dis', message=message)
 			else:
 				via = infos[7]
