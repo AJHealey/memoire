@@ -32,7 +32,7 @@ def getDhcpLogByType():
 	for t, display in order:
 		tmp = DHCPEvent.objects.filter(dhcpType=t).count()
 		if tmp > 0:
-			stats[display] = tmp
+			stats.append((t, tmp))
 	return stats
 
 def getRadiusSuccessRate():
