@@ -27,8 +27,9 @@ def getWismLogsBySeverity(cat='', severity=5):
 		result[severity] = logs.filter(severity=severity)
 
 def getDhcpLogByType():
-	stats = {}
-	for t, display in DHCPEvent.DHCP_TYPES:
+	stats = []
+	order=[("dis","Discover"), ("off","Offer"), ("req","Request"), ("ack","Ack"), ("nak","Nak"), ("inf", "Inform")]
+	for t, display in order:
 		tmp = DHCPEvent.objects.filter(dhcpType=t).count()
 		if tmp > 0:
 			stats[display] = tmp

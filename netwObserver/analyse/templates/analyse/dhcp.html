@@ -3,6 +3,7 @@
 
 {%block category%}
 
+{% if byType %}
 <script type="text/javascript">
 	
 	google.load("visualization", "1", {packages:["corechart"]});
@@ -13,7 +14,7 @@
 		
 		var data = google.visualization.arrayToDataTable([
 			['Types', 'Quantity'],
-			{%for t,qty in byType.items%}
+			{%for t,qty in byType%}
 			["{{t}}", {{qty}}],
 			{%endfor%}
 		]);
@@ -29,5 +30,5 @@
 </script>
 
 <div id="dhcpchart_div" style="width: 900px; height: 500px;"></div>
-
+{%endif%}
 {%endblock%}
