@@ -10,7 +10,7 @@ def getDhcpLeaseAlerts(fromDate=(timezone.now() - settings.DATAVALIDITY)):
 	return logs
 
 def getDhcpWrongPlugAlerts(fromDate=(timezone.now() - settings.DATAVALIDITY)):
-	result = []
+	result = {}
 
 	logs = DHCPEvent.objects.filter(dhcpType= "dis", date__gte=fromDate, message__icontains="peer holds all free leases").order_by('date','microsecond')
 	lastTime = None
@@ -30,7 +30,7 @@ def getDhcpWrongPlugAlerts(fromDate=(timezone.now() - settings.DATAVALIDITY)):
 
 		else:
 			if (time - lastTime) < timedelta(seconds=2) and device == lastDevice and via == lastVia and server != lastServer:
-				result.append({"date": time , "device": device, "via": via})
+				result[device] = ({"date": time, "via": via})
 
 	return result
 
