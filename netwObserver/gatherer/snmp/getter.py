@@ -457,7 +457,7 @@ def getAllRAP():
 			if index in result:
 				try:
 					apMac = parseMacAdresse(apMac)
-					result[index].closestAp = AccessPoint.objects.get_or_create(macAddress=apMac)
+					result[index].closestAp = AccessPoint.objects.get(macAddress=apMac)
 				
 				except ObjectDoesNotExist:
 					pass
