@@ -3,4 +3,21 @@
 
 {% block section %}
 
+<div class="form-group">
+	<label for="selectedProbe" class="col-md-2 control-label">Probes</label>
+	<div class="col-md-6">			
+		<select class="form-control" name="selectedProbe" id="selectedProbe">
+			<option value="" selected></option>
+			{% if allProbe %}
+			{% for p in allProbe %}
+			<option value="{{p.id}}">{{p.macAddress}}</option>
+			{% endfor %}
+			{% endif %}
+		</select>
+	</div>
+	<button type="submit" class="btn btn-default">
+		<span class="glyphicon glyphicon-signal"></span> Get
+	</button>
+</div>
+
 {%endblock%}

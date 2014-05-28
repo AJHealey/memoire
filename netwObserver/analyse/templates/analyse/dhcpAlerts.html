@@ -10,6 +10,22 @@
 	<div class="alert alert-warning">No DHCP activity detected</div>
 	{%endif%}
 
+	{%if leaseAlerts%}
+	<div class="panel panel-info">
+		<div class="panel-heading">Scattering of the lease alerts</div>
+		<div class="panel-body">
+			<dl class="dl-horizontal">
+				<dt>Number of alerts</dt>
+				<dd>{{leaseAlerts.alerts}}</dd>
+				<dt>Affected devices</dt>
+				<dd>{{leaseAlerts.devices}}</dd>
+				<dt>Scatter-degree</dt>
+				<dd>{{leaseAlerts.ratio}}</dd>
+			</dl>
+		</div>
+	</div>
+	{%endif%}
+
 	{%if wronglyPlugged%}
 	<div class="panel panel-warning">
 		<div class="panel-heading">The following devices may be connected on a wrong plug</div>

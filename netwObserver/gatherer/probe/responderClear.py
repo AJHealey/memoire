@@ -1,5 +1,6 @@
 import socket
 
+from gatherer.log import logParser
 from threading import Thread
 from time import sleep
 
@@ -23,28 +24,35 @@ def responder():
 
 def handler(clientsocket):
 	
+	clientsocket.setblocking(0)
+	clientsocket.settimeout(60)
+	try:
+		#print("[+] Connection established")
+		# Phase 1 : Probe send its identity
+		#identity = int.from_bytes(clientsocket.recv(4),byteorder='little') # identity of the probe
+		identity = clientsocket.recv(18).decode() # identity of the probe (MAC address)
+		#print("[+] Identity received: %s" % identity)
+		clientsocket.send(b'1')
 
-	print("[+] Connection established")
-	# Phase 1 : Probe send its identity
-	#identity = int.from_bytes(clientsocket.recv(4),byteorder='little') # identity of the probe
-	identity = clientsocket.recv(18).decode() # identity of the probe (MAC address)
-	print("[+] Identity received: %s" % identity)
-	clientsocket.send(b'1')
+		## Phase 2 = Data receive
+		dataSize = int.from_bytes(clientsocket.recv(4),byteorder='big')
+		#print("[*] Size received (%s)" % dataSize)
+		clientsocket.send(b'1')
 
-	## Phase 2 = Data receive
-	dataSize = int.from_bytes(clientsocket.recv(4),byteorder='big')
-	print("[*] Size received (%s)" % dataSize)
-	clientsocket.send(b'1')
+		data = clientsocket.recv(min(dataSize,1024))
 
-	data = clientsocket.recv(min(dataSize,1024))
+		while len(data) < dataSize :
+			data += clientsocket.recv(1024)
 
-	while len(data) < dataSize :
-		data += clientsocket.recv(1024)
+		clientsocket.close()
+		logParser.probeParser(data)
+		#print("%s" % data.decode())
+		#print("[*] Connection closed.")
+	except socket.timeout:
+		pass
 
-	clientsocket.close()
-	print("%s" % data.decode())
-	print("[*] Connection closed.")
-
+	except Exception as e:
+		OperationalError(source='Probe Responder', error='%s' % e).save()
 
 if __name__ == '__main__':
 	responder()

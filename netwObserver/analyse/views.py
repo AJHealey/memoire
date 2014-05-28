@@ -76,6 +76,8 @@ def wifiProbes(request):
 	context['app'] = 'analysis'
 	context['cat'] = 'wifi'
 	context['section'] = 'probes'
+	
+	context["allProbe"] = AccessPoint.objects.all().order_by('name')
 
 
 	return render(request, "analyse/wifiProbe.html", context)
@@ -87,6 +89,7 @@ def dhcpAlerts(request):
 	context['section'] = 'alerts'
 
 	context['active'] = monitoring.isDhcpActive()
+	context['leaseAlerts'] = monitoring.getDhcpLeaseAlerts()
 	context['wronglyPlugged'] = monitoring.getDhcpWrongPlugAlerts()
 
 	return render(request, "analyse/dhcpAlerts.html", context)

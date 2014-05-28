@@ -5,9 +5,13 @@ from django.utils import timezone
 from gatherer.models import DHCPEvent
 
 
-def getDhcpLeaseAlerts(fromDate=(timezone.now() - settings.DATAVALIDITY)):
-	logs = DHCPEvent.objects.filter(dhcpType= "dis", date__gte=fromDate, message__icontains="peer holds all free leases")
-	return logs
+def getDhcpLeaseAlerts(fromDate=(timezone.now() - timedelta(hours=1))):
+	logs = DHCPEvent.objects.filter(dhcpType= "dis", date__gte=fromDate, message__icontains="free leases").count()
+	devices = len(set(logs.values_list('device', flat=True)))
+	if devices > 0:
+		return {"alerts": logs , "devices": devices, "ratio": log/devices}
+	else:
+		return {}
 
 def getDhcpWrongPlugAlerts(fromDate=(timezone.now() - timedelta(hours=1))):
 	result = {}
