@@ -493,7 +493,8 @@ def parseMacAdresse(macString):
 		OperationalError(source='snmp macAddress parsing', error="Unknown format: %s" % result).save()
 		raise Exception()
 
-	elif len(result) == 12:
+	
+	if len(result) == 12:
 		return "%s:%s:%s:%s:%s:%s" % (result[0:2],result[2:4],result[4:6],result[6:8],result[8:10],result[10:])
 	
 	else:
