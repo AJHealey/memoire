@@ -1,0 +1,23 @@
+{% extends "analyse/dhcp.html" %}
+{% load staticfiles %}
+
+{% block section %}
+{%if wronglyPlugged%}
+<div class="container">
+<div class="panel panel-warning">
+	<div class="panel-heading">The following devices may be connected on a wrong plug</div>
+	<div class="panel-body">
+	{%for dev, infos in wronglyPlugged.items %}
+	<h5>{{dev}}</h5>
+	<dl class="dl-horizontal">
+		<dt>Plugged on</dt>
+		<dd>{{infos.via}}</dd>
+		<dt>Last seen</dt>
+		<dd>{{infos.date}}</dd>
+	</dl>
+	{%endfor%}
+	</div>
+</div>
+</div>
+{%endif%}
+{%endblock%}

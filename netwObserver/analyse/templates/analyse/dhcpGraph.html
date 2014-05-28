@@ -1,0 +1,33 @@
+{% extends "analyse/dhcp.html" %}
+{% load staticfiles %}
+
+{% block section %}
+{% if byType %}
+<script type="text/javascript">
+	
+	google.load("visualization", "1", {packages:["corechart"]});
+	
+	google.setOnLoadCallback(dhcpChart);
+	
+	function dhcpChart() {
+		
+		var data = google.visualization.arrayToDataTable([
+			['Types', 'Quantity'],
+			{%for t,qty in byType%}
+			["{{t}}", {{qty}}],
+			{%endfor%}
+		]);
+
+		var options = {
+			title: 'DHCP Packet by Types',
+		};
+
+		var chart = new google.visualization.BarChart(document.getElementById('dhcpchart_div'));
+		
+		chart.draw(data, options);
+	}
+</script>
+
+<div id="dhcpchart_div" style="width: 900px; height: 500px;"></div>
+{%endif%}
+{%endblock%}
