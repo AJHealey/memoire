@@ -16,18 +16,21 @@ def getDhcpWrongPlugAlerts(fromDate=(timezone.now() - settings.DATAVALIDITY)):
 	lastTime = None
 	lastDevice = None
 	lastServer = None
+	lastVia = None
 	for log in logs:
 		time = log.date
 		device = log.device
 		server = log.server
+		via = log.via
 		if  lastTime == None:
 			lastTime = time
 			lastDevice = device
 			lastServer = server
+			lastVia = via
 
 		else:
-			if (time - lastTime) < timedelta(seconds=2) and device == lastDevice and server != lastServer:
-				result.append({"date": time , device})
+			if (time - lastTime) < timedelta(seconds=2) and device == lastDevice and via=lastVia and server != lastServer:
+				result.append({"date": time , "device": device, "via": via})
 
-	return logs
+	return result
 
