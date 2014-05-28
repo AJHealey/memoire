@@ -91,6 +91,17 @@ USE_L10N = True
 
 USE_TZ = True
 
+
+
+## User Settings
+SNMPAPLAP = timedelta(minutes=20)
+SNMPRAPLAP = timedelta(hours=2)
+SNMPMSLAP = timedelta(minutes=30)
+
+DATAVALIDITY = timedelta(days=180)
+
+
+
 ## Celery
 CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
 BROKER_URL = 'django://'
@@ -120,14 +131,6 @@ MEDIA_ROOT = '/srv/media/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
  )
-
-
-## User Settings
-SNMPAPLAP = timedelta(minutes=20)
-SNMPRAPLAP = timedelta(hours=2)
-SNMPMSLAP = timedelta(minutes=30)
-
-DATAVALIDITY = timedelta(days=180)
 
 
 
