@@ -7,34 +7,42 @@
 \lhead{Chapter 5. \emph{Analysis and Results - Passive Monitoring}} % Change X to a consecutive number; this is for the header on each page - perhaps a shortened title
 
 \section{Analysis}
-The final purpose of our system is to provide analysis about the main issues present on the infrastructure. The way we process here is quite simple:
+The final purpose of our system is to provide analysis about the main issues we have encountered in the wireless infrastructure. The way we process here is quite simple:
 
 \begin{enumerate}
-\item Putting together the related information
-\item Spotting the anomalies
-\item Trying to understand the causes
+\item Put together the related information
+\item Spot the anomalies
+\item Try to understand the causes
 \end{enumerate}
-Like in any system, we had to define domains on which the monitoring tool will be able to work. One of the first steps of this thesis was to determine what were or could be the main issues on the UCL's network. It's here that we will use those results. Each of these problems will be a domain in which we will define what are the relevant data, how they can help us and how to react after having analyzed them. The purpose of this chapter is to present you these domains and the methodology used inside them. Each of them have their particular needs and their related techniques of analysis.
+Like in any other system, we had to define domains on which the monitoring tool will be able to work. As a reminder, one of the first steps of this thesis was to determine what are or could be the main issues in the UCL's wireless network. This is typically on this step that we will use those results. Each of these problems will be represented by a domain in which we will define what are the relevant data, how they can help us, and how to correctly react after having analyzed them. 
+
+The purpose of this chapter is to present these domains and the methodology we used to analyze them since they all have their particular needs and their related techniques of analysis.
 
 \section{WiFi}
-\subsection{Users}
-This section of the application offers some aggregated statistics about the users of the \emph{WiFi network}. The main goal is to get some analysis of the actual utilization of the wireless infrastructure. It's more a set of indicators to help the administrators to get a global view of his network. 
-\subsubsection*{WiFi Protocol}
-This graph display the repartition of the users among the available \texttt{802.11} standards (i.e. 802.11a, b, g, n). The reason for this analysis comes from an earlier policy enforced on the UCL network that forbids the use of the \texttt{802.11b} protocol. Users connecting with such low bandwidth standard force the \emph{access point} to transmitting longer and can in consequence prevent the others to achieve higher receiving speed. Our analysis was created to help the administrators in future considerations in the same domain. By profiling the habits of the users, we can define the impact of such decision. As the quality of the service is one of the main concern, deactivating the utilization of a standard used by most of the devices could have heavy consequences.
-The statistics are based by default on the connections of the last three months. It's to ensure that devices no longer using the network does not affect the result and keep the analysis as up to date as possible.
-\paragraph*{Source:} The data used come from \texttt{SNMP}. At each cycle gathering the information of the \emph{devices} associated with the \emph{access points}, we get the information thanks to the value available on the controller. All the descriptions of the OIB come from the Cisco OID Browser \footnote{http://tools.cisco.com/Support/SNMP/do/BrowseOID.do}.
 
+\subsection{Users}
+This first section of the application offers some aggregated statistics about the users of the wireless network. The main objective is to get some analysis of the actual utilization of the wireless infrastructure. It is more like a set of indicators to help the administrators get a global and live overview of their network. 
+
+\subsubsection{WiFi Protocol}
+
+This graph displays the repartition of users among the available \texttt{802.11} standards (i.e. \texttt{802.11a, b, g, n}). The reason for this analysis comes from an earlier policy enforced on the UCL's network that forbids the use of the \texttt{802.11b} protocol. Users connecting with such low bandwidth standard force the access point to transmit longer and can, in consequences, prevent the others users to achieve higher receiving speed. This analysis was designed to help the administrators to have future information in the same domain. By profiling the habits of the users, we can define the impact of such decision. Since the quality of the service is one of the main concerns, deactivating the utilization of a standard used by most of the devices could have heavy consequences.
+
+The statistics are based, by default, on the connection establishments made during the last three months. This to ensure that devices no longer connected to the network do not affect the results, and to keep the analysis as up-to-date as possible.
+
+\paragraph*{Source:} The data used come from \texttt{SNMP} requests. During each cycle we gather information about all the devices associated with the access points thanks to the values available on the controller. All the descriptions of the \texttt{OIB} come from the \texttt{Cisco OID Browser}\footnote{http://tools.cisco.com/Support/SNMP/do/BrowseOID.do}.
+
+\noindent
 \begin{tabular}{|r l|}
-\hline
+\hline 
 \textbf{Object} & \texttt{bsnMobileStationProtocol} \\
-\textbf{Description} & \parbox{11cm}{The 802.11 protocol type of the client. The protocol is mobile when this client detail is seen on the anchor i.e it's mobility status is anchor.} \\
+\textbf{Description} & \parbox{11cm}{The \texttt{802.11} protocol type of the client. The protocol is mobile when this client detail is seen on the anchor i.e. it is mobility status is anchor.} \\
 \textbf{OID} & 1.3.6.1.4.1.14179.2.1.4.1.25 \\
 \textbf{MIB} & AIRESPACE-WIRELESS-MIB \\
 \hline
 \end{tabular}
 
-\subsubsection*{SSID Utilization}
-Here, we count the number of users by \texttt{SSID}. As before, the goal is to provide a profile of the users to the administrators. Such measures can help to adapt the policies related to each \texttt{VLAN} and defining the load of each of them. It could help to diagnostic a useless \texttt{VLAN} or in the opposite, allow to detect an overloaded one that could be caused by an improper use of the network. The supposed utilization and the actual one can be really different and such indicators can help to adapt the configurations.
+\subsubsection{SSID Utilization}
+Here, we count the number of users by \texttt{SSID}. As before, the goal is to provide a complete profile of the users to the administrators. Such measures can help them to adapt the policies related to each \texttt{VLAN} and defining the load of each of them. It could help to diagnostic a useless \texttt{VLAN} or in the opposite, it could allow to detect an overloaded one that might be caused by an improper use of the network. The supposed utilization and the actual one can be really different and such indicators can help the administrators to adapt the \texttt{VLAN} configurations.
 \paragraph*{Source:} As before, we mainly aggregate the data available on the controller.
 
 \begin{tabular}{|r l|}
@@ -201,5 +209,5 @@ The first thing to observe about a radius is the proportion of users being able 
 \end{lstlisting}
 
 \section{Summary}
-This chapter has presented you the main information built by the application from the information gathered on the SNMP and log files. The main interest come from the fact that they are put together. All those data are already available to the administrators but by trying to correlate some of them, we want to give another view on the network and may be shed some lights on misunderstood issues. 
+This chapter detailed the main information built by the application from the data gathered with the \texttt{SNMP} protocol and the log files. The main interest comes from the fact that they are put together. All those data are already available to the administrators on the controller but by trying to correlate some of them, we wanted to give another view of the network and may be shed light on some misunderstood issues. 
 
