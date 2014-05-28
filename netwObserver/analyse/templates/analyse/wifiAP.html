@@ -25,7 +25,7 @@
 	</div>
 </form>
 </div>
-{%if ap%}
+{%if apData%}
 <script type="text/javascript">
 	google.load('visualization', '1.0', {'packages':['corechart']});
 	google.setOnLoadCallback(drawBandwidthChart);
@@ -35,7 +35,7 @@
 		var data = google.visualization.arrayToDataTable([
 		  ['Time', 'Rx Speed', 'Tx Speed'],
 		  {%for log in apData%}
-		  [new Date({{log.date.year}},{{log.date.month}}-1,{{log.date.day}},{{log.date.hour}},{{log.date.minute}},{{log.date.second}}), {{log.ethernetRxTotalBytes}}, {{log.ethernetTxTotalBytes}}],
+		  [new Date({{log.date.year}},{{log.date.month}}-1,{{log.date.day}},{{log.date.hour}},{{log.date.minute}},{{log.date.second}}), {{log.data.ethernetRxTotalBytes}}, {{log.data.ethernetTxTotalBytes}}],
 		  {%endfor%}
 		]);
 
