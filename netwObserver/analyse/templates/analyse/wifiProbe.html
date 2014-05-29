@@ -70,6 +70,36 @@
 </table>
 </div>
 {%endif%}
+{{connectionResults}}
+{%if connectionResults%}
+<script type="text/javascript">
+	google.load('visualization', '1.0', {'packages':['corechart']});
+	
+
+	{%for ssid, result in connectionResults.items%}
+	google.setOnLoadCallback(draw{{ssid}}ConnectionTimeChart);
+	function draw{{ssid}}ConnectionTimeChart() {
+		
+		var data = google.visualization.arrayToDataTable([
+
+		  ['Time'{%for check in result.0.times%} ,'{{check.step}}'{%endfor%} ],
+		  {%for connection in result%}
+		  [new Date({{connection.connection.date.year}},{{connection.connection.date.month}}-1,{{connection.connection.date.day}},{{connection.connection.date.hour}},{{connection.connection.date.minute}},{{connection.connection.date.second}}), {%for check in connection.times%} ,'{{check.time}}'{%endfor%}],
+		  {%endfor%}
+		]);
+
+		var options = {
+		  title: 'Access Point Bandwidth (Mb/s)',
+		  curveType : 'function',
+		};
+
+		var chart = new google.visualization.LineChart(document.getElementById('{{ssid}}timeschart_div'));
+		chart.draw(data, options);
+	}
+	{%endfor%}
+
+{%endif%}
+
 {%endif%}
 
 {%endblock%}

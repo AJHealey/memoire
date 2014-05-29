@@ -246,14 +246,14 @@ def getConnectionResult(probe,since=None):
 			result[ssid] = []
 			ssidResults = connectionResults.filter(ssid=ssid).order_by("date")
 			for con in ssidResults:
-				result[ssid].append({"connection":con, "times":con.timecheck_set.all(), "services":con.servicecheck_set.all()})
+				result[ssid].append({"connection":con, "times":con.timecheck_set.all(), "services":con.servicecheck_set.all().order_by('service')})
 
 
 		return result
 
 
 	except:
-		return []
+		return {}
 
 
 
