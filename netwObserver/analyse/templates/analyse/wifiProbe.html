@@ -89,7 +89,7 @@
 		]);
 
 		var options = {
-		  title: 'Access Point Bandwidth (Mb/s)',
+		  title: 'Connection time (seconds)',
 		  curveType : 'function',
 		};
 
@@ -97,7 +97,7 @@
 		chart.draw(data, options);
 	}
 	{%endfor%}
-
+</script>
 {%endif%}
 {%for ssid in connectionResults.keys%}
 <h4>SSID: {{ssid}}</h4>
