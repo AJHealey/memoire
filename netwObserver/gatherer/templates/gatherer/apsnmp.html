@@ -24,7 +24,7 @@
 		{% for point in ap %}
 		<tr>
 			<td>
-				<span class="glyphicon glyphicon-signal"></span>
+				<a href="{% url 'wifiAP' %}?selectedAP={{point.id}}"><span class="glyphicon glyphicon-signal"></span></a>
 			</td>
 			<td>{{point.name}}</td>
 			<td>{{point.macAddress}}</td>

@@ -108,8 +108,7 @@ def dhcpGraph(request):
 def radius(request):
 	context= {}
 	context['app'] = 'analysis'
-	context['cat'] = 'wifi'
-	context['section'] = 'probe'
+	context['cat'] = 'radius'
 
 	context['successRate'] = aggregator.getRadiusSuccessRate()
 
