@@ -119,6 +119,10 @@ CELERYBEAT_SCHEDULE = {
         'task': 'gatherer.tasks.snmpRAPDaemon',
         'schedule': SNMPRAPLAP,
     },
+    'probeResonder': {
+        'task': 'gatherer.tasks.startResponder',
+        'schedule': timedelta(seconds=10),
+    },
 }
 
 

@@ -16,18 +16,18 @@ apLock = Lock()
 @shared_task
 def snmpAPDaemon():
 	''' Background task gathering information on Access Point '''
-	apLock.acquire()
-	try:
-		task, created = CurrentTask.objects.get_or_create(name="snmpAPDaemon")
-		if created or task.lastTouched < (timezone.now() - SNMP_REQUEST_MIN_INTERVAL):
-			getter.getAllAP()
-			task.touch()
-	except IntegrityError:
-		pass
-	except Exception as e:
-		OperationalError(source='snmpAPDaemon', error='%s' % e).save()
-	finally:
-		apLock.release()
+	if apLock.acquire(blocking=False):
+		try:
+			task, created = CurrentTask.objects.get_or_create(name="snmpAPDaemon")
+			if created or task.lastTouched < (timezone.now() - SNMP_REQUEST_MIN_INTERVAL):
+				getter.getAllAP()
+				task.touch()
+		except IntegrityError:
+			pass
+		except Exception as e:
+			OperationalError(source='snmpAPDaemon', error='%s' % e).save()
+		finally:
+			apLock.release()
 
 
 
@@ -39,18 +39,18 @@ def snmpMSDaemon():
 		Argument:
 		laps -- duration between update. Instance of timedelta
 	'''
-	msLock.acquire()
-	try:
-		task, created = CurrentTask.objects.get_or_create(name="snmpMSDaemon")
-		if created or task.lastTouched < (timezone.now() - SNMP_REQUEST_MIN_INTERVAL):
-			getter.getAllMS()
-			task.touch()
-	except IntegrityError:
-		pass
-	except Exception as e:
-		OperationalError(source='snmpMSDaemon', error='%s' % e).save()
-	finally:
-		msLock.release()
+	if msLock.acquire(blocking=False):	
+		try:
+			task, created = CurrentTask.objects.get_or_create(name="snmpMSDaemon")
+			if created or task.lastTouched < (timezone.now() - SNMP_REQUEST_MIN_INTERVAL):
+				getter.getAllMS()
+				task.touch()
+		except IntegrityError:
+			pass
+		except Exception as e:
+			OperationalError(source='snmpMSDaemon', error='%s' % e).save()
+		finally:
+			msLock.release()
 
 rapLock = Lock()
 @shared_task
@@ -60,22 +60,30 @@ def snmpRAPDaemon():
 		Argument:
 		laps -- duration between update. Instance of timedelta
 	'''
-	rapLock.acquire()
-	try:
-		task, created = CurrentTask.objects.get_or_create(name="snmpRAPDaemon")
-		if created or task.lastTouched < (timezone.now() - SNMP_REQUEST_MIN_INTERVAL):
-			getter.getAllRAP()
-			task.touch()
-	except IntegrityError:
-		pass
-	except Exception as e:
-		OperationalError(source='snmpRAPDaemon', error='%s' % e).save()
-	finally:
-		rapLock.release()
+	if rapLock.acquire(blocking=False):
+		try:
+			task, created = CurrentTask.objects.get_or_create(name="snmpRAPDaemon")
+			if created or task.lastTouched < (timezone.now() - SNMP_REQUEST_MIN_INTERVAL):
+				getter.getAllRAP()
+				task.touch()
+		except IntegrityError:
+			pass
+		except Exception as e:
+			OperationalError(source='snmpRAPDaemon', error='%s' % e).save()
+		finally:
+			rapLock.release()
 
-
-@celeryd_init.connect(sender='responder@maltesse.info.ucl.ac.be')
+responderLock = Lock()
+@shared_task
 def startResponder(conf=None, **kwargs):
-	print("test")
+	if responderLock.acquire(blocking=False):
+		try:
+			responderClear.responder()
+		except Exception as e:
+			OperationalError(source='ProbeResponder', error='%s' % e).save()
+		finally:
+			responderLock.release()
+
+
 
 
