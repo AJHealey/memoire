@@ -99,7 +99,10 @@
 	{%endfor%}
 
 {%endif%}
-
+{%for ssid in connectionResults.keys%}
+<h4>SSID: {{ssid}}</h4>
+<div id="{{ssid}}timeschart_div" style="width: 900px; height: 500px;"></div>
+{%endfor%}
 {%endif%}
 
 {%endblock%}
