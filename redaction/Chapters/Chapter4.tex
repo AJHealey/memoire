@@ -44,17 +44,19 @@ The main difficulty was to correctly collect the available information from all 
 \subsubsection{Logs Parser}
 The first source we have processed was the log files. There are three generators of log files within the network: the controller, the \texttt{DHCP} and the \texttt{RADIUS} servers. Actually, there already is a software that gathers all the log files and centralizes them. That log management solution is called \texttt{Octopussy}\footnote{http://www.octopussy.pm/}. It allows the administrators to display the logs and access them by specifying criteria such as the date, the source or the gravity of the message. Our \emph{log} module does basically the same thing but with a deeper analysis and understanding of the content of those log files. 
 \paragraph{DHCP}
-The \texttt{DHCP} servers generate an entry in the log file for each step realized during of the allocation of an \texttt{IP} address and, of course, if an error occurs. Typical logs look like this:
+The \texttt{DHCP} servers generate an entry in the log file for each step realized during of the allocation of an \texttt{IP} address and, of course, if an error occurs. The following listing give an example of the typical messages that can be found within the log file.\\
+
 \begin{lstlisting}[frame=single,breaklines=true,caption={\texttt{DHCP} logs}]
 2013-10-21T17:26:00.113154+02:00 dhcp-1 dhcpd: DHCPREQUEST for 192.168.32.43 from cc:fe:3c:26:5c:3f via 192.168.35.253
 2013-10-21T17:26:00.113239+02:00 dhcp-1 dhcpd: DHCPACK on 192.168.32.43 to cc:fe:3c:26:5c:3f via 192.168.35.253
 2013-10-21T17:26:00.196242+02:00 dhcp-1 dhcpd: DHCPDISCOVER from 50:a4:c8:6b:48:c7 via 130.104.175.250: load balance to peer dhcp1-dhcp2
 \end{lstlisting}
+
 Since the application is able to understand each part of the messages, more powerful links can be made between them. By correctly analyzing each messages we can tell, for example, which \texttt{dhcpAck} correspond to a \texttt{dhcpRequest}. That is one of the weaknesses of \texttt{Octopussy}. This solution can tell what logs are important and can filter them but it does not make analysis based on the protocols. \texttt{DHCP} defines a succession of actions and being able to trace them makes the application capable of detecting more subtle errors. Concretely, the \emph{log} module decomposes the messages in several parts and stocks them in a relational database. Even if it seems simple, having a structured representation of the logs is the key to make better analysis on them afterwards.
 
 
 \paragraph{RADIUS}
-The \texttt{RADIUS} server generates logs about the authentication of the users. The main information here is the \emph{login} entered and the device used for the authentication.
+The \texttt{RADIUS} server generates logs about the authentication of the users. The main information here is the \emph{login} entered and the device used for the authentication.\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={\texttt{RADIUS} logs}]
 2013-10-21T17:26:00+02:00 radius1.sri.ucl.ac.be radiusd[1523]: [ID 702911 local3.notice] Login OK: [@eur.nl] (from client WiSMPythagore-B port 29 cli e4-d5-3d-89-af-51)
@@ -67,7 +69,7 @@ Which such information we can potentially tell when and where a user is. On the 
 
 \paragraph{Controller}
 
-The richest source of logs is the \emph{controller}. With its central position in the network infrastructure, it can produce more detailed messages when an error occurs. Since the controller is made by Cisco Systems Inc., the meaning of the messages can easily be found on the manufacturer website \cite{syslogCisco}. Here is an example of messages that can be found within the controller log files.
+The richest source of logs is the \emph{controller}. With its central position in the network infrastructure, it can produce more detailed messages when an error occurs. Since the controller is made by Cisco Systems Inc., the meaning of the messages can easily be found on the manufacturer website \cite{syslogCisco}. Here is an example of messages that can be found within the controller log files.\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Controller logs}]
 2013-10-21T17:26:00.123235+02:00 192.168.251.178 WiSMPythagore-B: *spamReceiveTask: Oct 21 17:26:00.080: %LWAPP-6-CAPWAP_SUPP_VER: spam_lrad.c:1835 Discarding Primary discovery request in LWAPP from AP 00:11:bc:1b:14:00 supporting CAPWAP
