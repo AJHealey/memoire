@@ -243,7 +243,7 @@ def getConnectionResult(probe,since=None):
 
 		ssids = connectionResults.values_list('ssid', flat=True)
 		for ssid in ssids:
-			tmp = ssid.replace(".","")
+			tmp = ssid.replace(".","").replace("-","")
 			result[tmp] = []
 			ssidResults = connectionResults.filter(ssid=ssid).order_by("date")
 			for con in ssidResults:
