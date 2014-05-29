@@ -243,10 +243,11 @@ def getConnectionResult(probe,since=None):
 
 		ssids = connectionResults.values_list('ssid', flat=True)
 		for ssid in ssids:
-			result[ssid] = []
+			tmp = ssid.replace(".","")
+			result[tmp] = []
 			ssidResults = connectionResults.filter(ssid=ssid).order_by("date")
 			for con in ssidResults:
-				result[ssid].append({"connection":con, "times":con.timecheck_set.all(), "services":con.servicecheck_set.all().order_by('service')})
+				result[tmp].append({"connection":con, "times":con.timecheck_set.all(), "services":con.servicecheck_set.all().order_by('service')})
 
 
 		return result
