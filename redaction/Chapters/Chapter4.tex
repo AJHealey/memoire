@@ -317,12 +317,11 @@ wlan0: Trying to associate with 00:1e:bd:65:34:71 (SSID='student.UCLouvain' freq
 	\item[Associated with $<$BSSID$>$]\hfill \\
 	Once the association with the AP is completed, the interface sends an association event. Let's continue the example above with the connection to the \texttt{student.UCLouvain} network.\\
 
-\begin{lstlisting}[frame=single,breaklines=true,caption={Example of a association with an AP]
+\begin{lstlisting}[frame=single,breaklines=true,caption={Example of a association with an AP}]
 wlan0: Trying to associate with 00:1e:bd:65:34:71 (SSID='student.UCLouvain' freq=2437 MHz)
 wlan0: Associated with 00:1e:bd:65:34:71
 \end{lstlisting}
-
-	In that case, we extract the \texttt{BSSID} of the AP that the daemon is associated with and we store it directly in our main log structure.
+In that case, we extract the \texttt{BSSID} of the AP that the daemon is associated with and we store it directly in our main log structure.
 
 	\item[CTRL-EVENT-CONNECTED]\hfill \\
 	This event means that the daemon is now connected to the AP after the \texttt{EAP} authentication has been performed. These are the final messages received in our example.\\
@@ -336,7 +335,6 @@ wlan0: CTRL-EVENT-EAP-SUCCESS EAP authentication completed successfully
 wlan0: WPA: Key negotiation completed with 00:1e:bd:65:34:71 [PTK=CCMP GTK=TKIP]
 wlan0: CTRL-EVENT-CONNECTED - Connection to 00:1e:bd:65:34:71 completed (auth) [id=0 id_str=]
 \end{lstlisting}
-
 When the function receives this event, there are several actions that are executed. First, the \texttt{BSSID} is extracted from the event and, as for the \textit{Trying to associate} event, the linked ap\_connect list is created or extended. Besides that, the time structure is also filled with \texttt{wpa\_supplicant} connection time and \texttt{DHCP} time. Basically, we evaluate the time taken by \texttt{wpa\_supplicant} to get a connection by starting a timer at the time our program requests a connection with one of the network and we stop the timer when this special event is received. Same for \texttt{DHCP}. We start the timer just after the receiving of the event and before starting the \texttt{DHCP} daemon by using the command \texttt{system("udhcpc -i wlan0")}. As soon as the supplicant has received an \texttt{IP} address we stop the timer. Those time information are stored directly into the ap\_time structure that is nested inside the log structure.
 \end{description}
 
@@ -385,14 +383,35 @@ struct scan_results *curr_scan = NULL;
 	
 	For each line of the scan results we extract the \texttt{BSSID}, the frequency, the signal, the flags and the \texttt{SSID} of the network the AP broadcasts. All this data is stored into one node and, as for the other linked list seen before, the node is either the first one or is added to the others. Once all the results from the buffer has been parsed and inserted into the linked list, the program automatically adds the scan results into the log file. For the log file we have decide to keep only the \textit{bssid}, \textit{freq}, \textit{signal} and \textit{signal} variables.
 
-	\item[Services checking process]: This is a special feature we have implemented in our monitoring tool. The idea is to emulate the behavior of a lambda user that connects on one of the networks. Thus, besides the connection establishment, we have decided to verify that a list of services is reachable. The process is divided in two parts. First we check if the two \texttt{DNS} servers (\texttt{130.104.1.1} and \texttt{130.104.1.2}) are accessible. To do that we question the two servers by forging and sending a special \texttt{DNS} query packet and we analyze the responses received. After that we performs an availability check on a list of selected websites. We check the ten most visited websites in the world according to Alexa\footnote{http://www.alexa.com/topsites}
+	\item[Services checking process]: This is a special feature we have implemented in our monitoring tool. The idea is to emulate the behavior of a lambda user that connects to one of the networks. We verify that a list of services is reachable once connected to the network. The process is divided in two parts. First we check if the two \texttt{DNS} servers (\texttt{130.104.1.1} and \texttt{130.104.1.2}) are accessible. To do that we query the two servers by forging and sending a special \texttt{DNS} query packet and we analyze the response received. After that we performs an availability check on a list of selected websites. We check the ten most visited websites in the world, according to Alexa\footnote{http://www.alexa.com/topsites} and removing the Chinese ones, and we add the main websites the clients of the UCL's network often visit. Here is the complete list:
+	\begin{itemize}
+		\item[-] \texttt{DNS} (\texttt{130.104.1.1})
+		\item[-] \texttt{DNS} (\texttt{130.104.1.2})
+		\item[-] google.be
+		\item[-] facebook.com
+		\item[-] youtube.com
+		\item[-] be.yahoo.com
+		\item[-] en.wikipedia.org
+		\item[-] twitter.com
+		\item[-] amazon.fr
+		\item[-] live.com
+		\item[-] linkedin.com
+		\item[-] blogspot.com
+		\item[-] smtp.gmail.com
+		\item[-] github.com
+		\item[-] uclouvain.be
+		\item[-] icampus.uclouvain.be
+		\item[-] moodleucl.uclouvain.be
+		\item[-] bib.sipr.ucl.ac.be
+		\item[-] horaire.sgsi.ucl.ac.be
+		\item[-] studssh.info.ucl.ac.be
+	\end{itemize}
+
+	Concerning the availability check for the list of websites, we create a socket and try to connect to the remote server through this socket. All the reachability information are stored into a special structure called \texttt{check\_serv}.
+
+	\item[Log file]: Finally, all the data collected during the connection loop process and stored into the different structures are inserted into the log file. We use a \texttt{JSON} syntax for the log file since we already use a \texttt{JSON} parser on our server. Thanks to this design the portability is maintained and enhanced. We have defined several conventions for our log file that is divided into several parts. As an introduction we print the date on which the log file was started and the \texttt{MAC} address of the router. Then first we have all the information about the scan results. After that we find all the data regarding the connection loop. This part is divided into sections where each section represents one network and contains all the details about it. At the end, we find all the information about the reachability and availability tests made on the set of services ("0" means that the service is not reachable and "1" means the opposite). Here is an small example of a log file, with only one scan result, one connection and the services, our server receives from the probe.\\
 
 
-	 (such as \textit{www.google.be}, \textit{www.gmail.com}, \textit{www.uclouvain.be}, \textit{www.icampus.ucl.ac.be}, etc.) are reachable. To be able to do that, for each service we create a \texttt{socket} and we try to connect to the remote server through this socket. If the connection is established then the service is reachable. The information about the reachability of the selected services is also stored into a structure called \texttt{check\_serv}. 
-
-	%TODO DNS 
-
-	\item[Log file]: Finally, all the data collected during the connection loop process is, as described before, stored into structures and between each new connection establishment this data is written into the log file. We have decided to use the \texttt{JSON} syntax for the log file because we already use a \texttt{JSON} parser on our server and by doing this, the portability is maintained and enhanced. We have defined several conventions for our log files and it is clearly divided into several parts. As an introduction we print the date on which the log file was started and the \texttt{MAC} address of the router. Then first we have all the information about the scan results. After that we find all the data regarding the connection loop. This part is divided in sections where each section represents one network and contains all the details about it. Here is an small example of a log file, with only one scan result, one connection and all services reachable, our server receives from the probe.\\
 \begin{lstlisting}[frame=single,breaklines=true,caption={Small log file example}]
 {
 	"date": "2014/05/23 14:54:17",
@@ -428,21 +447,14 @@ struct scan_results *curr_scan = NULL;
 				"services":
 				{
 					"google.be": "1",
-					"gmail.be": "1",
-					"github.be": "1",
-					"ssl.github.be": "1",
-					"uclouvain.be": "1",
-					"icampus.uclouain.be": "1"
+					...
+					"studssh.info.ucl.ac.be": "1"
 				}
 			}
 		]
 	]
 }
-\end{lstlisting}
-
-
-
-
+	\end{lstlisting}
 \end{description}
 
 
@@ -450,19 +462,23 @@ struct scan_results *curr_scan = NULL;
 The probes and the server have to exchange information. As we wanted to create a modular tool, we have chosen to encrypt all the data sent between the server and the probes. If the active monitoring device capture sensible contents, there must be no security vulnerabilities like \emph{eavesdropping} or \emph{man-in-the-middle attack}.
 The first constraint that appeared was the weak computation power of the probes. In consequence, we had to keep the encryption as easy to perform as possible. So, we have looked into \emph{symmetric cryptographic} techniques. But in the other hand, as we have several probes, it could be difficult to manage and exchange the keys unlike in asymmetric cryptography. Our choice was to take the best of both worlds and implement a protocol using hybrid encryption.
 In definitive, we used RSA and AES encryption together.
+
 \subsection{RSA}
 RSA\footnote{\url{http://www.google.com/patents/US4405829}} is one of the most used \emph{public-key cryptosystem}. Its name comes from its three designers: Ron Rivest, Adi Shamir, and Leonard Adleman. The algorithm involves two key: a \emph{public key} known by everybody and a \emph{private key} kept secret. The safety ensured by the technique comes from the difficulty of the factoring problem (factoring the product of two large prime numbers).
 The main advantage against symmetric cryptography is that the public key used for the encryption can be known by everybody and so make the problem of key exchange a lot easier. To make the explication clearer we will present a simple example occurring between Alice and Bob.
-\begin{enumerate}
-\item Alice give her public key to Bob.
-\item Bob wants to transmit a encrypted message to Alice. He uses the Alice's \emph{public key} to encrypt the message.
-\item Bob sends his message to Alice. Even if people intercept the transmission and have the public key, they couldn't decrypt it.
-\item Alice receives the message and decrypt it with her private key which she have kept secret.
-\end{enumerate}
+%\begin{enumerate}
+%\item Alice give her public key to Bob.
+%\item Bob wants to transmit a encrypted message to Alice. He uses the Alice's \emph{public key} to encrypt the message.
+%\item Bob sends his message to Alice. Even if people intercept the transmission and have the public key, they couldn't decrypt it.
+%\item Alice receives the message and decrypt it with her private key which she have kept secret.
+%\end{enumerate}
+
 The key is 2048 bits long and each entity has its own pair of keys (i.e. the server and each probe). The server will known the authorized probes by having their private keys and will use them to encrypt the AES key (see below).
 The main drawback of such encryption is that the computations are quite heavy to perform. Which is against our previous requirements. That's why we only use it to encrypt and exchange a symmetric key that will be used for the exchange of data.
+
 \subsection{AES}
 The symmetric algorithm used is AES which stands for Advanced Encryption Standard. We chose a size of 256 bits for the keys which is quite correct for our utilization. The idea is to permute the bits of the message using the key. The operations performed are lighter than the ones used by RSA and so make it more adapted to be used on the probes.
+
 
 \subsection{Transaction Protocol}
 To be correct, the exchanges between the probes and the server requires a protocol well defined and respected by the two parts. As already said, the server knows the public key of every probe in advance. 
@@ -472,23 +488,58 @@ To be correct, the exchanges between the probes and the server requires a protoc
 \subsection{PyCrypto}
 
 \section{Deployment}
-For the deployment of our system, we had a dedicated machine to host our data. This system was quite limited to be able to efficiently serve the requests. The server have a hard drive of about 300GB which is quite enough to stock the information gathered by NetwObserver during the test phase. In the other hand, the memory available was only of 1GB which is not enough to ensure a efficient handling of the users requests.
+Concerning the deployment of our monitoring tool, we had a dedicated server to host our data. This system was quite limited in order to efficiently serve the requests. The server have a hard drive of about 300GB which is quite enough to store all the information gathered by \texttt{NetwObserver} during the deployment and test phase. On the other hand, the memory available is only 1GB which is not enough to ensure an efficient handling of the users requests.
 
 \subsection{Apache 2}
-As the interface of the system is composed of Web pages, the HTTP requests are handled by Apache2. As the most used server, we had a lot of documentation available. That was the main reason of our choice. Moreover, we thought that a first experience in server configuration would be an interesting experience for any computer science students.
+Since the interface of the system is composed of web pages, all the \texttt{HTTP} requests are handled by Apache2\footnote{http://httpd.apache.org/}. A lot of documentation about this \texttt{HTTP} server is available online since it is the most widely used one. That is the main reason why we decided to choose it.
 
 \subsection{Module WSGI}
-This Apache module is able to interpret some python code. As said before, we choose Django as framework and in consequence executing python code is an important requirement. Something to note about the installation is that the code is written in \emph{Python3.3} and not in the version 2. That's force to be careful during the installation as the default python interpreter in most system is the 2.6. In definitive, we have to compile the module WSGI with the specification of the right interpreter.
+This \texttt{Apache} module is a module able to interpret some python code. As said before, we chose \texttt{Django} as a framework for our applicant, and in consequence executing \texttt{Python} code is an important requirement. Something important to mention about the installation is that the code is written in \texttt{Python3.3} and not in the version 2. That forced us to be careful during the installation as the default python interpreter in most system is the \texttt{2.6}. In definitive, we have to compile the module WSGI with the specification of the right interpreter.
 
 \subsection{Celery}
-Celery\footnote{http://www.celeryproject.org/} is a distributed task queue. It allows to create asynchronous jobs handled by several workers. Concretely, a worker is a external thread that receives tasks to accomplished. the main drawback of \emph{Apache} is that it's quite complicated to generate and manage daemon running in background constantly or at given intervals. As a turn-around, we have connected our system to Celery. It helps us to manage more efficiently the concurrent elements of the application. Our server has a small memory and a poor computation power and in consequence we must manage and organize the utilization of those resources. This module has two main component: the workers and the scheduler.
+\texttt{Celery}\footnote{http://www.celeryproject.org/} is a distributed task queue. It allows to create asynchronous jobs handled by several \emph{workers}. Concretely, a worker is a external thread that receives tasks to accomplish. the main drawback of \texttt{Apache} is that it is quite complicated to generate and manage daemons running in background constantly or at given intervals. As a turn-around, we have connected our system to \texttt{Celery}. It helps us to manage more efficiently the concurrent elements of the application. Our server has a small memory and a poor computation power and in consequence we must manage and organize the utilization of those resources. This module has two main component: the workers and the scheduler.
 
-\subsubsection*{The workers}
-In Celery, we can define the number of workers working on the task send to the queue. By adapting this number, we can tune the allocation of the processor. For example, when we lunch a set of \emph{SNMP} requests, it can require a large part of the available resources. Each of these set of requests are lunch at different intervals and can sometime overlap. When that situation occurred, the server can experience heavy computation requirements and have trouble to handle the requests generated by the users. That's why we define a fixed number of workers and each tasks wait in a queue till a slot are available. The main drawback of such architecture is that the the precise moment when the jobs is effectively done is undetermined. Even if it can be really annoying in certain context, it is not the case in our system. Either we have a daemon that run permanently as the one handling the communication with the probes or the task have to gather some data at some interval. This last category have not precise time requirement and even if they happen dozens of minutes later, it's not a really issue here.
+\subsubsection*{The Workers}
+In \texttt{Celery}, we can define the number of threads working on the tasks. By adapting this number, we can tune the allocation of the processor. For example, when we execute a set of \texttt{SNMP} requests, it may require a large part of the available resources. Each one of these sets of requests are executed at different intervals and can sometime overlap. When that situation occurs, the server can experience heavy computation needs and may have trouble to handle all the requests generated by the users. That is why we define a fixed number of workers and a queue. Each task waits in the queue till a slot is available. The main drawback of such an architecture is that the exact time when the job starts and is effectively done remain undetermined. Even if it can be really problematic in some contexts, it is not the case in our system. Indeed, in our system we have either a daemon that runs endlessly or tasks that have to be executed, like \texttt{SNMP} requests. In either case, this is not a real issue since they do not have precise time requirements. 
+
 
 \subsubsection*{The Scheduler}
-The scheduler in Celery is called \emph{beat} and its only responsibility is to send the \emph{periodic tasks} to the workers. We have given it the path of the application i which we have define the task and the related interval. \emph{Celery beat} gatherer them and fire the task accordingly. The main warning about the scheduler is the fact that it lunch the task \textbf{exactly} at each interval. If we imagine a task that take between 4 and 5 minutes to be perform and that the interval is of 10 minutes, there can be moments where two instances of that tasks overlap. Effectively, if all the workers are occupied and the first instance only start after 8 minutes of waiting, the second task will start two minutes later while the first one is still running. Here again, such consideration have been taken care of and the data are store with a time stamp or linked to en entity having one. The data gatherer can be completely order and even if such condition occurred, the result would be only a lack of data during an interval and more during the next one. As the intervals vary from 20 minutes to 2 hours while the results are analyzed through several day of data, the impact is quite reduced. 
+The scheduler in \texttt{Celery} is called \emph{beat} and its only responsibility is to send the \emph{periodic tasks} to the workers. It knows the path of the application in which we have defined the tasks and the related intervals. \texttt{Celery beat} gathers those intervals and fires the tasks accordingly. The main thing to take into account about the scheduler is the fact that it launches the tasks \textbf{exactly} at each interval. If we imagine a task that takes between 4 and 5 minutes to perform and an interval of 10 minutes, there can be moments where two instances of that tasks overlap. Indeed, if all the workers are occupied and the first instance only starts after 8 minutes, the second task will start two minutes later while the first one is still running. Here again, such consideration have been taken care of and the data are stored with a time stamp or linked to an already existing entity. Since the intervals vary from 20 minutes to 2 hours whilst the results are being analyzed, the impact is quite reduced. 
 
 \section{Extensions and Portability}
 
+In this section we give some further details about the overall portability of our applications and how extensions can be added to the source code.
+
+\subsection{Probe}
+The active monitoring program has been designed to work only with the UCL's wireless network. Yet some additions and modifications of the source code can be realized in order to extend it. To illustrate that, let's detail the two steps to follow in order to monitor a new UCL's network that uses the same authentication process as the five others.
+
+\subsubsection{Adding a new network}
+The specifications of the new network are the following.
+
+\begin{description}
+	\item [SSID]: test.UCLouvain
+	\item [Key Management]: \texttt{WPA-EAP}
+	\item [EAP-Method]: \texttt{TTLS}
+	\item [Login]: test@wifi.uclouvain.be
+	\item [Password]: pass
+	\item [Inner authentication]: \texttt{PAP}
+\end{description}
+
+The first thing to do is to increment the global variable \texttt{NUM\_OF\_NETWORKS} since it stores the number of networks used throughout the execution of the application.\\
+
+\begin{lstlisting}[frame=single,breaklines=true,caption={Small log file example}]
+#define NUM_OF_NETWORKS 6
+\end{lstlisting}
+
+The final step is to add the network specifications in the \texttt{create\_networks()} function. The network will be configured with the others when the program starts. Here is the line to add the to function.\\
+
+\begin{lstlisting}[frame=single,breaklines=true,caption={Small log file example}]
+config_network(5, "test.UCLouvain", "WPA-EAP", "TTLS", NULL, "test@wifi.uclouvain.be", "pass", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP");
+\end{lstlisting}
+
+As we can see, it is very easy to add a network. If we wanted to delete one of the network, we would have realized the opposite. First decrement the global variable and then delete the line for the newtork configuration.
+
+
+
 \section{Summary}
+This chapter reviewed the whole implementation design and deployment phase of our wireless monitoring tool. Precise information about the components of the system, \texttt{NetwObserver} were detailed in discussed throughout this chapter. With this better understanding of how the applications works we can, in the following chapters, examine the results collected during the deployment phase. 
