@@ -1,4 +1,4 @@
-\begin{thebibliography}{40}
+\begin{thebibliography}{41}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -243,7 +243,12 @@ Jouni Malinen.
 \newblock Developer's documentation for wpa\_supplicant and hostapd, 2012.
 \newblock URL \url{http://hostap.epitest.fi/wpa_supplicant/devel/}.
 
-\bibitem[Malinen(2009)]{wpa-supplicant-devel}
+\bibitem[Freedom(2013)]{wpa-supplicant-devel}
+OpenWrt~Wireless Freedom.
+\newblock Cross compile, 2013.
+\newblock URL \url{http://wiki.openwrt.org/doc/devel/crosscompile}.
+
+\bibitem[Malinen(2009)]{crosscompile}
 Jouni Malinen.
 \newblock wpa\_supplicant, hostapd - developer's documentation, 2009.
 \newblock URL \url{http://w1.fi/wpa_supplicant/wpa_supplicant-devel.pdf}.

@@ -37,6 +37,8 @@ Warning--entry type for "wpa-supplicant" isn't style-file defined
 --line 396 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "wpa-supplicant-devel" isn't style-file defined
 --line 403 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "crosscompile" isn't style-file defined
+--line 410 of file Bibliographie/Bibliography.bib.bib
 Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" has a comma at the end for entry article2
 while executing---line 1233 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
@@ -60,45 +62,45 @@ Warning--empty year in snmp
 Warning--empty year in eduroamRadius
 Warning--empty year in intermapper
 Warning--empty year in tplink
-You've used 40 entries,
+You've used 41 entries,
             2481 wiz_defined-function locations,
-            780 strings with 10808 characters,
-and the built_in function-call counts, 12385 in all, are:
-= -- 1011
-> -- 602
-< -- 29
-+ -- 258
-- -- 176
-* -- 787
-:= -- 1992
-add.period$ -- 147
-call.type$ -- 40
-change.case$ -- 76
-chr.to.int$ -- 38
-cite$ -- 51
-duplicate$ -- 612
-empty$ -- 1226
-format.name$ -- 228
-if$ -- 2660
+            783 strings with 10879 characters,
+and the built_in function-call counts, 12642 in all, are:
+= -- 1033
+> -- 609
+< -- 30
++ -- 262
+- -- 178
+* -- 798
+:= -- 2031
+add.period$ -- 150
+call.type$ -- 41
+change.case$ -- 78
+chr.to.int$ -- 39
+cite$ -- 52
+duplicate$ -- 626
+empty$ -- 1256
+format.name$ -- 231
+if$ -- 2717
 int.to.chr$ -- 3
-int.to.str$ -- 41
+int.to.str$ -- 42
 missing$ -- 15
-newline$ -- 234
-num.names$ -- 120
-pop$ -- 435
+newline$ -- 239
+num.names$ -- 123
+pop$ -- 447
 preamble$ -- 1
-purify$ -- 40
+purify$ -- 41
 quote$ -- 0
-skip$ -- 432
+skip$ -- 444
 stack$ -- 0
-substring$ -- 134
-swap$ -- 98
+substring$ -- 136
+swap$ -- 100
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 265
+type$ -- 272
 warning$ -- 11
-while$ -- 83
+while$ -- 85
 width$ -- 0
-write$ -- 540
+write$ -- 552
 (There were 6 error messages)

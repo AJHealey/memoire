@@ -344,7 +344,7 @@ Thanks to that function, complete data about the \texttt{SSID} of the network, t
 Let's now analyze the second thread. We can divide the work of this thread into four categories. It handles the main connection loop and also performs a scan, checks the availability of the services and, most importantly, creates the log file and sends it to our server. 
 
 \begin{description}
-	\item[Connection loop]: This is the core part of our monitoring system. Indeed, the loop embeds the key processes of our tool. The choice we have made for the loop is the following: first, the program performs a scan of the networks available around the router and the results are written inside the log file. Then the connection loop begins and for each network, the supplicant tries to establish a connection. Then for each network, once the connection is established, the availability of the selection of services is tested in order to see if they are reachable when connected to that particular network. Finally the supplicant is disconnected from the current network and the process restarts for the next one. After two entire loops, the log file is closed and sent to the server. A new file is then opened and the loop starts again. The following pseudo-code gives a better understanding of how the loop works.\\
+	\item[Connection loop]: This is the core part of our monitoring system. Indeed, the loop embeds the key processes of our tool. The choice we have made for the loop is the following: first, the program performs a scan of the networks available around the router and the results are written inside the log file. Then the connection loop begins and for each network, the supplicant tries to establish a connection. Then for each network, once the connection is established, the availability of the selection of services is tested in order to see if they are reachable when connected to that particular network. Finally the supplicant is disconnected from the current network and the process restarts for the next one. After five entire loops, the log file is closed and sent to the server. A new file is then opened and the loop starts again. The following pseudo-code gives a better understanding of how the loop works.\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Connection loop pseudo-code}]
 WHILE 1
@@ -353,7 +353,7 @@ WHILE 1
 		CALL execute_action with ACTION_CONNECT, network
 		CALL services_loop
 		CALL log_event with LOG_PRINT_STRUCT
-		IF number of loops = 2 AND network = last THEN
+		IF number of loops = 5 AND network = last THEN
 			CALL fclose with file
 			CALL send_log
 			CALL fopen with file path
@@ -383,7 +383,7 @@ struct scan_results *curr_scan = NULL;
 	
 	For each line of the scan results we extract the \texttt{BSSID}, the frequency, the signal, the flags and the \texttt{SSID} of the network the AP broadcasts. All this data is stored into one node and, as for the other linked list seen before, the node is either the first one or is added to the others. Once all the results from the buffer has been parsed and inserted into the linked list, the program automatically adds the scan results into the log file. For the log file we have decide to keep only the \textit{bssid}, \textit{freq}, \textit{signal} and \textit{signal} variables.
 
-	\item[Services checking process]: This is a special feature we have implemented in our monitoring tool. The idea is to emulate the behavior of a lambda user that connects to one of the networks. We verify that a list of services is reachable once connected to the network. The process is divided in two parts. First we check if the two \texttt{DNS} servers (\texttt{130.104.1.1} and \texttt{130.104.1.2}) are accessible. To do that we query the two servers by forging and sending a special \texttt{DNS} query packet and we analyze the response received. After that we performs an availability check on a list of selected websites. We check the ten most visited websites in the world, according to Alexa\footnote{http://www.alexa.com/topsites} and removing the Chinese ones, and we add the main websites the clients of the UCL's network often visit. Here is the complete list:
+	\item[Services checking process]: This is a special feature we have implemented in our monitoring tool. The idea is to emulate the behavior of a lambda user that connects to one of the networks. We verify that a list of services is reachable once connected to the network. The process is divided in two parts. First we check if the two \texttt{DNS} servers (\texttt{130.104.1.1} and \texttt{130.104.1.2}) are accessible. To do that we query the two servers by forging and sending a special \texttt{DNS} query packet and we analyze the response received. After that we performs an availability check on a list of selected websites. We check the ten most visited websites in the world, according to Alexa\footnote{http://www.alexa.com/topsites} (we made sure to remove the Chinese ones), and we add the main websites the clients of the UCL's network often visit. Here is the complete list:
 	\begin{itemize}
 		\item[-] \texttt{DNS} (\texttt{130.104.1.1})
 		\item[-] \texttt{DNS} (\texttt{130.104.1.2})
@@ -508,22 +508,22 @@ The scheduler in \texttt{Celery} is called \emph{beat} and its only responsibili
 
 \section{Extensions and Portability}
 
-In this section we give some further details about the overall portability of our applications and how extensions can be added to the source code.
+In this section we give some further details about the overall portability and modularity of our application and how extensions can be added to the source code in order to provide other features.
 
 \subsection{Probe}
-The active monitoring program has been designed to work only with the UCL's wireless network. Yet some additions and modifications of the source code can be realized in order to extend it. To illustrate that, let's detail the two steps to follow in order to monitor a new UCL's network that uses the same authentication process as the five others.
+The active monitoring program has been designed to work only with the UCL's wireless network. Yet some additions and modifications of the source code can be realized in order to extend it. To illustrate that, let's detail the two modification steps to realize in order to monitor a new UCL's network that uses the same authentication process as the five others.
 
-\subsubsection{Adding a new network}
-The specifications of the new network are the following.
+\subsubsection*{Adding a new network}
+Let's take a fake network for the sake of example. The specifications of the new network are the following.
 
-\begin{description}
-	\item [SSID]: test.UCLouvain
-	\item [Key Management]: \texttt{WPA-EAP}
-	\item [EAP-Method]: \texttt{TTLS}
-	\item [Login]: test@wifi.uclouvain.be
-	\item [Password]: pass
-	\item [Inner authentication]: \texttt{PAP}
-\end{description}
+\begin{itemize}
+	\item [-] \texttt{SSID}: test.UCLouvain
+	\item [–] Key Management: \texttt{WPA-EAP}
+	\item [-] \texttt{EAP}-Method: \texttt{TTLS}
+	\item [-] Login: test@wifi.uclouvain.be
+	\item [-] Password: passwd
+	\item [-] Inner authentication: \texttt{PAP}
+\end{itemize}
 
 The first thing to do is to increment the global variable \texttt{NUM\_OF\_NETWORKS} since it stores the number of networks used throughout the execution of the application.\\
 
@@ -534,10 +534,12 @@ The first thing to do is to increment the global variable \texttt{NUM\_OF\_NETWO
 The final step is to add the network specifications in the \texttt{create\_networks()} function. The network will be configured with the others when the program starts. Here is the line to add the to function.\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Small log file example}]
-config_network(5, "test.UCLouvain", "WPA-EAP", "TTLS", NULL, "test@wifi.uclouvain.be", "pass", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP");
+config_network(5, "test.UCLouvain", "WPA-EAP", "TTLS", NULL, "test@wifi.uclouvain.be", "passwd", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP");
 \end{lstlisting}
 
-As we can see, it is very easy to add a network. If we wanted to delete one of the network, we would have realized the opposite. First decrement the global variable and then delete the line for the newtork configuration.
+As we can see, it is very easy to add a network. If we wanted to delete one of the network, we would have realized the opposite. First decrement the global variable and then delete the line for the newtork configuration. 
+
+The tricky part of working with \texttt{OpenWrt} is the compilation phase. Indeed, if we want our program to run on the router, we have to \textit{cross compile} it. This is due to the fact that the router uses a distinctly different architecture than a Linux development box. Also there is not enough memory space on the router to install a compiler and compile the code natively. To cross compile we need the \texttt{OpenWrt SDK} which is a special compiler and development environment. Details about the cross compilation can be found in \cite{crosscompile}.
 
 
 
