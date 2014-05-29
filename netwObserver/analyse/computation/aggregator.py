@@ -223,7 +223,7 @@ def getLastScan(probe):
 			tmp = sum(v["signalStrength"])/float(len(v["signalStrength"]))
 			v["signalStrength"] = tmp
 
-		return result
+		return {"date": timezone.localtime(lastLog.date),"results":result}
 
 
 	except ObjectDoesNotExist:
