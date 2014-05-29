@@ -1,7 +1,7 @@
 from datetime import datetime,timedelta
 from django.utils import timezone
 from django.db.models import Max, Min
-from gatherer.models import WismEvent, DHCPEvent, RadiusEvent, MobileStation, AccessPoint, APSnapshot, APIfSnapshot, OperationalError
+from gatherer.models import *
 from django.core.exceptions import ObjectDoesNotExist
 
 from django.conf import settings
