@@ -39,7 +39,7 @@
 			<th>Mac Address</th>
 			<th>Link</th>
 			<th>Average Signal Strength</th>
-			<th>Available SSID</th>
+			<th>Detected SSID</th>
 			<th>Frequencies</th>
 		</tr>
 	</thead>
@@ -49,11 +49,11 @@
 			<td>{{ap.ap.name}}</td>
 			<td>{{mac}}</td>
 			<td>{{ap.ap.get_ethernetLinkSpeed_display}}</td>
-			<td>{{ap.signalStrength}}</td>
+			<td>{{ap.signalStrength}} dBm</td>
 			<td>
 				<ul class="list-unstyled">
 					{%for ssid in ap.ssid%}
-					<li>{{ssid}} dBm</li>
+					<li>{{ssid}}</li>
 					{%endfor%}
 				</ul>
 			</td>
