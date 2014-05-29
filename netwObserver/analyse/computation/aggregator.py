@@ -205,3 +205,26 @@ def getAllProbes():
 		probes.add(log.probe)
 	return probes
 
+def getLastScan(probe):
+	try:
+		result = {}
+		lastLog = ProbeLog.objects.filter(probe=probe).latest(field_name='date')
+		lastTest = lastLog.probetest_set.all().last()
+
+		for scan in lastTest.probescanresult_set.all():
+			if scan.ap.macAddress not in result:
+				result[scan.ap.macAddress] = {"ap": scan.ap, "ssid":set(), "frequency":set(), "signalStrength":[]}
+			
+			result[scan.ap.macAddress]["ssid"].add(scan.ssid)
+			result[scan.ap.macAddress]["frequency"].add(scan.frequency)
+			result[scan.ap.macAddress]["signalStrength"].append(scan.signalStrength)
+
+		return result
+
+	except ObjectDoesNotExist:
+		return {}
+
+
+
+
+
