@@ -2,6 +2,7 @@ from django.shortcuts import render
 from analyse.computation import aggregator
 from analyse.observation import monitoring
 from gatherer.models import AccessPoint
+from django.core.exceptions import ObjectDoesNotExist
 
 from datetime import datetime
 
@@ -46,9 +47,12 @@ def wifiAP(request, order='name'):
 	context["allAP"] = AccessPoint.objects.all().order_by('name')
 
 	if request.method == 'GET' and 'selectedAP' in request.GET:
-		context["ap"] = AccessPoint.objects.get(id=int(request.GET['selectedAP']))
-		context["apData"] = aggregator.getAPData(context["ap"])
-		context["interfaceData"] = aggregator.getAllIfData(context["ap"])
+		try:
+			context["ap"] = AccessPoint.objects.get(id=int(request.GET['selectedAP']))
+			context["apData"] = aggregator.getAPData(context["ap"])
+			context["interfaceData"] = aggregator.getAllIfData(context["ap"])
+		except:
+			pass
 
 	return render(request, "analyse/wifiAP.html", context)
 
@@ -78,7 +82,13 @@ def wifiProbes(request):
 	context['section'] = 'probes'
 	
 	context["allProbe"] = aggregator.getAllProbes()
-
+	
+	if request.method == 'GET' and 'selectedProbe' in request.GET:
+		try:
+			context["probe"] = MobileStation.objects.get(id=int(request.GET['selectedProbe']))
+			context["lastScan"] = aggregator.getLastScan(context["probe"])
+		except:
+			pass
 
 	return render(request, "analyse/wifiProbe.html", context)
 
