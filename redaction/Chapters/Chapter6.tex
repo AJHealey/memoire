@@ -17,48 +17,81 @@
 %OpenSSL
 %Aruba AP70 was originally designed to be a commercial AP instead of a wireless AM, its processing capability is limited: 266-MH MIPS 4Kc CPU, 28-MB RAM, and 8-MB flash memory storage
 \section{Analysis}
+The purpose of the active monitoring is, as mentioned before, to simulate a user on the network and make a bunch of tests in order to get a live overview of the network status. During the connection loop, data is gathered inserted into the log file. We have decided to focus on several metrics. As a reminder, here are the data we find into the log file.
 
-
-
-\section{Simulation of a user}
-We use our \texttt{OpenWrt} routers as probes that simulate the behavior of a lambda user that connects to the university network. In order to do that, we have implemented a \texttt{C} program using \texttt{wpa\_supplicant} and its control interface. This program, launched by the router at boot, tries to establish a connection with each one of the five \texttt{VLANs} of the UCL (i.e. \texttt{student.UCLouvain}, \texttt{UCLouvain}, \texttt{visiteurs.UCLouvain}, \texttt{UCLouvain-prive} and \texttt{eduroam}). During that connection process we compute the time taken by \texttt{wpa\_supplicant} to get a connection and the time taken by \texttt{udhcpc} to get an IP address. Thanks to those information we can approximate the overall quality perceived by the normal users when they want to get an access to the Internet inside the UCL. Beside that, our program also checks if a selection of the most used services by a user are reachable with each of the \texttt{VLANs}. We have decided to check the reachability of the following services:
 \begin{itemize}
-	\item[-] \texttt{www.google.be}
-	\item[-] \texttt{www.smtp.gmail.com}
-	\item[-] \texttt{www.github.com}
-	\item[-] \texttt{www.uclouvain.be}
-	\item[-] \texttt{www.icampus.uclouvain.be}
+	\item [-] Scan results
+	\item [-] APs tried \texttt{BSSIDs}
+	\item [-] AP connected to \texttt{BSSID}
+	\item [-] Time elapsed during the connection establishment
+	\item [-] Time elapsed till an \texttt{IP} address is received
+	\item [-] Services reachability results
 \end{itemize}
 
-We add these additional information to the log file our program creates and sends to our server for parsing and analysis.
+In this chapter we discuss about the analysis and the findings we made after having deployed our active monitoring tool on the UCL's network. For each data collected, we detail the results we have and the analysis we can make with them. In the last section, we also explain the limitations we had to face during the development of this application.
 
-\subsection{Services Availability}
+% l environnement du router
+% genre le signal des point d acces
+% tu le pose quelque part et tu vois si la y a des AP avec un bon signal 
+% tu dis que c est cool si tu veux voir si la connection d un endroit est bonne toute la journee
+% si l environnement RF change etc
+
+\section{Scanning}
+The first part of the log file aggregates all the scan results performed by the supplicant before connecting to a network. Those information are quite interesting since they allow us to get live details about the current environment of the router. Thanks to those results we have a full overview of the signal strength of all the surrounding access points as well as their frequencies and the \texttt{SSID} they broadcast. By plotting these information on a graph we are able to make some analysis and conclusion.
+
+On the following graph we can see how the signal of an access point is evolving during the day. 
+
+[INSERT GRAPH HERE]
 
 
 
+\section{Access Points Interactions}
 
-\section{Access Point Association}
+
+\subsection{Choice of the Access Point}
+
+Comparing the scan results for each AP and the APs tried and the one it has a connection with is quite interesting. Indeed, after having performed several tests, we have observed that the device does not always connect to the best AP (i.e. the one with the best signal strength).
+
+
+
+\subsection{Access Point Association}
 
 \subsection{Association Rejected}
 
-\subsection{Signal Strength}
-
-\subsection{Disconnection}
-%(sometimes when the daemon gets a connection with an AP for one of the networks it might get abruptly disconnected from that AP but restarts automatically a new connection with another AP for the same network. We keep track of that)
-
-%\subsection{Choice of the Access Point}
-%The first thing our program does when it starts its connection loop is to perform a scan of the networks available where the probe is placed and to write the results inside the log file. Among the results and for each network we have decided to keep the network \texttt{BSSID}, the \texttt{Signal Strength} of the network and its \texttt{SSID}. Those data are interesting for our analysis. Indeed, when the router tries to get a connection, it first tries to associate with an Access Point. But there could be several APs in the area and he might be rejected from one or several of them. If its association request is rejected by one AP, \texttt{wpa\_supplicant} will try to associate with another one, and so on until the request is accepted. Our program gathers all the \texttt{BSSID} of the APs it had an association request with. 
-%Comparing the scan results for each AP and the APs tried and the one it has a connection with is quite interesting. Indeed, after having performed several tests, we have observed that the device does not always connect to the best AP (i.e. the one with the best signal strength).
-
-\section{Time Durations}
 
 \subsection{Connection Establishments}
 
+\subsection{Disconnection}
 
+
+
+
+\section{Time Durations}
 \subsection{DHCP Requests}
 
 
+
+\section{Services Availability}
+
+
+
+
+
+
+
+
+%(sometimes when the daemon gets a connection with an AP for one of the networks it might get abruptly disconnected from that AP but restarts automatically a new connection with another AP for the same network. We keep track of that)
+
+
+
+
+
+
+
+
 \section{Limitations}
+
+
 
 
 \section{Summary}
@@ -66,5 +99,4 @@ We add these additional information to the log file our program creates and send
 % Temps de connection
 % Deconnection
 
-TODO
  %https://chromium-review.googlesource.com/#/c/183720/
