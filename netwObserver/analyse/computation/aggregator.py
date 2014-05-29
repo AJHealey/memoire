@@ -14,7 +14,7 @@ def getWismLogsByCategory():
 	stats = {}
 	## Logs More important than informational (level 5 at least)
 	logs = WismEvent.objects.filter(severity__lte=5)
-	categories = logs.values_list('category', flat=True).distinct()
+	categories = set(logs.values_list('category', flat=True))
 	for cat in categories:
 		stats[cat] = logs.filter(category=cat).count()
 
@@ -23,7 +23,7 @@ def getWismLogsByCategory():
 def getWismLogsBySeverity(cat='', severity=5):
 	result = {}
 	logs = WismEvent.objects.filter(severity__lte=severity).filter(category=cat)
-	for severity in logs.values_list('severity', flat=True).distinct():
+	for severity in set(logs.values_list('severity', flat=True)):
 		result[severity] = logs.filter(severity=severity)
 
 def getDhcpLogByType():
@@ -230,9 +230,32 @@ def getLastScan(probe):
 		return {}
 
 
-def getLastConnectionResult(probe):
-	lastLog = ProbeLog.objects.filter(probe=probe).latest(field_name='date')
-	tests = lastLog.probetest_set.all()
+def getConnectionResult(probe,since=None):
+	try:
+		result = {}
+		logs = ProbeLog.objects.filter(probe=probe)
+		
+		if since != None:
+			logs.filter(date__gte=since)
+
+		tests = ProbeTest.objects.filter(log__in=logs)
+		connectionResults = ProbeConnectionResult.objects.filter(test__in=tests)
+
+		ssids = connectionResults.values_list('ssid', flat=True)
+		for ssid in ssids:
+			result[ssid] = []
+			ssidResults = connectionResults.filter(ssid=ssid).order_by("date")
+			for con in ssidResults:
+				result[ssid].append({"connection":con, "times":con.timecheck_set.all(), "services":con.servicecheck_set.all()})
+
+
+		return result
+
+
+	except:
+		return []
+
+
 
 
 
