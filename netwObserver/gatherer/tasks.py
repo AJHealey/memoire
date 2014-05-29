@@ -6,7 +6,7 @@ from gatherer.snmp import getter
 from celery import shared_task
 from celery.signals import celeryd_init
 from gatherer.probe import responderClear
-from gatherer.models import CurrentTask
+from gatherer.models import CurrentTask, OperationalError
 from threading import Lock
 from datetime import datetime, timedelta
 
