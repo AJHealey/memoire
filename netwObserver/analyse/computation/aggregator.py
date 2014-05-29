@@ -199,7 +199,7 @@ def getSpeed(start, end, time):
 	return (speed/1048576)*8
 
 
-def getAllProbe():
+def getAllProbes():
 	probes = set()
 	for log in ProbeLog.objects.all():
 		probes.add(log.probe)
