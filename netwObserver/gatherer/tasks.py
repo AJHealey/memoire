@@ -76,6 +76,6 @@ def snmpRAPDaemon():
 
 @celeryd_init.connect(sender='responder@maltesse.info.ucl.ac.be')
 def startResponder(conf=None, **kwargs):
-	responderClear.responder()
+	print("test")
 
 
