@@ -49,7 +49,7 @@
 			<td>{{ap.ap.name}}</td>
 			<td>{{mac}}</td>
 			<td>{{ap.ap.get_ethernetLinkSpeed_display}}</td>
-			<td>{{ap.signalStrength}} dBm</td>
+			<td>{{ ap.signalStrength|floatformat:-2 }} dBm</td>
 			<td>
 				<ul class="list-unstyled">
 					{%for ssid in ap.ssid%}

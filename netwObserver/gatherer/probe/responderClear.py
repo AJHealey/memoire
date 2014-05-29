@@ -45,7 +45,6 @@ def handler(clientsocket):
 		while len(data) < dataSize :
 			data += clientsocket.recv(1024)
 
-		clientsocket.close()
 		logParser.probeParser(data.decode())
 		#print("%s" % data.decode())
 		#print("[*] Connection closed.")
@@ -54,6 +53,10 @@ def handler(clientsocket):
 
 	except Exception as e:
 		OperationalError(source='Probe Responder', error='%s' % e).save()
+
+	finally:
+		clientsocket.close()
+
 
 if __name__ == '__main__':
 	responder()

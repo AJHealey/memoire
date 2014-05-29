@@ -60,32 +60,32 @@ def getConnectionResult(probeTest,connection):
 def probeParser(data):
 	""" Parse a probe log
 	"""
-	logContent = json.loads(data)
+	try:
+		logContent = json.loads(data)
 
-	try: 
 		probe, created = MobileStation.objects.get_or_create(macAddress=logContent["mac"])
-	except IntegrityError:
 		# Handle possible race condition (get_or_create not thread safe)
 		probe = MobileStation.objects.get(macAddress=logContent["mac"])
 
-	try:
 		probeLog = ProbeLog(date=dateParser(logContent["date"]),probe=probe)
 		probeLog.save()
-	except IntegrityError:
-		return
 
-	for log in logContent["log"]:
-		test = ProbeTest(log=probeLog)
-		test.save()
-		# Get Scan Results
-		for scan in log["scan"]:
-			try:
-				getScanResult(test,scan)
-			except:
-				continue
-		#Get Connection results
-		for connection in log["connections"]:
-			getConnectionResult(test,connection)
+		for log in logContent["log"]:
+			test = ProbeTest(log=probeLog)
+			test.save()
+			# Get Scan Results
+			for scan in log["scan"]:
+				try:
+					getScanResult(test,scan)
+				except:
+					continue
+			#Get Connection results
+			for connection in log["connections"]:
+				getConnectionResult(test,connection)
+
+	except IntegrityError:
+		pass
+
 
 
 def wismParser(infos):
