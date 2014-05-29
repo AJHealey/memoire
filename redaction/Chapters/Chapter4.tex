@@ -6,34 +6,34 @@
 \lhead{Chapter 4. \emph{Monitoring Tool - Part 2}} 
 
 \section{NetwObserver}
-The first step in the system's development was to select the technologies adapted to the problem. Because we had a lot of log files to parse, we have started the implementation using \texttt{Python}. \texttt{Python} has a strong integration of the strings and lists. It is quite easy to generate a logs parser and to keep the code neat thanks to its very simple syntax.
-As more features were added, we needed to structure the system in a way that makes it easily accessible. The system is a network monitoring tool and because of that it has to be accessible from anywhere and, most of all, it has to be easy to use. So, we have decided to implement it as a web application. This application is usable from any computer without requiring any installation. The network administrators can manage and maintain the monitoring tool directly on the server and the updated system will be accessible directly for every users.
+The first step in the system's development was to select the technologies adapted to the problem. Because we had a lot of log files to parse, we have started the implementation using \texttt{Python}. Despite the fact that \texttt{Python} has poor computational performances and bad memory management, it is fine for a prototype. More, \texttt{Python} has a strong integration of the strings and lists. It is quite easy to generate a log parser and to keep the code neat thanks to its very simple syntax.
+As more features were added during the development phase, we needed to structure the system in a way that makes it easily accessible. Since this  is a network monitoring tool it has to be accessible from anywhere and, most of all, it has to be easy to use. So, we have decided to implement it as a web application. This application is usable from any computer without requiring any installation. The network administrators can manage and maintain the monitoring tool directly on the server and the updated system will be accessible directly for every users.
 
 \subsection{Django: A High-Level Python Web Framework}
 As presented by its developers, \texttt{Django} is a "web framework for perfectionists with deadlines"\footnote{\url{https://www.djangoproject.com/}}. \texttt{Django} allows to achieve a modular structure quite easily and provides everything the developer needs to add new components to the application. A \texttt{Django} application is composed of several modules that exist independently and interact with each other through the database.
-Moreover, Django adheres to the DRY\footnote{\url{http://c2.com/cgi/wiki?DontRepeatYourself}} principle.
+Moreover, Django adheres to the DRY\footnote{Don't Repeat Yourself (\url{http://c2.com/cgi/wiki?DontRepeatYourself)}} principle.
 
 \begin{description}
   \item[Don't Repeat Yourself !] \hfill \\
   Every piece of knowledge must have a single, unambiguous, authoritative representation within the system.
 \end{description}
 
-When we used this framework, we focused on writing and defining each element once and at the right place. Maintainability is another important feature of our system. Having duplicated code makes it difficult to maintain and to keep the application coherent.
+When we used this framework, we focused on writing and defining once each element and at the right place. Maintainability is another important feature of our system. Having duplicated code makes it difficult to maintain and to keep the application coherent.
 
-\texttt{Django} uses a variation of the Model-View-Controller model called \emph{Model-View-Template} \cite{mvt}. The main difference with the standard \texttt{MVC} model is that \texttt{Django} is not about states. Browser does not evolve from one state to another, every request is done from scratch. In the \texttt{MVC} model, the Controller updates the View and the Model accordingly to the events. That is not the case here because each time something is modified (e.g. a new insertion in the database) we start from the beginning. That is not a problem, it is how \texttt{HTTP} works.
+\texttt{Django} uses a variation of the Model-View-Controller model called \emph{Model-View-Template} \cite{mvt}. The main difference with the standard \texttt{MVC} model is that \texttt{Django} is not about states. The browser does not evolve from one state to another, every request is done from scratch. In the \texttt{MVC} model, the Controller updates the View and the Model accordingly to the events. That is not the case here because each time something is modified (e.g. a new insertion in the database) we start from the beginning. That is not a problem, it is how \texttt{HTTP} works.
 
 \begin{description}
 \item[Model] \hfill \\
 The first elements that compose the system are the entities manipulated by the application. A Model is a representation of an element of the domain. Each model encapsulates all the data and information required to understand it.
 
 \item[View] \hfill \\
-The main task of the View is to handle the \texttt{HTTP} requests. It receives a \texttt{HTTP} request and returns an \texttt{HTTP} response.
+The main task of the View is to handle the \texttt{HTTP} requests. It receives an \texttt{HTTP} request and returns an \texttt{HTTP} response.
 
 \item[Template] \hfill \\
 It represents the \texttt{HTTP} responses. It provides a generic answer and the View fulfills the missing parts (most of the time by interrogating the database).
 \end{description}
 
-Like most of the modern web frameworks, \texttt{Django} is built using the \emph{Object-relational mapping} technique. The purpose is to make a bridge between the object manipulated by \texttt{Python} and the database entries. The architecture respects an \emph{Active-record pattern} that tied each object to a row in the database. It allows to focus on the logic of the application and to write code easily. We can do more with less code. The main drawback of such pattern, is that developers tend to forget the database behind it. Even if \texttt{Django} is optimized to translate objects in database entities (and in the other way around), it is important to design the model by thinking about the database hidden behind. Every access is translated by \texttt{Django} but poor requests or a weak design could lead to really poor performances.
+Like most of the modern web frameworks, \texttt{Django} is built using the \emph{Object-relational mapping} technique. The purpose is to make a bridge between the object manipulated by \texttt{Python} and the database entries. The architecture respects an \emph{Active-record pattern} that ties each object to a row in the database. It allows to focus on the logic of the application and to write code easily. We can do more with less code. The main drawback of such pattern, is that developers tend to forget the database behind it. Even if \texttt{Django} is optimized to translate objects into database entities (and in the other way around), it is important to design the model by thinking about the database hidden behind. Every access is translated by \texttt{Django} but poor requests or a weak design could lead to really poor performances.
 
 \subsection{MySql}
 Even if most of the time we do not make direct transactions with the database, it is important to chose the right \texttt{DBMS}\footnote{Database Management System}. At the beginning, the capacity of the application was quite limited and we used \texttt{SqLite}\footnote{\url{https://sqlite.org/}}. \texttt{SqLite} has the particularity not to use a client-server model. It is directly managed inside the application and it is the one used by default in \texttt{Django}. It fits really well to small applications because all actions are internally handled and it does not require to install an external \texttt{DBMS} to handle the transactions. But quickly, we reached the limits of \texttt{SqLite} and we chose to migrate to \texttt{MySql}. \texttt{NetwObserver} generates several threads and makes a lot of concurrent accesses to the database. Such utilization was not adapted to \texttt{SqLite} and made the application unstable. The main issue was that, while the application was gathering its data, it needed to still be available to the users. \texttt{SqLite} have some difficulties to handle insertions of a lot of new entries while getting concurrent requests from the users.
@@ -64,7 +64,7 @@ The \texttt{RADIUS} server generates logs about the authentication of the users.
 2013-10-21T17:26:07+02:00 radus1.sri.ucl.ac.be radiusd[1523]: [ID 702911 local3.notice] Login OK: [53764smo@eur.nl] (from client WiSMPythagore-B port 29 cli e4-d5-3d-89-af-51)
 \end{lstlisting}
 
-Which such information we can potentially tell when and where a user is. On the other hand, it allows to detect any device that tries to connect with different logins. That could be considered as a strange behavior and might need some investigations. As in other modules, it is very important to limit the features implemented because it could cause an ethical problem. Even if we want to make the application as complete as possible, we need to precisely define what is required, how to do it and what are the boundaries. These considerations will be discussed further in the last chapter.
+With such information we can potentially know when and where a user is. On the other hand, it allows to detect any device that tries to connect with different logins. That could be considered as a strange behavior and might need some investigations. As in other modules, it is very important to limit the features implemented because it could cause an ethical problem. Even if we want to make the application as complete as possible, we need to precisely define what is required, how to do it and what are the boundaries. These considerations will be discussed further in the last chapter.
 
 
 \paragraph{Controller}
@@ -80,22 +80,26 @@ The richest source of logs is the \emph{controller}. With its central position i
 The messages generated are very well defined and detailed in the related documentation. Their structure facilitates the parsing process. Each message belong to a category and has a severity level. That allows to filter the useless ones and immediately detect the more important ones.
 
 \subsubsection{SNMP}
-The other main source of information is the SNMP protocol installed on the \emph{controller}. This mechanism delivers a lot of indicators about the current state of the network. An important characteristic is the fact that the information is not the same as the log. While the log file continuously represents the situation and its evolution, the SNMP requests delivers a snapshot of the controller. It's a fixed representation and a comparison with an older one does not give any information about what happened between the two. For example, if we had 30 people connected to an \emph{access point} at a given time and 40 people one hour later, we can't conclude that ten new people have connected. Maybe the thirty people left and forty new ones had connected. We highlight this because our first architecture tried to push together the information present in the logs and in the SNMP requests. It was a bad idea because the nature of the information was completely different. It resulted in an incoherent representation of the data and made the analysis wrong or completely impossible. To correct this situation, we met Bernard Lambeau and with his advices, we have completely modified our database architecture to make a strong and deliberate separation between the different kind of data.
+The other main source of information is the \texttt{SNMP} protocol installed on the \emph{controller}. This mechanism delivers a lot of indicators regarding the current state of the network. An important characteristic of \texttt{SNMP} is the fact that the information it provides is not the same as the one found in the log files. While the log files endlessly represent the situation of the network and its evolution through time, the \texttt{SNMP} requests deliver a snapshot of the controller. This snapshot is a fixed representation. A comparison with an older one does not give any information about what happened between the two. For example, if we had 30 people connected to an access point, at a given time, and 40 people one hour later, we cannot conclude that ten new people have established a connection with that AP. Maybe during that period of time the first 30 people have left the network and the 40 new ones have entered it. 
 
-As said before, SNMP organizes the information as a tree. The classification of the information is quite intuitive but the main difficulty comes from the size of the tree. Once the interesting part of the tree has been identified, a lot of indicators can be gathered.
+We have decided to highlight this because our first architecture tried to join the information present in the logs and in the \texttt{SNMP} requests. It was a bad idea because the nature of the information is completely different. It resulted in an incoherent representation of the data and made the analysis impossible or totally false. To fix this situation we met Bernard Lambeau and, thanks to his advices, we have completely modified and redesigned our database architecture to make a strong and deliberate separation between the different types of data.
 
-\paragraph{PySNMP} PySNMP is the module that performs the \emph{SNMP} requests. It's a pure python implementation able to perform all the standard operations i.e.\  \emph{get, set and walk}.
+As explained before, \texttt{SNMP} organizes the information as a tree. The classification of the information is quite intuitive but the main difficulty comes from the size of the tree. Once the interesting part of the tree has been identified, a lot of indicators can be gathered.
 
-The \emph{snmp} module is mainly a way to create an abstraction with the \texttt{SNMP} requests. It implements several methods to gather the information and make the links between them. Every request is independent and the module has to be able to know which value corresponds to what element. That's the signification of the \emph{index} attribute in the \emph{Device} model.
+\paragraph{PySNMP} \texttt{PySNMP} is the  module that performs the \texttt{SNMP} requests. It is a pure \texttt{Python} implementation that is able to perform all the standard \texttt{SNMP} operations i.e.\  \emph{get, set} and \emph{walk}.
+
+The \emph{snmp} module is mainly a way to create an abstraction with the \texttt{SNMP} requests. It implements several methods to gather the information and make the links between them. Every request is independent and the module has to be able to know which value corresponds to which element. That is the signification of the \emph{index} attribute in the \emph{Device} model.
+
+
 
 \subsubsection{Active Monitoring}
-The \emph{probe} module manages the connection with the probes. When a probe want to connect to the server, it answers and performs the authentication. When the authentication succeeds, the module will receive the log file generated by the probe. Finally, it will analyse it and translate it in the database.
+The \emph{probe} module manages the connection with the probes. When a probe wants to connect to the server, it answers and performs the authentication. When the authentication succeeds, the module receives the log file generated by the probe. Finally, it analyzes it and inserts all the data collected into the database.
 
 \subsection{Analysis}
-
+%????
 
 \section{Active Probe}
-As explained earlier, besides the gathering of data through the \texttt{SNMP} protocol or the controller logs, we also have an active data gathering process. To do that, we have implemented a \texttt{C} program that runs on an \texttt{OpenWrt} router. The following subsections give, in a first part, more details about the router used during the implementation and the tests phases as well as information about the \texttt{OpenWrt} firmware we have installed on this router. In a second part, the specifications of the program installed on that router is detailed. Information about the components and features added to that program are also explained.\\
+As explained earlier, besides the data gathering via the \texttt{SNMP} protocol and the controller logs, we also have an active data gathering process. Indeed, we have implemented a \texttt{C} program that runs on an \texttt{OpenWrt} router. The following subsections give, in a first part, more details about the router used for the active monitoring as well as information about the \texttt{OpenWrt} firmware we have installed on them. In a second part, the specifications and implementation of the program is discussed. Information about the components and features added to the program are also explained.\\
 
 
 \subsection{TP-LINK Wireless Router}
@@ -125,31 +129,32 @@ Regarding the wireless itself, the \texttt{TL-WR741ND} offers several interestin
 	\item [Functions]: Enable/Disable Wireless radio, WDS bridge, WMM, Wireless Statistics
 	\item [Security]: 64/128/152-bit \texttt{WEP} / \texttt{WPA} / \texttt{WPA2}, \texttt{WPA-PSK} / \texttt{WPA2-PSK}
 \end{description}
+
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=0.26\linewidth]{Pictures/chapter4/router.jpg}
+		\includegraphics[width=0.2\linewidth]{Pictures/chapter4/router.jpg}
 		\caption{TP-LINK TL-WR741ND}
 	\end{center}
 \end{figure}
 
-To summarize, with its 150Mbps wireless data rate and its advanced WiFi security management (\texttt{WPA/WPA2} encryptions), this router provides a rather good base for our active WiFi monitoring program. But in order to be able to execute it on the probes and get results we had to change the firmware of the router with something not proprietary that we can work with and modulate as we wish. This is why we have chosen to replace the original TP-LINK firmware installed on the router with \texttt{OpenWrt}.
+To summarize, with its 150Mbps wireless data rate and its advanced WiFi security management (\texttt{WPA/WPA2} encryptions), this router provides a rather good base for our active WiFi monitoring system. But in order to be able to execute our program on the router and get results we had to change its the firmware with something not proprietary that we can work with and modulate as we want. This is why we have chosen to replace the original TP-LINK firmware with \texttt{OpenWrt} Linux.
 
 
 \subsection{OpenWrt}
-\texttt{OpenWrt}\cite{openwrt} is a highly extensible GNU/Linux distribution for embedded devices. The particularity of \texttt{OpenWrt} is that it is a full-featured, easily modifiable operating system for the routers. Indeed, it offers a fully writable file system and a built-in package manager. Thanks to this package manager, we can install any package we want from a software repository allowing us to customize the device to suit any application. All the restrictions and configurations provided by the vendor within its own firmware installed by default on the router are therefore dropped meaning the device using this distribution can feature functions such as \texttt{SSH} server, \texttt{VPN}, \texttt{BitTorrent client}, custom QoS and so on.
+\texttt{OpenWrt} \cite{openwrt} is a highly extensible GNU/Linux distribution for embedded devices. The particularity of \texttt{OpenWrt} is that it is a full-featured, easily modifiable operating system for routers. Indeed, it offers a fully writable file system and a built-in package manager. Thanks to this package manager, we can install any package we want from a software repository allowing us to customize the device to suit any application. All the restrictions and configurations provided by the vendor within its own firmware installed by default on the router are therefore dropped meaning the device using this distribution can feature functions such as \texttt{SSH} server, \texttt{VPN}, \texttt{BitTorrent client}, custom QoS and so on.
 
-There are several firmwares available for \texttt{OpenWrt}. We have chosen to use the most recent one, \textit{OpenWrt 12.09 - Attitude Adjustment} for our active monitoring solution. Doing so, this ensure a reliable and up-to-date environment to deploy our application.
+There are several firmwares available for \texttt{OpenWrt}. We have chosen to use the most recent one, \textit{OpenWrt 12.09 - Attitude Adjustment}, for our active monitoring solution. Doing so, this ensure a reliable and up-to-date environment for our application.
 
 
 \subsection{Active WiFi Monitoring Solution}
-Our active WiFi monitoring solution is based on a \texttt{C} program running on that \texttt{OpenWrt} router. The program uses the \texttt{wpa\_supplicant} API to be able to connect to different networks. Plus during the connection processes, a log file is created and maintained by the program to write down important information about the network's behavior. 
+As explained earlier, our active WiFi monitoring solution is based on a \texttt{C} program running on an \texttt{OpenWrt} router. The program uses the \texttt{wpa\_supplicant} API in order to connect to the five different networks. During the connection processes, a log file is created and maintained by the program to store important details about the network's behavior. 
 
-On this subsection we first give an overview of \texttt{wpa\_supplicant} and how we use it in our implementation. Then, we explain how our program is structured and what are the key parts that make it work and that make us able to get some insights about the networks in real time.
+On this subsection we first give an overview of \texttt{wpa\_supplicant} and how we use it in our implementation. Then, we explain how our program is structured and what are the key parts that make it work and that make us able to get some insights about the network in real time.
 
 \subsubsection{\texttt{wpa\_supplicant}} %RSN = Robust Security Network
  As defined in \cite{wpa-supplicant}, \texttt{wpa\_supplicant} is a WPA Supplicant for Linux, BSD and Windows with support for WPA and WPA2 (\texttt{IEEE 802.11i/RSN}). Supplicant is the \texttt{IEEE 802.1X/WPA} component that is used in the client stations. It implements key negotiation with a WPA Authenticator and it can optionally control roaming and \texttt{IEEE 802.11} authentication/association of the WLAN driver.
 
- This supplicant uses portable \texttt{C} code and is divided into several separate files containing independent modules besides from the core part. The core part embedded functionality for controlling the network selection, association and configuration while independent modules include code dealing with WPA (such as key handshake, pre-authentication, etc.), \texttt{EAPOL} and \texttt{EAP} state machines and methods. Also, \texttt{wpa\_supplicant} implements a control interface that we use in our program and that can control the operations of the \texttt{wpa\_supplicant} daemon.
+ This supplicant uses portable \texttt{C} code and is divided into several separate files containing independent modules besides from the core part. The core part embedded functionality for controlling the network selection, association and configuration while independent modules include code dealing with \texttt{WPA} (such as key handshake, pre-authentication, etc.), \texttt{EAPOL} and \texttt{EAP} state machines and methods. Also, \texttt{wpa\_supplicant} implements a control interface that we use in our program and that can control the operations of the \texttt{wpa\_supplicant} daemon.
 
 The following figure gives an overview of all the wpa\_supplicant modules and how they interact with each other.
 
@@ -160,13 +165,14 @@ The following figure gives an overview of all the wpa\_supplicant modules and ho
 	\end{center}
 \end{figure}
 
-Within \texttt{wpa\_supplicant} there is a small \texttt{C} file, \texttt{wpa\_ctrl.c} that provides several functions to facilitate the use of that control interface. We have linked this file into program to be able to use that library of functions that can interact and communicate with \texttt{wpa\_supplicant}. Once that file is linked into the program, we can open a connection to the control interface with the \texttt{wpa\_ctrl\_open()} function and we can start sending commands to \texttt{wpa\_supplicant} with the function \texttt{wpa\_ctrl\_request()}. In order to be able to receive messages from the daemon, our program also needs to attach to the control interface using \texttt{wpa\_ctrl\_attach()}.
+Within the \texttt{wpa\_supplicant} source package there is a small \texttt{C} file, \texttt{wpa\_ctrl.c} that provides several functions to facilitate the use of that control interface. We link this file into our program to be able to use that library of functions in order to interact and communicate with \texttt{wpa\_supplicant}. Once that file is linked into our program, we are able to open a connection to the control interface with the \texttt{wpa\_ctrl\_open()} function and we can start sending commands to \texttt{wpa\_supplicant} with the function \texttt{wpa\_ctrl\_request()}. In order to receive messages from the daemon, our program also needs to attach to the control interface using \texttt{wpa\_ctrl\_attach()}.
 
-Several commands can be specified and sent to the \texttt{wpa\_supplicant} daemon but we only use a small selection of them, most of them being unrelated with our subject of study. Here is the list of the commands used in our program and their meaning:
+Several commands can be sent to the \texttt{wpa\_supplicant} daemon but we only use a small selection since most of them are unrelated with our subject of study. Here is the list of the commands we use in our program and their meaning:
+
 \begin{itemize}
 	\item[-] \texttt{SCAN}: This command request the daemon to perform a new BSS\footnote{Basic Service Set. The set composed of the access point and the stations in its coverage zone.} scan.
 
-	\item[-] \texttt{SCAN\_RESULTS}: This is used to get the latest scan results. Those results embed details about the bssid, the frequency, the signal level, the flags and the \texttt{SSID} of each network scanned. The message returned has the same syntax as in the following example representing one entry for each one of the networks of the UCL.\\
+	\item[-] \texttt{SCAN\_RESULTS}: This is used to get the latest scan results. Those results embed details about the bssid, the frequency, the signal level, the flags and the \texttt{SSID} of each network scanned. The message returned has the same syntax as in the following example representing one scan result for each one of the five networks of the UCL.\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Scan results message example}]
 bssid / frequency / signal level / flags / ssid
@@ -177,9 +183,9 @@ bssid / frequency / signal level / flags / ssid
 68:86:a7:30:a0:a4 	2437	-57	[ESS]	UCLouvain-prive
 \end{lstlisting}
 
-	\item[-] \texttt{ADD\_NETWORK}: This command adds a new network with an empty configuration. This network is disabled at first and can be configured afterwards. The command returns a message containing the id of the new network or \texttt{FAIL} on failure. In our case, the program adds five networks at boot for the five networks present within the university's campus.
+	\item[-] \texttt{ADD\_NETWORK}: This command adds a new network with an empty configuration. This network is disabled at first and can be configured using a following command. The \texttt{ADD\_NETWORK} command returns a message containing the id of the new network or \texttt{FAIL} on failure. In our case, the program adds five networks at boot for the five networks present within the university's campus.
 
-	\item[-] \texttt{SET\_NETWORK <network id> <variable> <value>}: Once the networks had been added with the previous command, we can configure them using this particular command. The \textit{variable} of the command uses the same variables and data formats as the standard \texttt{wpa\_supplicant} configuration file. For example, here are the different \texttt{SET\_NETWORK} commands used to configure the \texttt{student.UCLouvain} (with ID=1 for example) that we use in the program.\\
+	\item[-] \texttt{SET\_NETWORK <network id> <variable> <value>}: Once the networks had been added, we can configure them using this particular command. The \textit{variable} of the command uses the same variables and data formats as the standard \texttt{wpa\_supplicant} configuration file. For example, here are the different \texttt{SET\_NETWORK} commands used to configure the \texttt{student.UCLouvain} (with ID=1 for example) that we use in the program.\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Configuration of the \texttt{student.UCLouvain} network}]
 SET_NETWORK 1 ssid "student.UCLouvain"
@@ -191,20 +197,20 @@ SET_NETWORK 1 ca_cert "etc/wpa_supplicant/chain-radius.pem"
 SET_NETWORK 1 pahse2 "auth=PAP"
 \end{lstlisting}
 
-	\item[-] \texttt{SELECT\_NETWORK <network id>}: This command asks the \texttt{wpa\_supplicant} daemon to select a special network specifying its ID. When the network is selected, all the others are disabled.
+	\item[-] \texttt{SELECT\_NETWORK <network id>}: This command asks the \texttt{wpa\_supplicant} daemon to select a special network with the specified ID. When the network is selected, all the others are disabled.
 
-	\item[-] \texttt{DISCONNECT}: Special command to disconnect from the current network.
+	\item[-] \texttt{DISCONNECT}: This command disconnects the supplicant from the current network.
 \end{itemize}
 
-Thanks to those commands our program can control the \texttt{wpa\_supplicant} daemon and is thus able to simulate a typical user's behavior connection to the networks. More information about \texttt{wpa\_supplicant} can be found inside the developer's guide\cite{wpa-supplicant-devel}.
+Thanks to those commands our program can control the \texttt{wpa\_supplicant} daemon and is thus able to simulate a typical user's behavior connecting to the networks. More information about \texttt{wpa\_supplicant} can be found inside the developer's guide \cite{wpa-supplicant-devel}.
 
 
-\subsubsection{WiFi Monitoring Program}
+\subsubsection{Design and Implementation}
 In this section we describe the implementation details of our active monitoring program and how it gathers data about the current state of the networks.
 
-The program is composed of two threads that perform different actions. One thread is only dedicated to the \texttt{wpa\_supplicant} control interface and listens to the incoming events sent from that interface. The second thread is dedicated to the connection loop and to the bunch of tests we performed on the networks. This second thread is also responsible of sending logs to our server for parsing and analysis.
+The program is composed of two threads that perform different actions. One thread is only dedicated to the \texttt{wpa\_supplicant} control interface and listens to the incoming events sent from that interface. The second thread is dedicated to the connection loop and to the bunch of tests we performed on the network. This second thread is also responsible of sending logs to our server for parsing and analysis.
 
-Let's analyze the first thread. The first thing the program does at boot is to start the \texttt{wpa\_supplicant} daemon. We have created an empty configuration file for the supplicant in order to launch it without starting a connection to a special network defined in that file. The configuration file contains the following options:\\
+Let's analyze the first thread. The first thing the program does at boot is to start the \texttt{wpa\_supplicant} daemon. We have created an empty configuration file for the supplicant in order to launch it without starting any connection establishment to the specific network defined in that file. The configuration file contains the following options:\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={\texttt{wpa\_supplicant.conf}}]
 ctrl_interface=/var/run/wpa_supplicant
@@ -212,11 +218,12 @@ eapol_version=1
 ap_scan=1
 fast_reauth=1
 \end{lstlisting}
-\par The first parameter tells \texttt{wpa\_supplicant} to open a control interface that is available for external programs to manage the supplicant. The path \texttt{var/run/wpa\_supplicant} is the recommend directory for sockets. 
+
+\par The first parameter tells \texttt{wpa\_supplicant} to open a control interface that is available for external programs to manage the supplicant. The path \texttt{var/run/wpa\_supplicant} is the recommended directory for sockets. 
 
 The second parameter forces the supplicant to use the \texttt{EAPOL} version 1. Version 2 is available but there are many APs that do not handle that version correctly. In order to have a completely working and portable solution we have set the version number to the default value.
 
-The next parameter is about the AP scanning and selection. Three values are possible for that parameter (0, 1 and 2). The value we choose for the program is 1 and it means that it is the supplicant that initiates scanning and AP selection. We have decided to set that parameter to "1", as for the \texttt{EAPOL} version, we want our program to be used in any situation and infrastructure. With "0", it is the driver that take care of that scanning and selection process and is generally used for wired networks. With the value equals to "2", it is also the driver that performs the process but it only associates with APs using security policy and \texttt{SSID} (not \texttt{BSSID}). It can also force the network to be created immediately regardless of scan results.
+The next parameter is about the AP scanning and selection. Three values are possible for that parameter (0, 1 and 2). The value we choose for the program is 1 and it means that it is the supplicant that initiates scanning and AP selection. We have decided to set that parameter to the default value "1" because, as for the \texttt{EAPOL} version, we want our program to be used in any situation and infrastructure. With "0", it is the driver that is generally used for wired networks. The value "2" is used with special drivers and is generally for ad-hoc networks.
 
 Finally the last parameter is about the \texttt{EAP} fast re-authentication. By default it is enabled for all \texttt{EAP} methods that support it. There is no need to disable this.
 
@@ -227,12 +234,12 @@ The supplicant uses the driver \texttt{nl80211} which is the current standard (\
 system("wpa_supplicant -B -D nl80211 -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf")
 \end{lstlisting}
 
-Once the supplicant is launched we open a connection with the control interface using \texttt{wpa\_ctrl\_attach("/var/run/wpa\_supplicant/wlan0")}. That function returns a pointer to the abstract control interface data and is stored inside an internal \texttt{wpa\_ctrl} structure. The next step is to attach the program to the control interface to receive messages from the daemon. Once that attachment has been performed we start the creation of the networks.
+Once the supplicant is launched we open a connection with the control interface using \texttt{wpa\_ctrl\_attach("/var/run/wpa\_supplicant/wlan0")}. That function returns a pointer to the abstract control interface data and is stored inside an internal \texttt{wpa\_ctrl} structure. The next step is to attach the program to the control interface to receive messages from the daemon. Once that attachment has been performed we start the creation and configuration of the different networks.
 
 That creation is divided into two distinct parts:
 \begin{description}
-	\item [1) Add the networks]: We use a \texttt{for} loop that adds exactly the \texttt{NUM\_OF\_NETWORKS}, defined in the \texttt{C} file, using the command "\texttt{ADD\_NETWORK}". In our case, we add five networks.
-	\item [2) Configure the networks]: Each network has a specific ID and we have implemented a special function \texttt{config\_network()} that configures those previously created networks using the "\texttt{SET\_NETWORK <network id> <variable> <value>}" command. The IDs of the network are the following:
+	\item [1) Add the networks]: We use a \texttt{for} loop that adds exactly \texttt{NUM\_OF\_NETWORKS}, defined in the \texttt{C} file, new networks using the command "\texttt{ADD\_NETWORK}". In our case, we add five networks. Each network has an ID that starts from 0 and that is incremented each time a new network is added.
+	\item [2) Configure the networks]: We have implemented a special function \texttt{config\_network()} that configures those previously created networks using the "\texttt{SET\_NETWORK <network id> <variable> <value>}" command. The IDs of the networks, in our case, are the following:
 		\begin{itemize}
 			\item [-] \texttt{eduroam}: 0
 			\item [-] \texttt{UCLouvain}: 1
@@ -249,7 +256,7 @@ After that creation and configuration phase, the first thread waits for an event
 	\item \texttt{CTRL-EVENT-CONNECTED}
 \end{itemize}
 
-This function is also the core part for collecting data to be written into the log file. Indeed, it is where all the data are stored into structures that will be used later to write the log file. All the information is stored into a set of different structures depending on the type of data. First of all, for each connection to one of the five networks of the campus, there is a main log structure that stores all the information we want to keep for those particular connections. The log structure has six variables.\\
+This function is also the core part for collecting data that has to be written into the log file. Indeed, it is where all the data are stored into structures that will be used later to write the log file. All the information are stored into a set of different structures depending on the type of data. First of all, for each new connection to one of the five networks, there is a main structure, called \textit{log}, that stores all the information we want to keep for those particular connections. The log structure has six variables.\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Log structure}]
 struct log {
@@ -259,17 +266,17 @@ struct log {
 	struct ap_connect *connected;
 	struct ap_time *time;
 	struct check_serv *services;
-}
+};
 \end{lstlisting}
 
-As we can see on the listing above, our implementation uses nested structures. Indeed, besides that main log structure we also have structures that store as linked lists all the information about the APs tried during the association phase and the APs the supplicant might have made a connection with (sometimes when the daemon gets a connection with an AP for one of the networks it might get abruptly disconnected from that AP but restarts automatically a new connection with another AP for the same network. We keep track of that). Each one of these two structures has three variables. First of all the \texttt{BSSID} of the AP the daemon tried to associate or made a connection with, the number of nodes of the linked list and the next node. The following listings give an overview of those two structures.\\
+As we can see, our implementation uses nested structures. Indeed, besides that main log structure we also have structures that store all the information about the APs tried during the association phase and the APs the supplicant have made a connection with. Each one of these two structures has three variables. First of all the \texttt{BSSID} of the AP the supplicant tried to associate or made a connection with, the number of nodes of the linked list and the next node. The following listings give an overview of those two structures.\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Tried APs structure}]
 struct ap_tried {
 	char *bssid;
 	int num;
 	struct ap_tried *next;
-}
+};
 struct ap_tried *first = NULL;
 struct ap_tried *curr = NULL;
 \end{lstlisting}
@@ -279,50 +286,48 @@ struct ap_connect {
 	char *bssid;
 	int num;
 	struct ap_connect *next;
-}
+};
 struct ap_connect *first_connect = NULL;
 struct ap_connect *curr_connect = NULL;
 \end{lstlisting}
 
-
-
-We use one more structure in this function that keeps track of the time the daemon took since the start of the association and authentication phase until the establishment of the connection. And also the time elapsed in order to get an \texttt{IP} address from the \texttt{DHCP} server. Those data are stored into the following structure.\\
+We use one more structure in this function that keeps track of the time the daemon took since the start of the association and authentication phase until the connection establishment. We also keep track of the time elapsed in order to get an \texttt{IP} address from the \texttt{DHCP} server. Those data are stored into the following structure.\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Elapsed time structure}]
 struct ap_time {
 	struct timeb wpa_time;
 	struct timeb dhcp_time;
-}
+};
 \end{lstlisting}
 
 Let's now describe how the function reacts when it receives one of the three special events from the interface by analyzing each one of those messages.
 
 \begin{description}
-	\item[Trying to associate with $<$BSSID$>$ (SSID='$<$SSID$>$' freq=Frequency)]:
-		As explained before, the first thing the supplicant does when it tries to connect to a network is to try to authenticate and associate with one of the AP that broadcasts the network \texttt{SSID}. Here is an example of the what are all the messages received during a connection to the \texttt{student.UCLouvain} network.\\
+	\item[Trying to associate with $<$BSSID$>$ (SSID='$<$SSID$>$' freq=Frequency)]\hfill \\
+		As explained before, the first thing the supplicant does when it tries to connect to a network is trying to authenticate and associate with one of the AP that broadcasts the requested network \texttt{SSID}. Here is an example of the what are all the messages received during a connection establishment to the \texttt{student.UCLouvain} network.\\
 
-\begin{lstlisting}[frame=single,breaklines=true,caption={Example of a connection to the \texttt{student.UCLouvain} network - 1}]
+\begin{lstlisting}[frame=single,breaklines=true,caption={Example of a trying to authenticate and associate with an AP}]
 Successfully initialized wpa_supplicant
 wlan0: SME: Trying to authenticate with 00:1e:bd:65:34:71 (SSID='student.UCLouvain' freq=2437 MHz)
 wlan0: Trying to associate with 00:1e:bd:65:34:71 (SSID='student.UCLouvain' freq=2437 MHz)
 \end{lstlisting}
 
-	As soon as the \texttt{parse\_event()} function receives a "\textit{Trying to associate}" event, it first extracts from that message the \texttt{SSID} of the network. This piece of information is stored into a variable that will be used later when the log file will be filled. The next thing is to create the first node of the linked ap\_tried list, if it is the first AP tried for that network, or to add another node to the linked list. In each node, the \texttt{BSSID} of the AP is stored. Plus, the number of nodes of the linked list, \texttt{num}, is incremented.
+	As soon as the \texttt{parse\_event()} function receives a "\textit{Trying to associate}" event, it first extracts the \texttt{SSID} of the network from the event. This piece of information is stored into a global variable that will be used later when the log file will be filled. The next thing is to create the first node of the linked \textit{ap\_tried} list if it is the first AP tried for that network, or to add another node to the linked list. In each node, the \texttt{BSSID} of the AP is stored. Also, the number of nodes, \texttt{num}, is incremented.
 
-	\item[Associated with $<$BSSID$>$]:
+	\item[Associated with $<$BSSID$>$]\hfill \\
 	Once the association with the AP is completed, the interface sends an association event. Let's continue the example above with the connection to the \texttt{student.UCLouvain} network.\\
 
-\begin{lstlisting}[frame=single,breaklines=true,caption={Example of a connection to the \texttt{student.UCLouvain} network - 2}]
+\begin{lstlisting}[frame=single,breaklines=true,caption={Example of a association with an AP]
 wlan0: Trying to associate with 00:1e:bd:65:34:71 (SSID='student.UCLouvain' freq=2437 MHz)
 wlan0: Associated with 00:1e:bd:65:34:71
 \end{lstlisting}
 
 	In that case, we extract the \texttt{BSSID} of the AP that the daemon is associated with and we store it directly in our main log structure.
 
-	\item[CTRL-EVENT-CONNECTED]:
-	This event means that the daemon is now connected to the AP after the \texttt{EAP} authentication has been realized. These are the messages received to finish our example with a connection to the student network.\\
+	\item[CTRL-EVENT-CONNECTED]\hfill \\
+	This event means that the daemon is now connected to the AP after the \texttt{EAP} authentication has been performed. These are the final messages received in our example.\\
 
-\begin{lstlisting}[frame=single,breaklines=true,caption={Example of a connection to the \texttt{student.UCLouvain} network - 3}]
+\begin{lstlisting}[frame=single,breaklines=true,caption={Example of a connection to the \texttt{student.UCLouvain} network}]
 wlan0: Associated with 00:1e:bd:65:34:71
 wlan0: CTRL-EVENT-EAP-STARTED EAP authentication started
 wlan0: CTRL-EVENT-EAP-PROPOSED-METHOD vendor=0 method=21
@@ -332,16 +337,16 @@ wlan0: WPA: Key negotiation completed with 00:1e:bd:65:34:71 [PTK=CCMP GTK=TKIP]
 wlan0: CTRL-EVENT-CONNECTED - Connection to 00:1e:bd:65:34:71 completed (auth) [id=0 id_str=]
 \end{lstlisting}
 
-	When the function receives this event, there are several actions that are executed. First, the \texttt{BSSID} is extracted from the event and, as for the \textit{Trying to associate} event, the linked ap\_connect list is created or extended at this level. Beside that, the time structure is also filled with \texttt{wpa\_supplicant} connection time and \texttt{DHCP} time. Basically, we evaluate the time taken by \texttt{wpa\_supplicant} to get a connection by starting a timer at the time our program requests a connection with one of the network and we stop the timer when this special event is received. Same for \texttt{DHCP}. We start the timer just after the receiving of the event and before starting the \texttt{DHCP} daemon by using the command \texttt{system("udhcpc -i wlan0")}. As soon as the supplicant has received an \texttt{IP} address we stop the timer. Those time information are stored directly into the ap\_time structure that is nested inside the log structure.
+When the function receives this event, there are several actions that are executed. First, the \texttt{BSSID} is extracted from the event and, as for the \textit{Trying to associate} event, the linked ap\_connect list is created or extended. Besides that, the time structure is also filled with \texttt{wpa\_supplicant} connection time and \texttt{DHCP} time. Basically, we evaluate the time taken by \texttt{wpa\_supplicant} to get a connection by starting a timer at the time our program requests a connection with one of the network and we stop the timer when this special event is received. Same for \texttt{DHCP}. We start the timer just after the receiving of the event and before starting the \texttt{DHCP} daemon by using the command \texttt{system("udhcpc -i wlan0")}. As soon as the supplicant has received an \texttt{IP} address we stop the timer. Those time information are stored directly into the ap\_time structure that is nested inside the log structure.
 \end{description}
 
-Thanks to that function, data about the \texttt{SSID} of the network, the list of all APs that an association with has been tried, the ones the supplicant has established a connection with and the time duration of all those processes are already stored into our main structure.
+Thanks to that function, complete data about the \texttt{SSID} of the network, the list of all APs that the supplicant tried to associate with, the ones it has established a connection with and the time duration of all those processes are already stored into our main structure.
 
 
-Let's analyze the second thread. This thread is the most important in our monitoring tool. Indeed, we can divide its work into four categories. It is going to handle the connection loop. It also performs a scan, checks the availability of the services and, most importantly, it is going to create the log file and send it to our server. 
+Let's now analyze the second thread. We can divide the work of this thread into four categories. It handles the main connection loop and also performs a scan, checks the availability of the services and, most importantly, creates the log file and sends it to our server. 
 
 \begin{description}
-	\item[Connection loop]: This is the core part of our monitoring system. Indeed, the loop embeds the key processes of our tool. The choice we have made for the loop is the following: first, the program performs a scan of the networks available around the router and the results are written inside the log file. Then the connection loop begins and for each network, the supplicant tries to establish a connection (during those steps all the information are collected by the first thread as described above). Then for each network, once the connection is established, the availability of the selection of services is tested in order to see if they are reachable when connected to that particular network. Finally the supplicant is disconnected from the current network and restart the process for the next one. After two loops, the log file is closed and sent to the server. A new file is then opened and the loop starts again. The following pseudo-code gives a better understanding of how the loop works.\\
+	\item[Connection loop]: This is the core part of our monitoring system. Indeed, the loop embeds the key processes of our tool. The choice we have made for the loop is the following: first, the program performs a scan of the networks available around the router and the results are written inside the log file. Then the connection loop begins and for each network, the supplicant tries to establish a connection. Then for each network, once the connection is established, the availability of the selection of services is tested in order to see if they are reachable when connected to that particular network. Finally the supplicant is disconnected from the current network and the process restarts for the next one. After two entire loops, the log file is closed and sent to the server. A new file is then opened and the loop starts again. The following pseudo-code gives a better understanding of how the loop works.\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Connection loop pseudo-code}]
 WHILE 1
@@ -362,7 +367,7 @@ WHILE 1
 	ENDFOR
 \end{lstlisting}
 
-	\item[Scan]: Before every connection loop, the program performs a scan of all the available network and keeps the scan results in order to include them into the log file afterwards. Thanks to that, we have a more detailed overview of the surrounding area of the router and what are the APs specifications there. This process is handled by the function \texttt{scan()}. In order to perform this scan we first send the command \texttt{SCAN} to the interface and then we collect the results into a buffer by sending the command \texttt{SCAN\_RESULTS}. The results are stored into a custom structure organized as a linked list and containing seven variables. The structure is the following.\\
+	\item[Scan]: At the beginning of every connection loop, the program performs a scan of all the available networks and keeps the scan results in a special structure in order to include them into the log file afterwards. Thanks to those information, we have a more detailed overview of the router's surrounding environment and what are the APs specifications there. This process is handled by the function \texttt{scan()}. In order to perform this scan we first send the command \texttt{SCAN} to the interface and then we collect the results into a buffer by sending the command \texttt{SCAN\_RESULTS}. The results are stored into a custom structure containing seven variables. The structure is the following.\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={\texttt{scan\_results} structure}]
 struct scan_results {
@@ -373,14 +378,17 @@ struct scan_results {
 	char *ssid;
 	int num;
 	struct scan_results *next
-}
+};
 struct scan_results *first_scan = NULL;
 struct scan_results *curr_scan = NULL;
 \end{lstlisting}
 	
-	For each line of the buffer we extract the \texttt{BSSID}, the frequency, the signal, the flags and the \texttt{SSID} of the network the AP broadcasts. All this data is stored into one node and, as for the other linked list seen before, the node is either set as the first one or added to the linked list. Once all the results from the buffer has been parsed and inserted into the linked list, the program automatically adds the scan results into the log file. For the log file we have decide to only use the \textit{bssid}, \textit{freq}, \textit{signal} and \textit{signal} variables.
+	For each line of the scan results we extract the \texttt{BSSID}, the frequency, the signal, the flags and the \texttt{SSID} of the network the AP broadcasts. All this data is stored into one node and, as for the other linked list seen before, the node is either the first one or is added to the others. Once all the results from the buffer has been parsed and inserted into the linked list, the program automatically adds the scan results into the log file. For the log file we have decide to keep only the \textit{bssid}, \textit{freq}, \textit{signal} and \textit{signal} variables.
 
-	\item[Services checking process]: This is a special feature we have implemented in our monitoring tool. The idea is to emulate the behavior of a lambda user that connects on one of the networks. Thus, besides the connection establishment, we have decided to verify that a list of services (such as \textit{www.google.be}, \textit{www.gmail.com}, \textit{www.uclouvain.be}, \textit{www.icampus.ucl.ac.be}, etc.) are reachable. To be able to do that, for each service we create a \texttt{socket} and we try to connect to the remote server through this socket. If the connection is established then the service is reachable. The information about the reachability of the selected services is also stored into a structure called \texttt{check\_serv}. 
+	\item[Services checking process]: This is a special feature we have implemented in our monitoring tool. The idea is to emulate the behavior of a lambda user that connects on one of the networks. Thus, besides the connection establishment, we have decided to verify that a list of services is reachable. The process is divided in two parts. First we check if the two \texttt{DNS} servers (\texttt{130.104.1.1} and \texttt{130.104.1.2}) are accessible. To do that we question the two servers by forging and sending a special \texttt{DNS} query packet and we analyze the responses received. After that we performs an availability check on a list of selected websites. We check the ten most visited websites in the world according to Alexa\footnote{http://www.alexa.com/topsites}
+
+
+	 (such as \textit{www.google.be}, \textit{www.gmail.com}, \textit{www.uclouvain.be}, \textit{www.icampus.ucl.ac.be}, etc.) are reachable. To be able to do that, for each service we create a \texttt{socket} and we try to connect to the remote server through this socket. If the connection is established then the service is reachable. The information about the reachability of the selected services is also stored into a structure called \texttt{check\_serv}. 
 
 	%TODO DNS 
 
@@ -482,3 +490,5 @@ In Celery, we can define the number of workers working on the task send to the q
 The scheduler in Celery is called \emph{beat} and its only responsibility is to send the \emph{periodic tasks} to the workers. We have given it the path of the application i which we have define the task and the related interval. \emph{Celery beat} gatherer them and fire the task accordingly. The main warning about the scheduler is the fact that it lunch the task \textbf{exactly} at each interval. If we imagine a task that take between 4 and 5 minutes to be perform and that the interval is of 10 minutes, there can be moments where two instances of that tasks overlap. Effectively, if all the workers are occupied and the first instance only start after 8 minutes of waiting, the second task will start two minutes later while the first one is still running. Here again, such consideration have been taken care of and the data are store with a time stamp or linked to en entity having one. The data gatherer can be completely order and even if such condition occurred, the result would be only a lack of data during an interval and more during the next one. As the intervals vary from 20 minutes to 2 hours while the results are analyzed through several day of data, the impact is quite reduced. 
 
 \section{Extensions and Portability}
+
+\section{Summary}
