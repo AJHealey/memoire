@@ -121,7 +121,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'probeResponder': {
         'task': 'gatherer.tasks.startResponder',
-        'schedule': timedelta(seconds=10),
+        'schedule': timedelta(minutes=10),
     },
 }
 
