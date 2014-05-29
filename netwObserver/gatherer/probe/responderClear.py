@@ -1,5 +1,6 @@
 import socket
 
+from gatherer.models import *
 from gatherer.log import logParser
 from threading import Thread
 from time import sleep
