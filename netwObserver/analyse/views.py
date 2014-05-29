@@ -77,7 +77,7 @@ def wifiProbes(request):
 	context['cat'] = 'wifi'
 	context['section'] = 'probes'
 	
-	context["allProbe"] = AccessPoint.objects.all().order_by('name')
+	context["allProbe"] = aggregator.getAllProbes()
 
 
 	return render(request, "analyse/wifiProbe.html", context)
