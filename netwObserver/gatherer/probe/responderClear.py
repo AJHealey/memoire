@@ -1,5 +1,6 @@
 import socket
 
+from gatherer.models import *
 from gatherer.log import logParser
 from threading import Thread
 from time import sleep
@@ -45,7 +46,7 @@ def handler(clientsocket):
 			data += clientsocket.recv(1024)
 
 		clientsocket.close()
-		logParser.probeParser(data)
+		logParser.probeParser(data.decode())
 		#print("%s" % data.decode())
 		#print("[*] Connection closed.")
 	except socket.timeout:

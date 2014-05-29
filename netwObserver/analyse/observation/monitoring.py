@@ -6,10 +6,11 @@ from gatherer.models import DHCPEvent
 
 
 def getDhcpLeaseAlerts(fromDate=(timezone.now() - timedelta(hours=1))):
-	logs = DHCPEvent.objects.filter(dhcpType= "dis", date__gte=fromDate, message__icontains="free leases").count()
+	logs = DHCPEvent.objects.filter(dhcpType= "dis", date__gte=fromDate, message__icontains="free leases")
+	nbrAlert = logs.count()
 	devices = len(set(logs.values_list('device', flat=True)))
 	if devices > 0:
-		return {"alerts": logs , "devices": devices, "ratio": log/devices}
+		return {"alerts": logs , "devices": devices, "ratio": nbrAlert/devices}
 	else:
 		return {}
 
