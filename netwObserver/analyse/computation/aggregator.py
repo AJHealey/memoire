@@ -216,10 +216,15 @@ def getLastScan(probe):
 				result[scan.ap.macAddress] = {"ap": scan.ap, "ssid":set(), "frequency":set(), "signalStrength":[]}
 			
 			result[scan.ap.macAddress]["ssid"].add(scan.ssid)
-			result[scan.ap.macAddress]["frequency"].add(scan.frequency)
-			result[scan.ap.macAddress]["signalStrength"].append(scan.signalStrength)
+			result[scan.ap.macAddress]["frequency"].add(int(scan.frequency))
+			result[scan.ap.macAddress]["signalStrength"].append(int(scan.signalStrength))
+
+		for r, v in result.items():
+			tmp = sum(v["signalStrength"])/float(len(v["signalStrength"]))
+			v["signalStrength"] = tmp
 
 		return result
+
 
 	except ObjectDoesNotExist:
 		return {}
