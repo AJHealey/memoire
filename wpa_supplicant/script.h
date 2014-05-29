@@ -4,7 +4,7 @@
 
 #define DEFAULT_CTRL_IFACE "/var/run/wpa_supplicant/wlan0"
 #define BUF 1024 /* Reply buffer size */
-#define DELAY 10 /* Delay in seconds for the connection loop */
+#define DELAY 20 /* Delay in seconds for the connection loop */
 #define debug_print(args) if (DEBUG) printf(args) /* Debug print */
 
 
@@ -67,7 +67,9 @@ struct check_serv {
 	char *wikipedia;
 	char *twitter;
 	char *amazon;
+	char *live;
 	char *linkedin;
+	char *blogspot;
 	char *gmail;
 	char *github;
 	char *uclouvain;

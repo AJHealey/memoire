@@ -148,7 +148,9 @@ static void log_event(enum log_events log, const char *arg) {
 				fprintf(f, "\"en.wikipedia.com\": \"%s\",\n", log_struct->services->wikipedia);
 				fprintf(f, "\"twitter.com\": \"%s\",\n", log_struct->services->twitter);
 				fprintf(f, "\"amazon.fr\": \"%s\",\n", log_struct->services->amazon);
+				fprintf(f, "\"live.com\": \"%s\",\n", log_struct->services->live);
 				fprintf(f, "\"linkedin.com\": \"%s\",\n", log_struct->services->linkedin);
+				fprintf(f, "\"blogspot.com\": \"%s\",\n", log_struct->services->blogspot);
 				fprintf(f, "\"gmail.be\": \"%s\",\n", log_struct->services->gmail);
 				fprintf(f, "\"github.be\": \"%s\",\n", log_struct->services->github);
 				fprintf(f, "\"uclouvain.be\": \"%s\",\n", log_struct->services->uclouvain);
@@ -180,8 +182,9 @@ static void log_event(enum log_events log, const char *arg) {
 			break;
 
 		case LOG_INFO_DATE:
-			now = time(NULL);
+			time(&now);
 			tm = *localtime(&now);
+			printf("\"date\": \"%d/%d/%d %d:%d:%d\",\n", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 			fprintf(f, "\"date\": \"%d/%d/%d %d:%d:%d\",\n", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 			break;
 
@@ -424,7 +427,7 @@ static void create_networks() {
 static void connect_network(int network) {
 	char date[19];
 	char command[16];
-	now = time(NULL);
+	time(&now);
 	tm = *localtime(&now);
 	sprintf(date, "%d/%d/%d %d:%d:%d", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 	log_struct->date = malloc(strlen(date)+1);
@@ -548,7 +551,9 @@ static void services_loop() {
 	ptr->wikipedia = malloc(1);
 	ptr->twitter = malloc(1);
 	ptr->amazon = malloc(1);
+	ptr->live = malloc(1);
 	ptr->linkedin = malloc(1);
+	ptr->blogspot = malloc(1);
 	ptr->gmail = malloc(1);
 	ptr->github = malloc(1);
 	ptr->uclouvain = malloc(1);
@@ -603,10 +608,20 @@ static void services_loop() {
 	else
 		strcpy(ptr->amazon, "0");
 
+	if(checkService("login.live.com", "443") == 1)
+		strcpy(ptr->live, "1");
+	else
+		strcpy(ptr->live, "0");
+
 	if(checkService("linkedin.com", "443") == 1)
 		strcpy(ptr->linkedin, "1");
 	else
 		strcpy(ptr->linkedin, "0");
+
+	if(checkService("blogger.com", "443") == 1)
+		strcpy(ptr->blogspot, "1");
+	else
+		strcpy(ptr->blogspot, "0");
 
 	if(checkService("smtp.gmail.com", "587") == 1)
 		strcpy(ptr->gmail, "1");
@@ -858,14 +873,14 @@ void *connection_loop(void * p_data) {
 		}
 		log_event(LOG_STOP_CONNECTION, NULL);
 
-		if(close == 0) {
+		if(close == 5) {
 			debug_print("SAVE\n");
 			log_event(LOG_FINAL_STOP_LOOP, NULL);
 			log_event(LOG_STOP_LOG, NULL);
 			log_event(LOG_STOP_FILE, NULL);
 			fclose(f);
 			send_log();
-			f = fopen("/var/log/logs2.txt","w");
+			f = fopen("/var/log/logs.txt","w");
 			log_event(LOG_START_FILE, NULL);
 			log_event(LOG_MAC_ADDR, NULL);
 			log_event(LOG_START_LOG, NULL);
@@ -879,7 +894,7 @@ void *connection_loop(void * p_data) {
 			
 		}
 		
-		
+		printf(">>>CLOSE: %d\n", close);
 		close += 1;
 	}
 	return NULL;
