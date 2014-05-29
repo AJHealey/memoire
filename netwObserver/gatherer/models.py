@@ -202,7 +202,7 @@ class ProbeScanResult(models.Model):
 
 class ProbeConnectionResult(models.Model):
 	date = models.DateTimeField()
-	
+	ssid = models.CharField(max_length=50)
 	test = models.ForeignKey(ProbeTest)
 	apTried = models.ManyToManyField(AccessPoint, related_name='tried+')
 	connected = models.ManyToManyField(AccessPoint,related_name='connected+')

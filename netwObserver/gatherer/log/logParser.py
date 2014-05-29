@@ -30,7 +30,7 @@ def getScanResult(probeTest, scanItem):
 	return scanResult
 
 def getConnectionResult(probeTest,connection):
-	connectionResult = ProbeConnectionResult(date=dateParser(connection["date"]), test=probeTest)
+	connectionResult = ProbeConnectionResult(date=dateParser(connection["date"]), ssid=connection["ssid"], test=probeTest)
 	connectionResult.save()
 	for t in connection["tried"]:
 		try: 
