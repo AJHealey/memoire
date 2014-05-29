@@ -1,5 +1,6 @@
 import socket
 
+from datetime import datetime
 from gatherer.models import *
 from gatherer.log import logParser
 from threading import Thread
@@ -9,17 +10,20 @@ MAX_DATA_RECEIVED = 2000
 PROBEPORT = 3874
 
 def responder():
-	#create the server socket
-	serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	#bind the socket
-	serversocket.bind(('0.0.0.0', PROBEPORT))
-	serversocket.listen(5)
+	try:
+		#create the server socket
+		serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		#bind the socket
+		serversocket.bind(('0.0.0.0', PROBEPORT))
+		serversocket.listen(5)
 
-	running = True
-	while running:
-		#accept connections from outside
-		(clientsocket, address) = serversocket.accept()
-		Thread(target=handler, args=(clientsocket,)).start()
+		running = True
+		while running:
+			#accept connections from outside
+			(clientsocket, address) = serversocket.accept()
+			Thread(target=handler, args=(clientsocket,)).start()
+	except socket.error:
+		pass
 
 
 
@@ -45,6 +49,13 @@ def handler(clientsocket):
 		while len(data) < dataSize :
 			data += clientsocket.recv(1024)
 
+		# Save log file
+		tmp = datetime.now()
+		n = "/srv/media/probe%s%s%s%s%s.txt" % (tmp.month,tmp.day,tmp.hour,tmp.minute,tmp.second)
+		logFile = open(n, "w")
+		logFile.write(data.decode())
+		logFile.close()
+		
 		logParser.probeParser(data.decode())
 		#print("%s" % data.decode())
 		#print("[*] Connection closed.")
