@@ -60,7 +60,7 @@ def getConnectionResult(probeTest,connection):
 def probeParser(data):
 	""" Parse a probe log
 	"""
-	logContent = json.load(data)
+	logContent = json.loads(data)
 
 	try: 
 		probe, created = MobileStation.objects.get_or_create(macAddress=logContent["mac"])
