@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from analyse.computation import aggregator
 from analyse.observation import monitoring
-from gatherer.models import AccessPoint
+from gatherer.models import *
 from django.core.exceptions import ObjectDoesNotExist
 
 from datetime import datetime
