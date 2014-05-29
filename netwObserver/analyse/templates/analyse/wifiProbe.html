@@ -19,6 +19,55 @@
 		<span class="glyphicon glyphicon-signal"></span> Get
 	</button>
 </form>
-{{lastScan}}
 </div>
+
+{%if probe%}
+<dl class="dl-horizontal">
+	<dt>Mac Address</dt>
+	<dd>{{probe.macAddress}}</dd>
+	<dt>802.11 Protocol</dt>
+	<dd>{{probe.get_dot11protocol_display}}</dd>
+</dl>
+{%if lastScan%}
+<h3>Last Scan Results</h3>
+<table class="table table-striped table-hover">
+	<thead>
+		<tr>
+			<th>Access Point Name</th>
+			<th>Mac Address</th>
+			<th>Link</th>
+			<th>Average Signal Strength</th>
+			<th>Available SSID</th>
+			<th>Frequencies</th>
+		</tr>
+	</thead>
+ 	<tbody>
+		{% for mac,ap in lastScan.items %}
+		<tr>
+			<td>{{ap.ap.name}}</td>
+			<td>{{mac}}</td>
+			<td>{{ap.ap.get_ethernetLinkSpeed_display}}</td>
+			<td>{{ap.signalStrength}}</td>
+			<td>
+				<ul class="list-unstyled">
+					{%for ssid in ap.ssid%}
+					<li>{{ssid}}</li>
+					{%endfor%}
+				</ul>
+			</td>
+			<td>
+				<ul class="list-unstyled">
+					{%for freq in ap.frequency%}
+					<li>{{freq}}</li>
+					{%endfor%}
+				</ul>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+{%endif%}
+{%endif%}
+
 {%endblock%}
