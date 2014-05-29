@@ -46,7 +46,7 @@ def handler(clientsocket):
 			data += clientsocket.recv(1024)
 
 		clientsocket.close()
-		logParser.probeParser(data)
+		logParser.probeParser(data.decode())
 		#print("%s" % data.decode())
 		#print("[*] Connection closed.")
 	except socket.timeout:
