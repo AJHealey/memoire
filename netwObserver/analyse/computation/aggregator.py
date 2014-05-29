@@ -230,6 +230,9 @@ def getLastScan(probe):
 		return {}
 
 
+def getLastConnectionResult(probe):
+	lastLog = ProbeLog.objects.filter(probe=probe).latest(field_name='date')
+	tests = lastLog.probetest_set.all()
 
 
 
