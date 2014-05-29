@@ -102,7 +102,7 @@ def apsnmpRefresh(request):
 	return apsnmp(request)
 
 def apsnmp(request, page=1, perpage=100):
-	AUTHORIZED_ORDER = ["name", "-name", "mac", "-mac", "ip", "-ip", "link", "-link"]
+	AUTHORIZED_ORDER = ["name", "-name", "macAddress", "-macAddress", "ip", "-ip", "ethernetLinkSpeed", "-ethernetLinkSpeed"]
 
 	context = {}
 	context['app'] = 'gatherer'
