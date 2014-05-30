@@ -291,5 +291,6 @@ def getConnectionResult(probe,since=None):
 
 
 def getSignalStrangthThroughTime(probe,since=None):
+	pass
 
 
