@@ -242,7 +242,7 @@ def getAllProbes():
 def getLastScan(probe):
 	try:
 		result = {}
-		lastLog = ProbeLog.objects.filter(probe=probe).latest(field_name='date').prefetch_related('probetest_set')
+		lastLog = ProbeLog.objects.filter(probe=probe).latest(field_name='date')
 
 		for test in lastLog.probetest_set.all().order_by('-id'):
 			if test.probescanresult_set.all().exists():
