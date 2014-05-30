@@ -3,4 +3,31 @@
 
 {% block section %}
 
+<div class="container" style='margin-top: 25px;'>
+	{%if perZone%}
+	<script>
+		google.load('visualization', '1.0', {'packages':['corechart']});
+		google.setOnLoadCallback(drawPerZoneChart);
+		function drawPerZoneChart() {
+			
+			var data = google.visualization.arrayToDataTable([
+			  ['Zone' , 'Rogue Access Points'],
+			  {%for zone,rap in perZone.items%}
+			  ['{{zone}}' , {{rap|length}}],
+			  {%endfor%}
+			]);
+
+			var options = {
+			  title: 'Connection time (seconds)',
+			  isStacked : true,
+			};
+
+			var chart = new google.visualization.ColumnChart(document.getElementById('perzonechart_div'));
+			chart.draw(data, options);
+		}
+	</script>
+	<div id="perzonechart_div" style="width: 900px; height: 500px;"></div>
+	{%endif%}
+</div>
+
 {%endblock%}

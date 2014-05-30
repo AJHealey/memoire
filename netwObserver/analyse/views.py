@@ -62,7 +62,7 @@ def wifiRAP(request):
 	context['cat'] = 'wifi'
 	context['section'] = 'rap'
 
-	#context['perZone'] = aggregator.getRapPerZone()
+	context['perZone'] = aggregator.getRapPerZone()
 
 	return render(request, "analyse/wifiRAP.html", context)
 
