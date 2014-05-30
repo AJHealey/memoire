@@ -103,6 +103,7 @@
 <h4>SSID: {{result.0.connection.ssid}}</h4>
 <div id="{{ssid}}timeschart_div" style="width: 900px; height: 500px;"></div>
 {%if ssid in connectionService%}
+{{connectionService}}
 <h5>Service Availability</h5>
 <table class="table table-bordered">
 	<thead>
@@ -112,12 +113,13 @@
 		</tr>
 	</thead>
 	<tbody>
+		{%for name,data in connectionService.ssid.items%}
 		<tr>
-			{%for name,data in connectionService.ssid.items%}
 			<td>{{name}}</td>
 			<td {%if data.rate < 50%}class="danger"{%else%}class="active"{%endif%}>{{data.rate|floatformat:-2}}</td>
-			{%endfor%}
 		</tr>
+		{%endfor%}
+
 	</tbody>
 </table>
 {%endif%}
