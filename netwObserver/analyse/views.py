@@ -89,7 +89,7 @@ def wifiProbes(request):
 		try:
 			context["probe"] = MobileStation.objects.get(id=int(request.GET['selectedProbe']))
 			context["lastScan"] = aggregator.getLastScan(context["probe"])
-			context["connectionResults"] = aggregator.getConnectionResult(context["probe"])
+			context["connectionTime"] = aggregator.getConnectionTime(context["probe"])
 		except:
 			pass
 

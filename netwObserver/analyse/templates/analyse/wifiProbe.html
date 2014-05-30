@@ -72,12 +72,12 @@
 </div>
 {%endif%}
 
-{%if connectionResults%}
+{%if connectionTime%}
 <script type="text/javascript">
 	google.load('visualization', '1.0', {'packages':['corechart']});
 	
 
-	{%for ssid, result in connectionResults.items%}
+	{%for ssid, result in connectionTime.items%}
 	google.setOnLoadCallback(draw{{ssid}}ConnectionTimeChart);
 	function draw{{ssid}}ConnectionTimeChart() {
 		
@@ -100,7 +100,7 @@
 	{%endfor%}
 </script>
 {%endif%}
-{%for ssid, result in connectionResults.items%}
+{%for ssid, result in connectionTime.items%}
 <h4>SSID: {{result.0.connection.ssid}}</h4>
 <div id="{{ssid}}timeschart_div" style="width: 900px; height: 500px;"></div>
 {%endfor%}

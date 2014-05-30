@@ -265,11 +265,11 @@ def getLastScan(probe):
 		return {}
 
 
-def getConnectionResult(probe,since=None):
+def getConnectionTime(probe,since=None):
 	try:
 		result = {}
 				
-		connectionResults = ProbeConnectionResult.objects.filter(test__log__probe = probe).prefetch_related('servicecheck_set','timecheck_set')
+		connectionResults = ProbeConnectionResult.objects.filter(test__log__probe = probe).prefetch_related('timecheck_set')
 		if since != None:
 			connectionResults = connectionResults.filter(date__gte=since)
 
@@ -277,10 +277,10 @@ def getConnectionResult(probe,since=None):
 		for ssid in ssids:
 			tmp = ssid.replace(".","").replace("-","")
 			result[tmp] = []
-			ssidResults = connectionResults.filter(ssid=ssid).order_by("date").prefetch_related('timecheck_set','servicecheck_set')
+			ssidResults = connectionResults.filter(ssid=ssid).order_by("date")
 			for con in ssidResults:
-				if con.timecheck_set.all().exists() and con.servicecheck_set.all().exists():
-					result[tmp].append({"date": timezone.localtime(con.date), "connection":con, "times":con.timecheck_set.all(), "services":con.servicecheck_set.all().order_by('service')})
+				if con.timecheck_set.all().exists():
+					result[tmp].append({"date": timezone.localtime(con.date), "connection":con, "times":con.timecheck_set.all()})
 
 
 		return result
@@ -290,7 +290,39 @@ def getConnectionResult(probe,since=None):
 
 
 
-def getSignalStrangthThroughTime(probe,since=None):
-	pass
+def getAvailabilityByService(probe,since=None):
+	try:
+		result = {}
+		connectionResults = ProbeConnectionResult.objects.filter(test__log__probe = probe).prefetch_related('servicecheck_set')
+		
+		if since != None:
+			connectionResults = connectionResults.filter(date__gte=since)
+
+		ssids = set(connectionResults.values_list('ssid', flat=True))
+		for ssid in ssids:
+			tmp = ssid.replace(".","").replace("-","")
+			ssidResults = connectionResults.filter(ssid=ssid)
+			
+			availability = {}
+
+			for con in ssidResults:
+				for service in con.servicecheck_set.all():
+					if service not in availability:
+						availability[service] = {"fail":0,"success":0}
+					
+					if service.state:
+						availability[service]["success"] += 1
+					else:
+						availability[service]["fail"] += 1
+
+			result[tmp] = availability
+
+		return result
+
+	except:
+		return {}
+
+
+
 
 
