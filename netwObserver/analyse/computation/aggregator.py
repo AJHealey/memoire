@@ -281,7 +281,8 @@ def getConnectionResult(probe,since=None):
 			result[tmp] = []
 			ssidResults = connectionResults.filter(ssid=ssid).order_by("date")
 			for con in ssidResults:
-				result[tmp].append({"connection":con, "times":con.timecheck_set.all(), "services":con.servicecheck_set.all().order_by('service')})
+				if con.timecheck_set.all().exists() and con.servicecheck_set.all().exists():
+					result[tmp].append({"connection":con, "times":con.timecheck_set.all(), "services":con.servicecheck_set.all().order_by('service')})
 
 
 		return result
