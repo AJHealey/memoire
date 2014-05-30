@@ -242,22 +242,23 @@ def getAllProbes():
 def getLastScan(probe):
 	try:
 		result = {}
-		lastLog = ProbeLog.objects.filter(probe=probe).latest(field_name='date')
-		lastTest = lastLog.probetest_set.all().last()
+		lastLog = ProbeLog.objects.filter(probe=probe).latest(field_name='date').prefetch_related('probetest_set')
 
-		for scan in lastTest.probescanresult_set.all():
-			if scan.ap.macAddress not in result:
-				result[scan.ap.macAddress] = {"ap": scan.ap, "ssid":set(), "frequency":set(), "signalStrength":[]}
-			
-			result[scan.ap.macAddress]["ssid"].add(scan.ssid)
-			result[scan.ap.macAddress]["frequency"].add(int(scan.frequency))
-			result[scan.ap.macAddress]["signalStrength"].append(int(scan.signalStrength))
+		for test in lastLog.probetest_set.all().order_by('-id'):
+			if test.probescanresult_set.all().exists():
+				for scan in test.probescanresult_set.all():
+					if scan.ap.macAddress not in result:
+						result[scan.ap.macAddress] = {"ap": scan.ap, "ssid":set(), "frequency":set(), "signalStrength":[]}
+					
+					result[scan.ap.macAddress]["ssid"].add(scan.ssid)
+					result[scan.ap.macAddress]["frequency"].add(int(scan.frequency))
+					result[scan.ap.macAddress]["signalStrength"].append(int(scan.signalStrength))
 
-		for r, v in result.items():
-			tmp = sum(v["signalStrength"])/float(len(v["signalStrength"]))
-			v["signalStrength"] = tmp
+				for r, v in result.items():
+					tmp = sum(v["signalStrength"])/float(len(v["signalStrength"]))
+					v["signalStrength"] = tmp
 
-		return {"date": timezone.localtime(lastLog.date),"results":result}
+				return {"date": timezone.localtime(lastLog.date),"results":result}
 
 
 	except ObjectDoesNotExist:
@@ -276,10 +277,10 @@ def getConnectionResult(probe,since=None):
 		for ssid in ssids:
 			tmp = ssid.replace(".","").replace("-","")
 			result[tmp] = []
-			ssidResults = connectionResults.filter(ssid=ssid).order_by("date")
+			ssidResults = connectionResults.filter(ssid=ssid).order_by("date").prefetch_related('timecheck_set','servicecheck_set')
 			for con in ssidResults:
 				if con.timecheck_set.all().exists() and con.servicecheck_set.all().exists():
-					result[tmp].append({"connection":con, "times":con.timecheck_set.all(), "services":con.servicecheck_set.all().order_by('service')})
+					result[tmp].append({"date": timezone.localtime(con.date), "connection":con, "times":con.timecheck_set.all(), "services":con.servicecheck_set.all().order_by('service')})
 
 
 		return result

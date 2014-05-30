@@ -92,14 +92,27 @@ USE_L10N = True
 USE_TZ = True
 
 
-
+################
 ## User Settings
+################
+
+# SNMP Parameters
+CONTROLLERIP = '192.168.251.170'
+SNMPPORT = 161
+SNMPCOMMUNITY ='snmpstudentINGI'
+
 SNMPAPLAP = timedelta(minutes=20)
 SNMPRAPLAP = timedelta(hours=2)
 SNMPMSLAP = timedelta(minutes=30)
 
+# Maximum validity of the data used to the aggregation function
 DATAVALIDITY = timedelta(days=180)
+# Dictionnary defining the zone of the AP by their name
 APDICOZONE = "/srv/memoire/netwObserver/gatherer/data/apzone.json"
+
+
+
+
 
 
 ## Celery

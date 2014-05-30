@@ -2,23 +2,23 @@ import time
 
 from datetime import timedelta
 
+
 from django.utils import timezone
 from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
+
 
 from pysnmp.entity.rfc3413.oneliner import cmdgen
-from gatherer.models import APSnapshot, APIfSnapshot, APIfSnapshotData, APSnapshotData, AccessPoint, APInterface, MobileStation, RogueAccessPoint, OperationalError, CurrentTask
+from gatherer.models import *
 
-wism = ['192.168.251.170']
-SNMPPORT =161
-SNMPCOMMUNITY='snmpstudentINGI'
 
 """
 	This module offers an abstraction to perform the SNMP requests
 """
 
 ## Helper Functions
-def walker(ip, oib, port=SNMPPORT, community=SNMPCOMMUNITY):
+def walker(ip, oib, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	"""Perform a SNMP Walk Command"""
 	cmdGen = cmdgen.CommandGenerator()
 
@@ -43,7 +43,7 @@ def walker(ip, oib, port=SNMPPORT, community=SNMPCOMMUNITY):
 					result[name.prettyPrint()[len(oib)+1:]] = val.prettyPrint()
 			return result
 
-def walkByInterface(ip, oib, port=SNMPPORT, community=SNMPCOMMUNITY):
+def walkByInterface(ip, oib, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	"""
 	return - a dictionary where each index is the index of the APs
 			each entries is also a dictionary where each 
@@ -57,7 +57,7 @@ def walkByInterface(ip, oib, port=SNMPPORT, community=SNMPCOMMUNITY):
 		result[index[:tmp]][index[tmp:]] = int(value)
 	return result
 
-def walkByInterfaceWithAggregation(ip, oib, port=SNMPPORT, community=SNMPCOMMUNITY):
+def walkByInterfaceWithAggregation(ip, oib, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	"""
 	return - a dictionary where each index is the index of the APs
 			each entries is the aggregated value of all the interfaces
@@ -71,60 +71,60 @@ def walkByInterfaceWithAggregation(ip, oib, port=SNMPPORT, community=SNMPCOMMUNI
 	return result
 
 ## Access Points Requests
-def getApNames(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+def getApNames(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	""" Name of each Access Point """
 	return walker(ip,'1.3.6.1.4.1.14179.2.2.1.1.3', port=port, community=community)
 
-def getApMacAddresses(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+def getApMacAddresses(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	""" MAC address of Access Point """
 	return walker(ip,'1.3.6.1.4.1.14179.2.2.1.1.1', port=port, community=community)
 
-def getApIPs(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+def getApIPs(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	""" IP address of Access Point """
 	return walker(ip,'1.3.6.1.4.1.14179.2.2.1.1.19', port=port, community=community)
 
-def getApLocation(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+def getApLocation(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	""" Location of the access point (if configured) """
 	return walker(ip,'1.3.6.1.4.1.14179.2.2.1.1.4', port=port, community=community)
 
 ## AP Interfaces
-def getAPIfTypeface(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+def getAPIfTypeface(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	""" Interface Type """
 	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.2.1.2', port=port, community=community)
 
-def getAPIfLoadChannelUtilization(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+def getAPIfLoadChannelUtilization(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	""" Channel Utilization """
 	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.3', port=port, community=community)
 
-def getAPIfLoadNumOfClients(ip, port=SNMPPORT, community=SNMPCOMMUNITY, ap=''):
+def getAPIfLoadNumOfClients(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY, ap=''):
 	""" This is the number of clients attached to this Airespace
 		AP at the last measurement interval(This comes from 
 		APF)
 	"""
 	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.4', port=port, community=community)
 
-def getAPIfPoorSNRClients(ip, port=SNMPPORT, community=SNMPCOMMUNITY, ap=''):
+def getAPIfPoorSNRClients(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY, ap=''):
 	""" This is the number of clients attached to this Airespace
 		AP at the last measurement interval(This comes from 
 		APF)
 	"""
 	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.24', port=port, community=community)
 
-def getAPIfLoadRxUtilization(ip, port=SNMPPORT, community=SNMPCOMMUNITY, ap=''):
+def getAPIfLoadRxUtilization(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY, ap=''):
 	""" This is the percentage of time the Airespace AP
 		receiver is busy operating on packets. It is a number 
 		from 0-100 representing a load from 0 to 1.) 
 	"""
 	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.1', port=port, community=community)
 
-def getAPIfLoadTxUtilization(ip, port=SNMPPORT, community=SNMPCOMMUNITY, ap=''):
+def getAPIfLoadTxUtilization(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY, ap=''):
 	""" This is the percentage of time the Airespace AP
 		transmitter is busy operating on packets. It is a number 
 		from 0-100 representing a load from 0 to 1.) 
 	"""
 	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.2' + ap, port=port, community=community)
 
-def getAPEthernetRxTotalBytes(ip, port=SNMPPORT, community=SNMPCOMMUNITY, ap=''):
+def getAPEthernetRxTotalBytes(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY, ap=''):
 	""" This is the total number of bytes in the
 		error-free packets received on the ethernet
 		interface of the AP
@@ -132,7 +132,7 @@ def getAPEthernetRxTotalBytes(ip, port=SNMPPORT, community=SNMPCOMMUNITY, ap='')
 	return walkByInterfaceWithAggregation(ip=ip, oib='1.3.6.1.4.1.9.9.513.1.2.2.1.13', port=port, community=community)
 
 
-def getAPEthernetTxTotalBytes(ip, port=SNMPPORT, community=SNMPCOMMUNITY, ap=''):
+def getAPEthernetTxTotalBytes(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY, ap=''):
 	""" This is the total number of bytes in the
 		error-free packets received on the ethernet
 		interface of the AP
@@ -140,50 +140,50 @@ def getAPEthernetTxTotalBytes(ip, port=SNMPPORT, community=SNMPCOMMUNITY, ap='')
 	return walkByInterfaceWithAggregation(ip=ip, oib='1.3.6.1.4.1.9.9.513.1.2.2.1.14', port=port, community=community)
 
 
-def getAPEthernetLinkSpeed(ip, port=SNMPPORT, community=SNMPCOMMUNITY, ap=''):
+def getAPEthernetLinkSpeed(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY, ap=''):
 	""" Speed of the interface """
 	return walkByInterfaceWithAggregation(ip=ip, oib='1.3.6.1.4.1.9.9.513.1.2.2.1.11', port=port, community=community)
 
 ## Mobile Stations Requests
-def getMobileStationMacAddresses(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+def getMobileStationMacAddresses(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	""" Mac Address of each station connected to an AP """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.1', port=port, community=community)
 
-def getMobileStationIPs(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+def getMobileStationIPs(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	""" IP address of each station connected to an AP """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.2', port=port, community=community)
 
-def getMobileStationProtocol(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+def getMobileStationProtocol(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	""" Protocol used by the station (e.g 802.11a, b, g, n) """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.25', port=port, community=community)
 
-def getMobileStationSSID(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+def getMobileStationSSID(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	""" SSID advertised by the mobile station """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.7', port=port, community=community)
 
-def getMobileStationAPMacAddress(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+def getMobileStationAPMacAddress(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	""" SSID advertised by the mobile station """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.4.1.4', port=port, community=community)
 
 
 ## Rogue Access Point
-def getRAPMacAddresses(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+def getRAPMacAddresses(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	""" Mac Address of each station connected to an AP """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.7.1.1', port=port, community=community)
 
-def getRAPDetectingAP(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+def getRAPDetectingAP(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	""" Get the number of AP detecting the Rogue Access Point """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.7.1.2', port=port, community=community)
 
-def getRAPNbrOfClients(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+def getRAPNbrOfClients(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	""" Get the number of client associated with the Rogue Access Point """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.7.1.8', port=port, community=community)
 
-def getRAPSSID(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+def getRAPSSID(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	""" Get the SSID of the Rogue Access Point """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.7.1.11', port=port, community=community)
 
-def getRAPClosestAP(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+def getRAPClosestAP(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	""" Get the AP with the strongest RSSI with the Rogue Access Point """
 	return walker(ip,'1.3.6.1.4.1.14179.2.1.7.1.13', port=port, community=community)
 
@@ -192,7 +192,7 @@ def getRAPClosestAP(ip, port=SNMPPORT, community=SNMPCOMMUNITY):
 ### Aggregator #############################################################################################################
 ############################################################################################################################
 
-def getData(elements, attr, getter, ip, port=SNMPPORT, community=SNMPCOMMUNITY, valueInBinaryString=False, source='snmpAPDaemon'):
+def getData(elements, attr, getter, ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY, valueInBinaryString=False, source='snmpAPDaemon'):
 	""" Update the information about the Access Points
 
 		arguments:
@@ -217,7 +217,7 @@ def getData(elements, attr, getter, ip, port=SNMPPORT, community=SNMPCOMMUNITY, 
 		OperationalError(source='%s - %s' % (source,attr), error=str(e)).save()
 
 
-def getApSnapshotData(elements, attr, getter, ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+def getApSnapshotData(elements, attr, getter, ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	""" Get the information about the Access Points Snapshots
 
 		arguments:
@@ -235,7 +235,7 @@ def getApSnapshotData(elements, attr, getter, ip, port=SNMPPORT, community=SNMPC
 		OperationalError(source='snmpAPDaemon - %s' % attr, error=str(e)).save()
 
 
-def getIfSnapshotData(elements, attr, getter, ip, port=SNMPPORT, community=SNMPCOMMUNITY):
+def getIfSnapshotData(elements, attr, getter, ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	""" Get the information about the Access Points Interface Snapshots
 
 		arguments:
@@ -253,7 +253,7 @@ def getIfSnapshotData(elements, attr, getter, ip, port=SNMPPORT, community=SNMPC
 		OperationalError(source='snmpAPDaemon - %s' % attr, error=str(e)).save()
 
 
-def getAllAP(ip=wism[0], port=SNMPPORT, community=SNMPCOMMUNITY):
+def getAllAP(ip=settings.CONTROLLERIP, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	''' Gather and cross reference all the information about the Access Points and their interfaces '''
 
 	result = {}
@@ -263,7 +263,7 @@ def getAllAP(ip=wism[0], port=SNMPPORT, community=SNMPCOMMUNITY):
 
 	# Get All Access Points (Mac Address)
 	try:       
-		tmp = getApMacAddresses(ip=wism[0])
+		tmp = getApMacAddresses(ip=settings.CONTROLLERIP)
 		for index, mac in tmp.items():
 			mac = parseMacAdresse(mac)
 			try:
@@ -307,7 +307,7 @@ def getAllAP(ip=wism[0], port=SNMPPORT, community=SNMPCOMMUNITY):
 	
 	# Add/Update Interfaces
 	try:
-		tmp = getAPIfTypeface(ip=wism[0])
+		tmp = getAPIfTypeface(ip=settings.CONTROLLERIP)
 		for apIndex, interfaces in tmp.items():
 			if apIndex in result:
 				if apIndex not in resultInterfaces:
@@ -355,13 +355,13 @@ def getAllAP(ip=wism[0], port=SNMPPORT, community=SNMPCOMMUNITY):
 
 
 
-def getAllMS(ip=wism[0], port=SNMPPORT, community=SNMPCOMMUNITY):
+def getAllMS(ip=settings.CONTROLLERIP, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY):
 	''' Cross reference all the information on the Mobile Station and update the database '''
 	
 	result = {}
 	# Get All Mobile Stations (Mac Address)	
 	try:
-		tmp = getMobileStationMacAddresses(ip=wism[0])
+		tmp = getMobileStationMacAddresses(ip=settings.CONTROLLERIP)
 		for index, mac in tmp.items():
 			mac = parseMacAdresse(mac)
 				# Handle possible race condition (get_or_create not thread safe)
@@ -378,7 +378,7 @@ def getAllMS(ip=wism[0], port=SNMPPORT, community=SNMPCOMMUNITY):
 
 	# Link to AP
 	try:
-		tmp = getMobileStationAPMacAddress(ip=wism[0])
+		tmp = getMobileStationAPMacAddress(ip=settings.CONTROLLERIP)
 		for index, apMac in tmp.items():
 			if index in result:
 				apMac = parseMacAdresse(apMac)
@@ -416,7 +416,7 @@ def getAllRAP():
 	result = {}
 	# Get All Rogue Access Points (Mac Address)
 	try:       
-		tmp = getRAPMacAddresses(ip=wism[0])
+		tmp = getRAPMacAddresses(ip=settings.CONTROLLERIP)
 		for index, mac in tmp.items():
 			mac = parseMacAdresse(mac)
 			try:
@@ -431,7 +431,7 @@ def getAllRAP():
 	
 	# Add RAP SSID   
 	try: 
-		tmp = getRAPSSID(ip=wism[0])
+		tmp = getRAPSSID(ip=settings.CONTROLLERIP)
 		for index, ssid in tmp.items():
 			if index in result:
 				if ssid.startswith("b'") or ssid.startswith('b"'):
@@ -443,7 +443,7 @@ def getAllRAP():
 
 	# Add RAP Number of Clients   
 	try: 
-		tmp = getRAPNbrOfClients(ip=wism[0])
+		tmp = getRAPNbrOfClients(ip=settings.CONTROLLERIP)
 		for index, num in tmp.items():
 			if index in result:
 				result[index].nbrOfClients = num
@@ -452,7 +452,7 @@ def getAllRAP():
 	
 	# Add RAP Closest AP   
 	try: 
-		tmp = getRAPClosestAP(ip=wism[0])
+		tmp = getRAPClosestAP(ip=settings.CONTROLLERIP)
 		for index, apMac in tmp.items():
 			if index in result:
 				try:
@@ -506,5 +506,5 @@ def parseMacAdresse(macString):
 if __name__ == '__main__':
 	import sys
 
-	for ap in getAPIfLoadNumOfClients(wism[0]):
+	for ap in getAPIfLoadNumOfClients(settings.CONTROLLERIP):
 		print(str(ap))
