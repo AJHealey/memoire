@@ -280,7 +280,7 @@ def getConnectionTime(probe,since=None):
 			ssidResults = connectionResults.filter(ssid=ssid).order_by("date")
 			for con in ssidResults:
 				if con.timecheck_set.all().exists():
-					result[tmp].append({"date": timezone.localtime(con.date), "connection":con, "times":con.timecheck_set.all()})
+					result[tmp].append({"date": timezone.localtime(con.date), "connection":con, "times":con.timecheck_set.all().order_by('step')})
 
 
 		return result
@@ -314,6 +314,9 @@ def getAvailabilityByService(probe,since=None):
 						availability[service.service]["success"] += 1
 					else:
 						availability[service.service]["fail"] += 1
+
+			availability[service.service]["rate"] = float(availability[service.service]["success"]*100)/(availability[service.service]["success"] + availability[service.service]["fail"])
+
 
 			result[tmp] = availability
 
