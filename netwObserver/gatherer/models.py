@@ -79,7 +79,7 @@ class RogueAccessPoint(Device):
 
 	objects = RAPManage()
 	def __str__(self):
-		return str(self.name) + " : " + str(self.macAddress) + ' (' + str(self.ip) + ')'
+		return str(self.ssid) + " : " + str(self.macAddress)
 	
 	def isUp(self):
 		return lastTouched > (timezone.now()- settings.SNMPRAPLAP)
