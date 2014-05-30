@@ -280,7 +280,7 @@ def getConnectionResult(probe,since=None):
 			ssidResults = connectionResults.filter(ssid=ssid).order_by("date").prefetch_related('timecheck_set','servicecheck_set')
 			for con in ssidResults:
 				if con.timecheck_set.all().exists() and con.servicecheck_set.all().exists():
-					result[tmp].append({"date": timezone.localtime(con.date), "connection":con, "times":con.timecheck_set.all().order_by('step'), "services":con.servicecheck_set.all().order_by('service')})
+					result[tmp].append({"date": timezone.localtime(con.date), "connection":con, "times":con.timecheck_set.all(), "services":con.servicecheck_set.all().order_by('service')})
 
 
 		return result
@@ -290,5 +290,6 @@ def getConnectionResult(probe,since=None):
 
 
 
+def getSignalStrangthThroughTime(probe,since=None):
 
 
