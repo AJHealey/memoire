@@ -547,9 +547,9 @@ The final step is to add the network specifications in the \texttt{create\_netwo
 config_network(5, "test.UCLouvain", "WPA-EAP", "TTLS", NULL, "test@wifi.uclouvain.be", "passwd", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP");
 \end{lstlisting}
 
-As we can see, it is very easy to add a network. If we wanted to delete one of the network, we would have realized the opposite. First decrement the global variable and then delete the line for the newtork configuration. 
+As we can see, it is very easy to add a network. If we wanted to delete one of the network, we would have realized the exact opposite. First decrement the global variable and then delete the line responsible for configuring the network we want to remove (making sure to update the first parameter of the other \texttt{config\_network()} function calls (i.e. the IDs of the other networks) accordingly if necessary).
 
-The tricky part of working with \texttt{OpenWrt} is the compilation phase. Indeed, if we want our program to run on the router, we have to \textit{cross compile} it. This is due to the fact that the router uses a distinctly different architecture than a Linux development box. Also there is not enough memory space on the router to install a compiler and compile the code natively. To cross compile we need the \texttt{OpenWrt SDK} which is a special compiler and development environment. Details about the cross compilation can be found in \cite{crosscompile}.
+The tricky part of working with \texttt{OpenWrt} is the compilation phase. Indeed, if we want our program to run on the router, we have to \textit{cross compile} it. This is due to the fact that the router does not offer enough memory space in order to directly install the \texttt{C} compiler and to compile the code natively. Also, the router uses a different architecture than we do when developing the program. In our case, the router has a \texttt{MIPS} architecture. This is why the code needs to be cross compiled in order to run on the router. Details about the cross compilation can be found in \cite{crosscompile}.
 
 
 
