@@ -22,7 +22,7 @@
 			<td>{{event.server}}</td>
 			<td>{{event.get_dhcpType_display}}</td>
 			<td>{{event.ip|default_if_none:"-"}}</td>
-			<td>{{event.device.macAddress}}</td>
+			<td>{{event.device}}</td>
 		</tr>
 		{% endfor %}
 	</tbody>
