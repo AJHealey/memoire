@@ -4,6 +4,7 @@ from django.db.models import Max, Min
 from gatherer.models import *
 from django.core.exceptions import ObjectDoesNotExist
 
+import json
 from django.conf import settings
 
 
@@ -198,7 +199,36 @@ def getSpeed(start, end, time):
 	# In Mbites
 	return (speed/1048576)*8
 
+############################
+### Rogue Access Point #####
+############################
 
+def getRapPerZone():
+	dicoZone = {}
+	try:
+		dicoZone = json.load(open(settings.APDICOZONE,"r"))
+	except:
+		return {}
+
+	result = {}
+	for tag,zone in dicoZone.items():
+		result[zone] = 0
+
+	for rap in RogueAccessPoint.objects.all():
+		closestApName = rap.closestAp.name
+		for tag,zone in dicoZone.items():
+			if tag in closestApName:
+				result[zone] += 1
+				break
+
+
+	return result
+
+
+
+################
+### Probes #####
+################
 def getAllProbes():
 	probes = set()
 	for log in ProbeLog.objects.all():
@@ -251,7 +281,6 @@ def getConnectionResult(probe,since=None):
 
 
 		return result
-
 
 	except:
 		return {}

@@ -99,7 +99,7 @@ SNMPRAPLAP = timedelta(hours=2)
 SNMPMSLAP = timedelta(minutes=30)
 
 DATAVALIDITY = timedelta(days=180)
-
+APDICOZONE = "gatherer/data/apzone.json"
 
 
 ## Celery
