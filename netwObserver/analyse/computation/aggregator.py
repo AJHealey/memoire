@@ -207,7 +207,7 @@ def getSpeed(start, end, time):
 def getRapPerZone():
 	dicoZone = {}
 	try:
-		dicoZone = json.load(codecs.open(settings.APDICOZONE,'r',encoding='CP1252'))
+		dicoZone = json.load(codecs.open(settings.APDICOZONE,'r',encoding='utf-8'))
 	except Exception as e:
 		OperationalError(source="Rap Per Zone - dico loading", error=str(e)).save()
 		return {}
