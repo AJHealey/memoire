@@ -315,7 +315,8 @@ def getAvailabilityByService(probe,since=None):
 					else:
 						availability[service.service]["fail"] += 1
 
-			availability[service.service]["rate"] = float(availability[service.service]["success"]*100)/(availability[service.service]["success"] + availability[service.service]["fail"])
+			for service,data in availability.items():
+				data["rate"] = data["success"]*100/(data["fail"]+data["success"])
 
 
 			result[tmp] = availability
