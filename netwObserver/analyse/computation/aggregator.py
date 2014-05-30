@@ -307,13 +307,13 @@ def getAvailabilityByService(probe,since=None):
 
 			for con in ssidResults:
 				for service in con.servicecheck_set.all():
-					if service not in availability:
-						availability[service] = {"fail":0,"success":0}
+					if service.service not in availability:
+						availability[service.service] = {"fail":0,"success":0}
 					
 					if service.state:
-						availability[service]["success"] += 1
+						availability[service.service]["success"] += 1
 					else:
-						availability[service]["fail"] += 1
+						availability[service.service]["fail"] += 1
 
 			result[tmp] = availability
 
