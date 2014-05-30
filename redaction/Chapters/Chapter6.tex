@@ -13,10 +13,14 @@
 %Trying to associate -> rejected some time -> status code = 12 ?
 %Connecté et puis disconection abrupte -> code = 3 ?
 
-%Limitations ?
-%OpenSSL
-%Aruba AP70 was originally designed to be a commercial AP instead of a wireless AM, its processing capability is limited: 266-MH MIPS 4Kc CPU, 28-MB RAM, and 8-MB flash memory storage
+
 \section{Analysis}
+The purpose of the active monitoring tool is to simulate the behavior of a lambda users that tries to get a connection to the UCL's wireless network in order to access the Internet. In this active monitoring application, as detailed in the implementation and deployment section (see \texttt{4.2.3}), we have created a connection loops in which the supplicant tries to establish a connection with each one of the five UCL's wireless networks. During that loop we also perform an availability and reachability test on a collection of selected services and websites in order to have a better overview of the actual quality and performance of the network the user is experiencing.
+
+ a lot of data about the current network is gathered and inserted into a log file.
+
+
+
 The purpose of the active monitoring is, as mentioned before, to simulate a user on the network and make a bunch of tests in order to get a live overview of the network status. During the connection loop, data is gathered inserted into the log file. We have decided to focus on several metrics. As a reminder, here are the data we find into the log file.
 
 \begin{itemize}
@@ -91,7 +95,9 @@ During the connection establishment phase, the supplicant makes several interact
 
 
 \section{Limitations}
-
+%Limitations ?
+%OpenSSL
+%Aruba AP70 was originally designed to be a commercial AP instead of a wireless AM, its processing capability is limited: 266-MH MIPS 4Kc CPU, 28-MB RAM, and 8-MB flash memory storage
 
 
 
