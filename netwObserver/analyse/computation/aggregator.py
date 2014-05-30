@@ -207,7 +207,8 @@ def getRapPerZone():
 	dicoZone = {}
 	try:
 		dicoZone = json.load(open(settings.APDICOZONE,"r"))
-	except:
+	except Exception as e:
+		OperationalError(source="Rap Per Zone - dico loading", error=str(e)).save()
 		return {}
 
 	result = {}
