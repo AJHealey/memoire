@@ -281,8 +281,7 @@ def getConnectionResult(probe,since=None):
 			result[tmp] = []
 			ssidResults = connectionResults.filter(ssid=ssid).order_by("date").prefetch_related('timecheck_set','servicecheck_set')
 			for con in ssidResults:
-				if con.timecheck_set.all().exists() and con.servicecheck_set.all().exists():
-					result[tmp].append({"connection":con, "times":con.timecheck_set.all(), "services":con.servicecheck_set.all().order_by('service')})
+				result[tmp].append({"connection":con, "times":con.timecheck_set.all(), "services":con.servicecheck_set.all().order_by('service')})
 
 
 		return result
