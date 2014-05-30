@@ -112,10 +112,12 @@
 		</tr>
 	</thead>
 	<tbody>
-		{%for name,data in connectionService.ssid.items%}
-		<td>{{name}}</td>
-		<td {%if data.rate < 50%}class="danger"{%else%}class="active"{%endif%}>{{data.rate|floatformat:-2}}</td>
-		{%endfor%}
+		<tr>
+			{%for name,data in connectionService.ssid.items%}
+			<td>{{name}}</td>
+			<td {%if data.rate < 50%}class="danger"{%else%}class="active"{%endif%}>{{data.rate|floatformat:-2}}</td>
+			{%endfor%}
+		</tr>
 	</tbody>
 </table>
 {%endif%}
