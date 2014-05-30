@@ -251,6 +251,7 @@ static void parse_event(const char *reply) {
 		timeDiff(dhcp_start, dhcp_end, &time->dhcp_time);
 
 		dhcp = 1;
+		connection = 1;
 	}
 	
 	/* TRYING NETWORK CONNECTION */
@@ -314,6 +315,7 @@ static void execute_action(enum wpa_action action, int network) {
 				commands("DISCONNECT");
 				system("killall udhcpc"); /* Stop DHCP */
 				dhcp = 0;
+				connection = 0;
 			}
 			break;
 
@@ -433,8 +435,9 @@ static void connect_network(int network) {
 	log_struct->date = malloc(strlen(date)+1);
 	strcpy(log_struct->date, date);	
 
-	ftime(&wpa_start);
+	
 	sprintf(command, "SELECT_NETWORK %d", network);
+	ftime(&wpa_start);
 	commands(command);
 	while(dhcp != 1) {
 		sleep(1);
@@ -497,7 +500,7 @@ static int checkService(char *host, const char *port) {
 
 	if(res < 0) {
 		if(errno == EINPROGRESS) {
-			tv.tv_sec = 5; // 5sec timeout
+			tv.tv_sec = 3; // 5sec timeout
 			tv.tv_usec = 0;
 			FD_ZERO(&set);
 			FD_SET(sockfd, &set);
@@ -676,9 +679,9 @@ static void scan() {
 	commands("SCAN"); //Scan	
 	ret = wpa_ctrl_request(ctrl, "SCAN_RESULTS", os_strlen("SCAN_RESULTS"), reply, &len, NULL);
 	if(ret < 0) {
-		/* Wpa_supplicant timed out. Restart scan method */
 		scan();
 	}
+
 	reply[len] = '\0';
 	i = 0; 
 	/* Tokenize results and extract information */
@@ -744,8 +747,13 @@ static void scan() {
  * Send logs to server
  */
 static void send_log() {
-	if(sendLogs("/var/log/logs.txt", router_mac) < 0)
+	int ret;
+	ret = sendLogs("/var/log/logs.txt", router_mac);
+	printf("RET: %d\n");
+	if(ret < 0);
 		debug_print("Error sending log file\n");
+	else
+		debug_print("Log Sent\n");
 }
 
 /*
@@ -854,11 +862,12 @@ void *connection_loop(void * p_data) {
 		log_event(LOG_START_LOOP, NULL);
 		scan();
 		log_event(LOG_START_CONNECTION, NULL);
-
 		for(i = 0; i<NUM_OF_NETWORKS; i++) {
 			log_event(LOG_START_CONNECTION_LOOP, NULL);
 			execute_action(ACTION_CONNECT, i);
+
 			services_loop();
+
 			log_event(LOG_PRINT_STRUCT, NULL);
 			sleep(DELAY);
 			clear_struct();
@@ -873,29 +882,31 @@ void *connection_loop(void * p_data) {
 		}
 		log_event(LOG_STOP_CONNECTION, NULL);
 
-		if(close == 5) {
-			debug_print("SAVE\n");
+		if(close == 1) {
 			log_event(LOG_FINAL_STOP_LOOP, NULL);
 			log_event(LOG_STOP_LOG, NULL);
 			log_event(LOG_STOP_FILE, NULL);
+
 			fclose(f);
 			send_log();
-			f = fopen("/var/log/logs.txt","w");
+		
+			sleep(15);
+
+			execute_action(ACTION_DISCONNECT, 0);
+			f = fopen("/var/log/logs.txt","w+");
 			log_event(LOG_START_FILE, NULL);
-			log_event(LOG_MAC_ADDR, NULL);
+			log_event(LOG_INFO_DATE, NULL);
+			log_event(LOG_MAC_ADDR, router_mac);
 			log_event(LOG_START_LOG, NULL);
 			close = 0;
 		}
 		else {
 			log_event(LOG_STOP_LOOP, NULL);
-			debug_print("Disconnection from student\n");
 			execute_action(ACTION_DISCONNECT, 0);
-			sleep(DELAY);
+			close += 1;
 			
 		}
-		
 		printf(">>>CLOSE: %d\n", close);
-		close += 1;
 	}
 	return NULL;
 }
