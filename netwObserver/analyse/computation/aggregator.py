@@ -1,3 +1,4 @@
+import codecs
 from datetime import datetime,timedelta
 from django.utils import timezone
 from django.db.models import Max, Min
@@ -206,7 +207,7 @@ def getSpeed(start, end, time):
 def getRapPerZone():
 	dicoZone = {}
 	try:
-		dicoZone = json.load(open(settings.APDICOZONE,"r"))
+		dicoZone = json.load(codecs.open(path,'r',encoding='CP1252'))
 	except Exception as e:
 		OperationalError(source="Rap Per Zone - dico loading", error=str(e)).save()
 		return {}
