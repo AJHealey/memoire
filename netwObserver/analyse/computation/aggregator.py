@@ -293,7 +293,7 @@ def getConnectionTime(probe,since=None):
 def getAvailabilityByService(probe,since=None):
 	try:
 		result = {}
-		connectionResults = ProbeConnectionResult.objects.filter(test__log__probe = probe).prefetch_related('servicecheck_set')
+		connectionResults = ProbeConnectionResult.objects.filter(test__log__probe = probe)
 		
 		if since != None:
 			connectionResults = connectionResults.filter(date__gte=since)
@@ -301,7 +301,7 @@ def getAvailabilityByService(probe,since=None):
 		ssids = set(connectionResults.values_list('ssid', flat=True))
 		for ssid in ssids:
 			tmp = ssid.replace(".","").replace("-","")
-			ssidResults = connectionResults.filter(ssid=ssid)
+			ssidResults = connectionResults.filter(ssid=ssid).prefetch_related('servicecheck_set')
 			
 			availability = {}
 
