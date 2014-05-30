@@ -267,21 +267,19 @@ def getLastScan(probe):
 def getConnectionResult(probe,since=None):
 	try:
 		result = {}
-		logs = ProbeLog.objects.filter(probe=probe)
-		
+				
+		connectionResults = ProbeConnectionResult.objects.filter(test__log__probe = probe)
 		if since != None:
-			logs.filter(date__gte=since)
+			connectionResults = connectionResults.filter(date__gte=since)
 
-		tests = ProbeTest.objects.filter(log__in=logs)
-		connectionResults = ProbeConnectionResult.objects.filter(test__in=tests)
-
-		ssids = connectionResults.values_list('ssid', flat=True)
+		ssids = set(connectionResults.values_list('ssid', flat=True))
 		for ssid in ssids:
 			tmp = ssid.replace(".","").replace("-","")
 			result[tmp] = []
-			ssidResults = connectionResults.filter(ssid=ssid).order_by("date").prefetch_related('timecheck_set','servicecheck_set')
+			ssidResults = connectionResults.filter(ssid=ssid).order_by("date")
 			for con in ssidResults:
-				result[tmp].append({"connection":con, "times":con.timecheck_set.all(), "services":con.servicecheck_set.all().order_by('service')})
+				if con.timecheck_set.all().exists() and con.servicecheck_set.all().exists():
+					result[tmp].append({"connection":con, "times":con.timecheck_set.all(), "services":con.servicecheck_set.all().order_by('service')})
 
 
 		return result
