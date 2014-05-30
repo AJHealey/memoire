@@ -215,11 +215,12 @@ def getRapPerZone():
 		result[zone] = 0
 
 	for rap in RogueAccessPoint.objects.all():
-		closestApName = rap.closestAp.name
-		for tag,zone in dicoZone.items():
-			if tag in closestApName:
-				result[zone] += 1
-				break
+		if rap.closestAp != None:
+			closestApName = rap.closestAp.name
+			for tag,zone in dicoZone.items():
+				if tag in closestApName:
+					result[zone] += 1
+					break
 
 
 	return result
