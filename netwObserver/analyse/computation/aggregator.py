@@ -268,7 +268,7 @@ def getConnectionResult(probe,since=None):
 	try:
 		result = {}
 				
-		connectionResults = ProbeConnectionResult.objects.filter(test__log__probe = probe)
+		connectionResults = ProbeConnectionResult.objects.filter(test__log__probe = probe).prefetch_related('servicecheck_set','timecheck_set')
 		if since != None:
 			connectionResults = connectionResults.filter(date__gte=since)
 
