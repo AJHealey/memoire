@@ -269,7 +269,7 @@ def getConnectionTime(probe,since=None):
 	try:
 		result = {}
 				
-		connectionResults = ProbeConnectionResult.objects.filter(test__log__probe = probe).prefetch_related('timecheck_set')
+		connectionResults = ProbeConnectionResult.objects.filter(test__log__probe = probe).prefetch_related('timecheck')
 		if since != None:
 			connectionResults = connectionResults.filter(date__gte=since)
 
@@ -293,7 +293,7 @@ def getConnectionTime(probe,since=None):
 def getAvailabilityByService(since=None):
 	try:
 		result = {}
-		connectionResults = ProbeConnectionResult.objects.all().prefetch_related('servicecheck_set')
+		connectionResults = ProbeConnectionResult.objects.all().prefetch_related('servicecheck')
 		
 		if since != None:
 			connectionResults = connectionResults.filter(date__gte=since)
