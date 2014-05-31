@@ -106,14 +106,19 @@
 		
 		var data = google.visualization.arrayToDataTable([
 
-		  ['Time'{%for check in result.0.times%} ,'{{check.step}}'{%endfor%} ],
+		  ['Time'{%for check in result.0.times%} ,'{{check.step}}'{%endfor%} ,"Association attemps","Reconnection"],
 		  {%for connection in result%}
-		  [new Date({{connection.date.year}},{{connection.date.month}}-1,{{connection.date.day}},{{connection.date.hour}},{{connection.date.minute}},{{connection.date.second}}){%for check in connection.times%} ,{{check.time}}{%endfor%}],
+		  [new Date({{connection.date.year}},{{connection.date.month}}-1,{{connection.date.day}},{{connection.date.hour}},{{connection.date.minute}},{{connection.date.second}}){%for check in connection.times%} ,{{check.time}}{%endfor%}, {{connection.connection.apTried.count}}, {{connection.connection.connected.count}}],
 		  {%endfor%}
 		]);
 
 		var options = {
-		  title: 'Connection time (seconds)',
+			series: {2:{targetAxisIndex:1, curveType:'function'}},
+			vAxes:[
+				{}, 
+				{title:'Connections'}
+			],
+			title: 'Connection time (seconds)',
 		};
 
 		var chart = new google.visualization.LineChart(document.getElementById('{{ssid}}timeschart_div'));
