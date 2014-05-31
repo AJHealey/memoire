@@ -116,7 +116,7 @@
 		  title: 'Connection time (seconds)',
 		};
 
-		var chart = new google.visualization.AreaChart(document.getElementById('{{ssid}}timeschart_div'));
+		var chart = new google.visualization.LineChart(document.getElementById('{{ssid}}timeschart_div'));
 		chart.draw(data, options);
 	}
 	{%endfor%}
