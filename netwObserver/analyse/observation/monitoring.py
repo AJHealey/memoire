@@ -15,6 +15,8 @@ def getOverloadedAP(since=settings.AP_OVERLOADED_PERIOD):
 
 		result[snap.apinterface.ap.name]["overload"] += 1
 
+	return result
+
 
 
 
