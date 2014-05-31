@@ -127,6 +127,13 @@ The database has to be able to represent each kind of information and manage all
 
 Our choice is to clearly separate the different domains of data. Trying to make a link between each element could create inconsistencies and make the analysis harder. That is why each category of information has its own tables and links are only made when they are clearly present in the source data. This does not mean that we don't cross the information, it simply means that we let the data independent and we link them only when we need to perform an analysis. As there are plenty of ways to organize them, we preferred to keep them neat and avoid to mix them in the gathering part.
 
+The following figure details the architecture of our database.
+\begin{figure}[H]
+\centering
+  \includegraphics[width=1\linewidth]{Pictures/chapter3/db2.png}
+  \caption{Interconnections with the UCL's network infrastructure}
+\end{figure}
+
 
 \section{Link with the Infrastructure}
 Our monitoring tool needs to be directly plugged into the network infrastructure in order to be efficient and to display interesting results. For each data source, we have to define a point of communication in our system between the source and one of our modules. The data is not centralized and we have to manage how we access it and try to define a right balance between performances and respect of the external components which host the network information. For example, we can't overload \texttt{SNMP} agents with requests.
