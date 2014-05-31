@@ -58,15 +58,15 @@ Tobias Oetiker.
 \newblock Mrtg - the multi router traffic grapher, {\natexlab{a}}.
 \newblock URL \url{http://oss.oetiker.ch/mrtg/}.
 
-\bibitem[The Cacti~Group()]{cacti}
-Inc. The Cacti~Group.
-\newblock Cacti: The complete rrdtool-based graphing solution.
-\newblock URL \url{http://www.cacti.net/}.
-
 \bibitem[Oetiker({\natexlab{b}})]{rrdtool}
 Tobias Oetiker.
 \newblock Rrdtool logging \& graphing, {\natexlab{b}}.
 \newblock URL \url{http://oss.oetiker.ch/rrdtool/}.
+
+\bibitem[The Cacti~Group()]{cacti}
+Inc. The Cacti~Group.
+\newblock Cacti: The complete rrdtool-based graphing solution.
+\newblock URL \url{http://www.cacti.net/}.
 
 \bibitem[Entreprises()]{nagios}
 Nagios Entreprises.

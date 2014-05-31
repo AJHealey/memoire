@@ -727,9 +727,10 @@ static void scan() {
 	commands("SCAN");
 	/* Get and store the scan results inside a buffer */
 	ret = wpa_ctrl_request(ctrl, "SCAN_RESULTS", os_strlen("SCAN_RESULTS"), reply, &len, NULL);
-	if(ret < 0) {
+	/*if(ret < 0) {
+		printf("REPEAT\n");
 		scan();
-	}
+	}*/
 
 	reply[len] = '\0';
 	i = 0; 
@@ -972,7 +973,7 @@ void *wpa_loop(void *p_data) {
  */ 
 void *connection_loop(void * p_data) {
 	log_struct = (struct log*) malloc (sizeof(struct log));
-	int close = 0;
+	int loops = 0;
 	int i;
 
 	log_event(LOG_START_FILE, NULL);
@@ -1003,25 +1004,28 @@ void *connection_loop(void * p_data) {
 			sleep(DELAY);
 		}
 		log_event(LOG_STOP_CONNECTION, NULL);
-		if(close == NUM_OF_LOOPS-1) {
+		if(loops == NUM_OF_LOOPS-1) {
 			log_event(LOG_FINAL_STOP_LOOP, NULL);
 			log_event(LOG_STOP_LOG, NULL);
 			log_event(LOG_STOP_FILE, NULL);
 			fclose(f); /* Close log file */
 			send_log(); /* Send log file to the server */
+			//printf("SEND\n");
+			//sleep(10);
 			execute_action(ACTION_DISCONNECT, 0);
 			f = fopen("/var/log/logs.txt","w+"); /* Overwrite the log file */
 			log_event(LOG_START_FILE, NULL);
 			log_event(LOG_INFO_DATE, NULL);
 			log_event(LOG_MAC_ADDR, router_mac);
 			log_event(LOG_START_LOG, NULL);
-			close = 0;
+			loops = 0;
 		}
 		else {
 			log_event(LOG_STOP_LOOP, NULL);
 			execute_action(ACTION_DISCONNECT, 0);
-			close += 1;	
+			loops += 1;	
 		}
+		printf(">>Close %d\n", loops);
 	}
 	return NULL;
 }
