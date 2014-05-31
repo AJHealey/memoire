@@ -292,30 +292,27 @@ def getConnectionTime(probe,since=None):
 
 
 def getAvailabilityByService(since=None):
-	try:
-		result = []
-		connectionResults = ProbeConnectionResult.objects.all().prefetch_related('servicecheck_set')
+	result = []
+	connectionResults = ProbeConnectionResult.objects.all().prefetch_related('servicecheck_set')
+	
+	if since != None:
+		connectionResults = connectionResults.filter(date__gte=since)
+
+	# !Keep same ordering
+	services = sorted(list(set(connectionResults.values_list('servicecheck__service', flat=True))))
+	ssids = sorted(list(set(connectionResults.values_list('ssid', flat=True))))
+
+	for service in services:
+		data = {"service":service, "data":[]}
+		for ssid in ssids:
+			total = connectionResults.filter(ssid=ssid,servicecheck__service=service).count()
+			if total > 0:
+				success = connectionResults.filter(ssid=ssid,servicecheck__service=service,servicecheck__state=True).count()
+				data['data'].append(float(success)*100/total)
+		result.append(data)
 		
-		if since != None:
-			connectionResults = connectionResults.filter(date__gte=since)
+	return {"ssids":ssids, "data":result}
 
-		# !Keep same ordering
-		services = sorted(list(set(connectionResults.values_list('servicecheck__service', flat=True))))
-		ssids = sorted(list(set(connectionResults.values_list('ssid', flat=True))))
-
-		for service in services:
-			data = {"service":service, "data":[]}
-			for ssid in ssids:
-				total = connectionResults.filter(ssid=ssid,servicecheck__service=service).count()
-				if total > 0:
-					success = connectionResults.filter(ssid=ssid,servicecheck__service=service,servicecheck__state=True).count()
-					data['data'].append(float(success)*100/total)
-			result.append(data)
-			
-		return {"ssids":ssids, "data":result}
-
-	except:
-		return {}
 
 
 
