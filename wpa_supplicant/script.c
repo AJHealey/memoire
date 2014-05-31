@@ -371,7 +371,34 @@ static void commands(char *cmd)
 		
 	}
 }
-
+/*
+static void commands(char *cmd)
+{
+	char reply[BUF];
+	size_t len;
+	int ret;
+	
+	// No control interface has been found 
+	if(ctrl == NULL) {
+		exit(-1);
+	}
+	ret = wpa_ctrl_request(ctrl, cmd, os_strlen(cmd), reply, &len, NULL);
+	count = 1;
+	while(ret < 0 && count < 5) {
+		// Timeout (Overload)
+		if(ret == -2){
+			sleep(3);
+			ret = wpa_ctrl_request(ctrl, cmd, os_strlen(cmd), reply, &len, NULL);
+			count ++;
+		}
+		// Error
+		else {
+			exit(-1);
+		}	
+	}
+	return;
+}
+*/
 
 
 
