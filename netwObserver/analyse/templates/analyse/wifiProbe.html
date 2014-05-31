@@ -131,7 +131,7 @@
 
 		  ['Connection', "Association attempts","Reconnection"],
 		  {%for connection in result%}
-		  [new Date({{connection.date.year}},{{connection.date.month}}-1,{{connection.date.day}},{{connection.date.hour}},{{connection.date.minute}},{{connection.date.second}}), {{connection.connection.apTried.count}}, {{connection.connection.connected.count}-1],
+		  [new Date({{connection.date.year}},{{connection.date.month}}-1,{{connection.date.day}},{{connection.date.hour}},{{connection.date.minute}},{{connection.date.second}}), {{connection.connection.apTried.count}}, {{connection.connection.connected.count}}-1],
 		  {%endfor%}
 		]);
 
