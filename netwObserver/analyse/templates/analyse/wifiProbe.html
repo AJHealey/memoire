@@ -6,10 +6,10 @@
 <div class="container" style='margin-top: 25px;'>
 
 <h4>Service Availability</h4>
-{% for service, availability in connectionService.items %}
+{% for service,availability in connectionService.items %}
 <h6>{{service}}</h6>
 <dl class="dl-horizontal">
-	{%for ssid,rate in availability%}
+	{%for ssid,rate in availability.items%}
 	<dt>{{ssid}}</dt>
 	<dd>{{rate|floatformat:-2}} %</dd>	
 	{%endfor%}
