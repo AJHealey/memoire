@@ -84,7 +84,7 @@ def wifiProbes(request):
 	context['section'] = 'probes'
 	
 	context["allProbe"] = aggregator.getAllProbes()
-	#context["connectionService"] = aggregator.getAvailabilityByService()
+	context["connectionService"] = aggregator.getAvailabilityByService()
 
 	if request.method == 'GET' and 'selectedProbe' in request.GET:
 		try:

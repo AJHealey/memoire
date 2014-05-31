@@ -17,7 +17,12 @@
 	</thead>
 	<tbody>
 		<tr>
-			<td {%if data.rate < 50 %}class="danger"{%else%}class="active"{%endif%}>{{data.rate|floatformat:-2}}</td>
+			{%for service in connectionService.data%}
+			<td>{{service.service}}}</td>
+			{%for rate in service.data%}
+			<td {%if rate < 50 %}class="danger"{%else%}class="active"{%endif%}>{{rate|floatformat:-2}}</td>
+			{%endfor%}
+			{%endfor%}
 		</tr>
 	</tbody>
 </table>
