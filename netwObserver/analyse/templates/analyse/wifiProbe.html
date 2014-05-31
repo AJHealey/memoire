@@ -5,7 +5,7 @@
 {% block section %}
 <div class="container" style='margin-top: 25px;'>
 
-<h4>Service Availability</h4>
+<h4>Services Availability</h4>
 <table class="table table-bordered">
 	<thead>
 		<tr>
@@ -124,12 +124,31 @@
 		var chart = new google.visualization.LineChart(document.getElementById('{{ssid}}timeschart_div'));
 		chart.draw(data, options);
 	}
+	google.setOnLoadCallback(draw{{ssid}}ConnectionAttemptChart);
+	function draw{{ssid}}ConnectionAttemptChart() {
+		
+		var data = google.visualization.arrayToDataTable([
+
+		  ['Connection', "Association attempts","Reconnection"],
+		  {%for connection in result%}
+		  [new Date({{connection.date.year}},{{connection.date.month}}-1,{{connection.date.day}},{{connection.date.hour}},{{connection.date.minute}},{{connection.date.second}}), {{connection.connection.apTried.count}}, {{connection.connection.connected.count}-1],
+		  {%endfor%}
+		]);
+
+		var options = {
+			title: 'Number of Association Attempts and Connections',
+		};
+
+		var chart = new google.visualization.LineChart(document.getElementById('{{ssid}}attemptchart_div'));
+		chart.draw(data, options);
+	}
 	{%endfor%}
 </script>
 {%endif%}
 {%for ssid, result in connectionTime.items%}
 <h4>SSID: {{result.0.connection.ssid}}</h4>
 <div id="{{ssid}}timeschart_div" style="width: 900px; height: 500px;"></div>
+<div id="{{ssid}}attemptchart_div" style="width: 900px; height: 500px;"></div>
 {%endfor%}
 {%endif%}
 
