@@ -20,7 +20,7 @@
 		<tr>
 			<td>{{service.service}}</td>
 			{%for rate in service.data%}
-			<td {%if rate < 50 %}class="danger"{%else%}class="active"{%endif%}>{{rate|floatformat:-2}}</td>
+			<td {%if rate < 50 %}class="danger"{%else%}class="success"{%endif%}>{{rate|floatformat:-2}}</td>
 			{%endfor%}
 		</tr>
 		{%endfor%}
