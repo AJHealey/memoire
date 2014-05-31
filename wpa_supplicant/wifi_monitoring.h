@@ -1,35 +1,23 @@
 
-#ifndef SCRIPT_H
-#define SCRIPT_H
+#ifndef WIFI_MONITORING_H
+#define WIFI_MONITORING_H
 
-#define DEFAULT_CTRL_IFACE "/tmp/run/wpa_supplicant/wlan0"
-#define BUF 1024
-#define DELAY 10
-#define debug_print(args) if (DEBUG) printf(args)
+#define DEFAULT_CTRL_IFACE "/var/run/wpa_supplicant/wlan0"
+#define BUF 1024 /* Reply buffer size */
+#define DELAY 3 /* Delay in seconds for the connection loop */
+#define debug_print(args) if (DEBUG) printf(args) /* Debug print */
 
-/* PING */
-#define DEFDATALEN 56
-#define MAXIPLEN 60
-#define MAXICMPLEN 76
 
 char router_mac[18]; /* Router mac address */
-
+char *ssid_log; /* SSID of the current network */
 struct wpa_ctrl *ctrl; /* Control interface of wpa_supplicant */
 struct timeb wpa_start, wpa_end, dhcp_start, dhcp_end; /* Time structures */
 struct log *log_struct; /* Log structure */
-struct tm tm; // For date computation
-time_t now; // For date computation
-int start_loop = 0;
-
-
-int dhcp = 0;
-int connection = 0;
-
-//int disconnected = 0; // If abrupt disconnection
-FILE *f; //Log file
-
-/* For Logs */
-char *ssid_log;
+struct tm tm; /* For date computation */
+time_t now; /* For date computation */
+int start_loop = 0; /* Starts the connection thread as soon as wpa_supplicant is started and networks are created */
+int dhcp = 0; /* DHCP control variable */
+FILE *f, *tmp_log; /* Log files */
 
 
 /* Structure for log file */
@@ -71,16 +59,27 @@ struct ap_time {
 
 /* Structure that stores the information about the services */
 struct check_serv {
+	char *DNS_1;
+	char *DNS_2;
 	char *google;
+	char *facebook;
+	char *youtube;
+	char *yahoo;
+	char *wikipedia;
+	char *twitter;
+	char *amazon;
+	char *live;
+	char *linkedin;
+	char *blogspot;
 	char *gmail;
 	char *github;
-	char *ssl_github;
 	char *uclouvain;
 	char *icampus;
+	char *moodle;
+	char *libellule;
+	char *ade;
+	char *studssh;
 };
-
-
-
 
 
 /* Stores all the results of a scan */
@@ -118,36 +117,34 @@ enum log_events {
 	LOG_INFO_DATE,
 };
 
-/* Actions possible */
+/* List of possible actions */
 enum wpa_action {
 	ACTION_CONNECT,
 	ACTION_CONNECT_MAISON,
 	ACTION_DISCONNECT,
 	ACTION_CREATE_NETWORKS,
-	ACTION_SCAN,
 };
 
-/* Prototypes */
-static void log_event(enum log_events log, const char *arg);
-static void parse_event(const char *reply);
-static void execute_action(enum wpa_action action, int network);
-static void commands(char *cmd);
+
+/* Function prototypes */
+static void log_event(enum log_events, const char *);
+static void parse_event(const char *);
+static void execute_action(enum wpa_action, int);
+static void commands(char *);
 static void create_networks();
-static void config_network(int network, char *ssid, char *key_mgmt, char *eap, char *pairwise, char *identity, char *password, char *ca_cert, char *phase1, char *phase2);
-static void connect_network(int network);
-static void connect_eduroam();
-static void connect_uclouvain();
-static void connect_visiteurs();
-static void connect_prive();
-static void connect_student();
-static int checkService(char *host, const char *port);
+static void config_network(int, char *, char *, char *, char *, char *, char *, char *, char *, char *);
+static void connect_network(int );
+static int checkDNS(char *);
+static int checkService(char *, const char *);
 static void services_loop();
 static void scan();
+static void save_log_tmp();
 static void send_log();
-void *wpa_loop(void *p_data);
-void *connection_loop(void *p_data);
+static void clear_struct();
+void *wpa_loop(void *);
+void *connection_loop(void *);
 
 
 
 
-#endif /* SCRIPT2_H */
+#endif /* WIFI_MONITORING_H */
