@@ -325,6 +325,10 @@ static void parse_event(const char *reply) {
 		system("killall udhcpc"); /* Stop DHCP */
 		dhcp = 0;
 	}
+
+	else if(match(event, WPA_EVENT_SCAN_RESULTS)) {
+		
+	}
 }
 
 /*
@@ -400,14 +404,13 @@ static void create_networks() {
 	config_network(3, "UCLouvain-prive", "NONE", NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 	config_network(4, "student.UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP");
-
 }
 
 
 /*
  * Configure the network by sending commands to wpa_supplicant with special variables and parameters
  */
- void config_network(int network, char *ssid, char *key_mgmt, char *eap, char *pairwise, char *identity, char *password, char *ca_cert, char *phase1, char *phase2) {
+ void config_network(int network, char *ssid, char *key_mgmt, char *eap, char *pairwise, char *identity, char *password, char *ca_cert, char *phase1, char *phase2, char *psk) {
 	char cmd[512];
 
 	os_snprintf(cmd, sizeof(cmd), "SET_NETWORK %d ssid \"%s\"", network,ssid);
@@ -451,6 +454,10 @@ static void create_networks() {
 	if(phase2 != NULL) {
 		os_snprintf(cmd, sizeof(cmd), "SET_NETWORK %d phase2 \"%s\"",network, phase2);
 		commands(cmd);
+	}
+
+	if(psk != NULL) {
+		os_snprintf(cmd, sizeof(cmd), "SET_NETWORK %d psk \"%s\"", network, psk);
 	}
 }
 

@@ -15,7 +15,7 @@
 
 
 \section{Analysis}
-This chapter focus on the analysis made by our probe. This device simulates a lambda user that tries to establish a connection to the UCL's wireless network in order to access the Internet. The procedure followed by the device is quite simple. For each \texttt{SSID} available on the campus the process is the following.
+This chapter focuses on the active network analysis executed by the \texttt{OpenWrt} Linux probe. This device simulates a lambda user that tries to establish a connection with the UCL's wireless network in order to get an access to the Internet. The procedure followed by the \texttt{wpa\_supplicant} daemon is quite simple. A connection loop goes through all the networks specified in the program during the configuration phase, and then for each \texttt{SSID} several processes are executed. They can be grouped in three main steps.
 
 \begin{enumerate}
 \item Associate with the access point
@@ -23,20 +23,23 @@ This chapter focus on the analysis made by our probe. This device simulates a la
 \item Check the availability of a set of services
 \end{enumerate}
 
-The goal here is to get an overview of the infrastructure from the user's point of view. It is something really interesting because most of the time, the administrators make their diagnosis only by looking at the states of the components that they directly managed. Here, we try to complete those observations adding an opposite view (i.e. the view of the devices that use the infrastructure).
+The goal here is to get an overview of the network infrastructure's performances from a user's point of view. This is really interesting since, most of the time, network administrators make their diagnosis only by focusing on the states of the components they directly manage. Here, we try to enhance these observations by adding the data collected with this new monitoring angle (i.e. the devices that use the network infrastructure).
 
-The purpose of the active monitoring is, as mentioned before, to simulate a user on the network and make a bunch of tests in order to get a live overview of the network status. During the connection loop, a various set of data are gathered and inserted into log files. We have decided to focus on several metrics. As a reminder, here are the information available into a typical log file.
+The purpose of the active monitoring is, as mentioned before, to simulate a typical user's behavior on the network and make a bunch of tests in order to get a live overview of the current network status. During the connection loop, a various set of data is gathered and inserted into the log file. We have decided to focus on some key metrics. As a reminder, here are the information available into a typical log file (a full example is detailed in section \texttt{4.2.3.2}).
 
 \begin{description}
-	\item[Scan results]: The set of access points around the device as well as other \texttt{RF} related information.
-	\item[AP tried]: The set of access points that the device tries to associate with.
-	\item[AP connected]: The set of access points that the device has associated with during the tests. Like most devices, our router may change the access point to a better one (i.e. roaming).
+	\item[Scan results]: The information concerning the set of access points located in the device's area as well as other \texttt{RF} related information.
+	\item[AP tried]: The set of access points that the device tried to associate with.
+	\item[AP connected]: The access point the supplicant connected with. Several access points can be found here since \texttt{wpa\_supplicant} has a roaming feature enabled by default and, by consequence, may decide to disconnect and reconnect to an access point with a better configuration.
 	\item[Supplication Time]: Time elapsed during the connection establishment.
 	\item [DHCP Time]: Time elapsed till an \texttt{IP} address is assigned to the device.
-	\item [Services checks]: The results of the services availability tests.
+	\item [Services checks]: The results of the services availability and reachability tests.
 \end{description}
 
-Those information are stored and analyzed by the server. By aggregating those gathered data throughout time, we can build an estimation of the overall quality experienced by the users.
+After a defined amount of connections establishments on each \texttt{SSID}, the log file is sent to the server that is going to parse it and store the information accordingly in the database. These gathered data are then analyzed by the server's threads. By aggregating those information throughout time, we can build an estimation of the overall quality experienced by the users when using the wireless network.
+
+The following sections describe the analysis and conclusions we were able to make based on the information collected by the active probe after its deployment phase on the wireless network.
+
 
 \section{Scanning}
 As detailed above, the first part of the log file aggregates all the scan results performed by the supplicant before connecting to a network. Those information are quite interesting since they allow us to get live details about the current environment of the router. Thanks to those results we have a full overview of the signal strength of all the surrounding access points as well as their frequencies and the \texttt{SSID} they broadcast. 

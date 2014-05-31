@@ -132,7 +132,7 @@ static void parse_event(const char *);
 static void execute_action(enum wpa_action, int);
 static void commands(char *);
 static void create_networks();
-static void config_network(int, char *, char *, char *, char *, char *, char *, char *, char *, char *);
+static void config_network(int, char *, char *, char *, char *, char *, char *, char *, char *, char *, char *);
 static void connect_network(int );
 static int checkDNS(char *);
 static int checkService(char *, const char *);
