@@ -42,7 +42,7 @@ def getDhcpLeaseAlerts(fromDate=(timezone.now() - settings.DHCP_LEASE_ALERT_TRES
 	nbrAlert = logs.count()
 	devices = len(set(logs.values_list('device', flat=True)))
 	if devices > 0:
-		return {"alerts": logs.count() , "devices": devices, "ratio": nbrAlert/devices}
+		return {"alerts": nbrAlert , "devices": devices, "ratio": nbrAlert/devices}
 	else:
 		return {}
 
