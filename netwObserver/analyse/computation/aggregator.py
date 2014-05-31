@@ -290,7 +290,7 @@ def getConnectionTime(probe,since=None):
 
 
 
-def getAvailabilityByService(probe,since=None):
+def getAvailabilityByService(since=None):
 	try:
 		result = {}
 		connectionResults = ProbeConnectionResult.objects.all()

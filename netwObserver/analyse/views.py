@@ -84,13 +84,13 @@ def wifiProbes(request):
 	context['section'] = 'probes'
 	
 	context["allProbe"] = aggregator.getAllProbes()
-	
+	context["connectionService"] = aggregator.getAvailabilityByService()
+
 	if request.method == 'GET' and 'selectedProbe' in request.GET:
 		try:
 			context["probe"] = MobileStation.objects.get(id=int(request.GET['selectedProbe']))
 			context["lastScan"] = aggregator.getLastScan(context["probe"])
 			context["connectionTime"] = aggregator.getConnectionTime(context["probe"])
-			context["connectionService"] = aggregator.getAvailabilityByService(context["probe"])
 		except:
 			pass
 
