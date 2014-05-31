@@ -112,10 +112,10 @@ int read_responce(int fd, struct sockaddr_in dest_addr) {
 
     if ((num_of_bytes = recvfrom(fd, buf, BUFLEN, 0, (struct sockaddr *)&dest_addr, &buflen)) == -1) {
         //Timeout or error
-        return 0;
+        return -1;
     }
     //Response received
-    return 1;
+    return 0;
 }
 
 
@@ -137,7 +137,7 @@ int check_dns_response(char *host) {
         
     sockfd = socket( AF_INET, SOCK_DGRAM, 0 );
     if (sockfd <= 0) {
-        return 0;
+        return -1;
     }
 
     setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof(struct timeval));;

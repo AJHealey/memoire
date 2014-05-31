@@ -2,12 +2,8 @@
 #include "script.h"
 #include <pthread.h>
 
-/* TODO 
- * - RAJOUTER DNS ET TCP DANS LES SCANS (nouvelles structures pour chaque service ?)
- */
 
-
-#define DEBUG 1
+#define DEBUG 1 /* Print debug messages */
 
 /* Change the number of networks the router has to configure here
  * 1: eduroam
@@ -17,9 +13,12 @@
  * 5: student.UCLouvain
  */
 #define NUM_OF_NETWORKS 5
+#define NUM_OF_LOOPS 1 /* Number of loops to execute before sending the log file */
 
 /* 
- * Insert the logs into the logfile
+ * Insert the log information into the log file.
+ * Depending on the type of events received, the correct part handling the insertion is
+ * executed in order to respect the JSON syntax.
  */
 static void log_event(enum log_events log, const char *arg) {
 
@@ -54,18 +53,16 @@ static void log_event(enum log_events log, const char *arg) {
 
 		case LOG_START_SCAN: {
 			fprintf(f, "\"scan\":[\n");
-			
 			struct scan_results *ptr = first_scan;
-			
+
 			while(ptr != NULL) {
-				
 				fprintf(f, "{\n"); 
 				fprintf(f, "\"bssid\": \"%s\",\n", ptr->bssid);
 				fprintf(f, "\"frequency\": \"%s\",\n", ptr->freq);
 				fprintf(f, "\"signal\": \"%s\",\n", ptr->signal);
 				fprintf(f, "\"ssid\": \"%s\"\n", ptr->ssid);
 				
-				/* JSON syntax */
+				/* Last element cannot have a comma after the closing bracket */
 				if(first_scan -> num != 1) {
 					
 					fprintf(f,"},\n");
@@ -75,7 +72,6 @@ static void log_event(enum log_events log, const char *arg) {
 					
 					fprintf(f,"}\n");
 				}
-				
 				ptr = ptr->next;
 			}
 			}
@@ -100,14 +96,14 @@ static void log_event(enum log_events log, const char *arg) {
 				log_struct->connected = connect;
 
 				fprintf(f, "\"date\": \"%s\",\n", log_struct->date);
-
 				fprintf(f, "\"ssid\": \"%s\",\n", log_struct->ssid);
-
 				fprintf(f, "\"tried\": [ ");
-				/* Display all the BSSID tried */
+
+				/* Display all the BSSIDs tried during the allocation phase */
 				while(try != NULL) {
 					fprintf(f, "\"%s\"", try->bssid);
-					/* JSON syntax */
+
+					/* Last element cannot have a comma after the closing bracket */
 					if(first->num != 1) {
 						fprintf(f, ", ");
 						first->num -= 1;
@@ -117,12 +113,13 @@ static void log_event(enum log_events log, const char *arg) {
 					try = try->next;
 				}	
 				fprintf(f, "],\n");
-		
 				fprintf(f, "\"connected\": [ ");
-				/* Display the connection list */
+
+				/* Display the list of all the APs the supplicant had a connection with*/
 				while(connect != NULL) {
 					fprintf(f, "\"%s\"", log_struct->connected->bssid);
-					/* JSON syntax */
+
+					/* Last element cannot have a comma after the closing bracket */
 					if(first_connect->num != 1) {
 						fprintf(f, ", ");
 						first_connect->num -= 1;
@@ -132,12 +129,11 @@ static void log_event(enum log_events log, const char *arg) {
 					connect = connect->next;
 				}
 				fprintf(f, "],\n");
-		
 				fprintf(f, "\"time\": {\n");
 				fprintf(f, "\"wpa_supplicant\": \"%ldsec %.3ums\",\n", log_struct->time->wpa_time.time, log_struct->time->wpa_time.millitm);
 				fprintf(f, "\"dhcp\": \"%ldsec %.3ums\"\n", log_struct->time->dhcp_time.time, log_struct->time->dhcp_time.millitm);
 				fprintf(f, "},\n");
-
+				/* Services */
 				fprintf(f, "\"services\": {\n");
 				fprintf(f, "\"DNS_1\": \"%s\",\n", log_struct->services->DNS_1);
 				fprintf(f, "\"DNS_2\": \"%s\",\n", log_struct->services->DNS_2);
@@ -160,7 +156,6 @@ static void log_event(enum log_events log, const char *arg) {
 				fprintf(f, "\"horaire.sgsi.ucl.ac.be\": \"%s\",\n", log_struct->services->ade);
 				fprintf(f, "\"studssh.info.uc.ac.be\": \"%s\"\n", log_struct->services->studssh);
 				fprintf(f, "}\n");
-				
 			}
 			break;
 		
@@ -176,7 +171,6 @@ static void log_event(enum log_events log, const char *arg) {
 			fprintf(f, "}\n");
 			break;
 
-
 		case LOG_MAC_ADDR:
 			fprintf(f, "\"mac\": \"%s\",\n", arg);
 			break;
@@ -187,16 +181,22 @@ static void log_event(enum log_events log, const char *arg) {
 			printf("\"date\": \"%d/%d/%d %d:%d:%d\",\n", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 			fprintf(f, "\"date\": \"%d/%d/%d %d:%d:%d\",\n", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 			break;
-
 	}
 }
 
 /*
- * Parse all the event received from wpa_supplicant and execute the resulting action
+ * Parse all the event received from the wpa_supplicant daemon and execute actions accordingly.
+ * Four messages are handled:
+ *   - WPA_EVENT_CONNECTED 
+ *   - Trying an association
+ *   - Associated
+ *   - WPA_EVENT_DISCONNECTED
+ * The data concerning each message are stored into the different structures.
  */
 static void parse_event(const char *reply) {
 	const char *event, *addr;
 	event = reply;
+
 	/*Removing priority level < > from event*/
 	if(*event == '<') {
 		event = strchr(event, '>');
@@ -208,32 +208,37 @@ static void parse_event(const char *reply) {
 		}
 	}
 
-	/* Connected to the network */
+	/* 1st event: Connected to the network */
 	if(match(event, WPA_EVENT_CONNECTED)) {
 		char wpa_time[20];
 		char dhcp_time[20];
 
-		ftime(&wpa_end);
+		ftime(&wpa_end); /* Stop the wpa_supplicant timer */
 		
 		/*Get network BSSID */
 		char bssid[18];
 		memset(bssid, 0, 18);
 		memcpy(bssid, &event[37], 17);
 		
+		/* 
+		 * Inserting the data into the ap_connect and ap_time structures and linking
+		 * those structures to the main log_struct.
+		 * This part keeps track of all the possible reconnection made with APs.
+		 */
 		struct ap_connect *ptr = (struct ap_connect*) malloc (sizeof(struct ap_connect));
 		struct ap_time *time = (struct ap_time*) malloc (sizeof(struct ap_time));
 		log_struct->connected = ptr;
 		log_struct->time = time;
 		ptr->bssid = malloc(strlen(bssid)+1);
 
-		/* First connection */
+		/* First connection to an AP */
 		if(first_connect == NULL) {
 			strcpy(ptr->bssid, bssid);
 			ptr->next = NULL;
 			first_connect = curr_connect = ptr;
 			first_connect->num = 1;
 		}
-		/* Reconnections */
+		/* Reconnections to other APs */
 		else {
 			strcpy(ptr->bssid, bssid);
 			first_connect->num += 1;
@@ -242,19 +247,20 @@ static void parse_event(const char *reply) {
 			curr_connect = ptr;
 		}
 		
-		/* Start udhcpc to get an IP address */
+		/* 
+		 * Start udhcpc to receive an IP address from the DHCP servers.
+		 * Starting the udhcpc timer and stopping it as soon as the address is received.
+		 */ 
 		ftime(&dhcp_start);
 		system("udhcpc -t 0 -i wlan0 -C");
 		ftime(&dhcp_end);
 		
-		timeDiff(wpa_start, wpa_end, &time->wpa_time);
-		timeDiff(dhcp_start, dhcp_end, &time->dhcp_time);
-
-		dhcp = 1;
-		connection = 1;
+		timeDiff(wpa_start, wpa_end, &time->wpa_time); /* Compute the time wpa_supplicant took to connect */
+		timeDiff(dhcp_start, dhcp_end, &time->dhcp_time); /* Compute the time to get an IP address */
+		dhcp = 1; 
 	}
 	
-	/* TRYING NETWORK CONNECTION */
+	/* 2nd event: Trying to associate with an AP */
 	else if(match(event, "Trying")) {
 		char *ssid, *event_tmp, bssid[18];
 		
@@ -268,6 +274,10 @@ static void parse_event(const char *reply) {
 		ssid = strtok(NULL, "'");
 		ssid_log = ssid;
 
+		/* 
+		 * Inserting the data into the ap_tried and linking these structure to the main log_struct.
+		 * This part keeps track of all the APs the supplicant tried to associate with.
+		 */
 		struct ap_tried *ptr = (struct ap_tried*) malloc (sizeof(struct ap_tried));
 		log_struct->tried = ptr;
 		ptr->bssid = malloc(strlen(bssid)+1);
@@ -288,37 +298,50 @@ static void parse_event(const char *reply) {
 			curr = ptr;
 		}
 	}
-	/* Association accepted with AP */
+
+	/* 3rd event: Associated with an AP */
 	else if(match(event, "Associated")) {
 		char bssid[18];
 		/*Get network BSSID*/
 		memset(bssid, 0, 18);
 		memcpy(bssid, &event[16], 17);
 
+		/* Store the ssid of the network inside the main struct for the creation of the log file */
 		log_struct->ssid = malloc(strlen(ssid_log)+1);
 		strcpy(log_struct->ssid, ssid_log);
+	}
+
+	/* 
+	 * 4th event: WPA_EVENT_DISCONNECTED
+	 * Sometimes the supplicant is abruptly disconnected from the AP and is forced to reauthenticate 
+	 * and establish a connection with another AP.
+	 * This part is only to safely stop the connection by releasing the IP address.
+	 */
+	else if(match(event, WPA_EVENT_DISCONNECTED)) {
+		system("killall udhcpc"); /* Stop DHCP */
+		dhcp = 0;
 	}
 }
 
 /*
- * Execute the function w.r.t the special action received
+ * Executes the correct function requested by the action received.
  */
 static void execute_action(enum wpa_action action, int network) {
 	switch(action) {
+		/* Connect to the network with id equals to the 'network' parameter */
 		case ACTION_CONNECT:
 			connect_network(network);
 			break;
 
+		/* Disconnect from the current networks */
 		case ACTION_DISCONNECT: {
-				char cmd[17];
-				int i;
 				commands("DISCONNECT");
 				system("killall udhcpc"); /* Stop DHCP */
 				dhcp = 0;
-				connection = 0;
 			}
 			break;
 
+		/* Create all the networks needed to start the monitoring process */
 		case ACTION_CREATE_NETWORKS:
 			create_networks();
 			break;
@@ -326,7 +349,7 @@ static void execute_action(enum wpa_action action, int network) {
 }
 
 /*
- * Execute and send the command requests to wpa_supplicant
+ * This function is used to send a command to the wpa_supplicant interface.
  */
 static void commands(char *cmd)
 {
@@ -334,6 +357,7 @@ static void commands(char *cmd)
 	size_t len;
 	int ret;
 	
+	/* No control interface has been found */
 	if(ctrl == NULL) {
 		exit(-1);
 	}
@@ -349,20 +373,20 @@ static void commands(char *cmd)
 
 
 /*
- * Create the configuration for all the networks
- * ID=0: eduroam
- * ID=1: UCLouvain
- * ID=2: visiteurs.UCLouvain
- * ID=3: UCLouvain-prive
- * ID=4: student.UCLouvain
+ * Create the networks in two steps:
+ *   - First, it adds 'NUM_OF_NETWORKS' networks in the control interface with empty configuration
+ *   - Second, all the added networks are configured by calling the function config_network() with a set of
+ *     parameters.
  */
 static void create_networks() {
 	int i;
+
+	/* 1) Add the networks */
 	for(i = 0; i < NUM_OF_NETWORKS; i++) {
-		commands("ADD_NETWORK"); /* Create a network with no config for wpa_supplicant */
+		commands("ADD_NETWORK");
 	}
 
-	/* Add configuration to the created networks */
+	/* 2) Configrue the networks */
 	config_network(0, "eduroam", "WPA-EAP", "PEAP", "CCMP", "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", "peaplabel=0", "auth=MSCHAPV2");
 
 	config_network(1, "UCLouvain", "WPA-EAP", "TTLS", NULL, "ingi1@wifi.uclouvain.be", "OLIelmdrad99", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP");
@@ -377,7 +401,7 @@ static void create_networks() {
 
 
 /*
- * Configure the newly created networks
+ * Configure the network by sending commands to wpa_supplicant with special variables and parameters
  */
  void config_network(int network, char *ssid, char *key_mgmt, char *eap, char *pairwise, char *identity, char *password, char *ca_cert, char *phase1, char *phase2) {
 	char cmd[512];
@@ -426,28 +450,47 @@ static void create_networks() {
 	}
 }
 
+/*
+ * A connection to the network with ID 'network' is started. 
+ * The desired network needs to be previously added and configured.
+ */
 static void connect_network(int network) {
 	char date[19];
 	char command[16];
+	/* Insert the date in the log struct */
 	time(&now);
 	tm = *localtime(&now);
 	sprintf(date, "%d/%d/%d %d:%d:%d", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 	log_struct->date = malloc(strlen(date)+1);
 	strcpy(log_struct->date, date);	
 
-	
 	sprintf(command, "SELECT_NETWORK %d", network);
-	ftime(&wpa_start);
+	ftime(&wpa_start); /* Starting the wpa_supplicant timer */
 	commands(command);
+	/* Wait until the entire connection establishment has been executed */
 	while(dhcp != 1) {
 		sleep(1);
 	}
 }
 
+/* 
+ * Checks if the DNS server with IP address 'host' is responding and is available.
+ * A DNS query is sent to the server and the response is analyzed.
+ */
 static int checkDNS(char *host) {
 	int ret;
+
+	/* 
+	 * Some abrupt disconnection might occur during the tests. In order to counter the problem we
+	 * wait until a new IP address has been received before continuing the testings. 
+	 * The function returns 0 if the DNS is reachable, -1 otherwise.
+	 */
+	while(dhcp != 1) {
+		sleep(1);
+	}
+
 	ret = check_dns_response(host);
-	if(ret == 1)
+	if(ret == 0)
 		printf("OK %s\n", host);
 	else
 		printf("NOK %s\n", host);
@@ -456,7 +499,9 @@ static int checkDNS(char *host) {
 
 
 /* 
- * Check if services are available or not
+ * Check if the service 'host' is reachable and available.
+ * TCP Sockets connection are used in order to test the connection.
+ * The function returns 0 if the service is reachable, -1 otherwise.
  */
 static int checkService(char *host, const char *port) {
 	int res, valopt, sockfd;
@@ -472,8 +517,16 @@ static int checkService(char *host, const char *port) {
 
 	port_number = atoi(port);
 
+	/* 
+	 * Some abrupt disconnection might occur during the tests. In order to counter the problem we
+	 * wait until a new IP address has been received before continuing the testings. 
+	 */
+	while(dhcp != 1) {
+		sleep(1);
+	}
+
 	if((hostptr = (struct hostent *) gethostbyname(host)) == NULL) { 
-		return 0;
+		return -1;
 	}
 	host_name = host;
 	ptr = (struct in_addr *)*(hostptr->h_addr_list);
@@ -481,7 +534,7 @@ static int checkService(char *host, const char *port) {
 	//Create communication endpoint
 	if((sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP))<0) { //TCP for websites
 		close(sockfd);
-		return 0;
+		return -1;
 	}
 
 	memset((char *) &serv_addr, 0, sizeof(serv_addr));
@@ -500,7 +553,7 @@ static int checkService(char *host, const char *port) {
 
 	if(res < 0) {
 		if(errno == EINPROGRESS) {
-			tv.tv_sec = 3; // 5sec timeout
+			tv.tv_sec = 3; // 3sec timeout
 			tv.tv_usec = 0;
 			FD_ZERO(&set);
 			FD_SET(sockfd, &set);
@@ -510,37 +563,26 @@ static int checkService(char *host, const char *port) {
 				if(valopt) {
 					//Error connection
 					close(sockfd);
-					return 0;
+					return -1;
 				}
 			}
 			else {
 				//Time out 
 				printf("NOK %s\n", host);
 				close(sockfd);
-				return 0;
+				return -1;
 			}
 		}
 		//connected
 		printf("OK %s\n", host);
 		close(sockfd);
-		return 1;
+		return 0;
 	}
-	else {
-		//Connection Ok
-		debug_print("OK\n");
-		close(sockfd);
-		return 1;
-	}
-
-	//Set to blocking again
-	arg = fcntl(sockfd, F_GETFL, NULL);
-	arg &= (~O_NONBLOCK);
-	fcntl(sockfd, F_SETFL, arg);
-	close(sockfd);
 }
 
 /*
- * Loop to check availability
+ * Loop that check the availability and reachibilty of the services set.
+ * The results for each service are stored into the check_serv structure.
  */
 static void services_loop() {
 	struct check_serv *ptr = (struct check_serv*) malloc (sizeof(struct check_serv));
@@ -566,109 +608,110 @@ static void services_loop() {
 	ptr->ade = malloc(1);
 	ptr->studssh = malloc(1);
 
-	if(checkDNS("130.104.1.1") == 1)
+	if(checkDNS("130.104.1.1") == 0)
 		strcpy(ptr->DNS_1, "1");
 	else 
 		strcpy(ptr->DNS_1, "0");
 
-	if(checkDNS("130.104.1.2") == 1)
+	if(checkDNS("130.104.1.2") == 0)
 		strcpy(ptr->DNS_2, "1");
 	else
 		strcpy(ptr->DNS_2, "0");
 
-	if(checkService("google.be", "443") == 1)
+	if(checkService("google.be", "443") == 0)
 		strcpy(ptr->google, "1");
 	else
 		strcpy(ptr->google, "0");
 
-	if(checkService("facebook.com", "80") == 1)
+	if(checkService("facebook.com", "80") == 0)
 		strcpy(ptr->facebook, "1");
 	else
 		strcpy(ptr->facebook, "0");
 
-	if(checkService("youtube.com", "443") == 1)
+	if(checkService("youtube.com", "443") == 0)
 		strcpy(ptr->youtube, "1");
 	else
 		strcpy(ptr->youtube, "0");
 
-	if(checkService("be.yahoo.com", "80") == 1)
+	if(checkService("be.yahoo.com", "80") == 0)
 		strcpy(ptr->yahoo, "1");
 	else
 		strcpy(ptr->yahoo, "0");
 
-	if(checkService("en.wikipedia.org", "443") == 1)
+	if(checkService("en.wikipedia.org", "443") == 0)
 		strcpy(ptr->wikipedia, "1");
 	else
 		strcpy(ptr->wikipedia, "0");
 
-	if(checkService("twitter.com", "443") == 1)
+	if(checkService("twitter.com", "443") == 0)
 		strcpy(ptr->twitter, "1");
 	else
 		strcpy(ptr->twitter, "0");
 
-	if(checkService("amazon.fr", "443") == 1)
+	if(checkService("amazon.fr", "443") == 0)
 		strcpy(ptr->amazon, "1");
 	else
 		strcpy(ptr->amazon, "0");
 
-	if(checkService("login.live.com", "443") == 1)
+	if(checkService("login.live.com", "443") == 0)
 		strcpy(ptr->live, "1");
 	else
 		strcpy(ptr->live, "0");
 
-	if(checkService("linkedin.com", "443") == 1)
+	if(checkService("linkedin.com", "443") == 0)
 		strcpy(ptr->linkedin, "1");
 	else
 		strcpy(ptr->linkedin, "0");
 
-	if(checkService("blogger.com", "443") == 1)
+	if(checkService("blogger.com", "443") == 0)
 		strcpy(ptr->blogspot, "1");
 	else
 		strcpy(ptr->blogspot, "0");
 
-	if(checkService("smtp.gmail.com", "587") == 1)
+	if(checkService("smtp.gmail.com", "587") == 0)
 		strcpy(ptr->gmail, "1");
 	else
 		strcpy(ptr->gmail, "0");
 
-	if(checkService("github.com", "22") == 1)
+	if(checkService("github.com", "22") == 0)
 		strcpy(ptr->github, "1");
 	else
 		strcpy(ptr->github, "0");
 
-	if(checkService("uclouvain.be", "443") == 1)
+	if(checkService("uclouvain.be", "443") == 0)
 		strcpy(ptr->uclouvain, "1");
 	else
 		strcpy(ptr->uclouvain, "0");
 
-	if(checkService("icampus.uclouvain.be", "443") == 1)
+	if(checkService("icampus.uclouvain.be", "443") == 0)
 		strcpy(ptr->icampus, "1");
 	else
 		strcpy(ptr->icampus, "0");
 
-	if(checkService("moodleucl.uclouvain.be", "443") == 1)
+	if(checkService("moodleucl.uclouvain.be", "443") == 0)
 		strcpy(ptr->moodle, "1");
 	else
 		strcpy(ptr->moodle, "0");
 
-	if(checkService("bib.sipr.ucl.ac.be", "80") == 1)
+	if(checkService("bib.sipr.ucl.ac.be", "80") == 0)
 		strcpy(ptr->libellule, "1");
 	else
 		strcpy(ptr->libellule, "0");
 
-	if(checkService("horaire.sgsi.ucl.ac.be", "8080") == 1)
+	if(checkService("horaire.sgsi.ucl.ac.be", "8080") == 0)
 		strcpy(ptr->ade, "1");
 	else
 		strcpy(ptr->ade, "0");
 
-	if(checkService("studssh.info.ucl.ac.be", "22") == 1)
+	if(checkService("studssh.info.ucl.ac.be", "22") == 0)
 		strcpy(ptr->studssh, "1");
 	else
 		strcpy(ptr->studssh, "0");
 }
 
 /*
- * Scan for networks and get results
+ * Performs a scan of the networks in the surroundings of the router and stores the results 
+ * into the scan_results structure.
  */
 static void scan() {
 	char *line, *saved_line, *object, *saved_object;
@@ -676,7 +719,9 @@ static void scan() {
 	size_t len = (BUF*12)-1;
 	int i,ret;
 	
-	commands("SCAN"); //Scan	
+	/* Perfoms a scan */
+	commands("SCAN");
+	/* Get and store the scan results inside a buffer */
 	ret = wpa_ctrl_request(ctrl, "SCAN_RESULTS", os_strlen("SCAN_RESULTS"), reply, &len, NULL);
 	if(ret < 0) {
 		scan();
@@ -684,7 +729,9 @@ static void scan() {
 
 	reply[len] = '\0';
 	i = 0; 
-	/* Tokenize results and extract information */
+	/* 
+	 * Tokenize results, extract the information and stored them into the structure.
+	 */
 	for(line = strtok_r(reply, "\n", &saved_line); line; line = strtok_r(NULL, "\n", &saved_line)) {
 		printf("%s\n", line);		
 		if(i > 0) {
@@ -728,6 +775,7 @@ static void scan() {
 		}
 		i+=1;
 	}
+	/* Insert the scan results in the log file */
 	log_event(LOG_START_SCAN, NULL);
 	log_event(LOG_STOP_SCAN, NULL);
 	
@@ -743,17 +791,76 @@ static void scan() {
 	memset(&reply[0], 0, sizeof(reply));
 }
 
+
+static void save_log_tmp() {
+	FILE *tmp;
+	char ch;
+	tmp = fopen("/var/log/logs.txt", "r");
+	tmp_log = fopen("/var/log/logs.tmp.txt", "w");
+	while((ch = fgetc(tmp)) != EOF)
+		fputc(ch, tmp_log);
+	fclose(tmp);
+	fclose(tmp_log);
+}
+
+static int check_file_exists() {
+
+}
+
 /* 
- * Send logs to server
+ * Function that sends the log to the server. 
+ * If the sending failed, the log file is saved into tmp file that is going to be sent the next
+ * time as well as the current log file.
  */
 static void send_log() {
 	int ret;
-	ret = sendLogs("/var/log/logs.txt", router_mac);
-	printf("RET: %d\n");
-	if(ret < 0);
-		debug_print("Error sending log file\n");
-	else
-		debug_print("Log Sent\n");
+
+	/* Check if a tmp file exists to send it before the current log file */
+	if(access("/var/log/logs.tmp.txt", F_OK) != -1) {
+		printf("OK\n");
+		/* Try to send the tmp file */
+		ret = sendLogs("/var/log/logs.tmp.txt", router_mac);
+		if(ret == -1) {
+			debug_print("Error sending tmp file\n");
+			debug_print("Trying to send current log file\n");
+
+			ret = sendLogs("/var/log/logs.txt", router_mac);
+			if (ret == -1) {
+				save_log_tmp();
+				debug_print("Error sending log file\n");
+				debug_print("Log saved into tmp file\n");
+			}
+			else {
+				debug_print("Log Sent\n");
+			}
+		}
+		else {
+			debug_print("Tmp log sent.\n");
+			remove("logs.tmp.txt");
+
+			ret = sendLogs("/var/log/logs.txt", router_mac);
+			if (ret == -1) {
+				save_log_tmp();
+				debug_print("Error sending log file\n");
+				debug_print("Log saved into tmp file\n");
+			}
+			else {
+				debug_print("Log Sent\n");
+			}
+		}
+	} 
+	else {
+		printf("NOK\n");
+		ret = sendLogs("/var/log/logs.txt", router_mac);
+		if(ret == -1) {
+			save_log_tmp();
+			debug_print("Error sending log file\n");
+			debug_print("Log saved into tmp file\n");
+		}
+		else {
+			debug_print("Log Sent\n");
+		}
+	}
 }
 
 /*
@@ -882,7 +989,7 @@ void *connection_loop(void * p_data) {
 		}
 		log_event(LOG_STOP_CONNECTION, NULL);
 
-		if(close == 1) {
+		if(close == NUM_OF_LOOPS-1) {
 			log_event(LOG_FINAL_STOP_LOOP, NULL);
 			log_event(LOG_STOP_LOG, NULL);
 			log_event(LOG_STOP_FILE, NULL);
@@ -890,7 +997,7 @@ void *connection_loop(void * p_data) {
 			fclose(f);
 			send_log();
 		
-			sleep(15);
+			sleep(DELAY);
 
 			execute_action(ACTION_DISCONNECT, 0);
 			f = fopen("/var/log/logs.txt","w+");

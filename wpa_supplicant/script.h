@@ -4,7 +4,7 @@
 
 #define DEFAULT_CTRL_IFACE "/var/run/wpa_supplicant/wlan0"
 #define BUF 1024 /* Reply buffer size */
-#define DELAY 10 /* Delay in seconds for the connection loop */
+#define DELAY 3 /* Delay in seconds for the connection loop */
 #define debug_print(args) if (DEBUG) printf(args) /* Debug print */
 
 
@@ -16,9 +16,8 @@ struct log *log_struct; /* Log structure */
 struct tm tm; /* For date computation */
 time_t now; /* For date computation */
 int start_loop = 0; /* Starts the connection thread as soon as wpa_supplicant is started and networks are created */
-int dhcp = 0; /* DHCP */
-int connection = 0; /* Connection established or not */
-FILE *f, *f2, *f3; /* Log file */
+int dhcp = 0; /* DHCP control variable */
+FILE *f, *tmp_log; /* Log file */
 
 
 char line[512];
