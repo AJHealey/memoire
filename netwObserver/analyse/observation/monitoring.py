@@ -6,6 +6,15 @@ from gatherer.models import *
 
 
 def getOverloadedAP(since=settings.AP_OVERLOADED_PERIOD):
+	""" Get the Access Point which have been detected as overloadedSnaps
+
+		arguments:
+		since - period of the analysis
+
+		return: 
+		[{'ap': <AccessPoint>, 'overload': <int>}, ... ]
+		A list of dictionnary reverse order by the number of overload.
+	"""
 	result = {}
 	overloadedSnaps = APIfSnapshot.objects.filter(apifsnapshotdata__name="channelUtilization",apifsnapshotdata__value__gt=settings.CHANNEL_UTILIZATION_TRESHOLD,date__gte=timezone.now()-since)
 
@@ -15,12 +24,18 @@ def getOverloadedAP(since=settings.AP_OVERLOADED_PERIOD):
 
 		result[snap.apinterface.ap.name]["overload"] += 1
 
-	return result
-
-
+	return sorted(result.values(), key=operator.itemgetter('overload'),reverse=True)
 
 
 def getDhcpLeaseAlerts(fromDate=(timezone.now() - settings.DHCP_LEASE_ALERT_TRESHOLD)):
+	""" Compute the concentration of the lease alert among device
+
+		A low value means that the alerts a shattered among a high
+		number of devices.
+
+		argument:
+		fromDate - period of analysis
+	"""
 	logs = DHCPEvent.objects.filter(dhcpType= "dis", date__gte=fromDate, message__icontains="free leases")
 	nbrAlert = logs.count()
 	devices = len(set(logs.values_list('device', flat=True)))
@@ -30,6 +45,14 @@ def getDhcpLeaseAlerts(fromDate=(timezone.now() - settings.DHCP_LEASE_ALERT_TRES
 		return {}
 
 def getDhcpWrongPlugAlerts(fromDate=(timezone.now() - timedelta(hours=1))):
+	""" Look for a pattern that recognize the wrongly plugged device 
+
+		The pattern is a 'peer holds all free leases' alert on
+		all the dhcp server at the same time.
+
+		argument:
+		fromDate - period of analyse
+	"""
 	result = {}
 
 	logs = DHCPEvent.objects.filter(dhcpType= "dis", date__gte=fromDate, message__icontains="peer holds all free leases").order_by('date','microsecond')
@@ -61,5 +84,10 @@ def getDhcpWrongPlugAlerts(fromDate=(timezone.now() - timedelta(hours=1))):
 	return result
 
 def isDhcpActive(lastAck=settings.DHCP_ACTIVITY_ALERT):
+	""" Check if a DHCP Ack have been recorded recently
+
+		argument:
+		lastAck - period of verification (define recently)
+	"""
 	return DHCPEvent.objects.filter(dhcpType= "ack", date__gte=(timezone.now() - lastAck)).exists()
 

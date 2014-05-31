@@ -34,6 +34,7 @@ def wifiOverview(request):
 	context['cat'] = 'wifi'
 	context['section'] = 'overview'
 
+	context["hotAP"] = monitoring.getOverloadedAP()[:10]
 	context["apDown"] = AccessPoint.objects.areDown()
 
 	return render(request, "analyse/wifiOverview.html", context)

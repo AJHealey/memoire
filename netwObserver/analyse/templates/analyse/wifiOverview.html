@@ -22,5 +22,24 @@
 {%else%}
 <div class="alert alert-success">All Access Points are currently associated with the Controller</div>
 {%endif%}
+
+{%if hotAP%}
+<div class="panel panel-warning">
+	<div class="panel-heading">Busiest Access Points</div>
+	<div class="panel-body">
+	    {%for ap in hotAP%}
+	    <h4>{{forloop.counter}}. {{ap.ap.name}}</h4>
+		<dl class="dl-horizontal">
+			<dt>Mac Address</dt>
+			<dd>{{ap.ap.macAddress}}</dd>
+			<dt>Overload</dt>
+			<dd>{{ap.overload}}</dd>
+		</dl>
+		{%endfor%}
+	</div>
+	</div>
+</div>
+{%else%}
+
 </div>
 {%endblock%}

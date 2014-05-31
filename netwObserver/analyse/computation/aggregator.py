@@ -64,11 +64,6 @@ def getUsersBySSID():
 def getNbrOfUsers():
 	return MobileStation.objects.areAssociated().count()
 
-## AP aggregators
-def getHotAP(number=5):
-	ap = sorted([(ap.nbrOfClients(), ap) for ap in AccessPoint.objects.areUp()], reverse=True)
-	return ap[:number]
-
 def getNbrOfAP():
 	return AccessPoint.objects.areUp().count()
 
