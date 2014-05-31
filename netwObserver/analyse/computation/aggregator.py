@@ -293,34 +293,20 @@ def getConnectionTime(probe,since=None):
 def getAvailabilityByService(since=None):
 	try:
 		result = {}
-		connectionResults = ProbeConnectionResult.objects.all()
+		connectionResults = ProbeConnectionResult.objects.all().prefetch_related('servicecheck_set')
 		
 		if since != None:
 			connectionResults = connectionResults.filter(date__gte=since)
 
+		services = set(connectionResults.values_list('servicecheck__service', flat=True))
 		ssids = set(connectionResults.values_list('ssid', flat=True))
-		for ssid in ssids:
-			tmp = ssid.replace(".","").replace("-","")
-			ssidResults = connectionResults.filter(ssid=ssid).prefetch_related('servicecheck_set')
+		for service in services:
+			result[service] = {}
+			for ssid in ssids:
+				total = connectionResults.filter(ssid=ssid,servicecheck__service=service).count()
+				success = connectionResults.filter(ssid=ssid,servicecheck__service=service,servicecheck__state=True).count()
+				result[service][ssid] = float(success)*100/total
 			
-			availability = {}
-
-			for con in ssidResults:
-				for service in con.servicecheck_set.all():
-					if service.service not in availability:
-						availability[service.service] = {"fail":0,"success":0}
-					
-					if service.state:
-						availability[service.service]["success"] += 1
-					else:
-						availability[service.service]["fail"] += 1
-
-			for service,data in availability.items():
-				data["rate"] = data["success"]*100/(data["fail"]+data["success"])
-
-
-			result[tmp] = availability
-
 		return result
 
 	except:

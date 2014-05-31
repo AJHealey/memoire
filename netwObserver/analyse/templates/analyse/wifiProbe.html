@@ -6,22 +6,25 @@
 <div class="container" style='margin-top: 25px;'>
 
 <h4>Service Availability</h4>
+{%for ssid,services  in connectionService.items%}
+<h6>{{ssid}}</h6>
 <table class="table table-bordered">
 	<thead>
 		<tr>
-			<th>Service</th>
-			<th>Availability</th>
+			{%for service in services%}
+			<th>{{service}}</th>
+			{%endfor%}
 		</tr>
 	</thead>
 	<tbody>
-		{%for ssid,data  in connectionService.items%}
+		{%for service,data  in services.items%}
 		<tr>
-			<td>{{ssid}}</td>
 			<td {%if data.rate < 50 %}class="danger"{%else%}class="active"{%endif%}>{{data.rate|floatformat:-2}}</td>
 		</tr>
-		{%endfor%}
+		
 	</tbody>
 </table>
+{%endfor%}
 
 <form method="get"  action="{% url 'wifiProbes' %}" class="form-horizontal" role="form">
 	<label for="selectedProbe" class="col-md-2 control-label">Probes</label>
