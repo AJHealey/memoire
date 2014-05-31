@@ -299,8 +299,8 @@ def getAvailabilityByService(since=None):
 		connectionResults = connectionResults.filter(date__gte=since)
 
 	# !Keep same ordering
-	services = sorted(list(set(connectionResults.values_list('servicecheck__service', flat=True))))
-	ssids = sorted(list(set(connectionResults.values_list('ssid', flat=True))))
+	services = sorted(list(set(connectionResults.filter(servicecheck__service__isnull=False).values_list('servicecheck__service', flat=True))))
+	ssids = sorted(list(set(connectionResults.filter(ssid__isnull=False).values_list('ssid', flat=True))))
 
 	for service in services:
 		data = {"service":service, "data":[]}
