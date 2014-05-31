@@ -16,14 +16,14 @@
 		</tr>
 	</thead>
 	<tbody>
+		{%for service in connectionService.data%}
 		<tr>
-			{%for service in connectionService.data%}
-			<td>{{service.service}}}</td>
+			<td>{{service.service}}</td>
 			{%for rate in service.data%}
 			<td {%if rate < 50 %}class="danger"{%else%}class="active"{%endif%}>{{rate|floatformat:-2}}</td>
 			{%endfor%}
-			{%endfor%}
 		</tr>
+		{%endfor%}
 	</tbody>
 </table>
 
