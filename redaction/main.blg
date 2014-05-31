@@ -7,38 +7,38 @@ Warning--entry type for "eduroam1" isn't style-file defined
 --line 1 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "mrtg" isn't style-file defined
 --line 73 of file Bibliographie/Bibliography.bib.bib
-Warning--entry type for "cacti" isn't style-file defined
---line 80 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "rrdtool" isn't style-file defined
+--line 80 of file Bibliographie/Bibliography.bib.bib
+Warning--entry type for "cacti" isn't style-file defined
 --line 86 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "nagios" isn't style-file defined
---line 93 of file Bibliographie/Bibliography.bib.bib
+--line 92 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "windows" isn't style-file defined
---line 99 of file Bibliographie/Bibliography.bib.bib
+--line 98 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "snmp" isn't style-file defined
---line 307 of file Bibliographie/Bibliography.bib.bib
+--line 306 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "eduroamRadius" isn't style-file defined
---line 313 of file Bibliographie/Bibliography.bib.bib
+--line 312 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "eduroam2" isn't style-file defined
---line 348 of file Bibliographie/Bibliography.bib.bib
+--line 347 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "intermapper" isn't style-file defined
---line 355 of file Bibliographie/Bibliography.bib.bib
+--line 354 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "mvt" isn't style-file defined
---line 362 of file Bibliographie/Bibliography.bib.bib
+--line 361 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "octopussy" isn't style-file defined
---line 369 of file Bibliographie/Bibliography.bib.bib
+--line 368 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "syslogCisco" isn't style-file defined
---line 376 of file Bibliographie/Bibliography.bib.bib
+--line 375 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "tplink" isn't style-file defined
---line 383 of file Bibliographie/Bibliography.bib.bib
+--line 382 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "openwrt" isn't style-file defined
---line 389 of file Bibliographie/Bibliography.bib.bib
+--line 388 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "wpa-supplicant" isn't style-file defined
---line 396 of file Bibliographie/Bibliography.bib.bib
+--line 395 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "wpa-supplicant-devel" isn't style-file defined
---line 403 of file Bibliographie/Bibliography.bib.bib
+--line 402 of file Bibliographie/Bibliography.bib.bib
 Warning--entry type for "crosscompile" isn't style-file defined
---line 410 of file Bibliographie/Bibliography.bib.bib
+--line 409 of file Bibliographie/Bibliography.bib.bib
 Name 1 in "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" has a comma at the end for entry article2
 while executing---line 1233 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
@@ -52,8 +52,8 @@ while executing---line 1315 of file unsrtnat.bst
 Too many commas in name 1 of "Jiujun Cheng, Liufei Hu, Junjun Liu, Qingyang Zhang, and Chendan Yan" for entry article2
 while executing---line 1315 of file unsrtnat.bst
 Warning--empty year in mrtg
-Warning--empty year in cacti
 Warning--empty year in rrdtool
+Warning--empty year in cacti
 Warning--empty year in nagios
 Warning--empty year in windows
 Warning--empty year in rfc2759
