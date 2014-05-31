@@ -293,7 +293,7 @@ def getConnectionTime(probe,since=None):
 def getAvailabilityByService(probe,since=None):
 	try:
 		result = {}
-		connectionResults = ProbeConnectionResult.objects.filter(test__log__probe = probe)
+		connectionResults = ProbeConnectionResult.objects.all()
 		
 		if since != None:
 			connectionResults = connectionResults.filter(date__gte=since)

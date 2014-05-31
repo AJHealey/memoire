@@ -4,6 +4,25 @@
 
 {% block section %}
 <div class="container" style='margin-top: 25px;'>
+
+<h4>Service Availability</h4>
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th>Service</th>
+			<th>Availability</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%for ssid,data  in connectionService.items%}
+		<tr>
+			<td>{{ssid}}</td>
+			<td {%if data.rate < 50 %}class="danger"{%else%}class="active"{%endif%}>{{data.rate|floatformat:-2}}</td>
+		</tr>
+		{%endfor%}
+	</tbody>
+</table>
+
 <form method="get"  action="{% url 'wifiProbes' %}" class="form-horizontal" role="form">
 	<label for="selectedProbe" class="col-md-2 control-label">Probes</label>
 	<div class="col-md-6">			
@@ -102,28 +121,6 @@
 {%for ssid, result in connectionTime.items%}
 <h4>SSID: {{result.0.connection.ssid}}</h4>
 <div id="{{ssid}}timeschart_div" style="width: 900px; height: 500px;"></div>
-{%if ssid in connectionService%}
-{{ssid}}
-{{connectionService.ssid}}
-<h5>Service Availability</h5>
-<table class="table table-bordered">
-	<thead>
-		<tr>
-			<th>Service</th>
-			<th>Availability</th>
-		</tr>
-	</thead>
-	<tbody>
-		{%for name,data in connectionService.ssid.items%}
-		<tr>
-			<td>{{name}}</td>
-			<td {%if data.rate < 50%}class="danger"{%else%}class="active"{%endif%}>{{data.rate|floatformat:-2}}</td>
-		</tr>
-		{%endfor%}
-
-	</tbody>
-</table>
-{%endif%}
 {%endfor%}
 {%endif%}
 
