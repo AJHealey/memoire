@@ -1,3 +1,4 @@
+import collections
 import codecs
 from datetime import datetime,timedelta
 from django.utils import timezone
@@ -269,7 +270,7 @@ def getConnectionTime(probe,since=None):
 	try:
 		result = {}
 				
-		connectionResults = ProbeConnectionResult.objects.filter(test__log__probe = probe).prefetch_related('timecheck')
+		connectionResults = ProbeConnectionResult.objects.filter(test__log__probe = probe).prefetch_related('timecheck_set')
 		if since != None:
 			connectionResults = connectionResults.filter(date__gte=since)
 
@@ -293,13 +294,14 @@ def getConnectionTime(probe,since=None):
 def getAvailabilityByService(since=None):
 	try:
 		result = {}
-		connectionResults = ProbeConnectionResult.objects.all().prefetch_related('servicecheck')
+		connectionResults = ProbeConnectionResult.objects.all().prefetch_related('servicecheck_set')
 		
 		if since != None:
 			connectionResults = connectionResults.filter(date__gte=since)
 
-		services = set(connectionResults.values_list('servicecheck__service', flat=True))
-		ssids = set(connectionResults.values_list('ssid', flat=True))
+		# !Keep same ordering
+		services = list(set(connectionResults.values_list('servicecheck__service', flat=True)))
+		ssids = list(set(connectionResults.values_list('ssid', flat=True)))
 		for service in services:
 			result[service] = {}
 			for ssid in ssids:
@@ -309,6 +311,7 @@ def getAvailabilityByService(since=None):
 					result[service][ssid] = float(success)*100/total
 			
 		return result
+
 	except:
 		return {}
 
