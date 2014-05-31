@@ -1,6 +1,6 @@
 
-#ifndef SCRIPT_H
-#define SCRIPT_H
+#ifndef WIFI_MONITORING_H
+#define WIFI_MONITORING_H
 
 #define DEFAULT_CTRL_IFACE "/var/run/wpa_supplicant/wlan0"
 #define BUF 1024 /* Reply buffer size */
@@ -17,10 +17,8 @@ struct tm tm; /* For date computation */
 time_t now; /* For date computation */
 int start_loop = 0; /* Starts the connection thread as soon as wpa_supplicant is started and networks are created */
 int dhcp = 0; /* DHCP control variable */
-FILE *f, *tmp_log; /* Log file */
+FILE *f, *tmp_log; /* Log files */
 
-
-char line[512];
 
 /* Structure for log file */
 struct log {
@@ -140,6 +138,7 @@ static int checkDNS(char *);
 static int checkService(char *, const char *);
 static void services_loop();
 static void scan();
+static void save_log_tmp();
 static void send_log();
 static void clear_struct();
 void *wpa_loop(void *);
@@ -148,4 +147,4 @@ void *connection_loop(void *);
 
 
 
-#endif /* SCRIPT2_H */
+#endif /* WIFI_MONITORING_H */

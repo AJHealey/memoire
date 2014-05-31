@@ -1,6 +1,7 @@
 /*
  * wifi_monitoring.c
  */
+
 #include "wpa_ctrl/wpa_ctrl.h"
 #include "wifi_monitoring.h"
 #include <pthread.h>
@@ -8,14 +9,14 @@
 
 #define DEBUG 1 /* Print debug messages */
 
-/* Change the number of networks the router has to configure here
+/* 
  * 1: eduroam
  * 2: UCLouvain
  * 3: visiteurs.UCLouvain
  * 4: UCLouvain-prive
  * 5: student.UCLouvain
  */
-#define NUM_OF_NETWORKS 5
+#define NUM_OF_NETWORKS 5 /* Number of networks */
 #define NUM_OF_LOOPS 5 /* Number of loops to execute before sending the log file */
 
 /* 
