@@ -304,8 +304,9 @@ def getAvailabilityByService(since=None):
 			result[service] = {}
 			for ssid in ssids:
 				total = connectionResults.filter(ssid=ssid,servicecheck__service=service).count()
-				success = connectionResults.filter(ssid=ssid,servicecheck__service=service,servicecheck__state=True).count()
-				result[service][ssid] = float(success)*100/total
+				if total > 0:
+					success = connectionResults.filter(ssid=ssid,servicecheck__service=service,servicecheck__state=True).count()
+					result[service][ssid] = float(success)*100/total
 			
 		return result
 
