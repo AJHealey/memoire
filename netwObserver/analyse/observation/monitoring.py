@@ -2,10 +2,23 @@ from django.conf import settings
 from datetime import timedelta
 
 from django.utils import timezone
-from gatherer.models import DHCPEvent
+from gatherer.models import *
 
 
-def getDhcpLeaseAlerts(fromDate=(timezone.now() - timedelta(hours=1))):
+def getOverloadedAP(since=settings.AP_OVERLOADED_PERIOD):
+	result = {}
+	overloadedSnaps = APIfSnapshot.objects.filter(apifsnapshotdata__name="channelUtilization",apifsnapshotdata__value__gt=settings.CHANNEL_UTILIZATION_TRESHOLD,date__gte=timezone.now()-since)
+
+	for snap in overloadedSnaps:
+		if snap.apinterface.ap.name not in result:
+			result[snap.apinterface.ap.name] = {'ap': snap.apinterface.ap, "overload":0}
+
+		result[snap.apinterface.ap.name]["overload"] += 1
+
+
+
+
+def getDhcpLeaseAlerts(fromDate=(timezone.now() - settings.DHCP_LEASE_ALERT_TRESHOLD)):
 	logs = DHCPEvent.objects.filter(dhcpType= "dis", date__gte=fromDate, message__icontains="free leases")
 	nbrAlert = logs.count()
 	devices = len(set(logs.values_list('device', flat=True)))
@@ -45,6 +58,6 @@ def getDhcpWrongPlugAlerts(fromDate=(timezone.now() - timedelta(hours=1))):
 
 	return result
 
-def isDhcpActive(lastAck=timedelta(minutes=15)):
+def isDhcpActive(lastAck=settings.DHCP_ACTIVITY_ALERT):
 	return DHCPEvent.objects.filter(dhcpType= "ack", date__gte=(timezone.now() - lastAck)).exists()
 

@@ -110,7 +110,17 @@ DATAVALIDITY = timedelta(days=180)
 # Dictionnary defining the zone of the AP by their name
 APDICOZONE = "/srv/memoire/netwObserver/gatherer/data/apzone.json"
 
+# Maximum channel utilization expected
+CHANNEL_UTILIZATION_TRESHOLD = 50
 
+# Validity of a lease alert
+DHCP_LEASE_ALERT_TRESHOLD = timedelta(hours=1)
+
+# Maximum time since last DCP Ack detected
+DHCP_ACTIVITY_ALERT = timedelta(minutes=60)
+
+# Default analyse period for overloaded AP
+AP_OVERLOADED_PERIOD = timedelta(days=1)
 
 
 
