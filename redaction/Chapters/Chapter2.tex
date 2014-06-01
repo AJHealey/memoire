@@ -49,16 +49,16 @@ In this section, we give more information and details about all the protocols an
 \subsection{EAP}
 The \textit{Extensible Authentication Protocol} is an Internet Engineering Task Force (IETF) flexible authentication framework standard defined in the \texttt{RFC3748} \cite{rfc3748}. \texttt{EAP} was designed to work without the IP protocol and provides support only for the transport of authentication protocols. This protocol runs directly over data link layers such as \texttt{Point-to-Point Protocol} (PPP) or \texttt{IEEE 802}. It is used to select a specific authentication mechanism whenever the authenticator requests more information to the supplicant.
 
-The particularity with \texttt{EAP} is that the authentication mechanism is negotiated by the peers (i.e. the supplicants) during the connection authentication phase with the authentication server. The peers negotiate the use of which \texttt{EAP} method to use during the authentication. Once the method has been agreed upon, an \texttt{EAP} conversation consisting of requests and responses messages exchanged between the peer and the authentication server starts.
+The particularity with \texttt{EAP} is that the authentication mechanism is negotiated by the peers (i.e. the supplicants) during the connection authentication phase with the authentication server. The peers negotiate the use of which \texttt{EAP} method to use during the authentication. Once the method has been agreed upon, an \texttt{EAP} conversation consisting of requests and response messages exchanged between the peers and the authentication server starts.
 
 The \texttt{EAP} architecture consists of three main elements:
 \begin{itemize}
 	\item \textbf{EAP peer}: The peer is the client that tries to access the protected network and that responds to the authenticator requests.
 	\item \textbf{EAP authenticator}: It is the end of the link initiating an \texttt{EAP} authentication process. It is the access point or the network access server that requires \texttt{EAP} authentication in order to grant access to the network.
-	\item \textbf{Authentication server}: The server that communicates with the \texttt{EAP} peer. It negotiate the \texttt{EAP} method to use and validates the peer's credentials allowing it to access the protected network or not.
+	\item \textbf{Authentication server}: The server that communicates with the \texttt{EAP} peer. It negotiates the \texttt{EAP} method to use and validates the peer's credentials allowing it to access the protected network or not.
 \end{itemize}
 
-Since \texttt{EAP} only defines message formats it has to be encapsulated inside a data link layer transport protocols. Between the peer and the authenticator, the \texttt{EAP} messages has to be encapsulated inside protocols such as \texttt{PPP}, \texttt{PEAP} or \texttt{IEEE 802.1X}. The encapsulation of \texttt{EAP} over \texttt{IEEE 802.1X} is called \texttt{EAPOL}\footnote{EAP over LANs}. Once the authenticator has received a \texttt{EAP} message from the peer, it has to forward it to the authentication server and it does that by encapsulating the message using that \texttt{RADIUS} protocol. Thanks to that, the \texttt{EAP} messages are exchanged between the peer and the authentication server smoothly. Since the information flows between those two entities, the authenticator does not need to support any of the \texttt{EAP} methods. It just has to forward the messages.
+Since \texttt{EAP} only defines message formats it has to be encapsulated inside a data link layer transport protocols. Between the peer and the authenticator, the \texttt{EAP} messages has to be encapsulated inside protocols such as \texttt{PPP}, \texttt{PEAP} or \texttt{IEEE 802.1X}. The encapsulation of \texttt{EAP} over \texttt{IEEE 802.1X} is called \texttt{EAPOL}\footnote{EAP over LANs}. Once the authenticator has received a \texttt{EAP} message from the peer, it has to forward it to the authentication server and it does that by encapsulating the message using that \texttt{RADIUS} protocol. Thanks to that, the \texttt{EAP} messages are exchanged between the peer and the authentication server smoothly. Since the information flow between those two entities, the authenticator does not need to support any of the \texttt{EAP} methods. It just has to forward the messages.
 
 The following figure\footnote{http://technet.microsoft.com/en-us/library/bb457039.aspx} shows the \texttt{EAP} infrastructure and the information flow between the three components.
 
@@ -89,7 +89,7 @@ The most common version of \texttt{PEAP} is \texttt{PEAP-MSCHAPv2}. This version
 The \texttt{802.1X} authentication process architecture involves three main components:
 \begin{itemize}
 	\item[-]\texttt{Supplicant}: The client device that wants to connect to the network.
-	\item[-]\texttt{Authenticator}: A network device like an Ethernet switch or an access point that is between the supplicant and the authentication server. It purpose is to interact with the authentication server. It receives \texttt{EAP} messages, encapsulates them into \texttt{RADIUS} messages and forwards them to the authentication server.
+	\item[-]\texttt{Authenticator}: A network device like an Ethernet switch or an access point that is between the supplicant and the authentication server. Its purpose is to interact with the authentication server. It receives \texttt{EAP} messages, encapsulates them into \texttt{RADIUS} messages and forwards them to the authentication server.
 	\item[-]\texttt{Authentication Server}: It is the key part of that authentication process. This server receives the authentication requests from the authenticator and interacts with it in order to receive more information or credentials from the supplicant. It is the only one that can grant access or not to the protected network.
 \end{itemize} 
 
@@ -131,7 +131,7 @@ The server then returns one of the three \texttt{RADIUS} responses to the client
 		\item [Access-Reject]: The server denies access to the supplicant due to identification failure, unknown or inactive user.
 	\end{description}
 
-The following figure represents the message exchanges between a \texttt{NAS} and the \texttt{RADIUS} server. The server needs and asks for additional information in the authentication process and finally grant the access to the network.
+The following figure represents the message exchanges between a \texttt{NAS} and the \texttt{RADIUS} server. The server needs and asks for additional information in the authentication process and finally grants the access to the network.
 
 \begin{figure}[H]
 	\begin{center}
