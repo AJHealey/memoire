@@ -1,4 +1,26 @@
 % Appendix Template
 
 
+\chapter{Annexes} % Main appendix title
+\label{AppendixA} % Change X to a consecutive letter; for referencing this appendix elsewhere, use \ref{AppendixX}
+\lhead{Appendix A. \emph{Source Code}} % Change X to a consecutive letter; this is for the header on each page - perhaps a shortened title
+
+\section{Source Code}
+
+The source code is available on Github at the following address: 
+
+\texttt{https://github.com/cwayembergh/netwobserver/}
+
+\subsection*{Files}
+\begin{description}
+\item[analyse/] Module that performs analysis and aggregations on the data.
+\item[analyse/observation/monitoring.py] Methods detecting the anomalies.
+\item[analyse/computation/aggregation.py] Methods performing the aggregations and computations on the data.
+\item[gatherer/] Module that is responsible to gather the data.
+\item[gatherer/log/] Module that performs the parsing of the log files.
+\item[gatherer/snmp/] Abstractions for the SNMP requests.
+\item[gatherer/probe/] Module that manage the connections with the probes.
+\item[netwObserver/settings.py] Settings of the application. Contains the user preferences.
+\end{description}
+
 
