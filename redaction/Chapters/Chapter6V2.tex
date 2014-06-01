@@ -30,15 +30,15 @@ The purpose of the active monitoring is, as mentioned before, to simulate a typi
 \begin{description}
 	\item[Scan results]: The information concerning the set of access points located in the device's area as well as other \texttt{RF} related information.
 	\item[AP tried]: The set of access points that the device tried to associate with.
-	\item[AP connected]: The access point the supplicant connected with. Several access points can be found here since \texttt{wpa\_supplicant} has a roaming feature enabled by default and, by consequence, may decide to disconnect and reconnect to an access point with a better configuration.
+	\item[AP connected]: The access points the supplicant connected with. Several access points can be found here since \texttt{wpa\_supplicant} has a roaming feature enabled by default and, by consequence, may decide to disconnect and reconnect to an access point with a better configuration.
 	\item[Supplication Time]: Time elapsed during the connection establishment.
 	\item [DHCP Time]: Time elapsed till an \texttt{IP} address is assigned to the device.
 	\item [Services checks]: The results of the services availability and reachability tests.
 \end{description}
 
-After a defined amount of connections establishments on each \texttt{SSID}, the log file is sent to the server that is going to parse it and store the information accordingly in the database. These gathered data are then analysed by the server's threads. By aggregating those information throughout time, we can build an estimation of the overall quality experienced by the users when using the wireless network.
+After a defined amount of connection establishments on each \texttt{SSID}, the log file is sent to the server that is going to parse it and store the information accordingly in the database. These gathered data are then analysed by the server's threads. By aggregating those information throughout time, we can build an estimation of the overall quality experienced by the users when using the wireless network.
 
-The following sections describe the analysis and conclusions we were able to make based on the information collected by the active probe after its deployment phase on the wireless network.
+The following sections describe the analysis and conclusions we were able to make based on the information collected by the active probe after its deployment phase on the UCL's wireless network.
 
 
 \section{Scanning}
@@ -154,14 +154,14 @@ In order to understand why those rejected associations happen, we also examined 
 *apfReceiveTask: Jul 18 18:22:01.632: %LWAPP-3-INVALID_AID2: spam_api.c:1226 Association identifier 8 for client cc:52:af:7f:d8:8b is already in use by cc:52:af:7f:d2:1
 \end{lstlisting}
 
-The explanation\footnote{http://www.cisco.com/c/en/us/td/docs/wireless/controller/message/guide/controller\_smg/msgs6.html} \texttt{Cisco} gives for that error message is that an internal error caused an invalid association ID to be received from an AP for the indicated client and that the client may experience some communications problems. This seems to be related to duplicate and invalid association identifier entries for \texttt{FlexConnect} clients\footnote{http://www.cisco.com/c/en/us/td/docs/wireless/controller/release/notes/crn73.html}. \texttt{Cisco FlexConnect} is a technology that allows APs to be remotely deployed from the controller but allow for distributed switching of local packets. A local \texttt{VLAN ID} from the AP's switch is mapped to an \texttt{SSID} instead of tunneling all the traffic back to the \texttt{WLAN} controller to be switched centrally. This error message can also be observed for several devices on the network an unfortunately, according to \texttt{Cisco}, no work around is possible for that kind of error.
+The explanation\footnote{http://www.cisco.com/c/en/us/td/docs/wireless/controller/message/guide/controller\_smg/msgs6.html} \texttt{Cisco} gives for that error message is that an internal error caused an invalid association ID to be received from an AP for the indicated client and that the client may experience some communications problems. This seems to be related to duplicate and invalid association identifier entries for \texttt{FlexConnect} clients\footnote{http://www.cisco.com/c/en/us/td/docs/wireless/controller/release/notes/crn73.html}. \texttt{Cisco FlexConnect} is a technology that allows APs to be remotely deployed from the controller while making a distributed switching of local packets possible. A local \texttt{VLAN ID} from the AP's switch is mapped to an \texttt{SSID} instead of tunneling all the traffic back to the \texttt{WLAN} controller to be switched centrally. This error message can also be observed for several devices on the network an unfortunately, according to \texttt{Cisco}, no work around is possible for that kind of error.
 
 
 \paragraph*{Source} This analysis heavily uses the event mechanism of \texttt{wpa\_supplicant} to generate those estimations of duration. We complete the analysis with the controller logs that are available on the \emph{Gathering} part. This is also a good example that a system embedding all the monitoring tools can help generating better analysis about issues on a complex infrastructure.
 
 
 \section{Services Availability}
-We want our application to be able to give a performance and quality overview of the network every time a new connection is established. In order to provide that kind of information we have designed a special services reachability and availability test for a given selection of services. As mentioned in section \texttt{4.2.3.2}, we have divided our test into two parts. First we perform a \texttt{DNS} query on the two UCL's \texttt{DNS} servers to make sure that both servers are reachable. Then we test the \texttt{TCP} connection to the main UCL's services added to the collection of the ten most visited website in the world using simple \texttt{socket} connections. The resulting data is inserted into the log file that is forwarded to the server. After having received several log files from the router we were able to check the results and make some analysis on them. By decoupling those analysis, we can localize more precisely the connectivity issues. The following figure shows how the data concerning the services is represented on the web platform.
+We want our application to be able to give a performance and quality overview of the network every time a new connection is established. In order to provide that kind of information we have designed a special reachability and availability test for a given selection of services. As mentioned in section \texttt{4.2.3.2}, we have divided our test into two parts. First we perform a \texttt{DNS} query on the two UCL's \texttt{DNS} servers to make sure that both servers are reachable. Then we test the \texttt{TCP} connection to the main UCL's services added to the collection of the ten most visited website in the world using simple \texttt{socket} connections. The resulting data is inserted into the log file that is forwarded to the server. After having received several log files from the router we were able to check the results and make some analysis on them. By decoupling those analysis, we can localize more precisely the connectivity issues. The following figure shows how the data concerning the services is represented on the web platform.
 
 \begin{figure}[H]
 	\centering
@@ -181,12 +181,12 @@ We want our application to be able to give a performance and quality overview of
 
 For the first one, all the services that are not related to the UCL are forbidden. Indeed, this network is only for accessing the UCL wireless configuration page and others such as \texttt{www.icampus.uclouvain.be} or \texttt{www.bib.ucl.ac.be}.
 
-For the second one, all the services are reachable except \texttt{horaire.sgsi.ucl.ac.be}. This is because the port used to access this website is \texttt{8080} and this port has been blocked by the firewall on that \texttt{VLAN} as well as for \texttt{UCLouvain-prive}.
+For the second one, all the services are reachable except \texttt{horaire.sgsi.ucl.ac.be}. This may be because the port used to access this website is 8080 and this port might be blocked by firewall on such restricted  VLAN.
 
 By checking periodically those services, we can generate their availability rate which can be a good indicator to determine the network's performance experienced by the user.
 
 
-\paragraph*{Source} The data used in this analysis are completely generated by our system. The tests are performed by subroutines implemented in our \texttt{C} program. All the information are centralized in the server that also handles all the data aggregating and analysis phase.
+\paragraph*{Source} The data used in this analysis are completely generated by our system. The tests are performed by subroutines implemented in our \texttt{C} program. All the information are centralized in the server that also handles all the data aggregating and analysis phases.
 
 %\section{Limitations}
 %During the development 
