@@ -9,14 +9,29 @@ The source code of our monitoring application is available on Github at the foll
 Here is the list and descriptions of the contents of this repository.
 
 \begin{itemize}
-\item[-] \texttt{analyse/}: Module that performs analysis and aggregations on the data.
+\item[-] \texttt{analyse/}: Module that performs the analysis and the aggregations on the data.
 \item[-] \texttt{analyse/observation/monitoring.py}: Methods detecting the anomalies.
 \item[-] \texttt{analyse/computation/aggregation.py}: Methods performing the aggregations and computations on the data.
-\item[-] \texttt{gatherer/}: Module that is responsible to gather the data.
+\item[-] \texttt{gatherer/}: Module that is responsible for gathering the data.
 \item[-] \texttt{gatherer/log/}: Module that performs the parsing of the log files.
-\item[-] \texttt{gatherer/snmp/}: Abstractions for the SNMP requests.
-\item[-] \texttt{gatherer/probe/}: Module that manage the connections with the probes.
-\item[-] \texttt{netwObserver/settings.py}: Settings of the application. Contains the user preferences.
+\item[-] \texttt{gatherer/snmp/}: Abstractions for the \texttt{SNMP} requests.
+\item[-] \texttt{gatherer/probe/}: Module that manages the connections with the probes.
+\item[-] \texttt{netwObserver/settings.py}: Settings of the application. Contains the user's preferences.
+\item[-] \texttt{wpa\_supplicant/Makefile}: Make file of the wireless monitoring program.
+\item[-] \texttt{wpa\_supplicant/wifi\_monitoring.c}: Wireless monitoring program.
+\item[-] \texttt{wpa\_supplicant/wifi\_monitoring.h}: Header file of the wireless monitoring program.
+\item[-] \texttt{wpa\_supplicant/wpa\_ctrl/build\_config.h}: Build time configuration defines.
+\item[-] \texttt{wpa\_supplicant/wpa\_ctrl/common.h}: Common helper functions.
+\item[-] \texttt{wpa\_supplicant/wpa\_ctrl/dns.c}: Function that checks the availability of the \texttt{DNS} server.
+\item[-] \texttt{wpa\_supplicant/wpa\_ctrl/includes.h}: Default include file.
+\item[-] \texttt{wpa\_supplicant/wpa\_ctrl/log\_sender.c}: File that handles the log sending process.
+\item[-] \texttt{wpa\_supplicant/wpa\_ctrl/os.h}: OS specific functions.
+\item[-] \texttt{wpa\_supplicant/wpa\_ctrl/os\_unix.c}: OS specific functions for UNIX/POSIX systems.
+\item[-] \texttt{wpa\_supplicant/wpa\_ctrl/utils.c}: File containing utility functions.
+\item[-] \texttt{wpa\_supplicant/wpa\_ctrl/wpa\_ctrl.c}: Control interface library.
+\item[-] \texttt{wpa\_supplicant/wpa\_ctrl/wpa\_ctrl.h}: Header file for the control interface library.
+\item[-] \texttt{wpa\_supplicant/wpa\_ctrl/wpa\_debug.h}: Dynamic data bbuffer.
+
 \end{itemize}
 
 
