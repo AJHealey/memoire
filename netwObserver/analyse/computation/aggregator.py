@@ -202,9 +202,9 @@ def getSpeed(start, end, time):
 	""" Compute the speed based on byte counter 
 
 		arguments:
-		start: counter at start
-		end: counter at end
-		time: elapsed time between 'start' and 'end'
+		start - counter at start
+		end - counter at end
+		time - elapsed time between 'start' and 'end'
 	"""
 	# Warning wrap up counter
 	if start > (MAX_VALUE_SNMP_COUNTER32/2) and end < (MAX_VALUE_SNMP_COUNTER32/2):
@@ -221,6 +221,7 @@ def getSpeed(start, end, time):
 ############################
 
 def getRapPerZone():
+	""" Aggregate the Rogue Access Point by zone """
 	dicoZone = {}
 	try:
 		dicoZone = json.load(codecs.open(settings.APDICOZONE,'r',encoding='utf-8'))
@@ -250,12 +251,14 @@ def getRapPerZone():
 ### Probes #####
 ################
 def getAllProbes():
+	""" Detect the Mobile Station that are probe """
 	probes = set()
 	for log in ProbeLog.objects.all():
 		probes.add(log.probe)
 	return probes
 
 def getLastScan(probe):
+	""" Get the last scan information of the probe """
 	try:
 		result = {}
 		lastLog = ProbeLog.objects.filter(probe=probe).latest(field_name='date')
@@ -282,6 +285,7 @@ def getLastScan(probe):
 
 
 def getConnectionTime(probe,since=None):
+	"""  Aggregate the time record by the probe """
 	try:
 		result = {}
 				
@@ -307,6 +311,10 @@ def getConnectionTime(probe,since=None):
 
 
 def getAvailabilityByService(since=None):
+	""" Aggregate the overall availability of all the service
+
+		Note: The information of ALL the probe are aggregated
+	"""
 	try:
 		result = []
 		connectionResults = ProbeConnectionResult.objects.all().prefetch_related('servicecheck_set')
