@@ -42,7 +42,7 @@ def getDhcpLogByType():
 	return stats
 
 def getRadiusSuccessRate():
-	 """ Compute the success rate of the authentications """
+	""" Compute the success rate of the authentications """
 	return {
 		"Success" : RadiusEvent.objects.filter(radiusType="ok").count(),
 		"Failed" : RadiusEvent.objects.filter(radiusType="ko").count(),
