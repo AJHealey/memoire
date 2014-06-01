@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.db.models import Max, Min
 from gatherer.models import *
 from django.core.exceptions import ObjectDoesNotExist
-
+from django.conf import settings
 import json
 from django.conf import settings
 
@@ -23,14 +23,17 @@ def getWismLogsByCategory():
 		facDico = json.load(open(settings.FACILITIESDICO))
 	except:
 		pass
-		
+
 	## Logs More important than informational (level 5 at least)
 	logs = WismEvent.objects.filter(severity__lte=5)
 	categories = set(logs.values_list('category', flat=True))
 	for cat in categories:
+		tmp = logs.filter(category=cat).count()
+		
 		if cat in facDico:
 			cat = facDico[cat]
-		stats[cat] = logs.filter(category=cat).count()
+
+		stats[cat] = tmp
 
 	return stats
 

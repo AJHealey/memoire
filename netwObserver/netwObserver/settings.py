@@ -109,7 +109,7 @@ SNMPMSLAP = timedelta(minutes=30)
 DATAVALIDITY = timedelta(days=180)
 # Dictionnary defining the zone of the AP by their name
 APDICOZONE = "/srv/memoire/netwObserver/gatherer/data/apzone.json"
-FACILITIESDICO = "/srv/memoire/netwObserver/gatherer/data/facilitiesDico.json.json"
+FACILITIESDICO = "/srv/memoire/netwObserver/gatherer/data/facilitiesDico.json"
 
 # Maximum channel utilization expected
 CHANNEL_UTILIZATION_TRESHOLD = 50
