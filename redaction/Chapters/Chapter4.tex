@@ -564,7 +564,7 @@ getIfSnapshotData(resultIfSnapshot, 'rxUtilization', getAPIfLoadRxUtilization,
 		ip=ip, port=port, community=community)		
 \end{lstlisting}
 
-At this step, the data are already record at each periodical execution of the \emph{SNMP} requests. They are available to define new analysis.
+At this step, the data are already recorded at each periodical execution of the \emph{SNMP} requests. They are available to define new analysis.
 
 \paragraph*{Aggregation} When the data are available, we need to aggregate them to get a representation of their evolution throughout the days. As implemented, the system aggregate a number of snapshot and take the maximum or compute the average. For our data, we have chosen to take the maximum to be able to spot the peak of activity. For this step, we have nothing to do. The \texttt{getIfData()} defined in the \texttt{analyse.computation.aggregator} module takes into account the new data once they are available.
 
