@@ -14,9 +14,10 @@ def getFacilitiesMeaning(html):
 	for element in soup.find_all(attrs={"class":"pB1_Body1"}):
 		content = element.get_text()
 		fac = content[content.find("(")+1:content.rfind(")")]
-		meaning = ' '.join(content.split()[3:]).capitalize()
+		meaning = ' '.join(content.split()[3:]).title()
+		meaning = meaning[:meaning.find("(")].strip()
 		if len(fac) < 7 and meaning != "":
-			facilityCode[fac] = meaning
+			facilityCode[fac] = ("%s (%s)") % (fac,meaning)
 
 	return facilityCode
 
