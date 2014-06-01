@@ -147,6 +147,13 @@ Regarding the wireless itself, the \texttt{TL-WR741ND} offers several interestin
 
 To summarize, with its 150Mbps wireless data rate and its advanced WiFi security management (\texttt{WPA/WPA2} encryptions), this router provides a rather good base for our active WiFi monitoring system. But in order to be able to execute our program on the router and get results we had to change its the firmware with something not proprietary that we can work with and modulate as we want. This is why we have chosen to replace the original TP-LINK firmware with \texttt{OpenWrt} Linux.
 
+\paragraph*{Limitations}
+During the development and the implementation of the active monitoring program we had to deal with some limitations directly induced by the router's hardware specifications.
+\begin{description}
+	\item [Frequency range]: Since the frequency range of the \texttt{TP-LINK TL-WR741ND} goes from \texttt{2.4Ghz} to \texttt{2.4835Ghz} we were not able to test the connection loop on the \texttt{5Ghz} access points interface. Another limitation this frequency range introduced concerns the \texttt{802.11} protocols. Indeed, only \texttt{802.11a, g} and \texttt{n (2.4Ghz)} are used in our application. The \texttt{802.11n (5Ghz)} is not taken into account. 
+
+	\item [Filesystem Disk Space]: The available disk space on which \texttt{OpenWrt} packages can be installed is equal to \texttt{1.1Mo} which is rather limited. Even if we remove all unnecessary packages such as \texttt{Luci}, there is not enough space available in order to install all the required packages the application needs. One implication is for the utilization of \texttt{OpenSSL}. Indeed, We provide a fully working encrypted transmission of the log to the server but since there was not enough space to install the \texttt{openssl} package we took the decision not to use it in our implementation and use a clear text transmission mechanism instead.
+\end{description}
 
 \subsection{OpenWrt}
 \texttt{OpenWrt} \cite{openwrt} is a highly extensible GNU/Linux distribution for embedded devices. The particularity of \texttt{OpenWrt} is that it is a full-featured, easily modifiable operating system for routers. Indeed, it offers a fully writable file system and a built-in package manager. Thanks to this package manager, we can install any package we want from a software repository allowing us to customize the device to suit any application. All the restrictions and configurations provided by the vendor within its own firmware installed by default on the router are therefore dropped meaning the device using this distribution can feature functions such as \texttt{SSH} server, \texttt{VPN}, \texttt{BitTorrent client}, custom QoS and so on.
