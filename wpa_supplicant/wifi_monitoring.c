@@ -410,7 +410,7 @@ static void create_networks() {
 /*
  * Configure the network by sending commands to wpa_supplicant with special variables and parameters
  */
- void config_network(int network, char *ssid, char *key_mgmt, char *eap, char *pairwise, char *identity, char *password, char *ca_cert, char *phase1, char *phase2, char *psk) {
+ void config_network(int network, char *ssid, char *key_mgmt, char *eap, char *pairwise, char *identity, char *password, char *ca_cert, char *phase1, char *phase2) {
 	char cmd[512];
 
 	os_snprintf(cmd, sizeof(cmd), "SET_NETWORK %d ssid \"%s\"", network,ssid);
@@ -454,10 +454,6 @@ static void create_networks() {
 	if(phase2 != NULL) {
 		os_snprintf(cmd, sizeof(cmd), "SET_NETWORK %d phase2 \"%s\"",network, phase2);
 		commands(cmd);
-	}
-
-	if(psk != NULL) {
-		os_snprintf(cmd, sizeof(cmd), "SET_NETWORK %d psk \"%s\"", network, psk);
 	}
 }
 
@@ -726,18 +722,21 @@ static void services_loop() {
  */
 static void scan() {
 	char *line, *saved_line, *object, *saved_object;
-	char reply[BUF*12];
+	char reply[BUF*12], reply2[BUF];
 	size_t len = (BUF*12)-1;
+	size_t len2 = (BUF)-1;
 	int i,ret;
 	
 	/* Perfoms a scan */
-	commands("SCAN");
+	//commands("SCAN");
+	wpa_ctrl_request(ctrl, "SCAN", os_strlen("SCAN"), reply2, &len2, NULL);
 	/* Get and store the scan results inside a buffer */
 	ret = wpa_ctrl_request(ctrl, "SCAN_RESULTS", os_strlen("SCAN_RESULTS"), reply, &len, NULL);
-	/*if(ret < 0) {
+	if(ret < 0) {
+		sleep(1);
 		printf("REPEAT\n");
 		scan();
-	}*/
+	}
 
 	reply[len] = '\0';
 	i = 0; 
