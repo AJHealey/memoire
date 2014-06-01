@@ -138,36 +138,55 @@ Time is an important factor when dealing with wireless networks performances. In
    \caption{Connection time for \texttt{eduroam}}
 \end{figure} 
 
-We can see that the time taken by \texttt{wpa\_supplicant} and by the \texttt{DHCP} servers are totally different. The \texttt{DHCP} servers took four seconds maximum to attribute an \texttt{IP} address to the device in the \texttt{student.UCLouvain} network and seven seconds maximum in the \texttt{eduroam} network. We can safely affirm that those servers do not have any implications in the connection establishment bottleneck. On the other side, \texttt{wpa\_supplicant} seems to be more unstable and can experience peaks up to thirty seconds in order to get a connection. This can be explained by the analysis about the access point interactions we made earlier. Indeed, if we compare the graph about the number of associations and reconnections for the \texttt{student.UCLouvain} network above with the connection time graph for the same network we can see that most of the time the peaks coincide with the number of connection attempts. 
+We can see that the time taken by \texttt{wpa\_supplicant} and by the \texttt{DHCP} servers are totally different. The \texttt{DHCP} servers took only four seconds maximum to assign an \texttt{IP} address to the device in the \texttt{student.UCLouvain} network and up to seven seconds maximum in the \texttt{eduroam} network. Since those maximum values only occur from time to time we can safely affirm that the \texttt{DHCP} servers do not have any implications in the connection establishment bottleneck. On the other side, \texttt{wpa\_supplicant} seems to be more unstable and can experience peaks up to thirty seconds in order to get a connection. 
 
-\paragraph*{Peaks} We have investigated on the possible reasons of those peaks and we have noticed that the \texttt{wpa\_supplicant} daemon seems to spend a lot of time in the association phase. As said before, the AP is sometimes rejecting the device and, thus, forces the supplicant to associate to other ones. This may induce some latency in the connection phase and impact on perceived performance of the user. In order to understand why those rejected associations happen, we checked the log file of the \texttt{WiSM} and we found a lot of times the same \texttt{LWAPP} error message.\\
+\paragraph*{Peaks} We have investigated on the possible reasons of those peaks and we have noticed that \texttt{wpa\_supplicant} seems to spend a lot of time in the association phase. As said before, the AP is sometimes rejecting the device and, thus, forces the supplicant to associate to other ones. This may induce some latency in the connection phase and impact on perceived performance of the user. If we compare the graph about the number of associations and reconnections for the \texttt{student.UCLouvain} network with the connection time graph for the same network we can see that most of the time the peaks coincide with the number of connection attempts. 
+
+\begin{figure}[H]
+	\centering
+   \includegraphics[width=1\textwidth]{Pictures/chapter6/time-explain.jpg}
+   \caption{Comparison between time duration and associations-reconnections in the \texttt{student.UCLouvain} network}
+\end{figure} 
+
+In order to understand why those rejected associations happen, we also examined the log file of the \texttt{WiSM} available on the \texttt{Octopussy} platform \cite{octopussy} and we found a lot of the same \texttt{LWAPP} error message.\\
+
 \begin{lstlisting}[frame=single,breaklines=true,caption={\texttt{WiSM} association error message}]
-%LWAPP-3-INVALID_AID2: Association identifier [int] for client [hex]:[hex]:[hex]:[hex]:[hex]:[hex] is already in use by[hex]:[hex]:[hex]:[hex]:[hex]:[hex]
+*apfReceiveTask: Jul 18 18:22:01.632: %LWAPP-3-INVALID_AID2: spam_api.c:1226 Association identifier 8 for client cc:52:af:7f:d8:8b is already in use by cc:52:af:7f:d2:1
 \end{lstlisting}
 
-The explanation\footnote{http://www.cisco.com/c/en/us/td/docs/wireless/controller/message/guide/controller\_smg/msgs6.html} \texttt{Cisco} gives for that message is that an internal error caused an invalid association ID to be received from an AP for the indicated client and that the client may experience communications problems. This error message can also be observed for other devices on the network. In our case it might be linked to the fact that we generate a lot of associations in a short time.
+The explanation\footnote{http://www.cisco.com/c/en/us/td/docs/wireless/controller/message/guide/controller\_smg/msgs6.html} \texttt{Cisco} gives for that error message is that an internal error caused an invalid association ID to be received from an AP for the indicated client and that the client may experience some communications problems. This seems to be related to duplicate and invalid association identifier entries for \texttt{FlexConnect} clients. \texttt{Cisco FlexConnect} is a technology that allows APs to be remotely deployed from the controller but allow for distributed switching of local packets. A local \texttt{VLAN ID} from the AP's switch is mapped to an \texttt{SSID} instead of tunneling all the traffic back to the \texttt{WLAN} controller to be switched centrally. This error message can also be observed for several devices on the network an unfortunately, according to \texttt{Cisco}, no work around is possible for that kind of error.
 
-\paragraph*{Source} This analysis heavily uses the event mechanism of \texttt{wpa\_supplicant} to generate its estimations of duration. We complete the analysis with the controller logs that are available on the \emph{Gathering} part. This is also a good example that a system embedding all the monitoring tools can help to generate better analysis about issues on a complex infrastructure.
+
+\paragraph*{Source} This analysis heavily uses the event mechanism of \texttt{wpa\_supplicant} to generate those estimations of duration. We complete the analysis with the controller logs that are available on the \emph{Gathering} part. This is also a good example that a system embedding all the monitoring tools can help generating better analysis about issues on a complex infrastructure.
 
 
 \section{Services Availability}
-We wanted our application to be able to give a performance and quality overview of the network every time a new connection is established. As mentioned before, we have divided our test into two parts. First we perform a \texttt{DNS} query on the two \texttt{DNS} servers of the UCL to see if both servers are reachable. Then we test the \texttt{TCP} connection to the main UCL's services added to the collection of the ten most visited website in the world with simple \texttt{socket} connections. After having received several log files from the router we were able to check the results and make some analysis on them. By decoupling those analysis, we can localize more precisely the connectivity issues.
+We want our application to be able to give a performance and quality overview of the network every time a new connection is established. In order to provide that kind of information we have designed a special services reachability and availability test for a given selection of services. As mentioned in section \texttt{4.2.3.2}, we have divided our test into two parts. First we perform a \texttt{DNS} query on the two UCL's \texttt{DNS} servers to make sure that both servers are reachable. Then we test the \texttt{TCP} connection to the main UCL's services added to the collection of the ten most visited website in the world using simple \texttt{socket} connections. The resulting data is inserted into the log file that is forwarded to the server. After having received several log files from the router we were able to check the results and make some analysis on them. By decoupling those analysis, we can localize more precisely the connectivity issues. The following figure shows how the data concerning the services is represented on the web platform.
 
-\paragraph*{DNS} First of all, both \texttt{DNS} servers are always reachable and accessible for the five \texttt{VLANs}. The interest here comes from the fact that for the users, when the \texttt{DNS} is not responding, it the same as the \emph{Internet} is not working. 
+\begin{figure}[H]
+	\centering
+   \includegraphics[width=1\textwidth]{Pictures/chapter6/services.jpg}
+   \caption{Services availability on the UCL network}
+\end{figure} 
 
-\paragraph*{Service checks} The results of the service reachability tests depend on which network the test is executed on. Indeed, the UCL's online wireless documentation states that some \texttt{VLANs} restrict the range of accessible websites. We were able to confirm that information thanks to these tests. Upon our analysis we can see that, only two networks have some restrictions.
+
+\paragraph*{DNS} The first conclusion we made after analysing the results is that both \texttt{DNS} servers are always reachable and accessible within the five \texttt{VLANs}. Still, we noticed that during the deployment we had a 97.92\% reachability value for the first server with the \texttt{visiteurs.UCLouvain} network. This is not an issue since the second server, that had a 100\% reachability value, backs up the first one if a connectivity issue arise between that server and the users. Addresses are always resolved.
+
+\paragraph*{Services test} The results of the service reachability tests depend on which network the test is executed on. Indeed, the UCL's wireless documentation states that some \texttt{VLANs} restrict the range of accessible websites. We were able to confirm that information thanks to these tests. Upon our analysis we can see that, only two networks have some restrictions.
 
 \begin{itemize}
-	\item [-] \texttt{visiteurs.UCLouvain}
 	\item [-] \texttt{UCLouvain-prive}
+	\item [-] \texttt{visiteurs.UCLouvain}
 \end{itemize}
 
-For the first one, all the services are reachable except \texttt{horaire.sgsi.ucl.ac.be}. This is because the port used to access this website is the port \texttt{8080} and this port has been blocked for this \texttt{VLAN}. Concerning the \texttt{UCLouvain-prive}, all the websites but the ones managed by the UCL are blocked. The exhaustive list of all the services checked is described in section \texttt{4.2.3.2}.
+For the first one, all the services that are not related to the UCL are forbidden. Indeed, this network is only for accessing the UCL wireless configuration page and others such as \texttt{www.icampus.uclouvain.be} or \texttt{www.bib.ucl.ac.be}.
 
-By checking periodically those services, we can generate their rate of availability which can be a good indicator to determine the network's performance perceived by the user.
+For the second one, all the services are reachable except \texttt{horaire.sgsi.ucl.ac.be}. This is because the port used to access this website is \texttt{8080} and this port has been blocked by the firewall on that \texttt{VLAN} as well as for \texttt{UCLouvain-prive}.
+
+By checking periodically those services, we can generate their availability rate which can be a good indicator to determine the network's performance experienced by the user.
 
 
-\paragraph*{Source} The data used in this analysis are completely generated by our system. The tests are performed by subroutines implemented in our \texttt{C} program. All the information are centralized in the server that also handles all the data analysis phase.
+\paragraph*{Source} The data used in this analysis are completely generated by our system. The tests are performed by subroutines implemented in our \texttt{C} program. All the information are centralized in the server that also handles all the data aggregating and analysis phase.
 
 \section{Limitations}
 

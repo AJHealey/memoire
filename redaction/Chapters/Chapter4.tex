@@ -45,7 +45,7 @@ Even if most of the time we do not make direct transactions with the database, i
 The main difficulty was to correctly collect the available information from all the sources. For each of them, we had to implement a module to make the interface between the sources and the database. Those sources were quite heterogeneous and the implementation required a deep understanding of them. 
 
 \subsubsection{Logs Parser}
-The first source we have processed was the log files. There are three generators of log files within the network: the controller, the \texttt{DHCP} and the \texttt{RADIUS} servers. Actually, there already is a software that gathers all the log files and centralizes them. That log management solution is called \texttt{Octopussy}\footnote{http://www.octopussy.pm/}. It allows the administrators to display the logs and access them by specifying criteria such as the date, the source or the gravity of the message. Our \emph{log} module does basically the same thing but with a deeper analysis and understanding of the content of those log files. 
+The first source we have processed was the log files. There are three generators of log files within the network: the controller, the \texttt{DHCP} and the \texttt{RADIUS} servers. Actually, there already is a software that gathers all the log files and centralizes them. That log management solution is called \texttt{Octopussy} \cite{octopussy}. It allows the administrators to display the logs and access them by specifying criteria such as the date, the source or the gravity of the message. Our \emph{log} module does basically the same thing but with a deeper analysis and understanding of the content of those log files. 
 \paragraph{DHCP}
 The \texttt{DHCP} servers generate an entry in the log file for each step realized during of the allocation of an \texttt{IP} address and, of course, if an error occurs. The following listing give an example of the typical messages that can be found within the log file.\\
 
@@ -545,7 +545,7 @@ We focus on making our code as modular and extensible as possible. Each gatherer
 \hline
 \end{tabular}
 
-Once we have a clear idea of how to gatherer the data, we use the abstractions of the system to learn it how to get them. As those value are available for each interface of each access point, we use the method \texttt{walkByInterface()}. It is conceived to collect such data and aggregate them by AP. We continue by defining our two new methods.
+Once we have a clear idea of how to gatherer the data, we use the abstractions of the system to learn it how to get them. As those value are available for each interface of each access point, we use the method \texttt{walkByInterface()}. It is conceived to collect such data and aggregate them by AP. We continue by defining our two new methods.\\
 \begin{lstlisting}[language=Python, frame=single,breaklines=true,caption={Misleading Error Message}]
 def getAPIfLoadRxUtilization(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY, ap=''):
 	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.1', port=port, community=community)
@@ -554,7 +554,7 @@ def getAPIfLoadTxUtilization(ip, port=settings.SNMPPORT, community=settings.SNMP
 	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.2' + ap, port=port, community=community)
 \end{lstlisting}
 
-Once they are defined, we finally add them to the \texttt{getAllAP()} method that manages the SNMP requests. That method execute each of the request and cross the data with the ones already gathered. Concretely, we add two calls to the \texttt{getIfSnapshotData()} in the \texttt{getAllAP()} method. It performs a snapshot of the data and save them on the database.
+Once they are defined, we finally add them to the \texttt{getAllAP()} method that manages the SNMP requests. That method execute each of the request and cross the data with the ones already gathered. Concretely, we add two calls to the \texttt{getIfSnapshotData()} in the \texttt{getAllAP()} method. It performs a snapshot of the data and save them on the database.\\
 
 \begin{lstlisting}[language=Python, frame=single,breaklines=true,caption={Misleading Error Message}]
 getIfSnapshotData(resultIfSnapshot, 'txUtilization', getAPIfLoadTxUtilization, 
@@ -568,7 +568,7 @@ At this step, the data are already record at each periodical execution of the \e
 
 \paragraph*{Aggregation} When the data are available, we need to aggregate them to get a representation of their evolution throughout the days. As implemented, the system aggregate a number of snapshot and take the maximum or compute the average. For our data, we have chosen to take the maximum to be able to spot the peak of activity. For this step, we have nothing to do. The \texttt{getIfData()} defined in the \texttt{analyse.computation.aggregator} module takes into account the new data once they are available.
 
-\paragraph*{Interface} The interface is based on the \emph{Django} templates. Each interface inherits of partial interface and reusable by other. That is possible by the utilization of specific tags in the \emph{HTML} code. That system is not conceived by us and a complete documentation are available online\footnote{https://docs.djangoproject.com/en/1.6/ref/templates/}. The graph are generated by the \emph{Google Chart} library\footnote{https://developers.google.com/chart/}. That allow to generate interactive graph very easily. As we use it with the \emph{Django} templates, the definition of the graph become really easy as we can access the aggregated value directly. The tag are put between brackets and allow to generate dynamically the \emph{Javascript}. In our example, a graph is generated for each interface (\texttt{\{\%for i in interfaceData\%\}}) and the data are added directly by iteration on the aggregated values (\texttt{\{\%for log in i.data\%\}}). The last step is simply some design in \emph{HTML} and \emph{CSS}.
+\paragraph*{Interface} The interface is based on the \emph{Django} templates. Each interface inherits of partial interface and reusable by other. That is possible by the utilization of specific tags in the \emph{HTML} code. That system is not conceived by us and a complete documentation are available online\footnote{https://docs.djangoproject.com/en/1.6/ref/templates/}. The graph are generated by the \emph{Google Chart} library\footnote{https://developers.google.com/chart/}. That allow to generate interactive graph very easily. As we use it with the \emph{Django} templates, the definition of the graph become really easy as we can access the aggregated value directly. The tag are put between brackets and allow to generate dynamically the \emph{Javascript}. In our example, a graph is generated for each interface (\texttt{\{\%for i in interfaceData\%\}}) and the data are added directly by iteration on the aggregated values (\texttt{\{\%for log in i.data\%\}}). The last step is simply some design in \emph{HTML} and \emph{CSS}.\\
 
 \begin{lstlisting}[language=Python, frame=single,breaklines=true,caption={Example of Graph definition}]
 {%for i in interfaceData%}
@@ -610,13 +610,13 @@ Let's take a fake network for the sake of example. The specifications of the new
 
 The first thing to do is to increment the global variable \texttt{NUM\_OF\_NETWORKS} since it stores the number of networks used throughout the execution of the application.\\
 
-\begin{lstlisting}[frame=single,breaklines=true,caption={Small log file example}]
+\begin{lstlisting}[frame=single,breaklines=true]
 #define NUM_OF_NETWORKS 6
 \end{lstlisting}
 
 The final step is to add the network specifications in the \texttt{create\_networks()} function. The network will be configured with the others when the program starts. Here is the line to add the to function.\\
 
-\begin{lstlisting}[frame=single,breaklines=true,caption={Small log file example}]
+\begin{lstlisting}[frame=single,breaklines=true]
 config_network(5, "test.UCLouvain", "WPA-EAP", "TTLS", NULL, "test@wifi.uclouvain.be", "passwd", "/etc/wpa_supplicant/chain-radius.pem", NULL, "auth=PAP");
 \end{lstlisting}
 
@@ -624,6 +624,55 @@ As we can see, it is very easy to add a network. If we wanted to delete one of t
 
 The tricky part of working with \texttt{OpenWrt} is the compilation phase. Indeed, if we want our program to run on the router, we have to \textit{cross compile} it. This is due to the fact that the router does not offer enough memory space in order to directly install the \texttt{C} compiler and to compile the code natively. Also, the router uses a different architecture than we do when developing the program. In our case, the router has a \texttt{MIPS} architecture. This is why the code needs to be cross compiled in order to run on the router. Details about the cross compilation can be found in \cite{crosscompile}.
 
+
+\subsection*{Adding a new service}
+We have provided a selection of 18 services for this application but more services can be easily added to the check list.
+Let's say we want to add the website \\"\texttt{http://foditic.info.ucl.ac.be/}" to the list. Here are the following steps that need to be fulfilled in order to get availability and reachability results for this website.
+
+First, we need to add a variable in the \texttt{check\_serv} structure that will store the result of the socket connection test. This structure is located into the header file \texttt{wifi\_monitoring.h}.\\
+
+\begin{lstlisting}[frame=single,breaklines=true]
+struct check_serv {
+	char *DNS_1;
+	...
+	char *studssh;
+	char *foditic;
+};
+\end{lstlisting}
+
+Then we have to, first, allocate memory to this new variable and then add the call to the function that tests the services. The function \texttt{services\_loop()} located in the main \texttt{wifi\_monitoring.c} takes two arguments: the address and the port for the connection.\\
+
+\begin{lstlisting}[frame=single,breaklines=true]
+static void services_loop() {
+	...
+	ptr->studssh = malloc(1);
+	ptr->foditic = malloc(1);
+	...
+	if(checkService("studssh.info.ucl.ac.be", "22") == 0)
+		strcpy(ptr->studssh, "1");
+	else
+		strcpy(ptr->studssh, "0");
+
+	if(checkService("foditic.info.ucl.ac.be", "80") == 0)
+		strcpy(ptr->studssh, "1");
+	else
+		strcpy(ptr->studssh, "0");
+}
+\end{lstlisting}
+
+The last step consists of inserting the new collected information into the log file. To do that, we simply have to add a line into the function \texttt{log\_event()} also located in the main \texttt{C} file. Notice that we have to add a comma to the previous last line for the services in order to respect the \texttt{JSON} syntax and for our new log file to be parsed correctly by the server.\\
+
+\begin{lstlisting}[frame=single,breaklines=true]
+static void log_event(enum log_events log, const char *arg) {
+	case LOG_PRINT_STRUCT: {
+		...
+		fprintf(f, "\"studssh.info.uc.ac.be\": \"%s\",\n", log_struct->services->studssh);
+		fprintf(f, "\"foditic.info.ucl.ac.be\": \"%s\"\n", log_struct->services->foditic);
+		fprintf(f, "}\n");
+	}
+	break;
+}
+\end{lstlisting}
 
 
 \section{Summary}
