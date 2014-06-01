@@ -14,6 +14,7 @@ MAX_VALUE_SNMP_COUNTER32 = 4294967295
 
 ## Logs Aggregators
 def getWismLogsByCategory():
+	""" Aggregate the controller log by category """
 	stats = {}
 	## Logs More important than informational (level 5 at least)
 	logs = WismEvent.objects.filter(severity__lte=5)
@@ -24,12 +25,14 @@ def getWismLogsByCategory():
 	return stats
 
 def getWismLogsBySeverity(cat='', severity=5):
+	""" Aggregate the controller log by severity """
 	result = {}
 	logs = WismEvent.objects.filter(severity__lte=severity).filter(category=cat)
 	for severity in set(logs.values_list('severity', flat=True)):
 		result[severity] = logs.filter(severity=severity)
 
 def getDhcpLogByType():
+	""" Aggregate the DHCP log by type """
 	stats = []
 	order=[("dis","Discover"), ("off","Offer"), ("req","Request"), ("ack","Ack"), ("nak","Nak"), ("inf", "Inform")]
 	for t, display in order:
@@ -39,6 +42,7 @@ def getDhcpLogByType():
 	return stats
 
 def getRadiusSuccessRate():
+	 """ Compute the success rate of the authentications """
 	return {
 		"Success" : RadiusEvent.objects.filter(radiusType="ok").count(),
 		"Failed" : RadiusEvent.objects.filter(radiusType="ko").count(),
@@ -46,6 +50,7 @@ def getRadiusSuccessRate():
 
 ## Users Aggregators 
 def getUsersByDot11Protocol(timedeltaData=timedelta(weeks=12)):
+	""" Compute the rate of utilization of the 802.11 standards """
 	stats = {}
 	ms = MobileStation.objects.areAssociated()
 	for proto,display in MobileStation.DOT11_PROTOCOLS:
@@ -55,6 +60,7 @@ def getUsersByDot11Protocol(timedeltaData=timedelta(weeks=12)):
 	return stats
 
 def getUsersBySSID():
+	""" Compute the rate of utilization of the SSID """
 	stats = {}
 	ms =  MobileStation.objects.filter(ssid__isnull=False)
 	for ssid in set(MobileStation.objects.values_list('ssid', flat=True)):
@@ -193,6 +199,13 @@ def getAllIfData(ap, timePerRange=3*settings.SNMPAPLAP, startTime=None, endTime=
 
 
 def getSpeed(start, end, time):
+	""" Compute the speed based on byte counter 
+
+		arguments:
+		start: counter at start
+		end: counter at end
+		time: elapsed time between 'start' and 'end'
+	"""
 	# Warning wrap up counter
 	if start > (MAX_VALUE_SNMP_COUNTER32/2) and end < (MAX_VALUE_SNMP_COUNTER32/2):
 		total = (MAX_VALUE_SNMP_COUNTER32 - start) + end
