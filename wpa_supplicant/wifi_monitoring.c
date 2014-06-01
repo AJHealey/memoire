@@ -345,6 +345,7 @@ static void execute_action(enum wpa_action action, int network) {
 		case ACTION_DISCONNECT: {
 				commands("DISCONNECT");
 				system("killall udhcpc"); /* Stop DHCP */
+				clear_struct(); /* Free the structures */
 				dhcp = 0;
 			}
 			break;
@@ -999,7 +1000,6 @@ void *connection_loop(void * p_data) {
 			services_loop(); /* Executes the service checking loop */
 			log_event(LOG_PRINT_STRUCT, NULL);
 			sleep(DELAY);
-			clear_struct(); /* Free the structures */
 
 			if(i != NUM_OF_NETWORKS-1) { /* Last network needs special final closure for log syntax */
 				log_event(LOG_STOP_CONNECTION_LOOP, NULL);
