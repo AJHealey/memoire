@@ -132,7 +132,14 @@ def getAPData(ap, timePerRange=3*settings.SNMPAPLAP,
 
 
 def getIfData(interface, timePerRange=3*settings.SNMPAPLAP, startTime=None, endTime=None):
-	
+	""" Aggregate all the data gathered about the interface of the access points
+
+		arguments:
+		interface - interface to analyse
+		timePerRange - period of aggregation
+		startTime - minimum date of the data
+		endTime - maximum date of the data
+	"""
 	result = []
 	try:
 		if startTime == None:

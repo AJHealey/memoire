@@ -495,6 +495,10 @@ On the \texttt{OpenWRT} router, the encryption is realized by the \texttt{OpenSS
 
 \paragraph*{PyCrypto} As the server is written in \texttt{Python}, we used the \texttt{PyCrypto} module that offers a wrapper for the cryptographic functions required by our protocol.
 
+\section{Web Interface}
+For our user interface, we have chosen to use the \emph{Bootstrap} framework\footnote{http://getbootstrap.com/}. It is widely use and well documented. It allows to quickly develop intuitive and responsive interfaces and being automatically compatible with mobile devices. As we focus mainly on the back-end of our system, we needed to be able to build the interface as quickly as possible but still with quality. That is why we have coupled the \emph{Django} templates system with that framework. Finally, we complete them with the \emph{Google Chart} library. A more exhaustive explication of those technology is available in the \emph{Extensions and Portability} section.
+
+
 \section{Deployment}
 Concerning the deployment of our monitoring tool, we had a dedicated server to host our data. This system was quite limited in order to efficiently serve the requests. The server have a hard drive of about 300GB which is quite enough to store all the information gathered by \texttt{NetwObserver} during the deployment and test phase. On the other hand, the memory available is only 1GB which is not enough to ensure an efficient handling of the users requests.
 
@@ -518,8 +522,76 @@ The scheduler in \texttt{Celery} is called \emph{beat} and its only responsibili
 
 In this section we give some further details about the overall portability and modularity of our application and how extensions can be added to the source code in order to provide other features.
 
+\subsection{NetwObserver}
+We focus on making our code as modular and extensible as possible. Each gatherer and analyser are conceived to be easily understood. To illustrate that we will take the example of extension and proceed it through each part of our system.
 
+\paragraph*{Gathering a New SNMP Data} For our example, we will add the monitoring of the percentage of time spent by an interface to send and receive data. The first step is to define how to gather those information. They are both of them easily available with \emph{SNMP}.
 
+\begin{tabular}{|r l|}
+\hline
+\textbf{Object} & \texttt{bsnAPIfLoadRxUtilization} \\
+\textbf{Description} & \parbox{11cm}{This is the percentage of time the Airespace AP receiver is busy operating on packets. It is a number from 0-100 representing a load from 0 to 1.} \\
+\textbf{OID} & 1.3.6.1.4.1.14179.2.2.13.1.1 \\
+\textbf{MIB} & AIRESPACE-WIRELESS-MIB \\
+\hline
+\end{tabular}
+
+\begin{tabular}{|r l|}
+\hline
+\textbf{Object} & \texttt{bsnAPIfLoadTxUtilization} \\
+\textbf{Description} & \parbox{11cm}{This is the percentage of time the Airespace AP transmitter is busy operating on packets. It is a number from 0-100 representing a load from 0 to 1.} \\
+\textbf{OID} & 1.3.6.1.4.1.14179.2.2.13.1.2 \\
+\textbf{MIB} & AIRESPACE-WIRELESS-MIB \\
+\hline
+\end{tabular}
+
+Once we have a clear idea of how to gatherer the data, we use the abstractions of the system to learn it how to get them. As those value are available for each interface of each access point, we use the method \texttt{walkByInterface()}. It is conceived to collect such data and aggregate them by AP. We continue by defining our two new methods.
+\begin{lstlisting}[language=Python, frame=single,breaklines=true,caption={Misleading Error Message}]
+def getAPIfLoadRxUtilization(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY, ap=''):
+	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.1', port=port, community=community)
+
+def getAPIfLoadTxUtilization(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY, ap=''):
+	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.2' + ap, port=port, community=community)
+\end{lstlisting}
+
+Once they are defined, we finally add them to the \texttt{getAllAP()} method that manages the SNMP requests. That method execute each of the request and cross the data with the ones already gathered. Concretely, we add two calls to the \texttt{getIfSnapshotData()} in the \texttt{getAllAP()} method. It performs a snapshot of the data and save them on the database.
+
+\begin{lstlisting}[language=Python, frame=single,breaklines=true,caption={Misleading Error Message}]
+getIfSnapshotData(resultIfSnapshot, 'txUtilization', getAPIfLoadTxUtilization, 
+		ip=ip, port=port, community=community)
+
+getIfSnapshotData(resultIfSnapshot, 'rxUtilization', getAPIfLoadRxUtilization, 
+		ip=ip, port=port, community=community)		
+\end{lstlisting}
+
+At this step, the data are already record at each periodical execution of the \emph{SNMP} requests. They are available to define new analysis.
+
+\paragraph*{Aggregation} When the data are available, we need to aggregate them to get a representation of their evolution throughout the days. As implemented, the system aggregate a number of snapshot and take the maximum or compute the average. For our data, we have chosen to take the maximum to be able to spot the peak of activity. For this step, we have nothing to do. The \texttt{getIfData()} defined in the \texttt{analyse.computation.aggregator} module takes into account the new data once they are available.
+
+\paragraph*{Interface} The interface is based on the \emph{Django} templates. Each interface inherits of partial interface and reusable by other. That is possible by the utilization of specific tags in the \emph{HTML} code. That system is not conceived by us and a complete documentation are available online\footnote{https://docs.djangoproject.com/en/1.6/ref/templates/}. The graph are generated by the \emph{Google Chart} library\footnote{https://developers.google.com/chart/}. That allow to generate interactive graph very easily. As we use it with the \emph{Django} templates, the definition of the graph become really easy as we can access the aggregated value directly. The tag are put between brackets and allow to generate dynamically the \emph{Javascript}. In our example, a graph is generated for each interface (\texttt{\{\%for i in interfaceData\%\}}) and the data are added directly by iteration on the aggregated values (\texttt{\{\%for log in i.data\%\}}). The last step is simply some design in \emph{HTML} and \emph{CSS}.
+
+\begin{lstlisting}[language=Python, frame=single,breaklines=true,caption={Example of Graph definition}]
+{%for i in interfaceData%}
+google.setOnLoadCallback(drawInterface{{forloop.counter0}}Chart);
+function drawInterface{{forloop.counter0}}Chart() {
+		
+	var data = google.visualization.arrayToDataTable([
+		  ['Time', 'Clients', 'Clients with Poor SNR', 'Channel Utilization'],
+		  {%for log in i.data%}
+		  [new Date({{log.date.year}},{{log.date.month}}-1,{{log.date.day}},{{log.date.hour}},{{log.date.minute}},{{log.date.second}}), {{log.data.rxUtilization}} , {{log.data.txUtilization}}],
+		  {%endfor%}
+		]);
+
+	var options = {
+		title: 'Transmitter and Receiver Occupation',
+	};
+
+	var chart = new google.visualization.LineChart(document.getElementById('interface{{forloop.counter0}}chart_div'));
+		chart.draw(data, options);
+}
+
+{%endfor%}
+\end{lstlisting}
 
 \subsection{Probe}
 The active monitoring program has been designed to work only with the UCL's wireless network. Yet some additions and modifications of the source code can be realized in order to extend it. To illustrate that, let's detail the two modification steps to realize in order to monitor a new UCL's network that uses the same authentication process as the five others.

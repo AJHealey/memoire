@@ -305,6 +305,8 @@ def getAllAP(ip=settings.CONTROLLERIP, port=settings.SNMPPORT, community=setting
 	getApSnapshotData(elements=resultApSnapshot, attr='ethernetTxTotalBytes', getter=getAPEthernetTxTotalBytes,
 		ip=ip, port=port, community=community)
 	
+
+	### Interface Request ###
 	# Add/Update Interfaces
 	try:
 		tmp = getAPIfTypeface(ip=settings.CONTROLLERIP)
