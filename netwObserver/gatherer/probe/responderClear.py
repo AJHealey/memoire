@@ -48,13 +48,6 @@ def handler(clientsocket):
 
 		while len(data) < dataSize :
 			data += clientsocket.recv(1024)
-
-		# Save log file
-		tmp = datetime.now()
-		n = "/srv/media/probe%s%s%s%s%s.txt" % (tmp.month,tmp.day,tmp.hour,tmp.minute,tmp.second)
-		logFile = open(n, "w")
-		logFile.write(data.decode())
-		logFile.close()
 		
 		logParser.probeParser(data.decode())
 		#print("%s" % data.decode())
