@@ -42,10 +42,12 @@ The following sections describe the analysis and conclusions we were able to mak
 
 
 \section{Scanning}
-As detailed above, the first part of the log file aggregates all the scan results performed by the supplicant before connecting to a network. Those information are quite interesting since they allow us to get live details about the current environment of the router. Thanks to those results we have a full overview of the signal strength of all the surrounding access points as well as their frequencies and the \texttt{SSID} they broadcast. 
+As detailed above, the first part of the log file aggregates all the results received by the supplicant after having performed a network scan. Those information are quite interesting since they allow us to get live details about the current environment of the router. Thanks to those results we have a fully detailed overview of all the access points surrounding the it with information including their signal strengths, their frequencies and the \texttt{SSIDs} they broadcast.
 
 
-\paragraph*{Current Wifi Environment} On the web platform, we can see the lastest scan results sent by the device. This can help the administrator to diagnose some \emph{dead zones} on the campus. The results we have are the exact surroundings of the router itself and by consequence we can directly tell if the area where the probe is located is correctly covered or not. We could have chosen to plot the signal strength throughout the day but in our situation the \texttt{RF} environment is quite stable and we prefer to provide the most recent scan results. Nevertheless, such analysis could be interesting for administrators that desire to monitor a room where the \texttt{RF} conditions significantly vary. All the data required are already available in the database to support that extension.
+\paragraph*{Current Wifi Environment} On the web platform, we can see the latest scan results sent by the device. This can help the administrators to diagnose some \emph{dead zones} on the campus. The results we have represent the exact surroundings of the router and by consequence we can directly tell if the area where the probe is located is correctly covered or not. 
+
+We could have chosen to plot the signal strength throughout the day but in our situation the \texttt{RF} environment is quite stable and we prefer to provide the most recent scan results. Nevertheless, such analysis could be interesting for administrators that desire to monitor a room where the \texttt{RF} conditions significantly vary. All the data required are already available in the database to support that extension.
 
 \paragraph*{Source} The source of those data is \texttt{wpa\_supplicant} itself. Before any association, the supplicant scans the environment to detect all the reachable access points. Those results come with the a bunch of related information. The following figure represents a typical scan result displayed on the web interface.
 
@@ -57,47 +59,88 @@ As detailed above, the first part of the log file aggregates all the scan result
 
 
 \section{Access Points Interactions}
-During the connection establishment phase, the supplicant makes several interactions with the access points. The first interaction it makes is in order for the supplicant to associate itself with one of the access points. The others concerns all the required data exchanges for the \texttt{802.1X} authentication process.
+During the connection establishment phase, the supplicant makes several interactions with the access points. The first interaction it makes is in order to associate itself with one of the access points that broadcast the \texttt{SSID} of the network it tries to have get a connection to. The others concerns all the required data exchanges for the \texttt{802.1X} authentication process.
 
 \subsection{Access Point Association}
-The algorithm used by the supplicant is quite straightforward. It lists the access point that broadcast the \texttt{SSID}, the client wants to connect to, in a decreasing order based on the signal strength. The connection routine of \texttt{wpa\_supplicant} then tries to associate to those APs starting with the best one.
+The first thing the supplicant has to do in order to initiate a connection establishment is to associate itself with an access point. The algorithm used by the supplicant is quite straightforward. It lists all the access points that broadcast the \texttt{SSID} it wants to connect to in a decreasing order based on the signal strength. Then the supplicant tries to get associate with the first one. If the association is accepted by the AP, the authentication process is started and a connection with that particular AP is established. If the association is rejected, \texttt{wpa\_supplicant} tries with the second one, and so on. As an example, here is an association trace made by the supplicant in order to connect to \texttt{student.UCLouvain}.\\
 
-\paragraph*{Rejection} The first observation we made was that our device does not always connect with the best access point. Indeed, it may sometimes be rejected by several APs before being able to complete the association phase. This is an issue since our device might be associated to an access point with a weaker signal than other potential ones. This is a perfect example of why such active analysis can be useful. During our investigations we have noticed that each time an association is rejected, the status code is equal to \texttt{12}. By looking into the \texttt{wpa\_supplicant} source code\footnote{ieee802\_11\_defs.h} we have found that this status code refers to \texttt{WLAN\_STATUS\_ASSOC\_DENIED\_UNSPEC} that states for \emph{Access Denied Unspecified}. Our monitoring tool was able to detect the issue but a deeper debugging on the access point and the device is required in order to find the precise cause. That is outside the scope of our system since we do not have a direct access to the APs nor the controller in order to perform a deeper analysis. Nevertheless, we record all the tried access point and we are able to provide the quantity of APs that has rejected the association. With that metric, and by crossing it with the scan results, we are able to tell where that issue occurred. Here are the messages received from the \texttt{wpa\_supplicant} daemon by our application when an association reject occurs.\\
-
-\begin{lstlisting}[frame=single,breaklines=true,caption={Exemple of rejection}]
-Trying to associate with XX:XX:XX:XX:XX:XX (SSID='student.UCLouvain' freq=2437 MHz)
-CTRL-EVENT-ASSOC-REJECT bssid=XX:XX:XX:XX:XX:XX status_code=12
+\begin{lstlisting}[frame=single,breaklines=true,caption={Association trace for \texttt{student.UCLouvain}}]
+Successfully initialized wpa_supplicant
+wlan0: SME: Trying to authenticate with 00:1e:bd:65:34:71 (SSID='student.UCLouvain' freq=2437 MHz)
+wlan0: Trying to associate with 00:1e:bd:65:34:71 (SSID='student.UCLouvain' freq=2437 MHz)
+wlan0: CTRL-EVENT-ASSOC-REJECT bssid=00:1e:bd:65:34:71 status code=12
+wlan0: SME: Trying to authenticate with 68:86:a7:1c:bb:11 (SSID='student.UCLouvain' freq=2462 MHz)
+wlan0: Trying to associate with 68:86:a7:1c:bb:11 (SSID='student.UCLouvain' freq=2462 MHz)
+wlan0: CTRL-EVENT-ASSOC-REJECT bssid=68:86:a7:1c:bb:11 status code=12
+wlan0: SME: Trying to authenticate with 68:86:a7:30:a0:a1 (SSID='student.UCLouvain' freq=2412 MHz)
+wlan0: Trying to associate with 68:86:a7:30:a0:a1 (SSID='student.UCLouvain' freq=2412 MHz)
+wlan0: Associated with 68:86:a7:30:a0:a1
+wlan0: CTRL-EVENT-EAP-STARTED EAP authentication started
+wlan0: CTRL-EVENT-EAP-PROPOSED-METHOD vendor=0 method=4 -> NAK
+wlan0: CTRL-EVENT-EAP-PROPOSED-METHOD vendor=0 method=21
+wlan0: CTRL-EVENT-EAP-METHOD EAP vendor 0 method 21 (TTLS) selected
+wlan0: CTRL-EVENT-EAP-SUCCESS EAP authentication completed successfully
+wlan0: WPA: Key negotiation completed with 68:86:a7:30:a0:a1 [PTK=CCMP GTK=TKIP]
+wlan0: CTRL-EVENT-CONNECTED - Connection to 68:86:a7:30:a0:a1 completed (auth) [id=0 id_str=]
 \end{lstlisting}
 
-\paragraph*{Deconnection} Another problem reported during our analysis was the fact that the device randomly disconnects and reconnects during the test. Even if such behavior is totally normal for a common user since it is interpreted as roaming, it is quite disturbing for our tests. Indeed, those reconnections interrupt the test and make them running on different access points. Like before, we have recorded the events generated by \texttt{wpa\_supplicant} and identified the cause. The reported error (\texttt{reason=4}) was because of an inactivity of the access point. Here again, if such issues want to be diagnosed, deeper access to the infrastructure is required. For now, we monitor the amount of reconnections during a set of tests and we are able to inform when they occur.\\
+Notice that, during the authentication process, the \texttt{EAP-PROPOSED-METHOD} with value equals \textit{4} stands for the \texttt{EAP-MD5} method, which is rejected by the controller.
+
+
+\paragraph*{Rejection} The first observation we made regarding the association interactions was that our device does not always connect with the best access point in terms of signal strength. Indeed, as explained above, \texttt{wpa\_supplicant} lists all the APs it might connect with in a decreasing order based on that signal strength. But as we can see on the example with the association trace for \texttt{student.UCLouvain}, sometimes the association is rejected by the access point, forcing the supplicant to try other APs until the association is finally accepted. This is an issue since the device might be associated with an access point with a lower signal than the others.
+
+During our investigations we have noticed that each time an association is rejected, the status code is always equal to \textit{12}. By looking into the \texttt{wpa\_supplicant} source code\footnote{src/common/ieee802\_11\_defs.h} we have found that this status code refers to \texttt{WLAN\_STATUS\_ASSOC\_DENIED\_UNSPEC} that states for \emph{Access Denied Unspecified}. Despite the fact that our monitoring tool was able to detect this issue by analysing all the events sent from the supplicant, a deeper debugging on the access point and the controller is required in order to find the precise cause. Since we do not have a direct access to the APs nor the controller this debugging is outside the scope of our system. Nevertheless, we record all the access points \texttt{BSSID} the supplicant tried to associate with and we are able to provide the quantity of APs that has rejected the association request.With that metric, and by crossing it with the scan results, we are able to tell where the issue occurred.
+
+
+\paragraph*{Disconnection} Another issue we noticed during our analysis is the fact that the device sometimes disconnects from the AP and reconnects, to the same AP or to another one, forcing the daemon to restart the associate and authentication process. This behavior can be interpreted as roaming but it is quite disturbing when performing our tests. Like before, we have recorded all the events generated by the supplicant and identified the cause. In the case of \texttt{CTRL-EVENT-DISCONNECTED} event, two reasons have been noticed. The first, \textit{reason=3} meaning that the AP went offline and is deauthenticating the client. The second, \textit{reason=4} that refers to the fact the deauthentication is due to inactivity (i.e. client session timeout exceeded). The following listing continues the example aboves and shows a disconnection event.\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Example of Deconnection trace}]
-CTRL-EVENT-DISCONNECTED bssid=XX:XX:XX:XX:XX:XX reason=4
-Trying to associate with XX:XX:XX:XX:XX:XX (SSID='student.UCLouvain' freq=2437 MHz)
+wlan0: CTRL-EVENT-CONNECTED - Connection to 68:86:a7:30:a0:a1 completed (auth) [id=0 id_str=]
+wlan0: CTRL-EVENT-DISCONNECTED bssid=68:86:a7:30:a0:a1 reason=4 locally_generated=1
+wlan0: SME: Trying to authenticate with 68:86:a7:1c:d0:61 (SSID='student.UCLouvain' freq=2412 MHz)
+wlan0: Trying to associate with 68:86:a7:1c:d0:61 (SSID='student.UCLouvain' freq=2412 MHz)
+wlan0: CTRL-EVENT-EAP-STARTED EAP authentication started
+wlan0: CTRL-EVENT-EAP-PROPOSED-METHOD vendor=0 method=4 -> NAK
+wlan0: CTRL-EVENT-EAP-PROPOSED-METHOD vendor=0 method=21
+wlan0: CTRL-EVENT-EAP-METHOD EAP vendor 0 method 21 (TTLS) selected
+wlan0: CTRL-EVENT-EAP-SUCCESS EAP authentication completed successfully
+wlan0: WPA: Key negotiation completed with 68:86:a7:1c:d0:61 [PTK=CCMP GTK=TKIP]
+wlan0: CTRL-EVENT-CONNECTED - Connection to 68:86:a7:1c:d0:61 completed (auth) [id=0 id_str=]
 \end{lstlisting}
 
+Here again, if such issue wants to be properly diagnosed, deeper access to the infrastructure is required. For now, our application monitors the amount of reconnections that happened during the test phases. We plot that information as well as the number of associations tried for each \texttt{SSID}. The following figure shows such a graph for the \texttt{student.UCLouvain} network.
 
-\paragraph*{Source} All these logs are generated by \texttt{wpa\_supplicant} and provided through an events generator mechanism. Our program is interfaced with the supplicant and is able to record all those events, parse them and insert useful information into our own log file. It offers a rich source of information in order to trace all the steps of the association.
+\begin{figure}[H]
+	\centering
+   \includegraphics[width=1\textwidth]{Pictures/chapter6/ap-interactions.jpg}
+   \caption{Number of associations and reconnections}
+\end{figure} 
+
+We can see on that figure that there were not any reconnections during the deployment. In fact, that is not exactly true. Indeed, we have noticed some reconnections, thanks to the the \texttt{wpa\_supplicant} events, but each time the supplicant disassociated itself with the AP it directly reassociated with the same AP. This is not represented on the graph because we have chosen to only display the reconnections to different APs and not to the same one. Regarding the associations we can see that they vary from one to five APs maximum with the most frequently occurring value being four access points.
+
+\paragraph*{Source} All these logs are generated by \texttt{wpa\_supplicant} and provided through an event generator mechanism. Our program is interfaced with the supplicant and is able to record all those events, parse them and insert useful information into our own log file. These events provide a rich source of information since they trace everything that is happening between the supplicant and the network components.
 
 
 \section{Time Durations}
-Time is an important factor when dealing with wireless networks performances. Indeed, the users can be really annoyed when the connection establishment duration begins to take too much time. We have decided to keep track of the time duration it takes for \texttt{wpa\_supplicant} to establish a connection with the network. Concretely, we start a timer when the command \texttt{SELECT\_NETWORK} is sent to the control interface to start the connection phase and we stop it as soon as a \texttt{WPA-EVENT-CONNECTED} is received. We keep track of the time it takes for the \texttt{DHCP} server to provide an \texttt{IP} address to the supplicant as well. The methodology is the same as the one used for the connection establishment's duration computation. A timer is started as soon as the interface is connected to the network and before sending a \texttt{DISCOVER} message to the \texttt{DHCP} client, and is stopped as soon as a lease for an \texttt{IP} address is obtained. 
+Time is an important factor when dealing with wireless networks performances. Indeed, the users can be really annoyed when the duration taken for a connection establishment begins to take too much time. We have decided to keep track of the time duration it takes for \texttt{wpa\_supplicant} to establish a connection with the network. Concretely, we start a timer when the command \texttt{SELECT\_NETWORK} is sent to the control interface to start the connection phase and we stop it as soon as a \texttt{WPA-EVENT-CONNECTED} event is received. We also keep track of the time it takes for the \texttt{DHCP} servers to provide an \texttt{IP} address to the supplicant. The methodology is the same as the one used for the connection establishment's duration computation. A timer is started as soon as the device is connected to the network and before it sends a \texttt{DISCOVER} message to the \texttt{DHCP} servers, and is stopped as soon as a lease for an \texttt{IP} address is obtained. 
 
-\paragraph*{Decomposition} An interesting feature of this analysis is that, as we just mentioned, we can decompose the waiting time of the user in different parts. By observing the proportion of each part, we can point out what part constitutes the bottleneck of the connection establishment. Since we gathered those indicators during our deployment phase, we are able to monitor their evolution and make the distinction between persistent problems and the isolated cases. After plotting all the data collected on a graph, we have come to conclusion that, despite the fact that are some peaks in the time duration, the connection and \texttt{DHCP} remain rather constant. Here is an example for the networks \texttt{UCLouvain-prive} and \texttt{UCLouvain} record from the \emph{Reaumur} building.
+\paragraph*{Decomposition} An interesting feature of this analysis is that, as we just mentioned, we can decompose the waiting time of the users in different parts. By observing the proportion of each part, we can point out what part constitutes the bottleneck of the connection establishment. Since we gathered those indicators during our deployment phase, we are able to monitor their evolution and make the distinction between persistent problems and the isolated cases. By plotting the data from both parts on a same graph we are able to depict the evolution of the connection establishment duration through time for each \texttt{SSID}. The following two figures represent the time taken by \texttt{wpa\_supplicant} and by the \texttt{DHCP} servers during the deployment.
 
 \begin{figure}[H]
 	\centering
-   \includegraphics[width=1\textwidth]{Pictures/chapter6/time-uclouvain-prive.jpg}
-   \caption{Connection time for \texttt{UCLouvain-prive}}
+   \includegraphics[width=1\textwidth]{Pictures/chapter6/time-student.jpg}
+   \caption{Connection time for \texttt{student.UCLouvain}}
 \end{figure} 
 
 \begin{figure}[H]
 	\centering
-   \includegraphics[width=1\textwidth]{Pictures/chapter6/time-uclouvain.jpg}
-   \caption{Connection time for \texttt{UCLouvain}}
+   \includegraphics[width=1\textwidth]{Pictures/chapter6/time-eduroam.jpg}
+   \caption{Connection time for \texttt{eduroam}}
 \end{figure} 
 
-\paragraph*{Peak of time} We have investigated on the possible reasons of those peaks and we have noticed that the \texttt{wpa\_supplicant} daemon seems to spend a lot of time in the association phase. As said before, the AP is sometimes rejecting the device and, thus, forces the supplicant to associate to other ones. This may induce some latency in the connection phase and impact on perceived performance of the user. In order to understand why those rejected associations happen, we checked the log file of the \texttt{WiSM} and we found a lot of times the same \texttt{LWAPP} error message.\\
+We can see that the time taken by \texttt{wpa\_supplicant} and by the \texttt{DHCP} servers are totally different. The \texttt{DHCP} servers took four seconds maximum to attribute an \texttt{IP} address to the device in the \texttt{student.UCLouvain} network and seven seconds maximum in the \texttt{eduroam} network. We can safely affirm that those servers do not have any implications in the connection establishment bottleneck. On the other side, \texttt{wpa\_supplicant} seems to be more unstable and can experience peaks up to thirty seconds in order to get a connection. This can be explained by the analysis about the access point interactions we made earlier. Indeed, if we compare the graph about the number of associations and reconnections for the \texttt{student.UCLouvain} network above with the connection time graph for the same network we can see that most of the time the peaks coincide with the number of connection attempts. 
+
+\paragraph*{Peaks} We have investigated on the possible reasons of those peaks and we have noticed that the \texttt{wpa\_supplicant} daemon seems to spend a lot of time in the association phase. As said before, the AP is sometimes rejecting the device and, thus, forces the supplicant to associate to other ones. This may induce some latency in the connection phase and impact on perceived performance of the user. In order to understand why those rejected associations happen, we checked the log file of the \texttt{WiSM} and we found a lot of times the same \texttt{LWAPP} error message.\\
 \begin{lstlisting}[frame=single,breaklines=true,caption={\texttt{WiSM} association error message}]
 %LWAPP-3-INVALID_AID2: Association identifier [int] for client [hex]:[hex]:[hex]:[hex]:[hex]:[hex] is already in use by[hex]:[hex]:[hex]:[hex]:[hex]:[hex]
 \end{lstlisting}
