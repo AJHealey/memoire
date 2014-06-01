@@ -1,37 +1,29 @@
 import sys
 from bs4 import BeautifulSoup
+import json
+import urllib.request
 
-def parser(path):
-	messagesMeanings = {}
+URL = "http://www.cisco.com/c/en/us/td/docs/wireless/controller/message/guide/controller_smg/msgs%s.html"
+
+
+def getFacilitiesMeaning(html):
+	soup = BeautifulSoup(html)
 	facilityCode = {}
 
-
-	log = {}
-
-	soup = BeautifulSoup(open(path))
-	"""
-	## Mnemo meanings
-	for element in soup.find_all('span'):
-		if 'class' in element.attrs and 'pEM_ErrMsg' in element['class']:
-			tmp = element.get_text().find("%")
-			tmp = element.get_text()[tmp:].split()
-
-			code = tmp[0][1:-1].split('-')
-			if code[0] not in messagesMeanings:
-				messagesMeanings[code[0]] = {}
-			messagesMeanings[code[0]][code[2]] = ' '.join(tmp[1:])
-
-	"""
 	## Facilities Meanings
 	for element in soup.find_all(attrs={"class":"pB1_Body1"}):
 		content = element.get_text()
 		fac = content[content.find("(")+1:content.rfind(")")]
-		facilityCode[fac] = ' '.join(content.split()[3:])
-		print("%s: %s" % (fac,facilityCode[fac]))
+		meaning = ' '.join(content.split()[3:]).capitalize()
+		if len(fac) < 7 and meaning != "":
+			facilityCode[fac] = meaning
 
+	return facilityCode
 
-	
-	## mnemo
+def getMessageMeaning(html):
+	soup = BeautifulSoup(html)
+	messagesMeanings = {}
+
 	for element in soup.find_all(attrs={"class":"pEM_ErrMsg"}):
 		errorMessage = element.get_text().strip()
 		start = element.get_text().find("%")
@@ -55,7 +47,29 @@ def parser(path):
 			recommendedAction = "Use Bug Toolkit at http://tools.cisco.com/Support/BugToolKit/"
 		messagesMeanings[code[0]][code[2]]["action"] = recommendedAction
 
-	print("%s\n\n%s"%(messagesMeanings,facilityCode))
+
+def parser(path):
+	
+	
+	facilityCode = {}
+	try:
+		facilityCode = json.load(open("facilitiesDico.json",'r'))
+	except:
+		pass
+
+	for i in range(10):
+		html = urllib.request.urlopen(URL%(i+1)).read()
+		fac = getFacilitiesMeaning(html)
+		facilityCode.update(fac)
+
+	json.dump( facilityCode,open("facilitiesDico.json",'w'))
+
+	for (fac,m) in sorted(facilityCode.items()):
+		print("%s : %s" % (fac,m))
+
+
+
+
 
 
 if __name__ == '__main__':

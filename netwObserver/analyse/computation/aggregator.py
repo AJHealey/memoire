@@ -12,14 +12,24 @@ from django.conf import settings
 
 MAX_VALUE_SNMP_COUNTER32 = 4294967295
 
+
+
 ## Logs Aggregators
 def getWismLogsByCategory():
 	""" Aggregate the controller log by category """
 	stats = {}
+	facDico = {}
+	try:
+		facDico = json.load(open(settings.FACILITIESDICO))
+	except:
+		pass
+		
 	## Logs More important than informational (level 5 at least)
 	logs = WismEvent.objects.filter(severity__lte=5)
 	categories = set(logs.values_list('category', flat=True))
 	for cat in categories:
+		if cat in facDico:
+			cat = facDico[cat]
 		stats[cat] = logs.filter(category=cat).count()
 
 	return stats
