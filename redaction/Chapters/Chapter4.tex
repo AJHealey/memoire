@@ -116,7 +116,7 @@ About the hardware features, this router offers five interfaces. Four 10/100Mbps
 Regarding the wireless itself, the \texttt{TL-WR741ND} offers several interesting features \cite{tplink}:
 
 \begin{description}
-	\item [Frequency range]: from \texttt{2.4Ghz} to \texttt{2.4835Ghz}
+	\item [Frequency range]: from \texttt{2.4GHz} to \texttt{2.4835GHz}
 	\item [Signal rate]:
 		\begin{itemize}
 			\item \texttt{11n}: up to 150Mbps
@@ -150,7 +150,7 @@ To summarize, with its 150Mbps wireless data rate and its advanced WiFi security
 \paragraph*{Limitations}
 During the development and the implementation of the active monitoring program we had to deal with some limitations directly induced by the router's hardware specifications.
 \begin{description}
-	\item [Frequency range]: Since the frequency range of the \texttt{TP-LINK TL-WR741ND} goes from \texttt{2.4Ghz} to \texttt{2.4835Ghz} we were not able to test the connection loop on the \texttt{5Ghz} access points interface. Another limitation this frequency range introduced concerns the \texttt{802.11} protocols. Indeed, only \texttt{802.11a, g} and \texttt{n (2.4Ghz)} are used in our application. The \texttt{802.11n (5Ghz)} is not taken into account. 
+	\item [Frequency range]: Since the frequency range of the \texttt{TP-LINK TL-WR741ND} goes from \texttt{2.4GHz} to \texttt{2.4835GHz} we were not able to test the connection loop on the \texttt{5GHz} access points interface. Another limitation this frequency range introduced concerns the \texttt{802.11} protocols. Indeed, the router only supports the \texttt{802.11a, g} and \texttt{n (2.4GHz)} standards. The \texttt{802.11n (5GHz)} is not taken into account.
 
 	\item [Filesystem Disk Space]: The available disk space on which \texttt{OpenWrt} packages can be installed is equal to \texttt{1.1Mo} which is rather limited. Even if we remove all unnecessary packages such as \texttt{Luci}, there is not enough space available in order to install all the required packages the application needs. One implication is for the utilization of \texttt{OpenSSL}. Indeed, We provide a fully working encrypted transmission of the log to the server but since there was not enough space to install the \texttt{openssl} package we took the decision not to use it in our implementation and use a clear text transmission mechanism instead.
 \end{description}
