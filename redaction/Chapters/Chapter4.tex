@@ -59,7 +59,7 @@ Since the application is able to understand each part of the messages, more powe
 
 
 \paragraph{RADIUS}
-The \texttt{RADIUS} server generates logs about the authentication of the users. The main information here is the \emph{login} entered and the device used for the authentication. Here is a representation of the messages we find in the \texttt{RADIUS} log file.\\
+The \texttt{RADIUS} server generates logs about the authentication of the users. The main information here is the \emph{login} entered and the device used for the authentication. Here is a representation of the messages we find in the \texttt{RADIUS} log file.\\\\\\\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Example of a \texttt{RADIUS} log file}]
 2013-10-21T17:26:00+02:00 radius1.sri.ucl.ac.be radiusd[1523]: [ID 702911 local3.notice] Login OK: [login_1@eur.nl] (from client WiSMPythagore-B port 29 cli e4-d5-3d-89-af-51)
@@ -295,7 +295,7 @@ struct ap_tried {
 };
 struct ap_tried *first = NULL;
 struct ap_tried *curr = NULL;
-\end{lstlisting}
+\end{lstlisting}\hfill\\\\\\\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Connected APs structure}]
 struct ap_connect {
@@ -362,7 +362,7 @@ Thanks to that \texttt{parse\_event()} function, complete data about the \texttt
 Let's now analyse the second thread. We can divide the work of this thread into four categories. It handles the main connection loop, performs a scan, checks the availability of the services and, most importantly, fills the log file and sends it to our server. 
 
 \begin{description}
-	\item[Connection loop]: This is the core part of our monitoring system. Indeed, the loop embeds the key processes of our tool.The choices we made for the loop are the following: first, the program performs a scan of the networks available around the router and the results are inserted inside the log file. Then the connection loop begins and for each network, the supplicant tries to establish a connection. Once the connection is established, the availability of a selection of services is tested in order to see if a user can access to them when he is connected to that particular network. Finally the supplicant is disconnected from the current network and the process restarts for the next one. After a selected number of loops (5 by default), the log file is closed and sent to the server. A new file is then opened and the loop starts again. The following pseudo-code gives a better understanding of how the loop works.\\
+	\item[Connection loop]: This is the core part of our monitoring system. Indeed, the loop embeds the key processes of our tool.The choices we made for the loop are the following: first, the program performs a scan of the networks available around the router and the results are inserted inside the log file. Then the connection loop begins and for each network, the supplicant tries to establish a connection. Once the connection is established, the availability of a selection of services is tested in order to see if a user can access to them when he is connected to that particular network. Finally the supplicant is disconnected from the current network and the process restarts for the next one. After a selected number of loops (5 by default), the log file is closed and sent to the server. A new file is then opened and the loop starts again. The following pseudo-code gives a better understanding of how the loop works.
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Connection loop pseudo-code}]
 WHILE 1
@@ -568,12 +568,9 @@ def getAPIfLoadTxUtilization(ip, port=settings.SNMPPORT, community=settings.SNMP
 
 Once the methods are defined, we can finally add them to the \texttt{getAllAP()} method that manages the \texttt{SNMP} requests. This method executes each one of the request and crosses the data with the ones already gathered. Concretely, we add two calls to the \texttt{getIfSnapshotData()} method in the \texttt{getAllAP()} method. It performs a snapshot of the data and saves them into the database.\\
 
-\begin{lstlisting}[language=Python, frame=single,breaklines=true,caption={Adding two calls to the \texttt{getIfSnapshotData()}]
-getIfSnapshotData(resultIfSnapshot, 'txUtilization', getAPIfLoadTxUtilization, 
-		ip=ip, port=port, community=community)
-
-getIfSnapshotData(resultIfSnapshot, 'rxUtilization', getAPIfLoadRxUtilization, 
-		ip=ip, port=port, community=community)		
+\begin{lstlisting}[language=Python,frame=single,breaklines=true,caption={Adding two calls to \texttt{getIfSnapshotData()}}]
+getIfSnapshotData(resultIfSnapshot, 'txUtilization', getAPIfLoadTxUtilization,ip=ip, port=port, community=community)
+getIfSnapshotData(resultIfSnapshot, 'rxUtilization', getAPIfLoadRxUtilization,ip=ip, port=port, community=community)
 \end{lstlisting}
 
 At this step, the data are already recorded at each periodical execution of the \emph{SNMP} requests. They are available to define new analysis.
