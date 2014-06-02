@@ -7,37 +7,38 @@
 \lhead{Chapter 5. \emph{Analysis and Results - Passive Monitoring}} % Change X to a consecutive number; this is for the header on each page - perhaps a shortened title
 
 \section{Analysis}
-The final purpose of our system is to provide analysis about the main issues we have encountered in the wireless infrastructure. The way we process here is quite simple:
+The final purpose of our system is to provide analysis about the main issues we have encountered on the wireless infrastructure. The way we process here is quite simple:
 
 \begin{enumerate}
-\item Put together the related information
-\item Spot the anomalies
+\item Aggregate related information
+\item Spot anomalies
 \item Try to understand the causes
 \end{enumerate}
-Like in any other system, we had to define domains on which the monitoring tool will be able to work. As a reminder, one of the first steps of this thesis was to determine what are or could be the main issues in the UCL's wireless network. This is typically on this step that we will use those results. Each of these problems will be represented by a domain in which we will define what the relevant data are, how they can help us, and how to correctly react after having analysed them. 
+
+Like in any other system, we had to define domains on which the monitoring tool will be able to work. As a reminder, one of the first steps of this thesis was to determine what are, or could be, the main issues on the UCL's wireless network. This is typically during this step that we will use those results. Each of these problems will be represented by a domain in which we will define what the relevant data are, how they can help us, and how to correctly react after having analysed them. 
 
 The purpose of this chapter is to present these domains and the methodology we used to analyse them since they all have their particular needs and their related techniques of analysis.
 
 \section{WiFi}
 
 \subsection{Users}
-This first section of the application offers some aggregated statistics about the users of the wireless network. The main objective is to get some analysis of the actual utilization of the wireless infrastructure. It is more like a set of indicators to help the administrators get a global and live overview of their network. 
+This first section of the application offers some aggregated statistics about the users of the wireless network. The main objective is to get some analysis about the actual utilization of the wireless infrastructure. It can be seen like a set of indicators that help the administrators get a global and live overview of the network. 
 
 \subsubsection*{WiFi Protocol}
 
-The following graph displays the repartition of users among the available \texttt{802.11} standards (i.e. \texttt{802.11a, b, g, n}). 
+The following graph displays the repartition of users among the available \texttt{IEEE 802.11} standards (i.e. \texttt{802.11a, b, g, n}). 
 
 \begin{figure}[H]
 	\centering
    \includegraphics[width=0.6\textwidth]{Pictures/chapter5/ip-proto.jpg}
-   \caption{Repartition of users among the \texttt{802.11} standards.}
+   \caption{Repartition of users among the \texttt{IEEE 802.11} standards.}
 \end{figure} 
 
-The reason for this analysis comes from an earlier policy enforced on the UCL's network that forbids the use of the \texttt{802.11b} protocol. Users connecting with such low bandwidth standard force the access point to transmit longer and can, in consequence, prevent the others users to achieve higher receiving speed. This analysis was designed to help the administrators to have future information in the same domain. By profiling the habits of the users, we can define the impact of such decision. Since the quality of the service is one of the main concerns, deactivating the utilization of a standard used by most of the devices could have heavy consequences.
+The reason for this analysis came because of an earlier policy enforced on the UCL's network that forbids the use of the \texttt{802.11b} protocol. Indeed, users connecting to the network with such low bandwidth standard force the access points to transmit for a longer time and can, by consequence, prevent the other users from achieving high receiving speeds. This analysis was designed to help the administrators have future information in the same domain. By profiling the habits of the users, we can define the impact of such decision on the wireless protocols. Indeed, since the quality of the service is one of the main concerns, deactivating the utilization of a standard used by most of the devices could have heavy consequences.
 
 The statistics are based, by default, on the connection establishments made during the last three months. This to ensure that devices no longer connected to the network do not affect the results, and to keep the analysis as up-to-date as possible.
 
-\paragraph*{Sources} The data used come from \texttt{SNMP} requests. During each cycle we gather information about all the devices associated with the access points thanks to the values available on the controller. All the descriptions of the \texttt{OIB} come from the \texttt{Cisco OID Browser}\footnote{http://tools.cisco.com/Support/SNMP/do/BrowseOID.do}.
+\paragraph*{Sources} The data used come from \texttt{SNMP} requests. During each cycle we gather information about all the devices associated with the access points. All the descriptions and details about the \texttt{OID} come from the \texttt{Cisco OID Browser}\footnote{http://tools.cisco.com/Support/SNMP/do/BrowseOID.do}.
 
 \noindent
 \begin{tabular}{|r l|}
@@ -50,7 +51,7 @@ The statistics are based, by default, on the connection establishments made duri
 \end{tabular}
 
 \subsubsection*{SSID Utilization}
-Here, we count the number of users by \texttt{SSID}. As before, the goal is to provide a complete profile of the users to the administrators. Such measures can help them to adapt the policies related to each \texttt{VLAN} and defining the load of each of them. It could help to diagnostic a useless \texttt{VLAN} or in the opposite, it could allow to detect an overloaded one that might be caused by an improper use of the network. The supposed utilization and the actual one can be really different and such indicators can help the administrators to adapt the \texttt{VLAN} configurations. Here is the representation of the \texttt{SSID} utilization.
+Here, we compute the number of users by \texttt{SSID}. As before, the goal is to provide a complete profile of the network's users to the administrators. Such measurement can help them to adjust the policies related to each \texttt{VLAN} and defining the load of each one of them. It could help to diagnose a useless \texttt{VLAN} or in the opposite, it could allow to detect an overloaded one that might be caused by an improper utilization of the network. The supposed and the actual utilization of the network can be really different and such indicators can help the administrators to adjust the \texttt{VLAN} configurations. Here is the representation of the \texttt{VLANs} utilization we computed during our deployment phase.
 \begin{figure}[H]
 	\centering
    \includegraphics[width=0.7\textwidth]{Pictures/chapter5/ssid-utilization.jpg}
@@ -68,28 +69,29 @@ Here, we count the number of users by \texttt{SSID}. As before, the goal is to p
 \hline
 \end{tabular}
 
-\subsection{Access Point}
-This section regroups several analysis related to the \emph{access points}. In a network with several hundreds of access points, it can be difficult to diagnose and monitor each one of them. By centralizing and aggregating the data, we allow the network managers to save time by automatizing lot of computations. In this part of the application, we have access to the monitoring information of each access point currently associated with the controller.
+\subsection{Access Points}
+This section regroups several analysis related to the access points. In a network with several hundreds of access points, it can be difficult to diagnose and monitor each one of them. By centralizing and aggregating the data, we help the network managers to save time by automatizing lots of computations. In this part of the application, we have access to the monitoring information of each access point currently associated with the controller.
 
 \subsubsection*{Load}
-A fundamental piece of information related to an access point is the load. We monitor each spot continuously and record its state several times per hour. By analyzing those data, we are able to plot graphs representing the load throughout the days. To do that, we need two information: the \textit{quantity} of data transiting on the link and the \textit{maximum speed} of that link. Concretely, each \texttt{AP} owns two byte counters that are incremented each time a byte is received or sent. The other information required is the link speed connecting the spot (this information on itself can be useful to diagnostic bandwidth issues). 
+A fundamental piece of information related to an access point is its load. We monitor each spot continuously and record its state several times per hour. By analyzing those data, we are able to plot graphs representing the load of the access point throughout the days. To do that, we need two information: the \textit{quantity} of data transiting on the link and the \textit{maximum speed} of that link. Concretely, each \texttt{AP} owns two byte counters that are incremented each time a byte is received or sent. The other information required is the speed of the link connecting the AP to the network infrastructure (this information on itself can be useful to diagnose bandwidth issues).
 
-\paragraph*{Links} In a big network, it can be difficult to keep track of which links were updated and which ones were not. By collecting these data, we were able to find that two \emph{access points} were still connected with a \texttt{10 Mbits} link. For this case, the cause was that those concerned devices were not managed by the \texttt{SGSI} and in consequence were not upgraded with the others. Those APs are located in the \texttt{Stevin} building.
-This is an example that even such simple data can help diagnostic some inconsistencies in the network.
+\paragraph*{Links} In a large-scale network, it can be difficult to keep track of which links are up-to-date and which ones were updated yet. By collecting these data, we were able to find that two access points were still connected with a \texttt{10Mbps} link. For this particular case, the cause was that those two devices were not managed by the \texttt{SGSI} and in consequence were not upgraded with the others. Those APs are located in the \texttt{Stevin} building.
+This is an example that even such simple collected data can help diagnose some inconsistencies in the network.
 
 \begin{figure}[H]
    \includegraphics[width=\textwidth]{Pictures/chapter5/slowLinks.png}
    \caption{Example of 10Mbits Links (26/06/2014)}
 \end{figure}
 
-\paragraph*{Pattern of Utilization} By taking a look at the results, we can see during which periods of time the access point is the most active. In the example below, we have chosen an access point of the \texttt{Leclercq} building and displayed the results of several days of monitoring. As expected, almost no activity is detected during the night. It really starts around 9 am. 
+\paragraph*{Pattern of Utilization} By taking a look at the results, we can see during which periods of time the access points are the most active. In the example below, we have chosen an access point located in the \texttt{Leclercq} building and displayed the results of several days of monitoring. As expected, almost no activity is detected during the night. It really starts around 9 am. 
 
 \begin{figure}[H]
    \includegraphics[width=\textwidth]{Pictures/chapter5/apLoad.png}
    \caption{Access Point Load}
 \end{figure}
 
-\paragraph*{Overloaded AP} Finally, we check the access points that have a \emph{medium utilization} superior to a specific threshold (defined by the user). We count the number of times that such overload have been detected and order the access points accordingly. The result allows to see what are the busiest AP in the infrastructure.
+\paragraph*{Overloaded AP} Finally, we check the access points that have a \emph{medium utilization} superior to a specific threshold (defined by the user). We count the number of times such overload has been detected and we display the access points accordingly in a decreasing order. The result allows us to determine what are the busiest APs of the infrastructure. Here is an example of the four busiest APs of the infrastructure at the time of our deployment phase.
+
 \begin{figure}[H]
    \includegraphics[width=\textwidth]{Pictures/chapter5/busiestAP.png}
    \caption{Example of busiest Access Point}
@@ -127,21 +129,21 @@ The next step is to obtain the speed of each link connected to an access point. 
 \end{tabular} 
 
 \subsubsection*{Interfaces}
-Each access point has two WiFi interfaces. The first one emits at \texttt{5Ghz} and the second at \texttt{2,4Ghz}. For each interface, the controller provides a lot of information that can be used in parallel of the previous ones. The first that we gather is the \textit{number of users} currently associated to the interface. We complete that information with the quantity of users with a poor \texttt{Signal-Noise Ratio} (SNR). This analysis allows to diagnostic the efficiency of the access point. Even if it may be considered normal to have a couple of users in this category, if the proportion is constantly high, it can be an indicator that a supplementary access point might be helpful, or that the location of the AP is problematic. The problems have to be put in perspective with the \texttt{RF} environment (i.e. \texttt{Rogue Access Points} or physical walls) which is outside the scope of this monitoring system. 
-Finally, we complete this analysis with a monitoring of the \emph{channel utilization}. A high utilization of the channel results in poor connection quality for the user and could indicates weak \texttt{RF} conditions.
-Here is a representation of a \texttt{2.4GHz} interface with information related to the client occupancy, the occupancy of client with a poor \texttt{SNR} and the channel utilization. 
+Each access point has two WiFi interfaces. The first one emits at \texttt{2,4GHz} and the other at \texttt{5GHz}. For each interface, the controller provides a lot of information that can be used in parallel with the previous collected ones. The first information we gather is the \textit{number of users} currently associated to the interface. We complete that information with the quantity of users with a poor \texttt{Signal-Noise Ratio} (SNR). This analysis allows to diagnose the efficiency of the access point. Even if it may be considered normal to have a couple of users with a poor \texttt{SNR}, if the proportion is constantly high, it can be an indicator that an additional access point on that area might be helpful, or that the location of the monitored AP is problematic. The problems have to be put in perspective with the \texttt{RF} environment (i.e. \texttt{Rogue Access Points} or physical walls) which is outside the scope of this monitoring application. 
+Finally, we complete this analysis with a monitoring of the \emph{channel utilization}. A high utilization of the channel results in poor connection quality for the user and could indicates bad \texttt{RF} conditions.
+Here is a representation of a \texttt{2.4GHz} interface with information related to the clients occupancy, the occupancy of clients with a poor \texttt{SNR} and the channel utilization. 
 
 \begin{figure}[H]
    \includegraphics[width=\textwidth]{Pictures/chapter5/interfaceLoad.png}
    \caption{A 2,4GHz Interface}
 \end{figure}
 
-\paragraph*{Poor SNR} To illustrate our results, we have taken the 2,4GHz interface of the previous access point (i.e. \texttt{3210 Leclercq A215}) during the same period of time. As we can see, the load of the access point is correlated with the number of people connected to the interface. In this situation, we observe that there is an average of one-third or one-fourth of users with a poor SNR. This can be related to the configuration of the building. There is a large number of walls that separate the class room. The last thing to consider is the definition of a \emph{poor} \texttt{SNR}. This value is completely defined by the controller. In definitive, we do not have any access nor control on that parameter. Finally, in order to understand the importance of this result, we have to be aware that if a large portion of users has a low signal, it might influence the other devices with a good one. Indeed, the access points may have to spend more time sending data to those users with a low signal and, by consequence, are unavailable for others connections.
+\paragraph*{Poor SNR} To illustrate our results, we have taken the \texttt{2,4GHz} interface of the previous access point (i.e. \texttt{3210 Leclercq A215}) during the same period of time. As we can see, the load of the access point is correlated with the number of people connected to the interface. In this situation, we observe that there is an average of one-third or one-fourth of users with a poor \texttt{SNR}. This can be related to the configuration of the building. There is a large number of walls that separate the class rooms. The last thing to consider is the definition of a \emph{poor} \texttt{SNR}. This value is completely defined by the controller. In definitive, we do not have any access nor control on that parameter. Finally, in order to understand the importance of this result, we have to be aware that if a large portion of users has a low signal, it might influence the other devices with a good one. Indeed, the access points may have to spend more time sending data to those users with a low signal and, by consequence, are unavailable for others connections.
 
-\paragraph*{Channel Utilization} The channel is a shared resource and need to be available in order to be used. The utilization of the channel is an important monitoring indicator. It allows the network administrators to estimate the quality of the users connections. If the medium is used at more than fifty percent, latency-sensitive applications can experience some performance issues \cite{ciscoVowlan}. A continuous monitoring of that value can help to detect and diagnostic such related problems. In our example, we can see that there is some maximum peaks at twenty percent of utilization which are totally acceptable. 
+\paragraph*{Channel Utilization} The channel is a shared resource and need to be available in order to be used. The utilization of the channel is an important monitoring indicator. It allows the network administrators to estimate the quality of the users connections. If the medium is used at more than fifty percent, latency-sensitive applications can experience some performance issues \cite{ciscoVowlan}. A continuous monitoring of that value can help to detect and diagnose such related problems. In our example, we can see that there is some maximum peaks at twenty percent of utilization which are totally acceptable. 
 
 
-\paragraph*{Sources} The controller keeps entries for each \emph{interface} of each access point. We gather and cross all these data to generate some logs about each \emph{access point} and all the related \emph{interfaces}.
+\paragraph*{Sources} The controller keeps entries for each interface of each access point. We gather and cross all these data to generate some entries about each \emph{access point} and all the related \emph{interfaces} that are inserted into the database.
 
 \begin{tabular}{|r l|}
 \hline
@@ -171,7 +173,7 @@ Here is a representation of a \texttt{2.4GHz} interface with information related
 \end{tabular}
 
 \subsection{Rogue Access Points}
-For the \texttt{rogue access points}, we chose to group them by their estimated position. For each one of them, we know what is the closest AP that detects it. From that information we can tell where they are and we can generate aggregated information about the areas that contain the more rogue access points that we present on a graph.You can find an example of such representation below. To group the rogue access points, the system use a dictionary provided as a \emph{json} file. This file defines some \emph{tags} and their related group. For each rogue, the name of the closest \emph{Access Point} is checked. If it contains a tag, the rogue is added to the related group. The rogue with no group are left over.
+For the \texttt{rogue access points}, we chose to group them by their estimated location. For each one of them, we know what is the closest AP that is able to detect it. Thanks to that information we can tell where those rogue access points are and we can generate aggregated information about the areas that contain the more of them. To group the rogue access points, the system uses a dictionary implemented as a \texttt{JSON} file. This file defines some \texttt{tags} and their related \emph{group}. For each rogue AP, the name of the closest access point is checked. If it contains a tag, the rogue AP is added to the related group. The rogue AP with no groups are left over. The listing gives representation of what a zone dictionary looks like. The figure below shows the number of rogue access points by area.
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Example of a Zone Dictionary}]
 {
@@ -186,7 +188,7 @@ For the \texttt{rogue access points}, we chose to group them by their estimated 
    \caption{Number of Rogue AP by area}
 \end{figure}
 
-\paragraph*{Sources} The sources are the Access Points themselves. Each of them reports to the controller what are the Rogue Access Points that they detect. The Controller centralizes all those information and make them available through SNMP.
+\paragraph*{Sources} The sources are the access points themselves. Each one of them reports to the controller what are the rogue access points they are able to detect. The controller centralizes all those information and make them available through \texttt{SNMP}.
 
 \begin{tabular}{|r l|}
 \hline
@@ -209,24 +211,26 @@ For the \texttt{rogue access points}, we chose to group them by their estimated 
 
 
 \section{Controller}
-The controller logs are divided in several categories. Each of them defines a list of logs related to that category. The main idea here is to analyse the activity of each domain of logs and trying to spot irregularities. We make the hypothesis that when something goes wrong, the related category will emit a larger number of logs. By monitoring that activity, we will be able to identify in which part of the infrastructure the issue happened. More powerful analysis could be easily implemented but that would require to target some specific syslogs. That could be really useful if the administrators want to monitor specific events and detect certain patterns. But that is only relevant to detect very precise elements and we have chosen to focus on a more global monitoring system.
+The controller logs are divided in several categories. Each one of them defines a list of logs related to that category. The main idea here is to analyse the activity of each domain of logs and try to spot irregularities. We make the hypothesis that when something goes wrong, the related category emits a larger amount of logs. By monitoring that activity, we are be able to identify in which part of the infrastructure the issue happened. More powerful analysis could be easily implemented but that would require to target some specific syslogs. That could be really useful if the administrators want to monitor specific events and detect certain patterns. But that is only relevant in order to detect very precise elements, and we have chosen to focus on a more global monitoring system.
+
 
 \subsection{Components Activity}
-The idea here is to have a representation of the logs generated by each component throughout the day. With such representation, we can detect some peak of activity that could indicate an issue. Our graph show the overall activity but if a constant access to the logs can be created, a representation throughout time could be very useful to spot more easily the anomalies.
+The idea here is to have a representation of the logs generated by each component throughout the day. With such representation, we can detect some peaks of activity that could indicate an issue. Our graph displays the overall static activity but if a direct and stable access with the controller can be created in order to retrieve the logs dynamically, a representation throughout time would be possible and would be very useful in order to spot more easily the anomalies.
 
 \begin{figure}[H]
 	\centering
-   \includegraphics[width=0.7\textwidth]{Pictures/chapter5/controller.png}
+   \includegraphics[width=0.74\textwidth]{Pictures/chapter5/controller.png}
    \caption{Example of Controller Activity}
 \end{figure}
 
 \section{DHCP}
-These analyses aim to detect \texttt{DHCP} related issues. The allocation of IP addresses is a fundamental component in the wireless networks. Being able to detect when such problem appears and advertise them directly in our application might help making a quicker and more efficient response.
+These analyses aim to detect \texttt{DHCP} related issues. The allocation of IP addresses is a fundamental component in wireless networks. Being able to detect when \texttt{DHCHP} problems appears and notify them directly in our application might help making a quicker and more efficient response.
 
 \subsection{Leases}
-The main challenge with a \texttt{DHCP} server is the configuration of the address ranges. It is always difficult to determine the quantity of IP addresses the \texttt{VLANs} require. If no more \texttt{IP} address is available for a user he won't be able to access the Internet despite the fact that he has established a connection with the AP. The main issue is that when such problem arises it can be hard to be aware of them. Indeed, most of the time the users do not report the problem to the network administrators or if they do, their explanations of the problem are not very precise, complicating the tasks of those administrators. Being able to automatically detect the lack of \texttt{IP} addresses can thus be very time saving. Even if those information are available within the \texttt{DHCP} logs and that those servers can send warnings in case of trouble, centralizing them and aggregating them with data related to all the other network components may lead to more powerful analysis.
+The main challenge with a \texttt{DHCP} server is the configuration of the \texttt{IP} address ranges. It is always difficult to determine the quantity of IP addresses the \texttt{VLANs} require. If no \texttt{IP} address is available for a user, he won't be able to access the Internet despite the fact that he has already established a connection with the AP. The main issue is that when such problems arise it can be tricky to be aware of them. Indeed, most of the time the users do not report the problem to the network administrators or if they do, their explanations of the problem are not very precise, complicating the tasks of those administrators. Being able to automatically detect the lack of \texttt{IP} addresses can thus be very time saving. Even if those information are available within the \texttt{DHCP} logs and that those servers can send warnings in case of trouble, centralizing and aggregating them with data related to all the other network components may lead to more powerful analysis.
 
-\paragraph*{Misleading Error Messages} When we started to investigate on this issue, we tried to find what kind of logs the \texttt{DHCP} servers had generated in such circumstances. The answer is that the servers simply indicate that situation by adding \texttt{peer holds all free leases} next to the \texttt{Discover} log. So, we have searched for such messages in the log files and we have found some of them among other normal \texttt{Discover} messages. It seems odd that if no lease is available for someone, it is for the others. That might be explained by the fact that the users are not connected in the same \texttt{VLAN}. But what really bothered us is the fact that only specific devices are concerned by this error message. Each time one of those device sends its \texttt{Discover} message, the two \texttt{DHCP} servers responds with the \texttt{peer holds all free leases} message. We have created an analysis mechanism to recognize that error pattern and to list the potential affected devices. \\
+
+\paragraph*{Misleading Error Messages} When we started to investigate on this issue, we tried to find what kind of logs the \texttt{DHCP} servers had generated in such circumstances. The answer is that the servers simply indicate that situation by adding \texttt{peer holds all free leases} next to the \texttt{Discover} event. So, we have searched for such messages in the log files and we have found some of them among other normal \texttt{Discover} messages. It seems odd that if no lease is available for someone, it is for the others. That might be explained by the fact that the users are not connected within the same \texttt{VLANs}. But what really bothered us is the fact that only specific devices are concerned by this error message. Each time one of those device sends its \texttt{Discover} message, the two \texttt{DHCP} servers responds with the \texttt{peer holds all free leases} message. We have created an analysis mechanism to recognize that error pattern and to list the potential affected devices. \\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Misleading Error Message}]
 2014-05-28T13:03:02.628508+02:00 dhcp-1 dhcpd: DHCPDISCOVER from AB:CD:EF:12:34:56 via 130.104.238.254: peer holds all free leases
@@ -234,15 +238,15 @@ The main challenge with a \texttt{DHCP} server is the configuration of the addre
 \end{lstlisting}
 
 
-The next step of our investigation was to find what could be the source of that error pattern. We found an interesting answer on an online post from a network administrator\footnote{http://noone.org/blog/English/Computer/peer\%20holds\%20all\%20free\%20leases.html}. He explains that if we observe such messages from the two server at the same time, the cause could be a device connected on a wrong \texttt{VLAN}. If the \texttt{VLAN} is configured to only distribute static \texttt{IP}, the device asking for a dynamic one would be unable to obtain it. The main difficulty here is to make the difference between this situation and the one in which there is no more \texttt{IP} addresses available.
+The next step of our investigation was to find what could be the source of that error pattern. We found an interesting answer in an online post from a network administrator\footnote{http://noone.org/blog/English/Computer/peer\%20holds\%20all\%20free\%20leases.html}. He explains that if we observe such messages from the two server at the same time, the cause could be a device connected on a wrong \texttt{VLAN}. If the \texttt{VLAN} is configured to only distribute static \texttt{IP}, the device asking for a dynamic one would be unable to obtain it. The main difficulty here is to make the difference between this situation and the one in which there is no more \texttt{IP} addresses available.
 
 
-\paragraph*{No more lease} Most of the time, the ranges of \texttt{IP} addresses are large enough and the previous hypothesis about the \texttt{no free lease} messages holds. But how could we detect a real issue concerning the \texttt{IP} range ? To enhanced the previous results, we have added an indicator of the current \texttt{DHCP} server state. We compute the ratio of the number of error messages to the quantity of affected devices. The smaller the result, the more chances the \texttt{DHCP} has an actual \texttt{IP} range issue. We call this ratio the \emph{scatter degree} of the lease issue. Notice that, if the problem is concentrated on a small set of devices, there are a lot of chances that the source is not the \texttt{DHCP} but is the Ethernet sockets being used.
+\paragraph*{No more lease} Most of the time, the ranges of \texttt{IP} addresses are large enough and the previous hypothesis about the \texttt{no free lease} messages holds. But how could we detect a real issue concerning the \texttt{IP} range ? To enhanced the previous results, we have added an indicator of the current \texttt{DHCP} servers states. We compute the ratio of the number of error messages to the quantity of affected devices. The smaller the result, the more chances the \texttt{DHCP} has an actual \texttt{IP} range issue. We call this ratio the \emph{scatter degree} of the lease issue. Notice that, if the problem is concentrated on a small set of devices, there are a lot of chances that the source is not the \texttt{DHCP} but is the Ethernet sockets being used (as discussed above).
 \[ \frac{Nbr\ of\ \texttt{no free lease}\ messages}{Nbr\ of\ affected\ devices} \] 
 
 
 \subsection{Crash}
-Another issue we have been able to monitor was the crash of the \texttt{DHCP} servers on the 4$^{th}$ of March 2014. As we can see on the figure below that represents only a 15 minutes sample of the \texttt{DHCP} log file, there was an important number of \texttt{Discover} packets without any \texttt{Offer} packets in return. With such a representation, we are able to locate more precisely where the network problem came from. Because the servers were not even able to send any \texttt{Offer} packets, we had easily made the hypothesis that the entire \texttt{DHCP} servers were down.
+Another issue we have been able to monitor was the crash of the \texttt{DHCP} servers on the 4$^{th}$ of March 2014. As we can see on the figure below, that represents only a 15 minutes sample of the \texttt{DHCP} log file, there was an important number of \texttt{Discover} packets an absolutely no \texttt{Offer} packets in return. With such a representation, we are able to locate more precisely where the network problem came from. Because the servers were not even able to send any \texttt{Offer} packets, we had easily made the hypothesis that the entire \texttt{DHCP} servers were down.
 
 \begin{figure}[H]
 	\centering
@@ -251,7 +255,7 @@ Another issue we have been able to monitor was the crash of the \texttt{DHCP} se
 \end{figure}
 
 \section{RADIUS}
-The analysis we made about the \texttt{RADIUS} are quite limited by the verbosity of the logs and by the fact that we do not have any access to the server. What we have chosen to monitor here are some general indicators.
+The analysis we made about the \texttt{RADIUS} are quite limited by the verbosity of the logs and by the fact that we do not have any direct access to the server. What we have chosen to monitor here are some general indicators.
 
 \subsection{Authentication Success Rate}
 The first thing we can observe about the \texttt{RADIUS} is the proportion of users being able to authenticate. If this rate drastically drops, that could indicate issues about the \texttt{RADIUS} server. This indicator alone does not bring much information but could be compared with the average authentication success rate to detect some important divergences.
@@ -264,7 +268,8 @@ The first thing we can observe about the \texttt{RADIUS} is the proportion of us
    \caption{Example of \texttt{RADIUS} Success Rate}
 \end{figure} 
 
-\paragraph*{Sources} The sources of those data are the \texttt{RADIUS} log files. These files contains an entry for each authentication attempt. Here is an example of the success and fail message we find in the \texttt{RADIUS} log files.
+\paragraph*{Sources} The sources of those data are the \texttt{RADIUS} log files. These files contains an entry for each authentication attempt. Here is an example of the success and fail messages we find in the \texttt{RADIUS} log files.\\
+
 \begin{lstlisting}[frame=single,breaklines=true,caption={\texttt{RADIUS} logs}]
 2013-10-21T17:27:48+02:00 radius1.sri.ucl.ac.be radiusd[17913]: [ID 702911 local4.notice] Login incorrect: [XXXX] (from client WiSMPythagore-A port 29 cli XX-XX-XX-XX-XX-XX)
 2013-10-21T17:27:50+02:00 radius1.sri.ucl.ac.be radiusd[17913]: [ID 702911 local4.notice] Login incorrect: [none] (from client WiSMPythagore-A port 29 cli XX-XX-XX-XX-XX-XX)

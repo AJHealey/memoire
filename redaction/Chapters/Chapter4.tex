@@ -322,7 +322,7 @@ Let's now describe how the function reacts when it receives one of the three spe
 	\item[Trying to associate with $<$BSSID$>$ (SSID='$<$SSID$>$' freq=Frequency)]\hfill \\
 		As explained before, the first thing the supplicant does when it tries to connect to a network is trying to authenticate and associate with one of the AP that broadcasts the network \texttt{SSID} it wants to connect to. Here is an example of what are all the messages received during a connection establishment to the \texttt{student.UCLouvain} network.\\
 
-\begin{lstlisting}[frame=single,breaklines=true,caption={Example of a trying to authenticate and associate with an AP}]
+\begin{lstlisting}[frame=single,breaklines=true,caption={Example of trying to authenticate and associate with an AP}]
 Successfully initialized wpa_supplicant
 wlan0: SME: Trying to authenticate with 00:1e:bd:65:34:71 (SSID='student.UCLouvain' freq=2437 MHz)
 wlan0: Trying to associate with 00:1e:bd:65:34:71 (SSID='student.UCLouvain' freq=2437 MHz)
@@ -333,7 +333,7 @@ wlan0: Trying to associate with 00:1e:bd:65:34:71 (SSID='student.UCLouvain' freq
 	\item[Associated with $<$BSSID$>$]\hfill \\
 	Once the association with the AP is completed, the interface sends an association event. Let's continue the example above with the connection to the \texttt{student.UCLouvain} network.\\
 
-\begin{lstlisting}[frame=single,breaklines=true,caption={Example of a association with an AP}]
+\begin{lstlisting}[frame=single,breaklines=true,caption={Example of an association with an AP}]
 wlan0: Trying to associate with 00:1e:bd:65:34:71 (SSID='student.UCLouvain' freq=2437 MHz)
 wlan0: Associated with 00:1e:bd:65:34:71
 \end{lstlisting}
@@ -564,9 +564,9 @@ def getAPIfLoadRxUtilization(ip, port=settings.SNMPPORT, community=settings.SNMP
 
 def getAPIfLoadTxUtilization(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY, ap=''):
 	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.2' + ap, port=port, community=community)
-\end{lstlisting}
+\end{lstlisting} 
 
-Once the methods are defined, we can finally add them to the \texttt{getAllAP()} method that manages the \texttt{SNMP} requests. This method executes each one of the request and crosses the data with the ones already gathered. Concretely, we add two calls to the \texttt{getIfSnapshotData()} method in the \texttt{getAllAP()} method. It performs a snapshot of the data and saves them into the database.\\
+Once the methods are defined, we can finally add them to the \texttt{getAllAP()} method that manages the \texttt{SNMP} requests. This method executes each one of the request and crosses the data with the ones already gathered. Concretely, we add two calls to the \texttt{getIfSnapshotData()} method in the \texttt{getAllAP()} method. It performs a snapshot of the data and saves them into the database.\\\\
 
 \begin{lstlisting}[language=Python,frame=single,breaklines=true,caption={Adding two calls to \texttt{getIfSnapshotData()}}]
 getIfSnapshotData(resultIfSnapshot, 'txUtilization', getAPIfLoadTxUtilization,ip=ip, port=port, community=community)
