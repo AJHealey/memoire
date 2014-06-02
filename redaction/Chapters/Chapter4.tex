@@ -46,7 +46,7 @@ The main difficulty with the \texttt{Gatherer} was to correctly collect the avai
 \subsubsection{Logs Parser}
 The first thing we have processed are the log files. There are three generators of log files within the network: the controller, the \texttt{DHCP} and the \texttt{RADIUS} servers. Actually, there already is a software that gathers all the log files and centralizes them. That log management solution is called \texttt{Octopussy} \cite{octopussy}. It allows the network administrators to display the logs and access them by specifying criteria such as the date, the source or the gravity of the message. Our \emph{log module} does basically the same thing but with a deeper analysis and understanding of the content of those log files. 
 
-\paragraph{DHCP}
+\paragraph*{DHCP}
 The \texttt{DHCP} servers generate an entry in the log file for each step realized during the allocation of an \texttt{IP} address and the errors that might occur. The following listing gives an example of the typical messages that can be found within the \texttt{DHCP} log file.\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Example of a \texttt{DHCP} log file}]
@@ -58,7 +58,7 @@ The \texttt{DHCP} servers generate an entry in the log file for each step realiz
 Since the application is able to understand each part of the messages, more powerful links can be made between them. By correctly analyzing each messages we can tell, for example, which \texttt{DHCPACK} corresponds to a \texttt{DHCPREQUEST}. That is one of the weaknesses of \texttt{Octopussy}. This log management solution can tell what logs are important and can filter them but it does not make any analysis based on the protocols. The \texttt{DHCP} protocol defines a succession of actions and messages, and being able to trace them makes our application capable of detecting more subtle errors. Concretely, the \emph{log module} decomposes the messages in several parts and stocks them in a relational database. Even if it seems simple, having a structured representation of the logs is the key to make better analysis on them afterwards.
 
 
-\paragraph{RADIUS}
+\paragraph*{RADIUS}
 The \texttt{RADIUS} server generates logs about the authentication of the users. The main information here is the \emph{login} entered and the device used for the authentication. Here is a representation of the messages we find in the \texttt{RADIUS} log file.\\\\\\\\
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Example of a \texttt{RADIUS} log file}]
@@ -70,7 +70,7 @@ The \texttt{RADIUS} server generates logs about the authentication of the users.
 With such information we can potentially know when and where a user is. Also, it allows us to detect any device that tries to connect with different logins. That could be considered as a strange behavior and might need some investigations. As for the other modules, it is very important to limit the features implemented and set boundaries because it could lead to an ethical problem. Even if we want to make the application as complete as possible, we need to precisely define what is required, how to do it and what are the boundaries.
 
 
-\paragraph{Controller}
+\paragraph*{Controller}
 
 The richest source of logs is the \emph{controller}. With its central position in the network infrastructure, it can produce more detailed messages than any other component when an error occurs. Since the controller is made by \texttt{Cisco Systems Inc}., the meaning of the messages can easily be found on the manufacturer's website \cite{syslogCisco}. Here is an example of messages that can be found within the controller log files.\\
 
@@ -89,7 +89,7 @@ We wanted to highlight this because our first architecture tried to join the inf
 
 \texttt{SNMP} organizes the information as a tree. The classification of the information is quite intuitive but the main difficulty comes from the size of the tree. Once the interesting part of the tree has been identified, a lot of indicators can be gathered.
 
-\paragraph{PySNMP} \texttt{PySNMP} is the module that performs the \texttt{SNMP} requests in our application. It is a pure \texttt{Python} implementation that is able to perform all the standard \texttt{SNMP} operations (i.e.\  \texttt{get, set} and \texttt{walk}).
+\paragraph*{PySNMP} \texttt{PySNMP} is the module that performs the \texttt{SNMP} requests in our application. It is a pure \texttt{Python} implementation that is able to perform all the standard \texttt{SNMP} operations (i.e.\  \texttt{get, set} and \texttt{walk}).
 
 The \emph{snmp module} is essentially a way to create an abstraction with the \texttt{SNMP} requests. It implements several methods to gather the information and makes the links between them. Every request is independent and the module has to be able to know which value corresponds to which element. That is the signification of the \emph{index} attribute in the \emph{Device} model.
 
