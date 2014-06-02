@@ -6,7 +6,7 @@
 \lhead{Chapter 4. \emph{Monitoring Tool - Part 2}} 
 
 \section{NetwObserver}
-The first step in the development of the monitoring system was to select the technologies adapted to the problem. Because we had a lot of log files to parse, we have started the implementation using \texttt{Python}. Despite the fact that \texttt{Python} has poor computational performances and bad memory management, it is acceptable for a prototype. More, \texttt{Python} have strong integration capabilities when it comes to strings and lists. We can easily generate a log parser and keep the code clean thanks to its very simple syntax. As more features were added during the development phase, we needed to structure the system in a way that makes it portable and easily extensible. Since this is a network monitoring tool it has to be accessible from anywhere and, most of all, it has to be easy to use. So, we have decided to implement it as a web application. This application is accessible from any computer connected to the UCL's network and does not require any installation at all. The network administrators can manage and maintain the monitoring tool by working directly on the server. The updated system will be accessible instantly for every users.
+The first step in the development of the monitoring system was to select the technologies adapted to the problem. Because we had a lot of log files to parse, we have started the implementation using \texttt{Python}. Despite the fact that \texttt{Python} has poor computational performances and bad memory management, it is acceptable for a prototype. More, \texttt{Python} provides heavy support and handling capabilities when it comes to strings and lists. We can easily generate a log parser and keep the code clean thanks to its very simple syntax. As more features were added during the development phase, we needed to structure the system in a way that makes it portable and easily extensible. Since this is a network monitoring tool it has to be accessible from anywhere and, most of all, it has to be easy to use. So, we have decided to implement it as a \emph{web application}. This application is accessible from any computer connected to the UCL's network and does not require any installation at all. The network administrators can manage and maintain the monitoring tool by working directly on the server. The updated system will be accessible instantly for every users.
 
 \subsection{Django: A High-Level Python Web Framework}
 As presented by its developers, \texttt{Django} is a "web framework for perfectionists with deadlines"\footnote{\url{https://www.djangoproject.com/}}. \texttt{Django} allows to implement a modular structure quite easily and provides everything the developer needs to add new components to the application. A \texttt{Django} application is composed of several modules that exist independently and interact with each other through a database.
@@ -322,7 +322,7 @@ Let's now describe how the function reacts when it receives one of the three spe
 	\item[Trying to associate with $<$BSSID$>$ (SSID='$<$SSID$>$' freq=Frequency)]\hfill \\
 		As explained before, the first thing the supplicant does when it tries to connect to a network is trying to authenticate and associate with one of the AP that broadcasts the network \texttt{SSID} it wants to connect to. Here is an example of what are all the messages received during a connection establishment to the \texttt{student.UCLouvain} network.\\
 
-\begin{lstlisting}[frame=single,breaklines=true,caption={Example of trying to authenticate and associate with an AP}]
+\begin{lstlisting}[frame=single,breaklines=true,caption={Example of a trying to authenticate and associate with an AP}]
 Successfully initialized wpa_supplicant
 wlan0: SME: Trying to authenticate with 00:1e:bd:65:34:71 (SSID='student.UCLouvain' freq=2437 MHz)
 wlan0: Trying to associate with 00:1e:bd:65:34:71 (SSID='student.UCLouvain' freq=2437 MHz)
@@ -333,7 +333,7 @@ wlan0: Trying to associate with 00:1e:bd:65:34:71 (SSID='student.UCLouvain' freq
 	\item[Associated with $<$BSSID$>$]\hfill \\
 	Once the association with the AP is completed, the interface sends an association event. Let's continue the example above with the connection to the \texttt{student.UCLouvain} network.\\
 
-\begin{lstlisting}[frame=single,breaklines=true,caption={Example of an association with an AP}]
+\begin{lstlisting}[frame=single,breaklines=true,caption={Example of a association with an AP}]
 wlan0: Trying to associate with 00:1e:bd:65:34:71 (SSID='student.UCLouvain' freq=2437 MHz)
 wlan0: Associated with 00:1e:bd:65:34:71
 \end{lstlisting}
@@ -520,7 +520,7 @@ Since the interface of the system is composed of web pages, all the \texttt{HTTP
 This \texttt{Apache} module is a module able to interpret some \texttt{Python} code. As said before, we chose \texttt{Django} as a framework for our application, and in consequence executing \texttt{Python} code is an important requirement. Something important to mention about the installation is that the code is written in \texttt{Python3.3} and not in the version 2. That forced us to be careful during the installation as the default \texttt{Python} interpreter in most system is the \texttt{2.6}. In definitive, we have to compile the module \texttt{WSGI} with the specification of the right interpreter.
 
 \subsection{Celery}
-\texttt{Celery}\footnote{http://www.celeryproject.org/} is a distributed task queue. It allows to create asynchronous jobs handled by several \emph{workers}. Concretely, a worker is a external thread that receives tasks to accomplish. The main drawback of \texttt{Apache 2} is that it is quite complicated to generate and manage daemons running in background constantly or at given intervals. As a turn-around, we have connected our system to \texttt{Celery}. It helps us to manage more efficiently the concurrent elements of the application. Our server has a small memory capacity and a poor computation power and in consequences we must manage and organize the utilization of those resources. This module has two main component: the \emph{workers} and the \emph{scheduler}.
+\texttt{Celery}\footnote{http://www.celeryproject.org/} is a distributed task queue. It allows to create asynchronous jobs handled by several \emph{workers}. Concretely, a worker is a external thread that receives tasks to accomplish. The main drawback of \texttt{Apache 2} is that it is quite complicated to generate and manage daemons running in background constantly or at given intervals. As a turn-around, we have connected our system to \texttt{Celery}. It helps us to manage more efficiently the concurrent elements of the application. Our server has a small memory capacity and a poor computation power and in consequences we must manage and organize the utilization of those resources. This module has two main components: the \emph{workers} and the \emph{scheduler}.
 
 \subsubsection*{The Workers}
 In \texttt{Celery}, we can define the number of threads working on the tasks. By adapting this number, we can tune the allocation of the processor. For example, when we execute a set of \texttt{SNMP} requests, it may require a large part of the available resources. Each one of these sets of requests are executed at different intervals and can sometime overlap. When that situation occurs, the server can experience heavy computation processes and may have trouble to handle all the requests generated by the users. That is why we define a fixed number of workers and a queue. Each task waits in the queue until a slot is available. The main drawback of such an architecture is that the exact time when the job starts and is effectively done remains undetermined. Even if it can be really problematic in some contexts, it is not the case in our system. Indeed, in our system we have either a daemon that runs endlessly or we have tasks, such as \texttt{SNMP} requests, that have to be executed. In either case, this is not a real issue since they do not have precise time requirements. 
@@ -564,9 +564,9 @@ def getAPIfLoadRxUtilization(ip, port=settings.SNMPPORT, community=settings.SNMP
 
 def getAPIfLoadTxUtilization(ip, port=settings.SNMPPORT, community=settings.SNMPCOMMUNITY, ap=''):
 	return walkByInterface(ip=ip, oib='1.3.6.1.4.1.14179.2.2.13.1.2' + ap, port=port, community=community)
-\end{lstlisting} 
+\end{lstlisting}
 
-Once the methods are defined, we can finally add them to the \texttt{getAllAP()} method that manages the \texttt{SNMP} requests. This method executes each one of the request and crosses the data with the ones already gathered. Concretely, we add two calls to the \texttt{getIfSnapshotData()} method in the \texttt{getAllAP()} method. It performs a snapshot of the data and saves them into the database.\\\\
+Once the methods are defined, we can finally add them to the \texttt{getAllAP()} method that manages the \texttt{SNMP} requests. This method executes each one of the request and crosses the data with the ones already gathered. Concretely, we add two calls to the \texttt{getIfSnapshotData()} method in the \texttt{getAllAP()} method. It performs a snapshot of the data and saves them into the database.\\
 
 \begin{lstlisting}[language=Python,frame=single,breaklines=true,caption={Adding two calls to \texttt{getIfSnapshotData()}}]
 getIfSnapshotData(resultIfSnapshot, 'txUtilization', getAPIfLoadTxUtilization,ip=ip, port=port, community=community)
