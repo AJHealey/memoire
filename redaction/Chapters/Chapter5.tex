@@ -140,7 +140,7 @@ Here is a representation of a \texttt{2.4GHz} interface with information related
 
 \paragraph*{Poor SNR} To illustrate our results, we use the \texttt{2,4GHz} interface of the previous access point (i.e. \texttt{3210 Leclercq A215}) during the same period of time. As we can see, the load of the access point is correlated with the number of people connected to the interface. In this situation, we observe that there is an average of one-third to one-fourth of users with a poor \texttt{SNR}. This can be related to the configuration of the building. There is a large number of walls that separate the class rooms. The last thing to consider is the definition of a \emph{poor} \texttt{SNR}. This value is completely defined by the controller itself. In definitive, we do not have any access nor control on that parameter. Finally, in order to understand the importance of this result, we have to be aware that if a large portion of users has a low signal, it might influence the other devices with a good one. Indeed, the access points may have to spend more time sending data to those users with a low signal and, by consequence, are unavailable for others connections.
 
-\paragraph*{Channel Utilization} The channel is a shared resource among the clients and need to always be available in order to be used by them. The utilization of the channel is an important monitoring indicator. It allows the network administrators to estimate the quality of the users' connections. If the medium is used at more than fifty percent, latency-sensitive applications can experience some performance issues \cite{ciscoVowlan}. A continuous monitoring of that value can help to detect and diagnose such related problems. In our example, we can see that there are some maximum peaks at twenty percent of channel utilization which are totally acceptable. 
+\paragraph*{Channel Utilization} The channel is a shared resource among the clients that needs to always be available in order to be used by them. The utilization of the channel is an important monitoring indicator. It allows the network administrators to estimate the quality of the users' connections. If the medium is used at more than fifty percent, latency-sensitive applications can experience some performance issues \cite{ciscoVowlan}. A continuous monitoring of that value can help to detect and diagnose such related problems. In our example, we can see that there are some maximum peaks at twenty percent of channel utilization which are totally acceptable. 
 
 
 \paragraph*{Sources} The controller keeps entries for each interface of each access point. We gather and cross all these data to generate some entries about each \emph{access point} and all the related \emph{interfaces} that are inserted into the database.
@@ -173,12 +173,12 @@ Here is a representation of a \texttt{2.4GHz} interface with information related
 \end{tabular}
 
 \subsection{Rogue Access Points}
-For the \texttt{rogue access points}, we chose to group them by their estimated location. For each one of them, we know what is the closest AP that is able to detect it. Thanks to that information we can tell where those rogue access points are and we can generate aggregated information about the areas that contain the more of them. To group the rogue access points, the system uses a dictionary implemented as a \texttt{JSON} file. This file defines some \texttt{tags} and their related \emph{group}. For each rogue AP, the name of the closest access point is checked. If it contains a tag, the rogue AP is added to the related group. The rogue AP with no groups are left over. The listing gives representation of what a zone dictionary looks like. The figure below shows the number of rogue access points by area.
+For the \texttt{rogue access points}, we chose to group them by their estimated location. For each of them, we know what is the closest AP that is able to detect it. Thanks to that information we can tell where those rogue access points are and we can generate aggregated information about the areas that contain the more of them. To group the rogue access points, the system uses a dictionary implemented as a \texttt{JSON} file. This file defines some \texttt{tags} and their related \emph{group}. For each rogue AP, the name of the closest access point is checked. If it contains a tag, the rogue AP is added to the related group. The rogue APs with no groups are left over. The listing below gives a representation of what a zone dictionary looks like. The figure above shows the number of rogue access points grouped by area.
 
 \begin{lstlisting}[frame=single,breaklines=true,caption={Example of a Zone Dictionary}]
 {
 	"Halles":"Halles",
-	"Reaumur":"Sciences"
+	"Reaumur":"Sciences",
 	"Croix":"Sciences"	
 }
 \end{lstlisting}
@@ -188,7 +188,7 @@ For the \texttt{rogue access points}, we chose to group them by their estimated 
    \caption{Number of Rogue AP by area}
 \end{figure}
 
-\paragraph*{Sources} The sources are the access points themselves. Each one of them reports to the controller what are the rogue access points they are able to detect. The controller centralizes all those information and make them available through \texttt{SNMP}.
+\paragraph*{Sources} The sources are the access points themselves. Each one of them reports to the controller what are the rogue access points it is able to detect. The controller centralizes all those information and make them available through \texttt{SNMP}.
 
 \begin{tabular}{|r l|}
 \hline
@@ -211,7 +211,7 @@ For the \texttt{rogue access points}, we chose to group them by their estimated 
 
 
 \section{Controller}
-The controller logs are divided in several categories. Each one of them defines a list of logs related to that category. The main idea here is to analyse the activity of each domain of logs and try to spot irregularities. We make the hypothesis that when something goes wrong, the related category emits a larger amount of logs. By monitoring that activity, we are be able to identify in which part of the infrastructure the issue happened. More powerful analysis could be easily implemented but that would require to target some specific syslogs. That could be really useful if the administrators want to monitor specific events and detect certain patterns. But that is only relevant in order to detect very precise elements, and we have chosen to focus on a more global monitoring system.
+The controller logs are divided in several categories. Each one of them defines a list of messages related to that category. The main idea here is to analyse the activity of each domain of logs and try to spot irregularities. We make the hypothesis that when something goes wrong, the related category emits a larger amount of messages. By monitoring that activity, we are be able to identify in which part of the infrastructure the issue happened. More powerful analysis could be easily implemented but that would require to target some specific syslogs. That could be really useful if the administrators want to monitor specific events and detect certain patterns. But that is only relevant in order to detect very precise elements. We have chosen to focus on a more global monitoring system.
 
 
 \subsection{Components Activity}
