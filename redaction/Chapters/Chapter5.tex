@@ -75,7 +75,7 @@ This section regroups several analysis related to the access points. In a networ
 \subsubsection*{Load}
 A fundamental piece of information related to an access point is its load. We monitor each spot continuously and record its state several times per hour. By analyzing those data, we are able to plot graphs representing the load of the access point throughout the days. To do that, we need two information: the \textit{quantity} of data transiting on the link and the \textit{maximum speed} of that link. Concretely, each \texttt{AP} owns two byte counters that are incremented each time a byte is received or sent. The other information required is the speed of the link connecting the AP to the network infrastructure (this information on itself can be useful to diagnose bandwidth issues).
 
-\paragraph*{Links} In a large-scale network, it can be difficult to keep track of which links were updated and which ones were not. By collecting these data, we were able to find that two access points were still connected with a \texttt{10Mbps} link. For this particular case, the cause was that those two devices were not managed by the \texttt{SGSI} and in consequence were not upgraded with the others. Those APs are located in the \texttt{Stevin} building.
+\paragraph*{Links} In a large-scale network, it can be difficult to keep track of which links are up-to-date and which ones were updated yet. By collecting these data, we were able to find that two access points were still connected with a \texttt{10Mbps} link. For this particular case, the cause was that those two devices were not managed by the \texttt{SGSI} and in consequence were not upgraded with the others. Those APs are located in the \texttt{Stevin} building.
 This is an example that even such simple collected data can help diagnose some inconsistencies in the network.
 
 \begin{figure}[H]
@@ -83,14 +83,14 @@ This is an example that even such simple collected data can help diagnose some i
    \caption{Example of 10Mbits Links (26/06/2014)}
 \end{figure}
 
-\paragraph*{Pattern of Utilization} By taking a look at the results, we can see during which periods of time the access point is the most active. In the example below, we have chosen an access point located in the \texttt{Leclercq} building and displayed the results of several days of monitoring. As expected, almost no activity is detected during the night. It really starts around 9 am. 
+\paragraph*{Pattern of Utilization} By taking a look at the results, we can see during which periods of time the access points are the most active. In the example below, we have chosen an access point located in the \texttt{Leclercq} building and displayed the results of several days of monitoring. As expected, almost no activity is detected during the night. It really starts around 9 am. 
 
 \begin{figure}[H]
    \includegraphics[width=\textwidth]{Pictures/chapter5/apLoad.png}
    \caption{Access Point Load}
 \end{figure}
 
-\paragraph*{Overloaded AP} Finally, we check the access points that have a \emph{medium utilization} superior to a specific threshold (defined by the user). We count the number of times such overload has been detected and we order the access points accordingly in a decreasing order. The result allows us to determine what are the busiest APs in the infrastructure.
+\paragraph*{Overloaded AP} Finally, we check the access points that have a \emph{medium utilization} superior to a specific threshold (defined by the user). We count the number of times such overload has been detected and we display the access points accordingly in a decreasing order. The result allows us to determine what are the busiest APs of the infrastructure. Here is an example of the four busiest APs of the infrastructure at the time of our deployment phase.
 
 \begin{figure}[H]
    \includegraphics[width=\textwidth]{Pictures/chapter5/busiestAP.png}
