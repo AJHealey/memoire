@@ -69,7 +69,7 @@ class APInterface(models.Model):
 ## Rogue Access Point Model
 class RAPManage(models.Manager):
 	def areUp(self):
-		return super(APManage, self).filter(lastTouched__gte=(timezone.now() - settings.SNMPRAPLAP))
+		return super(RAPManage, self).filter(lastTouched__gte=(timezone.now() - settings.SNMPRAPLAP))
 
 class RogueAccessPoint(Device):
 
