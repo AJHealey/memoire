@@ -245,7 +245,7 @@ def getRapPerZone():
 	result = {}
 
 	# prefetch to avoid n+1 queries
-	for rap in RogueAccessPoint.objects.areUp.filter(closestAp__isnull=False).prefetch_related('closestAp'):
+	for rap in RogueAccessPoint.objects.areUp().filter(closestAp__isnull=False).prefetch_related('closestAp'):
 		if rap.closestAp != None:
 			closestApName = rap.closestAp.name
 			for tag,zone in dicoZone.items():
